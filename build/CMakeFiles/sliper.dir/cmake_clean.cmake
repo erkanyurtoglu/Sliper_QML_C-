@@ -1,0 +1,40 @@
+file(REMOVE_RECURSE
+  ".qt/rcc/qrc_qmake_sliper.cpp"
+  ".qt/rcc/qrc_sliper_raw_qml_0.cpp"
+  ".rcc/qmlcache/sliper_qml/Main_qml.cpp"
+  ".rcc/qmlcache/sliper_qmlcache_loader.cpp"
+  "CMakeFiles/sliper_autogen.dir/AutogenUsed.txt"
+  "CMakeFiles/sliper_autogen.dir/ParseCache.txt"
+  "sliper_autogen"
+  "CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj"
+  "CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj.d"
+  "CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj"
+  "CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj.d"
+  "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.obj"
+  "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.obj.d"
+  "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj"
+  "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj.d"
+  "CMakeFiles/sliper.dir/main.cpp.obj"
+  "CMakeFiles/sliper.dir/main.cpp.obj.d"
+  "CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj"
+  "CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj.d"
+  "CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj"
+  "CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj.d"
+  "libsliper.dll.a"
+  "meta_types/qt6sliper_debug_metatypes.json"
+  "meta_types/qt6sliper_debug_metatypes.json.gen"
+  "meta_types/sliper_json_file_list.txt"
+  "meta_types/sliper_json_file_list.txt.timestamp"
+  "sliper.exe"
+  "sliper.exe.manifest"
+  "sliper.pdb"
+  "sliper/sliper.qmltypes"
+  "sliper_autogen/mocs_compilation.cpp"
+  "sliper_autogen/timestamp"
+  "sliper_qmltyperegistrations.cpp"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/sliper.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

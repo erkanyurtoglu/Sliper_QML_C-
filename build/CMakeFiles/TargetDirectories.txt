@@ -1,0 +1,15 @@
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_qmltyperegistration.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/all_qmltyperegistrations.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_qmllint.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_qmllint_json.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_qmllint_module.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/all_qmllint.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/all_qmllint_json.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/all_qmllint_module.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_tooling.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_qmlimportscan.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/edit_cache.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/rebuild_cache.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_autogen_timestamp_deps.dir
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_autogen.dir

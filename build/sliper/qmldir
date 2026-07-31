@@ -1,0 +1,5 @@
+module sliper
+typeinfo sliper.qmltypes
+prefer :/qt/qml/sliper/
+Main 1.0 qml/Main.qml
+

@@ -1,0 +1,14 @@
+-rootPath
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++
+-cmake-output
+-output-file
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/qml_imports/sliper_build.cmake
+-importPath
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper
+-importPath
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build
+-importPath
+C:/Qt/6.7.3/mingw_64/qml
+-qrcFiles
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qmake_sliper.qrc
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/sliper_raw_qml_0.qrc

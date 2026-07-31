@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/qt/qml/sliper">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper</file>
+
+  </qresource>
+</RCC>
