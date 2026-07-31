@@ -69,7 +69,17 @@ sliper/qml/Main.qml: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/Main.qml
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Copying qml/Main.qml to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/Main.qml"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/Main.qml C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/Main.qml
 
+sliper/qml/pages/LoginPage.qml: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/LoginPage.qml
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Copying qml/pages/LoginPage.qml to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/pages/LoginPage.qml"
+	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/LoginPage.qml C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/pages/LoginPage.qml
+
+sliper/qml/assets/logo.png: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/logo.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Copying qml/assets/logo.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/logo.png"
+	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/logo.png C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/logo.png
+
 sliper_tooling: sliper/qml/Main.qml
+sliper_tooling: sliper/qml/assets/logo.png
+sliper_tooling: sliper/qml/pages/LoginPage.qml
 sliper_tooling: CMakeFiles/sliper_tooling.dir/build.make
 .PHONY : sliper_tooling
 

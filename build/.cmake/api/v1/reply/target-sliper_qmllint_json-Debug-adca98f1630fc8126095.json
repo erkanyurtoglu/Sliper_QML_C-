@@ -1,14 +1,14 @@
 {
-	"backtrace" : 4,
+	"backtrace" : 5,
 	"backtraceGraph" : 
 	{
 		"commands" : 
 		[
-			"add_library",
+			"add_custom_target",
+			"_qt_internal_target_enable_qmllint",
 			"qt6_target_qml_sources",
 			"qt6_add_qml_module",
-			"qt_add_qml_module",
-			"target_sources"
+			"qt_add_qml_module"
 		],
 		"files" : 
 		[
@@ -21,43 +21,49 @@
 				"file" : 1
 			},
 			{
-				"command" : 3,
+				"command" : 4,
 				"file" : 1,
-				"line" : 16,
+				"line" : 18,
 				"parent" : 0
 			},
 			{
-				"command" : 2,
+				"command" : 3,
 				"file" : 0,
 				"line" : 780,
 				"parent" : 1
 			},
 			{
-				"command" : 1,
+				"command" : 2,
 				"file" : 0,
 				"line" : 647,
 				"parent" : 2
 			},
 			{
-				"command" : 0,
+				"command" : 1,
 				"file" : 0,
-				"line" : 2767,
+				"line" : 2553,
 				"parent" : 3
 			},
 			{
-				"command" : 4,
+				"command" : 0,
 				"file" : 0,
-				"line" : 2771,
-				"parent" : 3
+				"line" : 998,
+				"parent" : 4
 			}
 		]
 	},
+	"dependencies" : 
+	[
+		{
+			"id" : "all_qmltyperegistrations::@6890427a1f51a3e7e1df"
+		}
+	],
 	"folder" : 
 	{
-		"name" : "QtInternalTargets"
+		"name" : "QtInternalTargets/QmlLinter"
 	},
-	"id" : "sliper_tooling::@6890427a1f51a3e7e1df",
-	"name" : "sliper_tooling",
+	"id" : "sliper_qmllint_json::@6890427a1f51a3e7e1df",
+	"name" : "sliper_qmllint_json",
 	"paths" : 
 	{
 		"build" : ".",
@@ -85,15 +91,15 @@
 		{
 			"backtrace" : 5,
 			"isGenerated" : true,
-			"path" : "build/sliper/qml/Main.qml",
+			"path" : "build/CMakeFiles/sliper_qmllint_json",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "build/sliper/qml/Main.qml.rule",
+			"path" : "build/CMakeFiles/sliper_qmllint_json.rule",
 			"sourceGroupIndex" : 1
 		}
 	],
-	"type" : "INTERFACE_LIBRARY"
+	"type" : "UTILITY"
 }

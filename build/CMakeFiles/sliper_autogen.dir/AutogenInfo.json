@@ -736,7 +736,15 @@
 	"CROSS_CONFIG" : false,
 	"DEP_FILE" : "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "sliper_autogen/timestamp",
-	"HEADERS" : [],
+	"HEADERS" : 
+	[
+		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.h",
+			"MU",
+			"UVLADIE3JM/moc_Backend.cpp",
+			null
+		]
+	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
 	"INCLUDE_DIR" : "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include",
 	"MOC_COMPILATION_FILE" : "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/mocs_compilation.cpp",
@@ -821,6 +829,7 @@
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qrc_qmake_sliper.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp"
 	],
@@ -834,7 +843,12 @@
 	"SETTINGS_FILE" : "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
-		[ "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/main.cpp", "MU", null ]
+		[ "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/main.cpp", "MU", null ],
+		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.cpp",
+			"MU",
+			null
+		]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],
@@ -843,6 +857,7 @@
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qrc_qmake_sliper.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp"
 	],

@@ -8,5 +8,6 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qmake_sliper.qrc
 --resource
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/sliper_raw_qml_0.qrc
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/Main.qml
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/LoginPage.qml
 --json
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmllint.json

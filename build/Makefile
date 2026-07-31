@@ -356,6 +356,30 @@ build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.s
 .PHONY : build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.s
 
+build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.obj: build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.obj
+
+# target to build an object file
+build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj
+
+build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.i: build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.i
+
+# target to preprocess a source file
+build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.i
+
+build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.s: build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.s
+
+# target to generate assembly for a file
+build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.s
+
 build/.rcc/qmlcache/sliper_qmlcache_loader.obj: build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj
 .PHONY : build/.rcc/qmlcache/sliper_qmlcache_loader.obj
 
@@ -452,6 +476,30 @@ sliper_qmltyperegistrations.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.s
 .PHONY : sliper_qmltyperegistrations.cpp.s
 
+src/Backend.obj: src/Backend.cpp.obj
+.PHONY : src/Backend.obj
+
+# target to build an object file
+src/Backend.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Backend.cpp.obj
+.PHONY : src/Backend.cpp.obj
+
+src/Backend.i: src/Backend.cpp.i
+.PHONY : src/Backend.i
+
+# target to preprocess a source file
+src/Backend.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Backend.cpp.i
+.PHONY : src/Backend.cpp.i
+
+src/Backend.s: src/Backend.cpp.s
+.PHONY : src/Backend.s
+
+# target to generate assembly for a file
+src/Backend.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Backend.cpp.s
+.PHONY : src/Backend.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -482,6 +530,9 @@ help:
 	@echo ... build/.rcc/qmlcache/sliper_qml/Main_qml.obj
 	@echo ... build/.rcc/qmlcache/sliper_qml/Main_qml.i
 	@echo ... build/.rcc/qmlcache/sliper_qml/Main_qml.s
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.obj
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.i
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.s
 	@echo ... build/.rcc/qmlcache/sliper_qmlcache_loader.obj
 	@echo ... build/.rcc/qmlcache/sliper_qmlcache_loader.i
 	@echo ... build/.rcc/qmlcache/sliper_qmlcache_loader.s
@@ -494,6 +545,9 @@ help:
 	@echo ... sliper_qmltyperegistrations.obj
 	@echo ... sliper_qmltyperegistrations.i
 	@echo ... sliper_qmltyperegistrations.s
+	@echo ... src/Backend.obj
+	@echo ... src/Backend.i
+	@echo ... src/Backend.s
 .PHONY : help
 
 

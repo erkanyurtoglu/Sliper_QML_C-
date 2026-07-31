@@ -11,6 +11,8 @@ qt_policy(SET QTP0001 NEW)
 
 qt_add_executable(sliper
     main.cpp
+    src/Backend.h
+    src/Backend.cpp
 )
 
 qt_add_qml_module(sliper
@@ -18,6 +20,9 @@ qt_add_qml_module(sliper
     VERSION 1.0
     QML_FILES
         qml/Main.qml
+        qml/pages/LoginPage.qml
+    RESOURCES
+        qml/assets/logo.png
 )
 
 target_link_libraries(sliper PRIVATE

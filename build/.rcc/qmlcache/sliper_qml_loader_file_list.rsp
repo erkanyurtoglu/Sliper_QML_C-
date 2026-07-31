@@ -3,3 +3,4 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qmake_sliper.qrc
 --resource
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/sliper_raw_qml_0.qrc
 /qt/qml/sliper/qml/Main.qml
+/qt/qml/sliper/qml/pages/LoginPage.qml

@@ -67,6 +67,7 @@ include CMakeFiles/sliper_qmllint_json.dir/progress.make
 
 CMakeFiles/sliper_qmllint_json: C:/Qt/6.7.3/mingw_64/bin/qmllint.exe
 CMakeFiles/sliper_qmllint_json: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/Main.qml
+CMakeFiles/sliper_qmllint_json: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/LoginPage.qml
 CMakeFiles/sliper_qmllint_json: .rcc/qmllint/sliper_json.rsp
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && call C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.qt\bin\qt_setup_tool_path.bat C:/Qt/6.7.3/mingw_64/bin/qmllint.exe @C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmllint/sliper_json.rsp
 

@@ -71,6 +71,7 @@ CMakeFiles/sliper_qmlimportscan: .qt/qml_imports/sliper_build.cmake
 .qt/qml_imports/sliper_build.cmake: .qt/rcc/qmake_sliper.qrc
 .qt/qml_imports/sliper_build.cmake: .qt/rcc/sliper_raw_qml_0.qrc
 .qt/qml_imports/sliper_build.cmake: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/Main.qml
+.qt/qml_imports/sliper_build.cmake: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/LoginPage.qml
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running qmlimportscanner for sliper"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && call C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.qt\bin\qt_setup_tool_path.bat C:/Qt/6.7.3/mingw_64/bin/qmlimportscanner.exe @C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/qml_imports/sliper_build.rsp
 

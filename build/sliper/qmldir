@@ -2,4 +2,5 @@ module sliper
 typeinfo sliper.qmltypes
 prefer :/qt/qml/sliper/
 Main 1.0 qml/Main.qml
+LoginPage 1.0 qml/pages/LoginPage.qml
 

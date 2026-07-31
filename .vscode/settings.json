@@ -13,5 +13,6 @@
     "qt-qml.qmlls.additionalImportPaths": [
         "C:/Qt/6.7.3/mingw_64/qml",
         "${workspaceFolder}/build/qml"
-    ]
+    ],
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json"
 }

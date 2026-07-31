@@ -23,7 +23,7 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 16,
+				"line" : 18,
 				"parent" : 0
 			},
 			{
@@ -47,7 +47,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 998,
+				"line" : 1036,
 				"parent" : 4
 			}
 		]
@@ -62,8 +62,8 @@
 	{
 		"name" : "QtInternalTargets/QmlLinter"
 	},
-	"id" : "sliper_qmllint_json::@6890427a1f51a3e7e1df",
-	"name" : "sliper_qmllint_json",
+	"id" : "sliper_qmllint_module::@6890427a1f51a3e7e1df",
+	"name" : "sliper_qmllint_module",
 	"paths" : 
 	{
 		"build" : ".",
@@ -91,13 +91,13 @@
 		{
 			"backtrace" : 5,
 			"isGenerated" : true,
-			"path" : "build/CMakeFiles/sliper_qmllint_json",
+			"path" : "build/CMakeFiles/sliper_qmllint_module",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "build/CMakeFiles/sliper_qmllint_json.rule",
+			"path" : "build/CMakeFiles/sliper_qmllint_module.rule",
 			"sourceGroupIndex" : 1
 		}
 	],
