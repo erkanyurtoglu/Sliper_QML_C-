@@ -4,6 +4,8 @@ import QtQuick.Controls 6.7
 Rectangle {
     id: sayfa
 
+    signal girisBasarili()
+
     gradient: Gradient {
         GradientStop { position: 0.0; color: "#101c33" }
         GradientStop { position: 1.0; color: "#0a1220" }
@@ -178,6 +180,21 @@ Rectangle {
                 font.family: "Segoe UI"
                 font.pixelSize: 14
                 font.bold: true
+
+                onClicked: {
+
+                    var sonuc = backend.girisYap(kullaniciAdiKutusu.text, sifreKutusu.text)
+                    
+                    if(sonuc)
+                    {
+                        sayfa.girisBasarili()
+                    }
+
+                    else
+                    {
+                        console.log("Kullanici adi veya sifre hatali")
+                    }
+                }
 
                 background: Rectangle {
                     radius: 8

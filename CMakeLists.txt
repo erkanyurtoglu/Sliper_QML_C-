@@ -21,6 +21,7 @@ qt_add_qml_module(sliper
     QML_FILES
         qml/Main.qml
         qml/pages/LoginPage.qml
+        qml/pages/DashboardPage.qml
     RESOURCES
         qml/assets/logo.png
 )

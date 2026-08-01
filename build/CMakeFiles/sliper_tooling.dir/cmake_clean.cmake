@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "sliper/qml/Main.qml"
   "sliper/qml/assets/logo.png"
+  "sliper/qml/pages/DashboardPage.qml"
   "sliper/qml/pages/LoginPage.qml"
 )
 

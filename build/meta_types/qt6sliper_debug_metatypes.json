@@ -3,6 +3,23 @@
         "classes": [
             {
                 "className": "Backend",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "kullaniciAdi",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "sifre",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "girisYap",
+                        "returnType": "bool"
+                    }
+                ],
                 "object": true,
                 "properties": [
                     {

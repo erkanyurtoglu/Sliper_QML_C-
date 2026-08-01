@@ -9,4 +9,5 @@ class Backend : public QObject
 public:
     explicit Backend(QObject *parent = nullptr);
     QString durum() const;
+    Q_INVOKABLE bool girisYap(const QString &kullaniciAdi, const QString &sifre);
 };
