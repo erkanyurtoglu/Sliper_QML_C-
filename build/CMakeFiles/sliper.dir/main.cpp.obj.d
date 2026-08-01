@@ -372,6 +372,8 @@ CMakeFiles/sliper.dir/main.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtQml/qqmlabstracturlinterceptor.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QDebug \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QtGlobal \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qglobal.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/Backend.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QObject \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qobject.h

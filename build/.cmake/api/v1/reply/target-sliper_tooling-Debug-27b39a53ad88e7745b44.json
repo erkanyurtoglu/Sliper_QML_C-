@@ -71,24 +71,32 @@
 			[
 				0,
 				1,
-				2
+				2,
+				3,
+				4,
+				5,
+				6
 			]
 		},
 		{
 			"name" : "Resources",
 			"sourceIndexes" : 
 			[
-				3
+				7
 			]
 		},
 		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				4,
-				5,
-				6,
-				7
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15
 			]
 		}
 	],
@@ -115,6 +123,30 @@
 		{
 			"backtrace" : 5,
 			"isGenerated" : true,
+			"path" : "build/sliper/qml/pages/OlcumPage.qml",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 5,
+			"isGenerated" : true,
+			"path" : "build/sliper/qml/pages/SonuclarPage.qml",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 5,
+			"isGenerated" : true,
+			"path" : "build/sliper/qml/pages/GecmisPage.qml",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 5,
+			"isGenerated" : true,
+			"path" : "build/sliper/qml/pages/KalibrasyonPage.qml",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 5,
+			"isGenerated" : true,
 			"path" : "build/sliper/qml/assets/logo.png",
 			"sourceGroupIndex" : 1
 		},
@@ -134,6 +166,30 @@
 			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/sliper/qml/pages/DashboardPage.qml.rule",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/sliper/qml/pages/OlcumPage.qml.rule",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/sliper/qml/pages/SonuclarPage.qml.rule",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/sliper/qml/pages/GecmisPage.qml.rule",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/sliper/qml/pages/KalibrasyonPage.qml.rule",
 			"sourceGroupIndex" : 2
 		},
 		{

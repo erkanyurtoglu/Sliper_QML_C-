@@ -4,7 +4,11 @@ ae6fcaaa038189ae5f14e4f120261116 .qt/rcc/qrc_qmake_sliper.cpp
 82f6fddada608781e216111cb153073f .qt/rcc/qrc_sliper_raw_qml_0.cpp
 dc88050dab06e6b15722edca2c1ba8e1 .rcc/qmlcache/sliper_qml/Main_qml.cpp
 94c68d1a7dcbda56f54ebaf0e675d2b6 .rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp
+a7296b82e6edeb4f1bc6de21f3ecbde8 .rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp
+8a4fb97b7087eaec882f6589b7a72e9d .rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp
 fb6255a4adcb8eb70b0636f185c4b9bb .rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp
+839efc952791a4b59201a7f9f3e1c180 .rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp
+4ba7769b87902c740f8f8cb8ddbfc85e .rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp
 2824adb9988638d1387b61729aa348d5 .rcc/qmlcache/sliper_qmlcache_loader.cpp
 ad0bf0bb4c8c2197760fd2efb9402451 CMakeFiles/sliper_autogen
 ad0bf0bb4c8c2197760fd2efb9402451 CMakeFiles/sliper_qmlimportscan
@@ -18,6 +22,10 @@ f78843eac0708364eb4e4b24ba68c85c meta_types/qt6sliper_debug_metatypes.json.gen
 70d95ef62879ee249966b89c109d1903 sliper/qml/Main.qml
 3e04d82f1972d209e06097f5e2b2ab89 sliper/qml/assets/logo.png
 8362889b1fd9f379f1d896619bd8adbc sliper/qml/pages/DashboardPage.qml
+f36d70333632cecaf09467d1e3bc897c sliper/qml/pages/GecmisPage.qml
+178a312326dd8732caa3916198f6f317 sliper/qml/pages/KalibrasyonPage.qml
 38b3b901906c1f25b61cb1439872cc86 sliper/qml/pages/LoginPage.qml
+095a1c72367f1988acdda6033ae766cf sliper/qml/pages/OlcumPage.qml
+5d6e7e1c6ea544870f1f3b332a016f7f sliper/qml/pages/SonuclarPage.qml
 cdf37b42ac044471ba246b44d268989b sliper_autogen/timestamp
 ae11c6cf5af9d8c080c84b9b01a6995e sliper_qmltyperegistrations.cpp

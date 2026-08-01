@@ -10,5 +10,9 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/sliper_raw_qml_0.qr
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/Main.qml
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/LoginPage.qml
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/DashboardPage.qml
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/OlcumPage.qml
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/SonuclarPage.qml
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/GecmisPage.qml
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/KalibrasyonPage.qml
 --json
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmllint.json

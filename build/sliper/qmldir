@@ -4,4 +4,8 @@ prefer :/qt/qml/sliper/
 Main 1.0 qml/Main.qml
 LoginPage 1.0 qml/pages/LoginPage.qml
 DashboardPage 1.0 qml/pages/DashboardPage.qml
+OlcumPage 1.0 qml/pages/OlcumPage.qml
+SonuclarPage 1.0 qml/pages/SonuclarPage.qml
+GecmisPage 1.0 qml/pages/GecmisPage.qml
+KalibrasyonPage 1.0 qml/pages/KalibrasyonPage.qml
 

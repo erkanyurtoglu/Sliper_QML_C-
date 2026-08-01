@@ -1,25 +1,30 @@
 import QtQuick 6.7
 import QtQuick.Controls 6.7
-import QtQuick.Window 
+import QtQuick.Window 6.7
+import QtQuick.Layouts 6.7
+import "pages"
 
 ApplicationWindow {
+    id: pencere
     visible: true
-    visibility: Window.Maximized //Görev çubuğu görünür kalır, pencere "büyütülmüş" hâlde açılır.
+    visibility: Window.Maximized // rectangle içine alınca bozuluyor
     title: "SLIPER Analiz"
 
     background: Rectangle {
         color: "#060d17"
     }
 
-    Loader {
-        id: sayfaYukleyici
-        anchors.fill: parent
-        source: "pages/LoginPage.qml"
 
-        onLoaded: {
-            item.girisBasarili.connect(function() {
-                sayfaYukleyici.source = "pages/DashboardPage.qml"
-            })
+    StackLayout {
+        id: anaStack
+        anchors.fill: parent
+        currentIndex: 0
+
+        LoginPage {
+            onGirisBasarili: anaStack.currentIndex = 1
+        }
+
+        DashboardPage {
         }
     }
 }

@@ -3,6 +3,10 @@
     <file alias="qml/Main.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/Main.qml</file>
     <file alias="qml/pages/LoginPage.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/LoginPage.qml</file>
     <file alias="qml/pages/DashboardPage.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/DashboardPage.qml</file>
+    <file alias="qml/pages/OlcumPage.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/OlcumPage.qml</file>
+    <file alias="qml/pages/SonuclarPage.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/SonuclarPage.qml</file>
+    <file alias="qml/pages/GecmisPage.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/GecmisPage.qml</file>
+    <file alias="qml/pages/KalibrasyonPage.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/KalibrasyonPage.qml</file>
     <file alias="qml/assets/logo.png">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/logo.png</file>
   </qresource>
 </RCC>

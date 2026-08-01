@@ -2,10 +2,15 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QDebug>
+#include <QtGlobal>
 #include "src/Backend.h"
 
 int main(int argc, char *argv[])
 {
+    if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
+        qputenv("QT_QUICK_CONTROLS_STYLE", "Basic");
+    }
+
     QGuiApplication app(argc, argv);
 
     Backend backend; // Stack üzerinde Backend nesnesi oluşturdum. 

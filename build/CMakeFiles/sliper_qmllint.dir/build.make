@@ -69,6 +69,10 @@ CMakeFiles/sliper_qmllint: C:/Qt/6.7.3/mingw_64/bin/qmllint.exe
 CMakeFiles/sliper_qmllint: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/Main.qml
 CMakeFiles/sliper_qmllint: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/LoginPage.qml
 CMakeFiles/sliper_qmllint: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/DashboardPage.qml
+CMakeFiles/sliper_qmllint: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/OlcumPage.qml
+CMakeFiles/sliper_qmllint: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/SonuclarPage.qml
+CMakeFiles/sliper_qmllint: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/GecmisPage.qml
+CMakeFiles/sliper_qmllint: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/KalibrasyonPage.qml
 CMakeFiles/sliper_qmllint: .rcc/qmllint/sliper.rsp
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && call C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.qt\bin\qt_setup_tool_path.bat C:/Qt/6.7.3/mingw_64/bin/qmllint.exe @C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmllint/sliper.rsp
 

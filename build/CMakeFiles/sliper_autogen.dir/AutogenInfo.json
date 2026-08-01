@@ -830,7 +830,11 @@
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp"
 	],
@@ -859,7 +863,11 @@
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp",
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp"
 	],

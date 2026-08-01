@@ -67,7 +67,7 @@ CMAKE_BINARY_DIR = C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
-	"C:\Program Files\CMake\bin\cmake-gui.exe" -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	C:\Qt\Tools\CMake_64\bin\cmake-gui.exe -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -380,6 +380,54 @@ build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.s
 .PHONY : build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.s
 
+build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.obj: build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.obj
+
+# target to build an object file
+build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj
+
+build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.i: build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.i
+
+# target to preprocess a source file
+build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.i
+
+build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.s: build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.s
+
+# target to generate assembly for a file
+build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.s
+
+build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.obj: build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.obj
+
+# target to build an object file
+build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj
+
+build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.i: build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.i
+
+# target to preprocess a source file
+build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.i
+
+build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.s: build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.s
+
+# target to generate assembly for a file
+build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.s
+
 build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.obj: build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj
 .PHONY : build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.obj
 
@@ -403,6 +451,54 @@ build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.s: build/.rcc/qmlcache/sliper
 build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.s
 .PHONY : build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.s
+
+build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.obj: build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.obj
+
+# target to build an object file
+build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj
+
+build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.i: build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.i
+
+# target to preprocess a source file
+build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.i
+
+build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.s: build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.s
+
+# target to generate assembly for a file
+build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.s
+
+build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.obj: build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.obj
+
+# target to build an object file
+build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj
+
+build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.i: build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.i
+
+# target to preprocess a source file
+build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.i
+
+build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.s: build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.s
+
+# target to generate assembly for a file
+build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.s
 
 build/.rcc/qmlcache/sliper_qmlcache_loader.obj: build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj
 .PHONY : build/.rcc/qmlcache/sliper_qmlcache_loader.obj
@@ -557,9 +653,21 @@ help:
 	@echo ... build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.obj
 	@echo ... build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.i
 	@echo ... build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.s
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.obj
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.i
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.s
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.obj
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.i
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.s
 	@echo ... build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.obj
 	@echo ... build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.i
 	@echo ... build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.s
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.obj
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.i
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.s
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.obj
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.i
+	@echo ... build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.s
 	@echo ... build/.rcc/qmlcache/sliper_qmlcache_loader.obj
 	@echo ... build/.rcc/qmlcache/sliper_qmlcache_loader.i
 	@echo ... build/.rcc/qmlcache/sliper_qmlcache_loader.s
