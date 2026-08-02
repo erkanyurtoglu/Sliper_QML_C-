@@ -1,9 +1,10 @@
 #include <QQmlContext>
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QDebug>
 #include <QtGlobal>
 #include "src/Backend.h"
+#include "src/SensorManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,13 +12,15 @@ int main(int argc, char *argv[])
         qputenv("QT_QUICK_CONTROLS_STYLE", "Basic");
     }
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     Backend backend; // Stack üzerinde Backend nesnesi oluşturdum. 
+    SensorManager sensorManager;
 
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("backend", &backend);
+    engine.rootContext()->setContextProperty("sensorManager", &sensorManager);  
 
     QObject::connect(
         &engine,

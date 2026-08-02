@@ -68,6 +68,7 @@ include CMakeFiles/sliper_autogen.dir/progress.make
 CMakeFiles/sliper_autogen: sliper_autogen/timestamp
 
 sliper_autogen/timestamp: C:/Qt/6.7.3/mingw_64/bin/moc.exe
+sliper_autogen/timestamp: C:/Qt/6.7.3/mingw_64/bin/uic.exe
 sliper_autogen/timestamp: CMakeFiles/sliper_autogen.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target sliper"
 	C:\Qt\Tools\CMake_64\bin\cmake.exe -E cmake_autogen C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_autogen.dir/AutogenInfo.json Debug

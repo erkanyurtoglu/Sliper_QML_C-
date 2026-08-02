@@ -1,85 +1,91 @@
 [
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\sliper_autogen\\mocs_compilation.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\sliper_autogen\\mocs_compilation.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\sliper_autogen\\mocs_compilation.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\sliper_autogen\\mocs_compilation.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/mocs_compilation.cpp",
   "output": "CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\main.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\main.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\main.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\main.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/main.cpp",
   "output": "CMakeFiles/sliper.dir/main.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\src\\Backend.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\src\\Backend.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\src\\Backend.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\src\\Backend.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.cpp",
   "output": "CMakeFiles/sliper.dir/src/Backend.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -Wa,-mbig-obj -o CMakeFiles\\sliper.dir\\sliper_qmltyperegistrations.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\sliper_qmltyperegistrations.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\src\\SensorManager.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\src\\SensorManager.cpp",
+  "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.cpp",
+  "output": "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj"
+},
+{
+  "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -Wa,-mbig-obj -o CMakeFiles\\sliper.dir\\sliper_qmltyperegistrations.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\sliper_qmltyperegistrations.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp",
   "output": "CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.qt\\rcc\\qrc_qmake_sliper.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.qt\\rcc\\qrc_qmake_sliper.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.qt\\rcc\\qrc_qmake_sliper.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.qt\\rcc\\qrc_qmake_sliper.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qrc_qmake_sliper.cpp",
   "output": "CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qmlcache_loader.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qmlcache_loader.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qmlcache_loader.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qmlcache_loader.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp",
   "output": "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\Main_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\Main_qml.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\Main_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\Main_qml.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp",
   "output": "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\LoginPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\LoginPage_qml.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\LoginPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\LoginPage_qml.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp",
   "output": "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\DashboardPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\DashboardPage_qml.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\DashboardPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\DashboardPage_qml.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp",
   "output": "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\OlcumPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\OlcumPage_qml.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\OlcumPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\OlcumPage_qml.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp",
   "output": "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\SonuclarPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\SonuclarPage_qml.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\SonuclarPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\SonuclarPage_qml.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp",
   "output": "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\GecmisPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\GecmisPage_qml.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\GecmisPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\GecmisPage_qml.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp",
   "output": "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\KalibrasyonPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\KalibrasyonPage_qml.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\KalibrasyonPage_qml.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.rcc\\qmlcache\\sliper_qml\\pages\\KalibrasyonPage_qml.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp",
   "output": "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj"
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
-  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.qt\\rcc\\qrc_sliper_raw_qml_0.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.qt\\rcc\\qrc_sliper_raw_qml_0.cpp",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\build\\.qt\\rcc\\qrc_sliper_raw_qml_0.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\.qt\\rcc\\qrc_sliper_raw_qml_0.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp",
   "output": "CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj"
 }

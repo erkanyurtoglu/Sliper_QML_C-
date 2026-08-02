@@ -325,11 +325,14 @@ CMakeFiles/sliper.dir/main.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qhash.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/q23utility.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/QGuiApplication \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qguiapplication.h \
+ C:/Qt/6.7.3/mingw_64/include/QtWidgets/QApplication \
+ C:/Qt/6.7.3/mingw_64/include/QtWidgets/qapplication.h \
+ C:/Qt/6.7.3/mingw_64/include/QtWidgets/qtwidgetsglobal.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qtguiglobal.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qtgui-config.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qtguiexports.h \
+ C:/Qt/6.7.3/mingw_64/include/QtWidgets/qtwidgets-config.h \
+ C:/Qt/6.7.3/mingw_64/include/QtWidgets/qtwidgetsexports.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qcoreapplication.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qcoreevent.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qdeadlinetimer.h \
@@ -339,13 +342,27 @@ CMakeFiles/sliper.dir/main.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qcoreapplication_platform.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qwindowdefs.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qwindowdefs_win.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qinputmethod.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qlocale.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qpoint.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qsize.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qmargins.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qguiapplication_platform.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qcursor.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qbitmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpixmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpaintdevice.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qrect.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qcolor.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qrgb.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qrgba64.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qimage.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpixelformat.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qtransform.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpolygon.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qregion.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qline.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qguiapplication.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qinputmethod.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qlocale.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qguiapplication_platform.h \
  C:/Qt/6.7.3/mingw_64/include/QtQml/QQmlApplicationEngine \
  C:/Qt/6.7.3/mingw_64/include/QtQml/qqmlapplicationengine.h \
  C:/Qt/6.7.3/mingw_64/include/QtQml/qqmlengine.h \
@@ -376,4 +393,8 @@ CMakeFiles/sliper.dir/main.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qglobal.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/Backend.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QObject \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qobject.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qobject.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/SensorManager.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QTimer \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qtimer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qbasictimer.h

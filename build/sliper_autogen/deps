@@ -1,5 +1,6 @@
 sliper_autogen/timestamp: \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/QObject \
+	C:/Qt/6.7.3/mingw_64/include/QtCore/QTimer \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/q20type_traits.h \
@@ -12,6 +13,7 @@ sliper_autogen/timestamp: \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qatomic.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qatomic_cxx11.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qbasicatomic.h \
+	C:/Qt/6.7.3/mingw_64/include/QtCore/qbasictimer.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qbindingstorage.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qbytearray.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qbytearrayalgorithms.h \
@@ -84,6 +86,7 @@ sliper_autogen/timestamp: \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qtcoreexports.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qtdeprecationmarkers.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qtenvironmentvariables.h \
+	C:/Qt/6.7.3/mingw_64/include/QtCore/qtimer.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qtmetamacros.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qtnoop.h \
 	C:/Qt/6.7.3/mingw_64/include/QtCore/qtpreprocessorsupport.h \
@@ -121,6 +124,14 @@ sliper_autogen/timestamp: \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6/QtPublicTestHelpers.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6/QtPublicToolHelpers.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6/QtPublicWalkLibsHelpers.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Charts/Qt6ChartsAdditionalTargetInfo.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Charts/Qt6ChartsConfig.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Charts/Qt6ChartsConfigVersion.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Charts/Qt6ChartsConfigVersionImpl.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Charts/Qt6ChartsDependencies.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Charts/Qt6ChartsTargets-relwithdebinfo.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Charts/Qt6ChartsTargets.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Charts/Qt6ChartsVersionlessTargets.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Core/Qt6CoreAdditionalTargetInfo.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Core/Qt6CoreConfig.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Core/Qt6CoreConfigExtras.cmake \
@@ -243,6 +254,14 @@ sliper_autogen/timestamp: \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGL/Qt6OpenGLTargets-relwithdebinfo.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGL/Qt6OpenGLTargets.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGL/Qt6OpenGLVersionlessTargets.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGLWidgets/Qt6OpenGLWidgetsAdditionalTargetInfo.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGLWidgets/Qt6OpenGLWidgetsConfig.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGLWidgets/Qt6OpenGLWidgetsConfigVersion.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGLWidgets/Qt6OpenGLWidgetsConfigVersionImpl.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGLWidgets/Qt6OpenGLWidgetsDependencies.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGLWidgets/Qt6OpenGLWidgetsTargets-relwithdebinfo.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGLWidgets/Qt6OpenGLWidgetsTargets.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6OpenGLWidgets/Qt6OpenGLWidgetsVersionlessTargets.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6PdfQuickpluginAdditionalTargetInfo.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6PdfQuickpluginConfig.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6PdfQuickpluginTargets-relwithdebinfo.cmake \
@@ -587,6 +606,28 @@ sliper_autogen/timestamp: \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6QuickTools/Qt6QuickToolsTargets-relwithdebinfo.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6QuickTools/Qt6QuickToolsTargets.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6QuickTools/Qt6QuickToolsVersionlessTargets.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6QModernWindowsStylePluginAdditionalTargetInfo.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6QModernWindowsStylePluginConfig.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6QModernWindowsStylePluginTargets-relwithdebinfo.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6QModernWindowsStylePluginTargets.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6WidgetsAdditionalTargetInfo.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6WidgetsConfigVersion.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6WidgetsConfigVersionImpl.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6WidgetsMacros.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6WidgetsPlugins.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6WidgetsTargets-relwithdebinfo.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6WidgetsTargets.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Widgets/Qt6WidgetsVersionlessTargets.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6WidgetsTools/Qt6WidgetsToolsAdditionalTargetInfo.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6WidgetsTools/Qt6WidgetsToolsConfig.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6WidgetsTools/Qt6WidgetsToolsConfigVersion.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6WidgetsTools/Qt6WidgetsToolsConfigVersionImpl.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6WidgetsTools/Qt6WidgetsToolsDependencies.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6WidgetsTools/Qt6WidgetsToolsTargets-relwithdebinfo.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6WidgetsTools/Qt6WidgetsToolsTargets.cmake \
+	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6WidgetsTools/Qt6WidgetsToolsVersionlessTargets.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6ZlibPrivate/Qt6ZlibPrivateAdditionalTargetInfo.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6ZlibPrivate/Qt6ZlibPrivateConfig.cmake \
 	C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6ZlibPrivate/Qt6ZlibPrivateConfigVersion.cmake \
@@ -798,6 +839,8 @@ sliper_autogen/timestamp: \
 	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/main.cpp \
 	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.cpp \
 	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.h \
+	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.cpp \
+	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h \
 	C:/msys64/mingw64/include/_mingw.h \
 	C:/msys64/mingw64/include/_mingw_mac.h \
 	C:/msys64/mingw64/include/_mingw_off_t.h \

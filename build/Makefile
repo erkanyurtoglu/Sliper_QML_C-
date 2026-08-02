@@ -620,6 +620,30 @@ src/Backend.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Backend.cpp.s
 .PHONY : src/Backend.cpp.s
 
+src/SensorManager.obj: src/SensorManager.cpp.obj
+.PHONY : src/SensorManager.obj
+
+# target to build an object file
+src/SensorManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/SensorManager.cpp.obj
+.PHONY : src/SensorManager.cpp.obj
+
+src/SensorManager.i: src/SensorManager.cpp.i
+.PHONY : src/SensorManager.i
+
+# target to preprocess a source file
+src/SensorManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/SensorManager.cpp.i
+.PHONY : src/SensorManager.cpp.i
+
+src/SensorManager.s: src/SensorManager.cpp.s
+.PHONY : src/SensorManager.s
+
+# target to generate assembly for a file
+src/SensorManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/SensorManager.cpp.s
+.PHONY : src/SensorManager.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -683,6 +707,9 @@ help:
 	@echo ... src/Backend.obj
 	@echo ... src/Backend.i
 	@echo ... src/Backend.s
+	@echo ... src/SensorManager.obj
+	@echo ... src/SensorManager.i
+	@echo ... src/SensorManager.s
 .PHONY : help
 
 

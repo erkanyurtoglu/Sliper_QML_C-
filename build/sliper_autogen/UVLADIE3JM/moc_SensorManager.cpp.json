@@ -1,0 +1,104 @@
+{
+    "classes": [
+        {
+            "className": "SensorManager",
+            "object": true,
+            "properties": [
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 0,
+                    "name": "basinc",
+                    "notify": "basincChanged",
+                    "read": "basinc",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 1,
+                    "name": "konum",
+                    "notify": "konumChanged",
+                    "read": "konum",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 2,
+                    "name": "hiz",
+                    "notify": "hizChanged",
+                    "read": "hiz",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 3,
+                    "name": "debi",
+                    "notify": "debiChanged",
+                    "read": "debi",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
+                }
+            ],
+            "qualifiedClassName": "SensorManager",
+            "signals": [
+                {
+                    "access": "public",
+                    "name": "basincChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "konumChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "hizChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "debiChanged",
+                    "returnType": "void"
+                }
+            ],
+            "slots": [
+                {
+                    "access": "public",
+                    "name": "veriUret",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "SensorManager.h",
+    "outputRevision": 68
+}

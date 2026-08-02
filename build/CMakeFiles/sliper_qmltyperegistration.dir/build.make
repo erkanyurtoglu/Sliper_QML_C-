@@ -79,6 +79,9 @@ sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6quick_relwith
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6gui_relwithdebinfo_metatypes.json
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6qmlmodels_relwithdebinfo_metatypes.json
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6opengl_relwithdebinfo_metatypes.json
+sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6charts_relwithdebinfo_metatypes.json
+sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6widgets_relwithdebinfo_metatypes.json
+sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6openglwidgets_relwithdebinfo_metatypes.json
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic QML type registration for target sliper"
 	call .qt\bin\qt_setup_tool_path.bat C:/Qt/6.7.3/mingw_64/bin/qmltyperegistrar.exe --generate-qmltypes=C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/sliper.qmltypes --import-name=sliper --major-version=1 --minor-version=0 @C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/qmltypes/sliper_foreign_types.txt -o C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/meta_types/qt6sliper_debug_metatypes.json
 	C:\Qt\Tools\CMake_64\bin\cmake.exe -E make_directory C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/qmltypes
@@ -103,6 +106,7 @@ meta_types/sliper_json_file_list.txt: sliper_autogen/timestamp
 	C:\Qt\6.7.3\mingw_64\bin\cmake_automoc_parser.exe --cmake-autogen-cache-file C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_autogen.dir/ParseCache.txt --cmake-autogen-info-file C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_autogen.dir/AutogenInfo.json --output-file-path C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/meta_types/sliper_json_file_list.txt --timestamp-file-path C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/meta_types/sliper_json_file_list.txt.timestamp --cmake-autogen-include-dir-path C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include
 
 sliper_autogen/timestamp: C:/Qt/6.7.3/mingw_64/bin/moc.exe
+sliper_autogen/timestamp: C:/Qt/6.7.3/mingw_64/bin/uic.exe
 sliper_autogen/timestamp: CMakeFiles/sliper_qmltyperegistration.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Automatic MOC and UIC for target sliper"
 	C:\Qt\Tools\CMake_64\bin\cmake.exe -E cmake_autogen C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/CMakeFiles/sliper_autogen.dir/AutogenInfo.json Debug

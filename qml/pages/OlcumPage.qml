@@ -1,5 +1,6 @@
 import QtQuick 6.7
 import QtQuick.Controls 6.7
+import QtCharts 6.7
 
 Rectangle {
     color: "#0a0e17"
@@ -240,7 +241,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: "0.0"
+                            text: sensorManager.basinc.toFixed(1)
                             color: "#3b82f6"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -278,7 +279,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: "0.0"
+                            text: sensorManager.konum.toFixed(1)
                             color: "#9333ea"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -316,7 +317,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: "0.0"
+                            text: sensorManager.hiz.toFixed(1)
                             color: "#f59e0b"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -354,7 +355,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: "0.0"
+                            text: sensorManager.debi.toFixed(1)
                             color: "#16a34a"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -399,6 +400,33 @@ Rectangle {
                         font.family: "Segoe UI"
                         font.pixelSize: 13
                         font.bold: true
+                    }
+                    
+                    ChartView {
+                        anchors.fill: parent
+                        anchors.topMargin: 36
+                        backgroundColor: "transparent"
+                        legend.visible: false
+                        antialiasing: true
+
+                        ValueAxis {
+                            id: xEkseni
+                            min: 0
+                            max: 60
+                        }
+
+                        ValueAxis {
+                            id: yEkseni
+                            min: 0
+                            max: 30
+                        }
+
+                        LineSeries {
+                            id: basincSerisi
+                            axisX: xEkseni
+                            axisY: yEkseni
+                            color: "#3b82f6"
+                        }
                     }
                 }
 

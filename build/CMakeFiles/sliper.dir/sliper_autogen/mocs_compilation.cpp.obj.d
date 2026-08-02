@@ -304,4 +304,10 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/chrono \
  C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/ratio \
  C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/ctime \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qtmochelpers.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qtmochelpers.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_SensorManager.cpp \
+ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QTimer \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qtimer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qbasictimer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qobject.h
