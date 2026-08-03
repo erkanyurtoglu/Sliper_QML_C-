@@ -1,0 +1,72 @@
+{
+    "classes": [
+        {
+            "className": "Calculator",
+            "methods": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "konum",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "konumGuncelle",
+                    "returnType": "void"
+                }
+            ],
+            "object": true,
+            "properties": [
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 0,
+                    "name": "durum",
+                    "notify": "durumChanged",
+                    "read": "durum",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QString",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 1,
+                    "name": "strokeSayisi",
+                    "notify": "strokeSayisiChanged",
+                    "read": "strokeSayisi",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "int",
+                    "user": false
+                }
+            ],
+            "qualifiedClassName": "Calculator",
+            "signals": [
+                {
+                    "access": "public",
+                    "name": "durumChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "strokeSayisiChanged",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "Calculator.h",
+    "outputRevision": 68
+}

@@ -788,6 +788,12 @@
 			null
 		],
 		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.h",
+			"MU",
+			"UVLADIE3JM/moc_Calculator.cpp",
+			null
+		],
+		[
 			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h",
 			"MU",
 			"UVLADIE3JM/moc_SensorManager.cpp",
@@ -906,6 +912,11 @@
 		[ "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/main.cpp", "MU", null ],
 		[
 			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.cpp",
 			"MU",
 			null
 		],

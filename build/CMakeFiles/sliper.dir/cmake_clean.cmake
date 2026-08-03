@@ -40,6 +40,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj.d"
   "CMakeFiles/sliper.dir/src/Backend.cpp.obj"
   "CMakeFiles/sliper.dir/src/Backend.cpp.obj.d"
+  "CMakeFiles/sliper.dir/src/Calculator.cpp.obj"
+  "CMakeFiles/sliper.dir/src/Calculator.cpp.obj.d"
   "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj"
   "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj.d"
   "libsliper.dll.a"

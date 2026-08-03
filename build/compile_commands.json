@@ -25,6 +25,12 @@
 },
 {
   "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
+  "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\sliper.dir\\src\\Calculator.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\src\\Calculator.cpp",
+  "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.cpp",
+  "output": "CMakeFiles/sliper.dir/src/Calculator.cpp.obj"
+},
+{
+  "directory": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
   "command": "C:\\Qt\\Tools\\mingw1120_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CHARTS_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGLWIDGETS_LIB -DQT_OPENGL_LIB -DQT_QMLBUILTINS_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/sliper.dir/includes_CXX.rsp -g -std=gnu++17 -Wa,-mbig-obj -o CMakeFiles\\sliper.dir\\sliper_qmltyperegistrations.cpp.obj -c C:\\Users\\yurto\\Documents\\GitHub\\Sliper_QML_C++\\build\\sliper_qmltyperegistrations.cpp",
   "file": "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp",
   "output": "CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj"

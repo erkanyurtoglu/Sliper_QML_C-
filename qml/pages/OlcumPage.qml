@@ -4,6 +4,7 @@ import QtCharts 6.7
 
 Rectangle {
     color: "#0a0e17"
+    property real zamanSayaci: 0
     
     Row {
         anchors.fill: parent
@@ -197,10 +198,59 @@ Rectangle {
                 }
             }
 
+            Row {
+                anchors.top: formAlanlari.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 20
+                anchors.leftMargin: 20
+                spacing: 12
+
+                Rectangle {
+                    id: trafikIsigi
+                    width: 16
+                    height: 16
+                    radius: 8
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: {
+                        if (calculator.durum === "YUKARIDA") return "#16a34a"
+                        if (calculator.durum === "INIYOR") return "#f59e0b"
+                        return "#dc2626"
+                    }
+                }
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: calculator.durum
+                    color: "#dce8f5"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 13
+                    font.bold: true
+                }
+
+                Rectangle {
+                    width: 60
+                    height: 28
+                    radius: 6
+                    color: "#0a0e17"
+                    border.color: "#1e2a3f"
+                    border.width: 1
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: calculator.strokeSayisi
+                        color: "#e8a020"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 15
+                        font.bold: true
+                    }
+                }
+            }
+
             Text {
                 anchors.top: formAlanlari.bottom
                 anchors.left: parent.left
-                anchors.topMargin: 24
+                anchors.topMargin: 70
                 anchors.leftMargin: 20
                 text: "ANLIK DEĞERLER"
                 color: "#6b7280"
@@ -213,7 +263,7 @@ Rectangle {
             Grid {
                 anchors.top: parent.top
                 anchors.left: parent.left
-                anchors.topMargin: 420
+                anchors.topMargin: 470
                 anchors.leftMargin: 20
                 columns: 2
                 spacing: 10
@@ -427,6 +477,20 @@ Rectangle {
                             axisY: yEkseni
                             color: "#3b82f6"
                         }
+
+                        Connections {
+                            target: sensorManager
+                            function onBasincChanged() {
+                                zamanSayaci += 0.2
+                                basincSerisi.append(zamanSayaci, sensorManager.basinc)
+
+                                if (zamanSayaci > 60) {
+                                    basincSerisi.remove(0)
+                                    xEkseni.min = zamanSayaci - 60
+                                    xEkseni.max = zamanSayaci
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -448,6 +512,48 @@ Rectangle {
                         font.pixelSize: 13
                         font.bold: true
                     }
+
+                    ChartView {
+                        anchors.fill: parent
+                        anchors.topMargin: 36
+                        backgroundColor: "transparent"
+                        legend.visible: false
+                        antialiasing: true
+
+                        ValueAxis {
+                            id: konumXEkseni
+                            min: 0
+                            max: 60
+                        }
+
+                        ValueAxis {
+                            id: konumYEkseni
+                            min: 0
+                            max: 500
+                        }
+
+                        LineSeries {
+                            id: konumSerisi
+                            axisX: konumXEkseni
+                            axisY: konumYEkseni
+                            color: "#9333ea"
+                        }
+
+                        Connections {
+                            target: sensorManager
+                            function onKonumChanged() {
+                                konumSerisi.append(zamanSayaci, sensorManager.konum)
+
+                                if (zamanSayaci > 60) {
+                                    konumSerisi.remove(0)
+                                    konumXEkseni.min = zamanSayaci - 60
+                                    konumXEkseni.max = zamanSayaci
+                                }
+
+                                calculator.konumGuncelle(sensorManager.konum)
+                            }
+                        }
+                    }
                 }
 
                 Rectangle {
@@ -468,6 +574,46 @@ Rectangle {
                         font.pixelSize: 13
                         font.bold: true
                     }
+
+                    ChartView {
+                        anchors.fill: parent
+                        anchors.topMargin: 36
+                        backgroundColor: "transparent"
+                        legend.visible: false
+                        antialiasing: true
+
+                        ValueAxis {
+                            id: hizXEkseni
+                            min: 0
+                            max: 60
+                        }
+
+                        ValueAxis {
+                            id: hizYEkseni
+                            min: 0
+                            max: 4
+                        }
+
+                        LineSeries {
+                            id: hizSerisi
+                            axisX: hizXEkseni
+                            axisY: hizYEkseni
+                            color: "#f59e0b"
+                        }
+
+                        Connections {
+                            target: sensorManager
+                            function onHizChanged() {
+                                hizSerisi.append(zamanSayaci, sensorManager.hiz)
+
+                                if (zamanSayaci > 60) {
+                                    hizSerisi.remove(0)
+                                    hizXEkseni.min = zamanSayaci - 60
+                                    hizXEkseni.max = zamanSayaci
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Rectangle {
@@ -487,6 +633,46 @@ Rectangle {
                         font.family: "Segoe UI"
                         font.pixelSize: 13
                         font.bold: true
+                    }
+
+                    ChartView {
+                        anchors.fill: parent
+                        anchors.topMargin: 36
+                        backgroundColor: "transparent"
+                        legend.visible: false
+                        antialiasing: true
+
+                        ValueAxis {
+                            id: debiXEkseni
+                            min: 0
+                            max: 60
+                        }
+
+                        ValueAxis {
+                            id: debiYEkseni
+                            min: 0
+                            max: 15
+                        }
+
+                        LineSeries {
+                            id: debiSerisi
+                            axisX: debiXEkseni
+                            axisY: debiYEkseni
+                            color: "#16a34a"
+                        }
+
+                        Connections {
+                            target: sensorManager
+                            function onDebiChanged() {
+                                debiSerisi.append(zamanSayaci, sensorManager.debi)
+
+                                if (zamanSayaci > 60) {
+                                    debiSerisi.remove(0)
+                                    debiXEkseni.min = zamanSayaci - 60
+                                    debiXEkseni.max = zamanSayaci
+                                }
+                            }
+                        }
                     }
                 }
             }

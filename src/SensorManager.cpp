@@ -34,7 +34,16 @@ void SensorManager::veriUret()
     m_basinc = QRandomGenerator::global()->bounded(0, 300) / 10.0;
     emit basincChanged();
 
-    m_konum = QRandomGenerator::global()->bounded(0, 5000) / 10.0;
+    if (m_iniyor) {
+        m_konum -= QRandomGenerator::global()->bounded(5, 15);
+        if (m_konum <= 0) {
+            m_konum = 0;
+            m_iniyor = false;
+        }
+    } else {
+        m_konum = 500;
+        m_iniyor = true;
+    }
     emit konumChanged();
 
     m_hiz = QRandomGenerator::global()->bounded(0, 40) / 10.0;

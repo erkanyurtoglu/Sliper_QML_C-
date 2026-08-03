@@ -839,6 +839,8 @@ sliper_autogen/timestamp: \
 	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/main.cpp \
 	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.cpp \
 	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.h \
+	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.cpp \
+	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.h \
 	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.cpp \
 	C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h \
 	C:/msys64/mingw64/include/_mingw.h \

@@ -28,8 +28,9 @@ signals:
 
 private:
     double m_basinc = 0.0;
-    double m_konum = 0.0;
+    double m_konum = 500.0;
     double m_hiz = 0.0;
     double m_debi = 0.0;
+    bool m_iniyor = true;
     QTimer *m_timer;
 };

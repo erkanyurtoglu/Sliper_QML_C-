@@ -5,6 +5,7 @@
 #include <QtGlobal>
 #include "src/Backend.h"
 #include "src/SensorManager.h"
+#include "src/Calculator.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,11 +17,13 @@ int main(int argc, char *argv[])
 
     Backend backend; // Stack üzerinde Backend nesnesi oluşturdum. 
     SensorManager sensorManager;
+    Calculator calculator;
 
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("backend", &backend);
-    engine.rootContext()->setContextProperty("sensorManager", &sensorManager);  
+    engine.rootContext()->setContextProperty("sensorManager", &sensorManager); 
+    engine.rootContext()->setContextProperty("calculator", &calculator); 
 
     QObject::connect(
         &engine,

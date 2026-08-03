@@ -620,6 +620,30 @@ src/Backend.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Backend.cpp.s
 .PHONY : src/Backend.cpp.s
 
+src/Calculator.obj: src/Calculator.cpp.obj
+.PHONY : src/Calculator.obj
+
+# target to build an object file
+src/Calculator.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Calculator.cpp.obj
+.PHONY : src/Calculator.cpp.obj
+
+src/Calculator.i: src/Calculator.cpp.i
+.PHONY : src/Calculator.i
+
+# target to preprocess a source file
+src/Calculator.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Calculator.cpp.i
+.PHONY : src/Calculator.cpp.i
+
+src/Calculator.s: src/Calculator.cpp.s
+.PHONY : src/Calculator.s
+
+# target to generate assembly for a file
+src/Calculator.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Calculator.cpp.s
+.PHONY : src/Calculator.cpp.s
+
 src/SensorManager.obj: src/SensorManager.cpp.obj
 .PHONY : src/SensorManager.obj
 
@@ -707,6 +731,9 @@ help:
 	@echo ... src/Backend.obj
 	@echo ... src/Backend.i
 	@echo ... src/Backend.s
+	@echo ... src/Calculator.obj
+	@echo ... src/Calculator.i
+	@echo ... src/Calculator.s
 	@echo ... src/SensorManager.obj
 	@echo ... src/SensorManager.i
 	@echo ... src/SensorManager.s

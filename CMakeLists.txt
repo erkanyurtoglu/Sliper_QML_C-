@@ -15,6 +15,8 @@ qt_add_executable(sliper
     src/Backend.cpp
     src/SensorManager.h
     src/SensorManager.cpp
+    src/Calculator.h
+    src/Calculator.cpp
 )
 
 qt_add_qml_module(sliper
