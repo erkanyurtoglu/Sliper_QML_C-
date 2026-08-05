@@ -38,16 +38,27 @@ Rectangle {
                     height: 260
                     radius: 12
                     color: "#0f1420"
-                    border.color: egimKarti.hovered ? "#3b82f6" : "#1e2a3f"
+                    border.color: egimKarti.hovered ? "#14b8a6" : "#1e2a3f"
                     border.width: 1
                     property bool hovered: false
+                    scale: hovered ? 1.03 : 1.0
                     Behavior on border.color { ColorAnimation { duration: 120 } }
+                    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
 
                     Column {
                         anchors.centerIn: parent
                         spacing: 16
 
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "📐"; font.pixelSize: 48 }
+                        Rectangle {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            width: 88
+                            height: 88
+                            radius: 44
+                            color: "#0f2e2a"
+
+                            Text { anchors.centerIn: parent; text: "📐"; font.pixelSize: 40 }
+                        }
+
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Eğim Sensörü"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 15; font.bold: true }
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Yatay hizalama kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11 }
                     }
@@ -71,13 +82,24 @@ Rectangle {
                     border.color: loadCellKarti.hovered ? "#3b82f6" : "#1e2a3f"
                     border.width: 1
                     property bool hovered: false
+                    scale: hovered ? 1.03 : 1.0
                     Behavior on border.color { ColorAnimation { duration: 120 } }
+                    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
 
                     Column {
                         anchors.centerIn: parent
                         spacing: 16
 
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "⚖️"; font.pixelSize: 48 }
+                        Rectangle {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            width: 88
+                            height: 88
+                            radius: 44
+                            color: "#132335"
+
+                            Text { anchors.centerIn: parent; text: "⚖️"; font.pixelSize: 40 }
+                        }
+
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Load Cell"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 15; font.bold: true }
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Basınç sensörü kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11 }
                     }
@@ -98,16 +120,27 @@ Rectangle {
                     height: 260
                     radius: 12
                     color: "#0f1420"
-                    border.color: mesafeKarti.hovered ? "#3b82f6" : "#1e2a3f"
+                    border.color: mesafeKarti.hovered ? "#9333ea" : "#1e2a3f"
                     border.width: 1
                     property bool hovered: false
+                    scale: hovered ? 1.03 : 1.0
                     Behavior on border.color { ColorAnimation { duration: 120 } }
+                    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
 
                     Column {
                         anchors.centerIn: parent
                         spacing: 16
 
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "📏"; font.pixelSize: 48 }
+                        Rectangle {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            width: 88
+                            height: 88
+                            radius: 44
+                            color: "#241a38"
+
+                            Text { anchors.centerIn: parent; text: "📏"; font.pixelSize: 40 }
+                        }
+
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Mesafe Sensörü"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 15; font.bold: true }
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Konum ölçümü kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11 }
                     }
@@ -157,6 +190,19 @@ Rectangle {
                     onClicked: seciliSensor = -1
                 }
 
+                Rectangle {
+                    width: 8
+                    height: 8
+                    radius: 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: {
+                        if (seciliSensor === 0) return "#14b8a6"
+                        if (seciliSensor === 1) return "#3b82f6"
+                        if (seciliSensor === 2) return "#9333ea"
+                        return "#6b7280"
+                    }
+                }
+
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     text: {
@@ -196,13 +242,23 @@ Rectangle {
                         font.pixelSize: 14
                     }
 
-                    Text {
+                    Rectangle {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        text: "X: 0.0°   Y: 0.0°"
-                        color: "#3b82f6"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 24
-                        font.bold: true
+                        width: 220
+                        height: 72
+                        radius: 12
+                        color: "#0f2e2a"
+                        border.color: "#14b8a6"
+                        border.width: 1
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "X: 0.0°   Y: 0.0°"
+                            color: "#2dd4bf"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 22
+                            font.bold: true
+                        }
                     }
 
                     Button {
@@ -252,6 +308,22 @@ Rectangle {
                         font.letterSpacing: 1
                     }
 
+                    Row {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 6
+
+                        Repeater {
+                            model: 2
+                            Rectangle {
+                                width: index === loadCellAdimi ? 22 : 8
+                                height: 8
+                                radius: 4
+                                color: index <= loadCellAdimi ? "#3b82f6" : "#1e2a3f"
+                                Behavior on width { NumberAnimation { duration: 150 } }
+                            }
+                        }
+                    }
+
                     // Adim 0: Sifirlama
                     Column {
                         width: parent.width
@@ -268,13 +340,23 @@ Rectangle {
                             font.pixelSize: 14
                         }
 
-                        Text {
+                        Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            text: "0.0 mbar"
-                            color: "#3b82f6"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 24
-                            font.bold: true
+                            width: 220
+                            height: 72
+                            radius: 12
+                            color: "#132335"
+                            border.color: "#3b82f6"
+                            border.width: 1
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "0.0 mbar"
+                                color: "#3b82f6"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 22
+                                font.bold: true
+                            }
                         }
 
                         Button {
@@ -419,6 +501,22 @@ Rectangle {
                         font.letterSpacing: 1
                     }
 
+                    Row {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 6
+
+                        Repeater {
+                            model: 2
+                            Rectangle {
+                                width: index === mesafeAdimi ? 22 : 8
+                                height: 8
+                                radius: 4
+                                color: index <= mesafeAdimi ? "#9333ea" : "#1e2a3f"
+                                Behavior on width { NumberAnimation { duration: 150 } }
+                            }
+                        }
+                    }
+
                     // Adim 0: Ust pozisyon
                     Column {
                         width: parent.width
@@ -435,13 +533,23 @@ Rectangle {
                             font.pixelSize: 14
                         }
 
-                        Text {
+                        Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            text: "0.0 mm"
-                            color: "#9333ea"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 24
-                            font.bold: true
+                            width: 220
+                            height: 72
+                            radius: 12
+                            color: "#241a38"
+                            border.color: "#9333ea"
+                            border.width: 1
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "0.0 mm"
+                                color: "#c084fc"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 22
+                                font.bold: true
+                            }
                         }
 
                         Button {
@@ -485,13 +593,23 @@ Rectangle {
                             font.pixelSize: 14
                         }
 
-                        Text {
+                        Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            text: "0.0 mm"
-                            color: "#9333ea"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 24
-                            font.bold: true
+                            width: 220
+                            height: 72
+                            radius: 12
+                            color: "#241a38"
+                            border.color: "#9333ea"
+                            border.width: 1
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "0.0 mm"
+                                color: "#c084fc"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 22
+                                font.bold: true
+                            }
                         }
 
                         Button {

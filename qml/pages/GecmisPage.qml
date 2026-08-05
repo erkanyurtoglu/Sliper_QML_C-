@@ -21,13 +21,22 @@ Rectangle {
                 placeholderTextColor: "#4b5563"
                 color: "#ffffff"
                 font.pixelSize: 13
-                leftPadding: 12
+                leftPadding: 34
                 verticalAlignment: TextInput.AlignVCenter
                 background: Rectangle {
                     color: "#0f1420"
                     radius: 8
                     border.color: aramaKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                     border.width: 1
+                }
+
+                Text {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "🔍"
+                    color: "#4b5563"
+                    font.pixelSize: 13
                 }
             }
 
@@ -40,7 +49,7 @@ Rectangle {
                 background: Rectangle {
                     color: "#0f1420"
                     radius: 8
-                    border.color: "#1e2a3f"
+                    border.color: filtreKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                     border.width: 1
                 }
 
@@ -69,24 +78,75 @@ Rectangle {
             }
 
             delegate: Rectangle {
+                id: gecmisKarti
                 width: parent.width
                 height: 76
-                radius: 8
+                radius: 10
                 color: "#0f1420"
-                border.color: "#1e2a3f"
+                border.color: kartAlani.containsMouse ? "#3b82f6" : "#1e2a3f"
                 border.width: 1
+                Behavior on border.color { ColorAnimation { duration: 120 } }
 
-                Column {
+                MouseArea {
+                    id: kartAlani
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    acceptedButtons: Qt.NoButton
+                }
+
+                Rectangle {
+                    id: rozet
+                    width: 44
+                    height: 44
+                    radius: 10
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.leftMargin: 16
-                    spacing: 4
+                    color: "#132335"
 
                     Text {
-                        text: tarih
-                        color: "#6b7280"
+                        anchors.centerIn: parent
+                        text: musteri.charAt(0).toUpperCase()
+                        color: "#3b82f6"
                         font.family: "Segoe UI"
-                        font.pixelSize: 11
+                        font.pixelSize: 18
+                        font.bold: true
+                    }
+                }
+
+                Column {
+                    anchors.left: rozet.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.leftMargin: 14
+                    spacing: 4
+
+                    Row {
+                        spacing: 8
+
+                        Text {
+                            text: tarih
+                            color: "#6b7280"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 11
+                        }
+
+                        Rectangle {
+                            width: strokeMetni.implicitWidth + 12
+                            height: 16
+                            radius: 8
+                            color: "#2a2010"
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Text {
+                                id: strokeMetni
+                                anchors.centerIn: parent
+                                text: strokeSayisi + " stroke"
+                                color: "#e8a020"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 10
+                                font.bold: true
+                            }
+                        }
                     }
 
                     Text {
@@ -95,13 +155,6 @@ Rectangle {
                         font.family: "Segoe UI"
                         font.pixelSize: 13
                         font.bold: true
-                    }
-
-                    Text {
-                        text: "Strokes: " + strokeSayisi
-                        color: "#9ca3af"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 11
                     }
                 }
 

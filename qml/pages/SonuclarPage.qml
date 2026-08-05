@@ -39,15 +39,18 @@ Rectangle {
                 Rectangle {
                     width: parent.width
                     height: 70
-                    radius: 8
+                    radius: 10
                     color: "#0a0e17"
-                    border.color: "#1e2a3f"
+                    border.color: "#17263d"
                     border.width: 1
+                    clip: true
+
+                    Rectangle { width: 4; height: parent.height; color: "#3b82f6" }
 
                     Column {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        anchors.leftMargin: 14
+                        anchors.leftMargin: 20
                         spacing: 2
 
                         Text {
@@ -71,15 +74,18 @@ Rectangle {
                 Rectangle {
                     width: parent.width
                     height: 70
-                    radius: 8
+                    radius: 10
                     color: "#0a0e17"
-                    border.color: "#1e2a3f"
+                    border.color: "#241a38"
                     border.width: 1
+                    clip: true
+
+                    Rectangle { width: 4; height: parent.height; color: "#9333ea" }
 
                     Column {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        anchors.leftMargin: 14
+                        anchors.leftMargin: 20
                         spacing: 2
 
                         Text {
@@ -103,15 +109,18 @@ Rectangle {
                 Rectangle {
                     width: parent.width
                     height: 70
-                    radius: 8
+                    radius: 10
                     color: "#0a0e17"
-                    border.color: "#1e2a3f"
+                    border.color: "#163321"
                     border.width: 1
+                    clip: true
+
+                    Rectangle { width: 4; height: parent.height; color: "#16a34a" }
 
                     Column {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        anchors.leftMargin: 14
+                        anchors.leftMargin: 20
                         spacing: 2
 
                         Text {
@@ -135,7 +144,7 @@ Rectangle {
                 // ---- BORU HATTI TAHMİNİ ----
                 Rectangle {
                     width: parent.width
-                    radius: 8
+                    radius: 10
                     color: "#0a0e17"
                     border.color: "#1e2a3f"
                     border.width: 1
@@ -248,9 +257,9 @@ Rectangle {
                 Rectangle {
                     id: durumKutusu
                     width: parent.width
-                    height: 75
-                    radius: 8
-                    color: "#0a0e17"
+                    height: durumIcerik.implicitHeight + 24
+                    radius: 10
+                    color: durumIyiMi ? "#0f2417" : "#2a1414"
                     border.color: durumIyiMi ? "#16a34a" : "#dc2626"
                     border.width: 1
 
@@ -261,17 +270,37 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.topMargin: 12
-                        spacing: 6
+                        spacing: 8
                         width: parent.width - 24
 
-                        Text {
-                            width: parent.width
-                            horizontalAlignment: Text.AlignHCenter
-                            text: durumKutusu.durumIyiMi ? "✓ POMPALANABİLİR" : "✗ POMPALAMA SORUNU"
-                            color: durumKutusu.durumIyiMi ? "#16a34a" : "#dc2626"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 15
-                            font.bold: true
+                        Row {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            spacing: 10
+
+                            Rectangle {
+                                width: 24
+                                height: 24
+                                radius: 12
+                                anchors.verticalCenter: parent.verticalCenter
+                                color: durumKutusu.durumIyiMi ? "#16a34a" : "#dc2626"
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: durumKutusu.durumIyiMi ? "✓" : "✗"
+                                    color: "#ffffff"
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                            }
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: durumKutusu.durumIyiMi ? "POMPALANABİLİR" : "POMPALAMA SORUNU"
+                                color: durumKutusu.durumIyiMi ? "#4ade80" : "#f87171"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 15
+                                font.bold: true
+                            }
                         }
 
                         Text {
@@ -284,7 +313,7 @@ Rectangle {
                             font.pixelSize: 11
                             wrapMode: Text.WordWrap
                         }
-                    } 
+                    }
                 }
             }
         }
@@ -300,25 +329,83 @@ Rectangle {
                 anchors.right: parent.right
                 anchors.margins: 16
                 height: parent.height * 0.55
-                radius: 8
+                radius: 10
                 color: "#0f1420"
                 border.color: "#1e2a3f"
                 border.width: 1
 
-                Text {
+                Item {
+                    id: grafikBaslik
                     anchors.top: parent.top
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.topMargin: 12
-                    text: "P-Q Dağılım Grafiği"
-                    color: "#9ca3af"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 13
-                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: 14
+                    height: 20
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "P-Q Dağılım Grafiği"
+                        color: "#9ca3af"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Row {
+                            spacing: 6
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Rectangle {
+                                width: 8
+                                height: 8
+                                radius: 4
+                                color: "#3b82f6"
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Text {
+                                text: "Ölçüm Noktaları"
+                                color: "#6b7280"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 11
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        Row {
+                            spacing: 6
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Rectangle {
+                                width: 12
+                                height: 2
+                                color: "#e8a020"
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Text {
+                                text: "Regresyon Doğrusu"
+                                color: "#6b7280"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 11
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+                    }
                 }
 
                 ChartView {
-                    anchors.fill: parent
-                    anchors.topMargin: 36
+                    anchors.top: grafikBaslik.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.topMargin: 4
                     anchors.margins: 8
                     backgroundColor: "transparent"
                     legend.visible: false
@@ -329,6 +416,11 @@ Rectangle {
                         min: 0
                         max: 20
                         titleText: "Debi (Q) m³/h"
+                        gridLineColor: "#182131"
+                        labelsColor: "#4b5563"
+                        labelsFont.pixelSize: 9
+                        lineVisible: false
+                        minorGridVisible: false
                     }
 
                     ValueAxis {
@@ -336,6 +428,11 @@ Rectangle {
                         min: 0
                         max: 100
                         titleText: "Basınç (P) mbar"
+                        gridLineColor: "#182131"
+                        labelsColor: "#4b5563"
+                        labelsFont.pixelSize: 9
+                        lineVisible: false
+                        minorGridVisible: false
                     }
 
                     ScatterSeries {
@@ -374,7 +471,7 @@ Rectangle {
                 anchors.bottom: parent.bottom
                 anchors.margins: 16
                 anchors.topMargin: 8
-                radius: 8
+                radius: 10
                 color: "#0f1420"
                 border.color: "#1e2a3f"
                 border.width: 1
@@ -382,7 +479,7 @@ Rectangle {
                 Text {
                     anchors.top: parent.top
                     anchors.left: parent.left
-                    anchors.margins: 12
+                    anchors.margins: 14
                     text: "Stroke Tablosu"
                     color: "#9ca3af"
                     font.family: "Segoe UI"
@@ -396,12 +493,24 @@ Rectangle {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.topMargin: 36
-                    anchors.margins: 12
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
 
-                    Text { width: parent.width * 0.25; text: "STROKE"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.25; text: "P (mbar)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.25; text: "Q (m³/h)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.25; text: "DURUM"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    Text { width: parent.width * 0.25; text: "STROKE"; color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
+                    Text { width: parent.width * 0.25; text: "P (mbar)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
+                    Text { width: parent.width * 0.25; text: "Q (m³/h)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
+                    Text { width: parent.width * 0.25; text: "DURUM"; color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
+                }
+
+                Rectangle {
+                    anchors.top: tabloBasligi.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.topMargin: 8
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
+                    height: 1
+                    color: "#1e2a3f"
                 }
 
                 ListView {
@@ -410,7 +519,7 @@ Rectangle {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
                     anchors.margins: 12
-                    anchors.topMargin: 8
+                    anchors.topMargin: 14
                     clip: true
 
                     model: ListModel {
@@ -423,14 +532,42 @@ Rectangle {
                         ListElement { stroke: 7; p: 58.6; q: 14.61; gecerli: true }
                     }
 
-                    delegate: Row {
+                    delegate: Rectangle {
                         width: parent.width
-                        height: 28
+                        height: 32
+                        radius: 6
+                        color: index % 2 === 0 ? "transparent" : "#0a0e17"
 
-                        Text { width: parent.width * 0.25; text: stroke; color: "#dce8f5"; font.pixelSize: 12 }
-                        Text { width: parent.width * 0.25; text: p.toFixed(1); color: "#dce8f5"; font.pixelSize: 12 }
-                        Text { width: parent.width * 0.25; text: q.toFixed(2); color: "#dce8f5"; font.pixelSize: 12 }
-                        Text { width: parent.width * 0.25; text: gecerli ? "Geçerli" : "Hatalı"; color: gecerli ? "#16a34a" : "#dc2626"; font.pixelSize: 12 }
+                        Row {
+                            anchors.fill: parent
+                            anchors.leftMargin: 6
+
+                            Text { width: parent.width * 0.25; anchors.verticalCenter: parent.verticalCenter; text: stroke; color: "#dce8f5"; font.pixelSize: 12 }
+                            Text { width: parent.width * 0.25; anchors.verticalCenter: parent.verticalCenter; text: p.toFixed(1); color: "#dce8f5"; font.pixelSize: 12 }
+                            Text { width: parent.width * 0.25; anchors.verticalCenter: parent.verticalCenter; text: q.toFixed(2); color: "#dce8f5"; font.pixelSize: 12 }
+
+                            Item {
+                                width: parent.width * 0.25
+                                height: parent.height
+
+                                Rectangle {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: durumMetni.implicitWidth + 16
+                                    height: 20
+                                    radius: 10
+                                    color: gecerli ? "#123321" : "#2a1414"
+
+                                    Text {
+                                        id: durumMetni
+                                        anchors.centerIn: parent
+                                        text: gecerli ? "Geçerli" : "Hatalı"
+                                        color: gecerli ? "#4ade80" : "#f87171"
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

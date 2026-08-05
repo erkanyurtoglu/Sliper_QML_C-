@@ -90,10 +90,10 @@ clean: CMakeFiles/sliper_autogen.dir/clean
 # Target rules for target CMakeFiles/sliper.dir
 
 # All Build rule for target.
-CMakeFiles/sliper.dir/all: CMakeFiles/sliper_qmlimportscan.dir/all
-CMakeFiles/sliper.dir/all: CMakeFiles/sliper_tooling.dir/all
-CMakeFiles/sliper.dir/all: CMakeFiles/sliper_autogen_timestamp_deps.dir/all
 CMakeFiles/sliper.dir/all: CMakeFiles/sliper_autogen.dir/all
+CMakeFiles/sliper.dir/all: CMakeFiles/sliper_tooling.dir/all
+CMakeFiles/sliper.dir/all: CMakeFiles/sliper_qmlimportscan.dir/all
+CMakeFiles/sliper.dir/all: CMakeFiles/sliper_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32 "Built target sliper"
@@ -379,8 +379,8 @@ CMakeFiles/sliper_qmlimportscan.dir/clean:
 # Target rules for target CMakeFiles/sliper_autogen_timestamp_deps.dir
 
 # All Build rule for target.
-CMakeFiles/sliper_autogen_timestamp_deps.dir/all: CMakeFiles/sliper_qmlimportscan.dir/all
 CMakeFiles/sliper_autogen_timestamp_deps.dir/all: CMakeFiles/sliper_tooling.dir/all
+CMakeFiles/sliper_autogen_timestamp_deps.dir/all: CMakeFiles/sliper_qmlimportscan.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper_autogen_timestamp_deps.dir\build.make CMakeFiles/sliper_autogen_timestamp_deps.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper_autogen_timestamp_deps.dir\build.make CMakeFiles/sliper_autogen_timestamp_deps.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num= "Built target sliper_autogen_timestamp_deps"

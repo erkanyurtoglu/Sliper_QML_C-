@@ -198,59 +198,91 @@ Rectangle {
                 }
             }
 
-            Row {
+            Rectangle {
+                id: durumKarti
                 anchors.top: formAlanlari.bottom
                 anchors.left: parent.left
+                anchors.right: parent.right
                 anchors.topMargin: 20
                 anchors.leftMargin: 20
-                spacing: 12
+                anchors.rightMargin: 20
+                height: 52
+                radius: 10
+                color: "#0a0e17"
+                border.color: "#1e2a3f"
+                border.width: 1
 
-                Rectangle {
-                    id: trafikIsigi
-                    width: 16
-                    height: 16
-                    radius: 8
+                Row {
+                    anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    color: {
-                        if (calculator.durum === "YUKARIDA") return "#16a34a"
-                        if (calculator.durum === "INIYOR") return "#f59e0b"
-                        return "#dc2626"
+                    anchors.leftMargin: 14
+                    spacing: 10
+
+                    Rectangle {
+                        id: trafikIsigi
+                        width: 12
+                        height: 12
+                        radius: 6
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: {
+                            if (calculator.durum === "YUKARIDA") return "#16a34a"
+                            if (calculator.durum === "INIYOR") return "#f59e0b"
+                            return "#dc2626"
+                        }
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: parent.width + 8
+                            height: parent.height + 8
+                            radius: width / 2
+                            color: "transparent"
+                            border.color: parent.color
+                            border.width: 1
+                            opacity: 0.35
+                        }
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: calculator.durum
+                        color: "#dce8f5"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 13
+                        font.bold: true
                     }
                 }
 
-                Text {
+                Row {
+                    anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    text: calculator.durum
-                    color: "#dce8f5"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 13
-                    font.bold: true
-                }
-
-                Rectangle {
-                    width: 60
-                    height: 28
-                    radius: 6
-                    color: "#0a0e17"
-                    border.color: "#1e2a3f"
-                    border.width: 1
-                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.rightMargin: 14
+                    spacing: 6
 
                     Text {
-                        anchors.centerIn: parent
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "STROKE"
+                        color: "#6b7280"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 10
+                        font.letterSpacing: 1
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
                         text: calculator.strokeSayisi
                         color: "#e8a020"
                         font.family: "Segoe UI"
-                        font.pixelSize: 15
+                        font.pixelSize: 16
                         font.bold: true
                     }
                 }
             }
 
             Text {
-                anchors.top: formAlanlari.bottom
+                id: anlikDegerlerBaslik
+                anchors.top: durumKarti.bottom
                 anchors.left: parent.left
-                anchors.topMargin: 70
+                anchors.topMargin: 24
                 anchors.leftMargin: 20
                 text: "ANLIK DEĞERLER"
                 color: "#6b7280"
@@ -261,9 +293,9 @@ Rectangle {
             }
 
             Grid {
-                anchors.top: parent.top
+                anchors.top: anlikDegerlerBaslik.bottom
                 anchors.left: parent.left
-                anchors.topMargin: 470
+                anchors.topMargin: 12
                 anchors.leftMargin: 20
                 columns: 2
                 spacing: 10
@@ -272,14 +304,23 @@ Rectangle {
                     id: basincKarti
                     width: 115
                     height: 90
-                    radius: 8
+                    radius: 10
                     color: "#0a0e17"
                     border.color: "#1e2a3f"
                     border.width: 1
+                    clip: true
+
+                    Rectangle { width: 4; height: parent.height; color: "#3b82f6" }
 
                     Column {
-                        anchors.fill: parent
-                        anchors.margins: 10
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.topMargin: 10
+                        anchors.rightMargin: 10
+                        anchors.bottomMargin: 10
+                        anchors.leftMargin: 16
                         spacing: 6
 
                         Text {
@@ -310,14 +351,23 @@ Rectangle {
                 Rectangle {
                     width: 115
                     height: 90
-                    radius: 8
+                    radius: 10
                     color: "#0a0e17"
                     border.color: "#1e2a3f"
                     border.width: 1
+                    clip: true
+
+                    Rectangle { width: 4; height: parent.height; color: "#9333ea" }
 
                     Column {
-                        anchors.fill: parent
-                        anchors.margins: 10
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.topMargin: 10
+                        anchors.rightMargin: 10
+                        anchors.bottomMargin: 10
+                        anchors.leftMargin: 16
                         spacing: 6
 
                         Text {
@@ -348,14 +398,23 @@ Rectangle {
                 Rectangle {
                     width: 115
                     height: 90
-                    radius: 8
+                    radius: 10
                     color: "#0a0e17"
                     border.color: "#1e2a3f"
                     border.width: 1
+                    clip: true
+
+                    Rectangle { width: 4; height: parent.height; color: "#f59e0b" }
 
                     Column {
-                        anchors.fill: parent
-                        anchors.margins: 10
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.topMargin: 10
+                        anchors.rightMargin: 10
+                        anchors.bottomMargin: 10
+                        anchors.leftMargin: 16
                         spacing: 6
 
                         Text {
@@ -386,14 +445,23 @@ Rectangle {
                 Rectangle {
                     width: 115
                     height: 90
-                    radius: 8
+                    radius: 10
                     color: "#0a0e17"
                     border.color: "#1e2a3f"
                     border.width: 1
+                    clip: true
+
+                    Rectangle { width: 4; height: parent.height; color: "#16a34a" }
 
                     Column {
-                        anchors.fill: parent
-                        anchors.margins: 10
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.topMargin: 10
+                        anchors.rightMargin: 10
+                        anchors.bottomMargin: 10
+                        anchors.leftMargin: 16
                         spacing: 6
 
                         Text {
@@ -436,25 +504,58 @@ Rectangle {
                 Rectangle {
                     width: (parent.width - parent.spacing) / 2
                     height: (parent.height - parent.spacing) / 2
-                    radius: 8
+                    radius: 10
                     color: "#0f1420"
-                    border.color: "#1e2a3f"
+                    border.color: "#17263d"
                     border.width: 1
 
-                    Text {
+                    Item {
+                        id: basincBaslik
                         anchors.top: parent.top
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.topMargin: 12
-                        text: "Basınç - Zaman"
-                        color: "#9ca3af"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 13
-                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.margins: 14
+                        height: 20
+
+                        Rectangle {
+                            id: basincNoktasi
+                            width: 8
+                            height: 8
+                            radius: 4
+                            color: "#3b82f6"
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            anchors.left: basincNoktasi.right
+                            anchors.leftMargin: 8
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Basınç - Zaman"
+                            color: "#9ca3af"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+
+                        Text {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: sensorManager.basinc.toFixed(1) + " mbar"
+                            color: "#3b82f6"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
                     }
-                    
+
                     ChartView {
-                        anchors.fill: parent
-                        anchors.topMargin: 36
+                        anchors.top: basincBaslik.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.topMargin: 4
+                        anchors.bottomMargin: 4
                         backgroundColor: "transparent"
                         legend.visible: false
                         antialiasing: true
@@ -463,19 +564,30 @@ Rectangle {
                             id: xEkseni
                             min: 0
                             max: 60
+                            gridLineColor: "#182131"
+                            labelsColor: "#4b5563"
+                            labelsFont.pixelSize: 9
+                            lineVisible: false
+                            minorGridVisible: false
                         }
 
                         ValueAxis {
                             id: yEkseni
                             min: 0
                             max: 30
+                            gridLineColor: "#182131"
+                            labelsColor: "#4b5563"
+                            labelsFont.pixelSize: 9
+                            lineVisible: false
+                            minorGridVisible: false
                         }
 
-                        LineSeries {
+                        SplineSeries {
                             id: basincSerisi
                             axisX: xEkseni
                             axisY: yEkseni
                             color: "#3b82f6"
+                            width: 2
                         }
 
                         Connections {
@@ -497,25 +609,58 @@ Rectangle {
                 Rectangle {
                     width: (parent.width - parent.spacing) / 2
                     height: (parent.height - parent.spacing) / 2
-                    radius: 8
+                    radius: 10
                     color: "#0f1420"
-                    border.color: "#1e2a3f"
+                    border.color: "#241a38"
                     border.width: 1
 
-                    Text {
+                    Item {
+                        id: konumBaslik
                         anchors.top: parent.top
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.topMargin: 12
-                        text: "Konum - Zaman"
-                        color: "#9ca3af"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 13
-                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.margins: 14
+                        height: 20
+
+                        Rectangle {
+                            id: konumNoktasi
+                            width: 8
+                            height: 8
+                            radius: 4
+                            color: "#9333ea"
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            anchors.left: konumNoktasi.right
+                            anchors.leftMargin: 8
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Konum - Zaman"
+                            color: "#9ca3af"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+
+                        Text {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: sensorManager.konum.toFixed(1) + " mm"
+                            color: "#9333ea"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
                     }
 
                     ChartView {
-                        anchors.fill: parent
-                        anchors.topMargin: 36
+                        anchors.top: konumBaslik.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.topMargin: 4
+                        anchors.bottomMargin: 4
                         backgroundColor: "transparent"
                         legend.visible: false
                         antialiasing: true
@@ -524,19 +669,30 @@ Rectangle {
                             id: konumXEkseni
                             min: 0
                             max: 60
+                            gridLineColor: "#182131"
+                            labelsColor: "#4b5563"
+                            labelsFont.pixelSize: 9
+                            lineVisible: false
+                            minorGridVisible: false
                         }
 
                         ValueAxis {
                             id: konumYEkseni
                             min: 0
                             max: 500
+                            gridLineColor: "#182131"
+                            labelsColor: "#4b5563"
+                            labelsFont.pixelSize: 9
+                            lineVisible: false
+                            minorGridVisible: false
                         }
 
-                        LineSeries {
+                        SplineSeries {
                             id: konumSerisi
                             axisX: konumXEkseni
                             axisY: konumYEkseni
                             color: "#9333ea"
+                            width: 2
                         }
 
                         Connections {
@@ -559,25 +715,58 @@ Rectangle {
                 Rectangle {
                     width: (parent.width - parent.spacing) / 2
                     height: (parent.height - parent.spacing) / 2
-                    radius: 8
+                    radius: 10
                     color: "#0f1420"
-                    border.color: "#1e2a3f"
+                    border.color: "#3a2a14"
                     border.width: 1
 
-                    Text {
+                    Item {
+                        id: hizBaslik
                         anchors.top: parent.top
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.topMargin: 12
-                        text: "Hız - Zaman"
-                        color: "#9ca3af"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 13
-                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.margins: 14
+                        height: 20
+
+                        Rectangle {
+                            id: hizNoktasi
+                            width: 8
+                            height: 8
+                            radius: 4
+                            color: "#f59e0b"
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            anchors.left: hizNoktasi.right
+                            anchors.leftMargin: 8
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Hız - Zaman"
+                            color: "#9ca3af"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+
+                        Text {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: sensorManager.hiz.toFixed(1) + " m/s"
+                            color: "#f59e0b"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
                     }
 
                     ChartView {
-                        anchors.fill: parent
-                        anchors.topMargin: 36
+                        anchors.top: hizBaslik.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.topMargin: 4
+                        anchors.bottomMargin: 4
                         backgroundColor: "transparent"
                         legend.visible: false
                         antialiasing: true
@@ -586,19 +775,30 @@ Rectangle {
                             id: hizXEkseni
                             min: 0
                             max: 60
+                            gridLineColor: "#182131"
+                            labelsColor: "#4b5563"
+                            labelsFont.pixelSize: 9
+                            lineVisible: false
+                            minorGridVisible: false
                         }
 
                         ValueAxis {
                             id: hizYEkseni
                             min: 0
                             max: 4
+                            gridLineColor: "#182131"
+                            labelsColor: "#4b5563"
+                            labelsFont.pixelSize: 9
+                            lineVisible: false
+                            minorGridVisible: false
                         }
 
-                        LineSeries {
+                        SplineSeries {
                             id: hizSerisi
                             axisX: hizXEkseni
                             axisY: hizYEkseni
                             color: "#f59e0b"
+                            width: 2
                         }
 
                         Connections {
@@ -619,25 +819,58 @@ Rectangle {
                 Rectangle {
                     width: (parent.width - parent.spacing) / 2
                     height: (parent.height - parent.spacing) / 2
-                    radius: 8
+                    radius: 10
                     color: "#0f1420"
-                    border.color: "#1e2a3f"
+                    border.color: "#163321"
                     border.width: 1
 
-                    Text {
+                    Item {
+                        id: debiBaslik
                         anchors.top: parent.top
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.topMargin: 12
-                        text: "Debi - Zaman"
-                        color: "#9ca3af"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 13
-                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.margins: 14
+                        height: 20
+
+                        Rectangle {
+                            id: debiNoktasi
+                            width: 8
+                            height: 8
+                            radius: 4
+                            color: "#16a34a"
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            anchors.left: debiNoktasi.right
+                            anchors.leftMargin: 8
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Debi - Zaman"
+                            color: "#9ca3af"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+
+                        Text {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: sensorManager.debi.toFixed(1) + " m3/h"
+                            color: "#16a34a"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
                     }
 
                     ChartView {
-                        anchors.fill: parent
-                        anchors.topMargin: 36
+                        anchors.top: debiBaslik.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.topMargin: 4
+                        anchors.bottomMargin: 4
                         backgroundColor: "transparent"
                         legend.visible: false
                         antialiasing: true
@@ -646,19 +879,30 @@ Rectangle {
                             id: debiXEkseni
                             min: 0
                             max: 60
+                            gridLineColor: "#182131"
+                            labelsColor: "#4b5563"
+                            labelsFont.pixelSize: 9
+                            lineVisible: false
+                            minorGridVisible: false
                         }
 
                         ValueAxis {
                             id: debiYEkseni
                             min: 0
                             max: 15
+                            gridLineColor: "#182131"
+                            labelsColor: "#4b5563"
+                            labelsFont.pixelSize: 9
+                            lineVisible: false
+                            minorGridVisible: false
                         }
 
-                        LineSeries {
+                        SplineSeries {
                             id: debiSerisi
                             axisX: debiXEkseni
                             axisY: debiYEkseni
                             color: "#16a34a"
+                            width: 2
                         }
 
                         Connections {
