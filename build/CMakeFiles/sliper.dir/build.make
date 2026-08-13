@@ -88,6 +88,8 @@ sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6opengl_relwit
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6charts_relwithdebinfo_metatypes.json
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6widgets_relwithdebinfo_metatypes.json
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6openglwidgets_relwithdebinfo_metatypes.json
+sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6sql_relwithdebinfo_metatypes.json
+sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6printsupport_relwithdebinfo_metatypes.json
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Automatic QML type registration for target sliper"
 	call .qt\bin\qt_setup_tool_path.bat C:/Qt/6.7.3/mingw_64/bin/qmltyperegistrar.exe --generate-qmltypes=C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/sliper.qmltypes --import-name=sliper --major-version=1 --minor-version=0 @C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/qmltypes/sliper_foreign_types.txt -o C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/meta_types/qt6sliper_debug_metatypes.json
 	C:\Qt\Tools\CMake_64\bin\cmake.exe -E make_directory C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/qmltypes
@@ -283,11 +285,41 @@ CMakeFiles/sliper.dir/src/Calculator.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sliper.dir/src/Calculator.cpp.s"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\Calculator.cpp -o CMakeFiles\sliper.dir\src\Calculator.cpp.s
 
+CMakeFiles/sliper.dir/src/Database.cpp.obj: CMakeFiles/sliper.dir/flags.make
+CMakeFiles/sliper.dir/src/Database.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
+CMakeFiles/sliper.dir/src/Database.cpp.obj: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Database.cpp
+CMakeFiles/sliper.dir/src/Database.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/sliper.dir/src/Database.cpp.obj"
+	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/src/Database.cpp.obj -MF CMakeFiles\sliper.dir\src\Database.cpp.obj.d -o CMakeFiles\sliper.dir\src\Database.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\Database.cpp
+
+CMakeFiles/sliper.dir/src/Database.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sliper.dir/src/Database.cpp.i"
+	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\Database.cpp > CMakeFiles\sliper.dir\src\Database.cpp.i
+
+CMakeFiles/sliper.dir/src/Database.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sliper.dir/src/Database.cpp.s"
+	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\Database.cpp -o CMakeFiles\sliper.dir\src\Database.cpp.s
+
+CMakeFiles/sliper.dir/src/ReportManager.cpp.obj: CMakeFiles/sliper.dir/flags.make
+CMakeFiles/sliper.dir/src/ReportManager.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
+CMakeFiles/sliper.dir/src/ReportManager.cpp.obj: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.cpp
+CMakeFiles/sliper.dir/src/ReportManager.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/sliper.dir/src/ReportManager.cpp.obj"
+	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/src/ReportManager.cpp.obj -MF CMakeFiles\sliper.dir\src\ReportManager.cpp.obj.d -o CMakeFiles\sliper.dir\src\ReportManager.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\ReportManager.cpp
+
+CMakeFiles/sliper.dir/src/ReportManager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sliper.dir/src/ReportManager.cpp.i"
+	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\ReportManager.cpp > CMakeFiles\sliper.dir\src\ReportManager.cpp.i
+
+CMakeFiles/sliper.dir/src/ReportManager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sliper.dir/src/ReportManager.cpp.s"
+	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\ReportManager.cpp -o CMakeFiles\sliper.dir\src\ReportManager.cpp.s
+
 CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj: CMakeFiles/sliper.dir/flags.make
 CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj: sliper_qmltyperegistrations.cpp
 CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wa,-mbig-obj -MD -MT CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj -MF CMakeFiles\sliper.dir\sliper_qmltyperegistrations.cpp.obj.d -o CMakeFiles\sliper.dir\sliper_qmltyperegistrations.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_qmltyperegistrations.cpp
 
 CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.i: cmake_force
@@ -302,7 +334,7 @@ CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj: CMakeFiles/sliper.
 CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj: .qt/rcc/qrc_qmake_sliper.cpp
 CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj -MF CMakeFiles\sliper.dir\build\.qt\rcc\qrc_qmake_sliper.cpp.obj.d -o CMakeFiles\sliper.dir\build\.qt\rcc\qrc_qmake_sliper.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.qt\rcc\qrc_qmake_sliper.cpp
 
 CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.i: cmake_force
@@ -317,7 +349,7 @@ CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj: CMakeF
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj: .rcc/qmlcache/sliper_qmlcache_loader.cpp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj -MF CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qmlcache_loader.cpp.obj.d -o CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qmlcache_loader.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.rcc\qmlcache\sliper_qmlcache_loader.cpp
 
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.i: cmake_force
@@ -332,7 +364,7 @@ CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.obj: CMakeFile
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.obj: .rcc/qmlcache/sliper_qml/Main_qml.cpp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.obj -MF CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\Main_qml.cpp.obj.d -o CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\Main_qml.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.rcc\qmlcache\sliper_qml\Main_qml.cpp
 
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/Main_qml.cpp.i: cmake_force
@@ -347,7 +379,7 @@ CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj: .rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.obj -MF CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\LoginPage_qml.cpp.obj.d -o CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\LoginPage_qml.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.rcc\qmlcache\sliper_qml\pages\LoginPage_qml.cpp
 
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp.i: cmake_force
@@ -362,7 +394,7 @@ CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.obj: .rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.obj -MF CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\DashboardPage_qml.cpp.obj.d -o CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\DashboardPage_qml.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.rcc\qmlcache\sliper_qml\pages\DashboardPage_qml.cpp
 
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.i: cmake_force
@@ -377,7 +409,7 @@ CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj: .rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.obj -MF CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\OlcumPage_qml.cpp.obj.d -o CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\OlcumPage_qml.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.rcc\qmlcache\sliper_qml\pages\OlcumPage_qml.cpp
 
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp.i: cmake_force
@@ -392,7 +424,7 @@ CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj: .rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.obj -MF CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\SonuclarPage_qml.cpp.obj.d -o CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\SonuclarPage_qml.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.rcc\qmlcache\sliper_qml\pages\SonuclarPage_qml.cpp
 
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.i: cmake_force
@@ -407,7 +439,7 @@ CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.ob
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj: .rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.obj -MF CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\GecmisPage_qml.cpp.obj.d -o CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\GecmisPage_qml.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.rcc\qmlcache\sliper_qml\pages\GecmisPage_qml.cpp
 
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp.i: cmake_force
@@ -422,7 +454,7 @@ CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.c
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj: .rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.obj -MF CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\KalibrasyonPage_qml.cpp.obj.d -o CMakeFiles\sliper.dir\build\.rcc\qmlcache\sliper_qml\pages\KalibrasyonPage_qml.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.rcc\qmlcache\sliper_qml\pages\KalibrasyonPage_qml.cpp
 
 CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp.i: cmake_force
@@ -437,7 +469,7 @@ CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj: CMakeFiles/sli
 CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj: CMakeFiles/sliper.dir/includes_CXX.rsp
 CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj: .qt/rcc/qrc_sliper_raw_qml_0.cpp
 CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj: CMakeFiles/sliper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj"
 	C:\Qt\Tools\mingw1120_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj -MF CMakeFiles\sliper.dir\build\.qt\rcc\qrc_sliper_raw_qml_0.cpp.obj.d -o CMakeFiles\sliper.dir\build\.qt\rcc\qrc_sliper_raw_qml_0.cpp.obj -c C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.qt\rcc\qrc_sliper_raw_qml_0.cpp
 
 CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.i: cmake_force
@@ -455,6 +487,8 @@ sliper_OBJECTS = \
 "CMakeFiles/sliper.dir/src/Backend.cpp.obj" \
 "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj" \
 "CMakeFiles/sliper.dir/src/Calculator.cpp.obj" \
+"CMakeFiles/sliper.dir/src/Database.cpp.obj" \
+"CMakeFiles/sliper.dir/src/ReportManager.cpp.obj" \
 "CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj" \
 "CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj" \
 "CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj" \
@@ -475,6 +509,8 @@ sliper.exe: CMakeFiles/sliper.dir/main.cpp.obj
 sliper.exe: CMakeFiles/sliper.dir/src/Backend.cpp.obj
 sliper.exe: CMakeFiles/sliper.dir/src/SensorManager.cpp.obj
 sliper.exe: CMakeFiles/sliper.dir/src/Calculator.cpp.obj
+sliper.exe: CMakeFiles/sliper.dir/src/Database.cpp.obj
+sliper.exe: CMakeFiles/sliper.dir/src/ReportManager.cpp.obj
 sliper.exe: CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj
 sliper.exe: CMakeFiles/sliper.dir/build/.qt/rcc/qrc_qmake_sliper.cpp.obj
 sliper.exe: CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qmlcache_loader.cpp.obj
@@ -489,19 +525,21 @@ sliper.exe: CMakeFiles/sliper.dir/build/.qt/rcc/qrc_sliper_raw_qml_0.cpp.obj
 sliper.exe: CMakeFiles/sliper.dir/build.make
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Quick.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Charts.a
+sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Sql.a
+sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6PrintSupport.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6QmlModels.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Qml.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6QmlBuiltins.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Network.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6OpenGLWidgets.a
-sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Widgets.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6OpenGL.a
+sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Widgets.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Gui.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Core.a
 sliper.exe: CMakeFiles/sliper.dir/linkLibs.rsp
 sliper.exe: CMakeFiles/sliper.dir/objects1.rsp
 sliper.exe: CMakeFiles/sliper.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Linking CXX executable sliper.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Linking CXX executable sliper.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\sliper.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

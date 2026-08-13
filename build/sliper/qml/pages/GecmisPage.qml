@@ -4,6 +4,8 @@ import QtQuick.Controls 6.7
 Rectangle {
     color: "#0a0e17"
 
+    signal testSecildi(int id)
+
     Column {
         anchors.fill: parent
         anchors.margins: 20
@@ -69,13 +71,7 @@ Rectangle {
             clip: true
             spacing: 10
 
-            model: ListModel {
-                ListElement { tarih: "31.07.2026 14:20"; musteri: "ABC İnşaat"; recete: "C25/30 Standart"; strokeSayisi: 24 }
-                ListElement { tarih: "30.07.2026 09:15"; musteri: "XYZ Beton"; recete: "C30/37 SCC"; strokeSayisi: 18 }
-                ListElement { tarih: "28.07.2026 16:42"; musteri: "Liya Test"; recete: "C35/45 Yuksek Mukavemet"; strokeSayisi: 15 }
-                ListElement { tarih: "27.07.2026 11:05"; musteri: "ABC İnşaat"; recete: "C25/30 Standart"; strokeSayisi: 22 }
-                ListElement { tarih: "25.07.2026 08:30"; musteri: "DEF Hazır Beton"; recete: "C30/37 SCC"; strokeSayisi: 20 }
-            }
+            model: database.tumOlcumleriGetir()
 
             delegate: Rectangle {
                 id: gecmisKarti
@@ -106,7 +102,7 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        text: musteri.charAt(0).toUpperCase()
+                        text: modelData.musteri.charAt(0).toUpperCase()
                         color: "#3b82f6"
                         font.family: "Segoe UI"
                         font.pixelSize: 18
@@ -124,7 +120,7 @@ Rectangle {
                         spacing: 8
 
                         Text {
-                            text: tarih
+                            text: modelData.tarih
                             color: "#6b7280"
                             font.family: "Segoe UI"
                             font.pixelSize: 11
@@ -140,7 +136,7 @@ Rectangle {
                             Text {
                                 id: strokeMetni
                                 anchors.centerIn: parent
-                                text: strokeSayisi + " stroke"
+                                text: modelData.strokeSayisi + " stroke"
                                 color: "#e8a020"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 10
@@ -150,7 +146,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: "Müşteri: " + musteri + "  •  Reçete: " + recete
+                        text: "Müşteri: " + modelData.musteri + "  •  Reçete: " + modelData.recete
                         color: "#dce8f5"
                         font.family: "Segoe UI"
                         font.pixelSize: 13
@@ -165,6 +161,8 @@ Rectangle {
                     height: 34
                     text: "Görüntüle"
                     font.pixelSize: 12
+
+                    onClicked: testSecildi(modelData.id)
 
                     background: Rectangle {
                         radius: 6

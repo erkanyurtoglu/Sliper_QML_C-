@@ -63,6 +63,21 @@
                         ],
                         "name": "konumGuncelle",
                         "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "duraklat",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "devamEt",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "sifirla",
+                        "returnType": "void"
                     }
                 ],
                 "object": true,
@@ -94,6 +109,20 @@
                         "stored": true,
                         "type": "int",
                         "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "duraklatildi",
+                        "notify": "duraklatildiChanged",
+                        "read": "duraklatildi",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
                     }
                 ],
                 "qualifiedClassName": "Calculator",
@@ -106,6 +135,11 @@
                     {
                         "access": "public",
                         "name": "strokeSayisiChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "duraklatildiChanged",
                         "returnType": "void"
                     }
                 ],
@@ -123,7 +157,231 @@
     {
         "classes": [
             {
+                "className": "Database",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "musteri",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "recete",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "agirlik",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "olcumBaslat",
+                        "returnType": "int"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "olcumId",
+                                "type": "int"
+                            },
+                            {
+                                "name": "basinc",
+                                "type": "double"
+                            },
+                            {
+                                "name": "konum",
+                                "type": "double"
+                            },
+                            {
+                                "name": "debi",
+                                "type": "double"
+                            },
+                            {
+                                "name": "gecerli",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "strokeKaydet",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "tumOlcumleriGetir",
+                        "returnType": "QVariantList"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "olcumId",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "strokeVerileriGetir",
+                        "returnType": "QVariantList"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "olcumId",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "binghamHesapla",
+                        "returnType": "QVariantMap"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "sensor",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "deger1",
+                                "type": "double"
+                            },
+                            {
+                                "name": "deger2",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "kalibrasyonKaydet",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "sensor",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "kalibrasyonGetir",
+                        "returnType": "QVariantMap"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "olcumId",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "olcumBilgisiGetir",
+                        "returnType": "QVariantMap"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "olcumId",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "csvDisaAktar",
+                        "returnType": "bool"
+                    }
+                ],
+                "object": true,
+                "qualifiedClassName": "Database",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "Database.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "ReportManager",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "olcumId",
+                                "type": "int"
+                            },
+                            {
+                                "name": "musteri",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "recete",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "tau0",
+                                "type": "double"
+                            },
+                            {
+                                "name": "mu",
+                                "type": "double"
+                            },
+                            {
+                                "name": "r2",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "pdfOlustur",
+                        "returnType": "bool"
+                    }
+                ],
+                "object": true,
+                "qualifiedClassName": "ReportManager",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "ReportManager.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
                 "className": "SensorManager",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "basinc",
+                                "type": "double"
+                            },
+                            {
+                                "name": "konum",
+                                "type": "double"
+                            },
+                            {
+                                "name": "hiz",
+                                "type": "double"
+                            },
+                            {
+                                "name": "debi",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "veriGuncelle",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "veriyiGecersizYap",
+                        "returnType": "void"
+                    }
+                ],
                 "object": true,
                 "properties": [
                     {
@@ -181,6 +439,20 @@
                         "stored": true,
                         "type": "double",
                         "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "name": "veriGecerli",
+                        "notify": "veriGecerliChanged",
+                        "read": "veriGecerli",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
                     }
                 ],
                 "qualifiedClassName": "SensorManager",
@@ -204,12 +476,10 @@
                         "access": "public",
                         "name": "debiChanged",
                         "returnType": "void"
-                    }
-                ],
-                "slots": [
+                    },
                     {
                         "access": "public",
-                        "name": "veriUret",
+                        "name": "veriGecerliChanged",
                         "returnType": "void"
                     }
                 ],

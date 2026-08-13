@@ -1,3 +1,5 @@
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_Backend.cpp.json
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_Calculator.cpp.json
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_Database.cpp.json
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_ReportManager.cpp.json
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_SensorManager.cpp.json

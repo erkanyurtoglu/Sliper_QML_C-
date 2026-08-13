@@ -6,24 +6,28 @@
 #include "src/Backend.h"
 #include "src/SensorManager.h"
 #include "src/Calculator.h"
+#include "src/Database.h"
+#include "src/ReportManager.h"
 
 int main(int argc, char *argv[])
 {
-    if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
-        qputenv("QT_QUICK_CONTROLS_STYLE", "Basic");
-    }
+    qputenv("QT_QUICK_CONTROLS_STYLE", "Basic");
 
     QApplication app(argc, argv);
 
-    Backend backend; // Stack üzerinde Backend nesnesi oluşturdum. 
+    Backend backend;
     SensorManager sensorManager;
     Calculator calculator;
+    Database database;
+    ReportManager reportManager;
 
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("backend", &backend);
-    engine.rootContext()->setContextProperty("sensorManager", &sensorManager); 
-    engine.rootContext()->setContextProperty("calculator", &calculator); 
+    engine.rootContext()->setContextProperty("sensorManager", &sensorManager);
+    engine.rootContext()->setContextProperty("calculator", &calculator);
+    engine.rootContext()->setContextProperty("database", &database);
+    engine.rootContext()->setContextProperty("reportManager", &reportManager);
 
     QObject::connect(
         &engine,

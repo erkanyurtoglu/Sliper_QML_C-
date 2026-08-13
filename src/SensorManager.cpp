@@ -1,12 +1,8 @@
 #include "SensorManager.h"
-#include <QRandomGenerator>
 
 SensorManager::SensorManager(QObject *parent)
     : QObject(parent)
 {
-    m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &SensorManager::veriUret);
-    m_timer->start(200);
 }
 
 double SensorManager::basinc() const
@@ -29,26 +25,47 @@ double SensorManager::debi() const
     return m_debi;
 }
 
-void SensorManager::veriUret()
+bool SensorManager::veriGecerli() const
 {
-    m_basinc = QRandomGenerator::global()->bounded(0, 300) / 10.0;
-    emit basincChanged();
+    return m_veriGecerli;
+}
 
-    if (m_iniyor) {
-        m_konum -= QRandomGenerator::global()->bounded(5, 15);
-        if (m_konum <= 0) {
-            m_konum = 0;
-            m_iniyor = false;
-        }
-    } else {
-        m_konum = 500;
-        m_iniyor = true;
+void SensorManager::veriGuncelle(double basinc, double konum, double hiz, double debi)
+{
+    const bool veriGecerliDegisti = !m_veriGecerli;
+    m_veriGecerli = true;
+
+    if (m_basinc != basinc) {
+        m_basinc = basinc;
+        emit basincChanged();
     }
-    emit konumChanged();
 
-    m_hiz = QRandomGenerator::global()->bounded(0, 40) / 10.0;
-    emit hizChanged();
+    if (m_konum != konum) {
+        m_konum = konum;
+        emit konumChanged();
+    }
 
-    m_debi = QRandomGenerator::global()->bounded(0, 150) / 10.0;
-    emit debiChanged();
+    if (m_hiz != hiz) {
+        m_hiz = hiz;
+        emit hizChanged();
+    }
+
+    if (m_debi != debi) {
+        m_debi = debi;
+        emit debiChanged();
+    }
+
+    if (veriGecerliDegisti) {
+        emit veriGecerliChanged();
+    }
+}
+
+void SensorManager::veriyiGecersizYap()
+{
+    if (!m_veriGecerli) {
+        return;
+    }
+
+    m_veriGecerli = false;
+    emit veriGecerliChanged();
 }

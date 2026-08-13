@@ -2,6 +2,36 @@
     "classes": [
         {
             "className": "SensorManager",
+            "methods": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "basinc",
+                            "type": "double"
+                        },
+                        {
+                            "name": "konum",
+                            "type": "double"
+                        },
+                        {
+                            "name": "hiz",
+                            "type": "double"
+                        },
+                        {
+                            "name": "debi",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "veriGuncelle",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "veriyiGecersizYap",
+                    "returnType": "void"
+                }
+            ],
             "object": true,
             "properties": [
                 {
@@ -59,6 +89,20 @@
                     "stored": true,
                     "type": "double",
                     "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 4,
+                    "name": "veriGecerli",
+                    "notify": "veriGecerliChanged",
+                    "read": "veriGecerli",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "bool",
+                    "user": false
                 }
             ],
             "qualifiedClassName": "SensorManager",
@@ -82,12 +126,10 @@
                     "access": "public",
                     "name": "debiChanged",
                     "returnType": "void"
-                }
-            ],
-            "slots": [
+                },
                 {
                     "access": "public",
-                    "name": "veriUret",
+                    "name": "veriGecerliChanged",
                     "returnType": "void"
                 }
             ],

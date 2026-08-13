@@ -644,6 +644,54 @@ src/Calculator.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Calculator.cpp.s
 .PHONY : src/Calculator.cpp.s
 
+src/Database.obj: src/Database.cpp.obj
+.PHONY : src/Database.obj
+
+# target to build an object file
+src/Database.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Database.cpp.obj
+.PHONY : src/Database.cpp.obj
+
+src/Database.i: src/Database.cpp.i
+.PHONY : src/Database.i
+
+# target to preprocess a source file
+src/Database.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Database.cpp.i
+.PHONY : src/Database.cpp.i
+
+src/Database.s: src/Database.cpp.s
+.PHONY : src/Database.s
+
+# target to generate assembly for a file
+src/Database.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/Database.cpp.s
+.PHONY : src/Database.cpp.s
+
+src/ReportManager.obj: src/ReportManager.cpp.obj
+.PHONY : src/ReportManager.obj
+
+# target to build an object file
+src/ReportManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/ReportManager.cpp.obj
+.PHONY : src/ReportManager.cpp.obj
+
+src/ReportManager.i: src/ReportManager.cpp.i
+.PHONY : src/ReportManager.i
+
+# target to preprocess a source file
+src/ReportManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/ReportManager.cpp.i
+.PHONY : src/ReportManager.cpp.i
+
+src/ReportManager.s: src/ReportManager.cpp.s
+.PHONY : src/ReportManager.s
+
+# target to generate assembly for a file
+src/ReportManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/ReportManager.cpp.s
+.PHONY : src/ReportManager.cpp.s
+
 src/SensorManager.obj: src/SensorManager.cpp.obj
 .PHONY : src/SensorManager.obj
 
@@ -734,6 +782,12 @@ help:
 	@echo ... src/Calculator.obj
 	@echo ... src/Calculator.i
 	@echo ... src/Calculator.s
+	@echo ... src/Database.obj
+	@echo ... src/Database.i
+	@echo ... src/Database.s
+	@echo ... src/ReportManager.obj
+	@echo ... src/ReportManager.i
+	@echo ... src/ReportManager.s
 	@echo ... src/SensorManager.obj
 	@echo ... src/SensorManager.i
 	@echo ... src/SensorManager.s

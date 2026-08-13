@@ -5,10 +5,11 @@ import QtCharts 6.7
 Rectangle {
     color: "#0a0e17"
     property real zamanSayaci: 0
-    
+    property int aktifOlcumId: -1
+
     Row {
         anchors.fill: parent
-        spacing: 1
+        spacing: 0
 
         Rectangle {
             id: testBilgileriPaneli
@@ -128,6 +129,21 @@ Rectangle {
                     font.pixelSize: 14
                     font.bold: true
 
+                    onClicked: {
+                        if (!sensorManager.veriGecerli) {
+                            console.warn("Gercek sensor verisi yok, olcum baslatilmadi.")
+                            return
+                        }
+
+                        calculator.sifirla()
+                        aktifOlcumId = database.olcumBaslat(
+                            musteriKutusu.text,
+                            receteKutusu.currentText,
+                            parseFloat(agirlikKutusu.text)
+                        )
+                        console.log("Aktif olcum id:", aktifOlcumId)
+                    }
+
                     background: Rectangle {
                         radius: 8
                         color: baslatButonu.pressed ? "#15803d" : (baslatButonu.hovered ? "#22c55e" : "#16a34a")
@@ -143,7 +159,6 @@ Rectangle {
                     }
                 }
 
-
                 Row {
                     width: parent.width
                     spacing: 10
@@ -152,9 +167,17 @@ Rectangle {
                         id: duraklatButonu
                         width: (parent.width - parent.spacing) / 2
                         height: 40
-                        text: "⏸  Duraklat"
+                        text: calculator.duraklatildi ? "▶  Devam Et" : "⏸  Duraklat"
                         font.family: "Segoe UI"
                         font.pixelSize: 13
+
+                        onClicked: {
+                            if (calculator.duraklatildi) {
+                                calculator.devamEt()
+                            } else {
+                                calculator.duraklat()
+                            }
+                        }
 
                         background: Rectangle {
                             radius: 8
@@ -179,6 +202,11 @@ Rectangle {
                         text: "⏹  Bitir"
                         font.family: "Segoe UI"
                         font.pixelSize: 13
+
+                        onClicked: {
+                            aktifOlcumId = -1
+                            console.log("Olcum sonlandirildi.")
+                        }
 
                         background: Rectangle {
                             radius: 8
@@ -225,6 +253,8 @@ Rectangle {
                         radius: 6
                         anchors.verticalCenter: parent.verticalCenter
                         color: {
+                            if (!sensorManager.veriGecerli) return "#dc2626"
+                            if (calculator.duraklatildi) return "#6b7280"
                             if (calculator.durum === "YUKARIDA") return "#16a34a"
                             if (calculator.durum === "INIYOR") return "#f59e0b"
                             return "#dc2626"
@@ -244,7 +274,11 @@ Rectangle {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: calculator.durum
+                        text: {
+                            if (!sensorManager.veriGecerli) return "VERI YOK"
+                            if (calculator.duraklatildi) return "DURAKLATILDI"
+                            return calculator.durum
+                        }
                         color: "#dce8f5"
                         font.family: "Segoe UI"
                         font.pixelSize: 13
@@ -332,7 +366,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.basinc.toFixed(1)
+                            text: sensorManager.veriGecerli ? sensorManager.basinc.toFixed(1) : "--"
                             color: "#3b82f6"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -379,7 +413,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.konum.toFixed(1)
+                            text: sensorManager.veriGecerli ? sensorManager.konum.toFixed(1) : "--"
                             color: "#9333ea"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -426,7 +460,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.hiz.toFixed(1)
+                            text: sensorManager.veriGecerli ? sensorManager.hiz.toFixed(1) : "--"
                             color: "#f59e0b"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -473,7 +507,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.debi.toFixed(1)
+                            text: sensorManager.veriGecerli ? sensorManager.debi.toFixed(1) : "--"
                             color: "#16a34a"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -491,8 +525,23 @@ Rectangle {
             }
         }
 
+        Rectangle {
+            id: panelAyraci
+            width: 3
+            height: parent.height
+            color: "#05070b"
+
+            Rectangle {
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: 1
+                color: "#403b82f6"
+            }
+        }
+
         Item {
-            width: parent.width - testBilgileriPaneli.width - parent.spacing
+            width: parent.width - testBilgileriPaneli.width - panelAyraci.width
             height: parent.height
 
             Grid {
@@ -541,7 +590,7 @@ Rectangle {
                         Text {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.basinc.toFixed(1) + " mbar"
+                            text: sensorManager.veriGecerli ? sensorManager.basinc.toFixed(1) + " mbar" : "-- mbar"
                             color: "#3b82f6"
                             font.family: "Segoe UI"
                             font.pixelSize: 13
@@ -593,6 +642,8 @@ Rectangle {
                         Connections {
                             target: sensorManager
                             function onBasincChanged() {
+                                if (!sensorManager.veriGecerli) return
+
                                 zamanSayaci += 0.2
                                 basincSerisi.append(zamanSayaci, sensorManager.basinc)
 
@@ -646,7 +697,7 @@ Rectangle {
                         Text {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.konum.toFixed(1) + " mm"
+                            text: sensorManager.veriGecerli ? sensorManager.konum.toFixed(1) + " mm" : "-- mm"
                             color: "#9333ea"
                             font.family: "Segoe UI"
                             font.pixelSize: 13
@@ -698,6 +749,8 @@ Rectangle {
                         Connections {
                             target: sensorManager
                             function onKonumChanged() {
+                                if (!sensorManager.veriGecerli) return
+
                                 konumSerisi.append(zamanSayaci, sensorManager.konum)
 
                                 if (zamanSayaci > 60) {
@@ -707,6 +760,15 @@ Rectangle {
                                 }
 
                                 calculator.konumGuncelle(sensorManager.konum)
+                            }
+                        }
+
+                        Connections {
+                            target: calculator
+                            function onStrokeSayisiChanged() {
+                                if (aktifOlcumId > 0 && sensorManager.veriGecerli) {
+                                    database.strokeKaydet(aktifOlcumId, sensorManager.basinc, sensorManager.konum, sensorManager.debi, true)
+                                }
                             }
                         }
                     }
@@ -752,7 +814,7 @@ Rectangle {
                         Text {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.hiz.toFixed(1) + " m/s"
+                            text: sensorManager.veriGecerli ? sensorManager.hiz.toFixed(1) + " m/s" : "-- m/s"
                             color: "#f59e0b"
                             font.family: "Segoe UI"
                             font.pixelSize: 13
@@ -804,6 +866,8 @@ Rectangle {
                         Connections {
                             target: sensorManager
                             function onHizChanged() {
+                                if (!sensorManager.veriGecerli) return
+
                                 hizSerisi.append(zamanSayaci, sensorManager.hiz)
 
                                 if (zamanSayaci > 60) {
@@ -856,7 +920,7 @@ Rectangle {
                         Text {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.debi.toFixed(1) + " m3/h"
+                            text: sensorManager.veriGecerli ? sensorManager.debi.toFixed(1) + " m3/h" : "-- m3/h"
                             color: "#16a34a"
                             font.family: "Segoe UI"
                             font.pixelSize: 13
@@ -908,6 +972,8 @@ Rectangle {
                         Connections {
                             target: sensorManager
                             function onDebiChanged() {
+                                if (!sensorManager.veriGecerli) return
+
                                 debiSerisi.append(zamanSayaci, sensorManager.debi)
 
                                 if (zamanSayaci > 60) {

@@ -13,6 +13,21 @@
                     ],
                     "name": "konumGuncelle",
                     "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "duraklat",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "devamEt",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "sifirla",
+                    "returnType": "void"
                 }
             ],
             "object": true,
@@ -44,6 +59,20 @@
                     "stored": true,
                     "type": "int",
                     "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 2,
+                    "name": "duraklatildi",
+                    "notify": "duraklatildiChanged",
+                    "read": "duraklatildi",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "bool",
+                    "user": false
                 }
             ],
             "qualifiedClassName": "Calculator",
@@ -56,6 +85,11 @@
                 {
                     "access": "public",
                     "name": "strokeSayisiChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "duraklatildiChanged",
                     "returnType": "void"
                 }
             ],

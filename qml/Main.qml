@@ -6,14 +6,12 @@ import "pages"
 
 ApplicationWindow {
     id: pencere
-    visible: true
-    visibility: Window.Maximized // rectangle içine alınca bozuluyor
+    visibility: Window.Maximized
     title: "SLIPER Analiz"
 
     background: Rectangle {
         color: "#060d17"
     }
-
 
     StackLayout {
         id: anaStack

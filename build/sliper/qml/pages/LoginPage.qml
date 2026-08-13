@@ -52,32 +52,8 @@ Rectangle {
                 font.pixelSize: 12
             }
         }
-
-        Item { width: 8; height: 1 }
-
-        Rectangle {
-            width: 30
-            height: 30
-            radius: 6
-            color: "#0f1420"
-            border.color: "#1e2a3f"
-            border.width: 1
-
-            Text {
-                anchors.centerIn: parent
-                text: "☀"
-                color: "#9ca3af"
-                font.pixelSize: 14
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-            }
-        }
     }
 
-    // Kartin golgesi - her yonden saran katmanli yari saydam dikdortgenler
     Rectangle {
         anchors.centerIn: kart
         width: kart.width + 48
@@ -109,7 +85,7 @@ Rectangle {
         radius: 18
         color: "#45000000"
     }
-    
+
     Rectangle {
         id: kart
         anchors.centerIn: parent
@@ -314,16 +290,11 @@ Rectangle {
                 font.bold: true
 
                 onClicked: {
-
                     var sonuc = backend.girisYap(kullaniciAdiKutusu.text, sifreKutusu.text)
-                    
-                    if(sonuc)
-                    {
-                        sayfa.girisBasarili()
-                    }
 
-                    else
-                    {
+                    if (sonuc) {
+                        sayfa.girisBasarili()
+                    } else {
                         console.log("Kullanici adi veya sifre hatali")
                     }
                 }

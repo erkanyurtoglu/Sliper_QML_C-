@@ -24,6 +24,8 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp" "CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj" "gcc" "CMakeFiles/sliper.dir/sliper_qmltyperegistrations.cpp.obj.d"
   "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.cpp" "CMakeFiles/sliper.dir/src/Backend.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/Backend.cpp.obj.d"
   "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.cpp" "CMakeFiles/sliper.dir/src/Calculator.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/Calculator.cpp.obj.d"
+  "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Database.cpp" "CMakeFiles/sliper.dir/src/Database.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/Database.cpp.obj.d"
+  "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.cpp" "CMakeFiles/sliper.dir/src/ReportManager.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/ReportManager.cpp.obj.d"
   "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.cpp" "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj.d"
   )
 

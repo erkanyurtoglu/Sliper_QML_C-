@@ -15,8 +15,17 @@ int Calculator::strokeSayisi() const
     return m_strokeSayisi;
 }
 
+bool Calculator::duraklatildi() const
+{
+    return m_duraklatildi;
+}
+
 void Calculator::konumGuncelle(double konum)
 {
+    if (m_duraklatildi) {
+        return;
+    }
+
     QString yeniDurum;
 
     if (konum > 450) {
@@ -36,4 +45,34 @@ void Calculator::konumGuncelle(double konum)
         m_durum = yeniDurum;
         emit durumChanged();
     }
+}
+
+void Calculator::duraklat()
+{
+    if (m_duraklatildi) {
+        return;
+    }
+
+    m_duraklatildi = true;
+    emit duraklatildiChanged();
+}
+
+void Calculator::devamEt()
+{
+    if (!m_duraklatildi) {
+        return;
+    }
+
+    m_duraklatildi = false;
+    emit duraklatildiChanged();
+}
+
+void Calculator::sifirla()
+{
+    m_strokeSayisi = 0;
+    m_durum = "BEKLENIYOR";
+    m_duraklatildi = false;
+    emit strokeSayisiChanged();
+    emit durumChanged();
+    emit duraklatildiChanged();
 }

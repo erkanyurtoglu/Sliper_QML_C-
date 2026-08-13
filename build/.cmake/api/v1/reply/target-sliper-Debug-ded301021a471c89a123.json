@@ -72,6 +72,8 @@
 			"C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Core/Qt6CoreConfig.cmake",
 			"C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Gui/Qt6GuiTargets.cmake",
 			"C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Gui/Qt6GuiConfig.cmake",
+			"C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportTargets.cmake",
+			"C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportConfig.cmake",
 			"C:/Qt/6.7.3/mingw_64/lib/cmake/Qt6Core/Qt6CoreMacros.cmake:749:EVAL"
 		],
 		"nodes" : 
@@ -106,7 +108,7 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 37,
+				"line" : 41,
 				"parent" : 0
 			},
 			{
@@ -148,7 +150,7 @@
 			{
 				"command" : 9,
 				"file" : 1,
-				"line" : 22,
+				"line" : 26,
 				"parent" : 0
 			},
 			{
@@ -462,45 +464,71 @@
 				"parent" : 70
 			},
 			{
+				"command" : 7,
+				"file" : 4,
+				"line" : 169,
+				"parent" : 7
+			},
+			{
+				"file" : 28,
+				"parent" : 72
+			},
+			{
+				"command" : 6,
+				"file" : 28,
+				"line" : 55,
+				"parent" : 73
+			},
+			{
+				"file" : 27,
+				"parent" : 74
+			},
+			{
+				"command" : 5,
+				"file" : 27,
+				"line" : 61,
+				"parent" : 75
+			},
+			{
 				"file" : 1,
 				"line" : -1,
 				"parent" : 0
 			},
 			{
 				"command" : 17,
-				"file" : 27,
+				"file" : 29,
 				"line" : 1,
-				"parent" : 72
+				"parent" : 77
 			},
 			{
 				"command" : 16,
 				"file" : 0,
 				"line" : 780,
-				"parent" : 73
+				"parent" : 78
 			},
 			{
 				"command" : 15,
 				"file" : 0,
 				"line" : 684,
-				"parent" : 74
+				"parent" : 79
 			},
 			{
 				"command" : 14,
 				"file" : 0,
 				"line" : 684,
-				"parent" : 75
+				"parent" : 80
 			},
 			{
 				"command" : 13,
 				"file" : 5,
 				"line" : 3566,
-				"parent" : 76
+				"parent" : 81
 			},
 			{
 				"command" : 12,
 				"file" : 5,
 				"line" : 3371,
-				"parent" : 77
+				"parent" : 82
 			},
 			{
 				"command" : 18,
@@ -512,7 +540,7 @@
 				"command" : 12,
 				"file" : 5,
 				"line" : 2768,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 20,
@@ -524,37 +552,37 @@
 				"command" : 19,
 				"file" : 5,
 				"line" : 3099,
-				"parent" : 81
+				"parent" : 86
 			},
 			{
 				"command" : 19,
 				"file" : 5,
 				"line" : 3124,
-				"parent" : 81
+				"parent" : 86
 			},
 			{
 				"command" : 22,
 				"file" : 5,
 				"line" : 2924,
-				"parent" : 81
+				"parent" : 86
 			},
 			{
 				"command" : 21,
 				"file" : 0,
 				"line" : 1421,
-				"parent" : 84
+				"parent" : 89
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 3090,
-				"parent" : 81
+				"parent" : 86
 			},
 			{
 				"command" : 23,
 				"file" : 5,
 				"line" : 3114,
-				"parent" : 81
+				"parent" : 86
 			},
 			{
 				"command" : 26,
@@ -566,151 +594,151 @@
 				"command" : 25,
 				"file" : 0,
 				"line" : 337,
-				"parent" : 88
+				"parent" : 93
 			},
 			{
 				"command" : 24,
 				"file" : 0,
 				"line" : 2396,
-				"parent" : 89
+				"parent" : 94
 			},
 			{
 				"command" : 21,
 				"file" : 0,
 				"line" : 2010,
-				"parent" : 90
+				"parent" : 95
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 27,
 				"file" : 5,
 				"line" : 2656,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 1248,
-				"parent" : 93
+				"parent" : 98
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 26,
 				"file" : 5,
 				"line" : 2788,
-				"parent" : 79
+				"parent" : 84
 			},
 			{
 				"command" : 25,
 				"file" : 0,
 				"line" : 337,
-				"parent" : 108
+				"parent" : 113
 			},
 			{
 				"command" : 24,
 				"file" : 0,
 				"line" : 2396,
-				"parent" : 109
+				"parent" : 114
 			},
 			{
 				"command" : 21,
 				"file" : 0,
 				"line" : 2010,
-				"parent" : 110
+				"parent" : 115
 			},
 			{
 				"command" : 28,
 				"file" : 0,
 				"line" : 774,
-				"parent" : 73
+				"parent" : 78
 			},
 			{
 				"command" : 21,
 				"file" : 0,
 				"line" : 2123,
-				"parent" : 112
+				"parent" : 117
 			}
 		]
 	},
@@ -754,6 +782,10 @@
 					"define" : "QT_OPENGL_LIB"
 				},
 				{
+					"backtrace" : 5,
+					"define" : "QT_PRINTSUPPORT_LIB"
+				},
+				{
 					"backtrace" : 15,
 					"define" : "QT_QMLBUILTINS_LIB"
 				},
@@ -772,6 +804,10 @@
 				{
 					"backtrace" : 5,
 					"define" : "QT_QUICK_LIB"
+				},
+				{
+					"backtrace" : 5,
+					"define" : "QT_SQL_LIB"
 				},
 				{
 					"backtrace" : 5,
@@ -809,71 +845,71 @@
 					"path" : "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include"
 				},
 				{
-					"backtrace" : 82,
+					"backtrace" : 87,
 					"path" : "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQml/6.7.3"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQml/6.7.3/QtQml"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtCore/6.7.3"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtCore/6.7.3/QtCore"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtCore"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/mkspecs/win32-g++"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQmlBuiltins/6.7.3"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQmlBuiltins/6.7.3/QtQmlBuiltins"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQmlBuiltins"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQml"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQmlIntegration"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtNetwork"
 				},
@@ -916,6 +952,16 @@
 					"backtrace" : 5,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtOpenGLWidgets"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Qt/6.7.3/mingw_64/include/QtSql"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Qt/6.7.3/mingw_64/include/QtPrintSupport"
 				}
 			],
 			"language" : "CXX",
@@ -935,16 +981,18 @@
 				3,
 				5,
 				7,
-				10,
-				12,
-				13,
-				15,
+				9,
+				11,
+				14,
+				16,
 				17,
 				19,
 				21,
 				23,
 				25,
-				26
+				27,
+				29,
+				30
 			]
 		},
 		{
@@ -954,7 +1002,7 @@
 					"fragment" : "-g -std=gnu++17"
 				},
 				{
-					"backtrace" : 87,
+					"backtrace" : 92,
 					"fragment" : "-Wa,-mbig-obj"
 				}
 			],
@@ -989,6 +1037,10 @@
 					"define" : "QT_OPENGL_LIB"
 				},
 				{
+					"backtrace" : 5,
+					"define" : "QT_PRINTSUPPORT_LIB"
+				},
+				{
 					"backtrace" : 15,
 					"define" : "QT_QMLBUILTINS_LIB"
 				},
@@ -1007,6 +1059,10 @@
 				{
 					"backtrace" : 5,
 					"define" : "QT_QUICK_LIB"
+				},
+				{
+					"backtrace" : 5,
+					"define" : "QT_SQL_LIB"
 				},
 				{
 					"backtrace" : 5,
@@ -1044,71 +1100,71 @@
 					"path" : "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include"
 				},
 				{
-					"backtrace" : 82,
+					"backtrace" : 87,
 					"path" : "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQml/6.7.3"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQml/6.7.3/QtQml"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtCore/6.7.3"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtCore/6.7.3/QtCore"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtCore"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/mkspecs/win32-g++"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQmlBuiltins/6.7.3"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQmlBuiltins/6.7.3/QtQmlBuiltins"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQmlBuiltins"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQml"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtQmlIntegration"
 				},
 				{
-					"backtrace" : 83,
+					"backtrace" : 88,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtNetwork"
 				},
@@ -1151,6 +1207,16 @@
 					"backtrace" : 5,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.7.3/mingw_64/include/QtOpenGLWidgets"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Qt/6.7.3/mingw_64/include/QtSql"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "C:/Qt/6.7.3/mingw_64/include/QtPrintSupport"
 				}
 			],
 			"language" : "CXX",
@@ -1165,21 +1231,21 @@
 			},
 			"sourceIndexes" : 
 			[
-				9
+				13
 			]
 		}
 	],
 	"dependencies" : 
 	[
 		{
-			"backtrace" : 78,
-			"id" : "sliper_qmlimportscan::@6890427a1f51a3e7e1df"
-		},
-		{
 			"id" : "sliper_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
 		},
 		{
-			"backtrace" : 80,
+			"backtrace" : 83,
+			"id" : "sliper_qmlimportscan::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 85,
 			"id" : "sliper_tooling::@6890427a1f51a3e7e1df"
 		},
 		{
@@ -1208,6 +1274,16 @@
 			{
 				"backtrace" : 5,
 				"fragment" : "C:\\Qt\\6.7.3\\mingw_64\\lib\\libQt6Charts.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Qt\\6.7.3\\mingw_64\\lib\\libQt6Sql.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Qt\\6.7.3\\mingw_64\\lib\\libQt6PrintSupport.a",
 				"role" : "libraries"
 			},
 			{
@@ -1251,13 +1327,13 @@
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 5,
-				"fragment" : "C:\\Qt\\6.7.3\\mingw_64\\lib\\libQt6Widgets.a",
+				"backtrace" : 53,
+				"fragment" : "C:\\Qt\\6.7.3\\mingw_64\\lib\\libQt6OpenGL.a",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 53,
-				"fragment" : "C:\\Qt\\6.7.3\\mingw_64\\lib\\libQt6OpenGL.a",
+				"backtrace" : 5,
+				"fragment" : "C:\\Qt\\6.7.3\\mingw_64\\lib\\libQt6Widgets.a",
 				"role" : "libraries"
 			},
 			{
@@ -1301,6 +1377,16 @@
 				"role" : "libraries"
 			},
 			{
+				"backtrace" : 76,
+				"fragment" : "-lcomdlg32",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 76,
+				"fragment" : "-lwinspool",
+				"role" : "libraries"
+			},
+			{
 				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
 				"role" : "libraries"
 			}
@@ -1321,18 +1407,20 @@
 			"sourceIndexes" : 
 			[
 				0,
-				31,
-				47,
-				48,
-				49,
-				50,
+				35,
 				51,
 				52,
 				53,
 				54,
 				55,
 				56,
-				57
+				57,
+				58,
+				59,
+				60,
+				61,
+				62,
+				63
 			]
 		},
 		{
@@ -1344,16 +1432,18 @@
 				5,
 				7,
 				9,
-				10,
-				12,
+				11,
 				13,
-				15,
+				14,
+				16,
 				17,
 				19,
 				21,
 				23,
 				25,
-				26
+				27,
+				29,
+				30
 			]
 		},
 		{
@@ -1362,41 +1452,39 @@
 			[
 				2,
 				4,
-				6
+				6,
+				8,
+				10
 			]
 		},
 		{
 			"name" : "",
 			"sourceIndexes" : 
 			[
-				8,
-				11,
-				14,
-				16,
+				12,
+				15,
 				18,
 				20,
 				22,
 				24,
-				27,
+				26,
 				28,
-				29
+				31,
+				32,
+				33
 			]
 		},
 		{
 			"name" : "Resources",
 			"sourceIndexes" : 
 			[
-				30
+				34
 			]
 		},
 		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				32,
-				33,
-				34,
-				35,
 				36,
 				37,
 				38,
@@ -1407,7 +1495,11 @@
 				43,
 				44,
 				45,
-				46
+				46,
+				47,
+				48,
+				49,
+				50
 			]
 		}
 	],
@@ -1460,143 +1552,165 @@
 			"sourceGroupIndex" : 1
 		},
 		{
-			"backtrace" : 85,
+			"backtrace" : 4,
+			"path" : "src/Database.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "src/Database.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "src/ReportManager.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "src/ReportManager.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 90,
 			"isGenerated" : true,
 			"path" : "build/meta_types/qt6sliper_debug_metatypes.json.gen",
 			"sourceGroupIndex" : 3
 		},
 		{
-			"backtrace" : 86,
+			"backtrace" : 91,
 			"compileGroupIndex" : 1,
 			"isGenerated" : true,
 			"path" : "build/sliper_qmltyperegistrations.cpp",
 			"sourceGroupIndex" : 1
 		},
 		{
-			"backtrace" : 91,
+			"backtrace" : 96,
 			"compileGroupIndex" : 0,
 			"isGenerated" : true,
 			"path" : "build/.qt/rcc/qrc_qmake_sliper.cpp",
 			"sourceGroupIndex" : 1
 		},
 		{
-			"backtrace" : 92,
-			"path" : "qml/Main.qml",
-			"sourceGroupIndex" : 3
-		},
-		{
-			"backtrace" : 94,
-			"compileGroupIndex" : 0,
-			"isGenerated" : true,
-			"path" : "build/.rcc/qmlcache/sliper_qmlcache_loader.cpp",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 95,
-			"compileGroupIndex" : 0,
-			"isGenerated" : true,
-			"path" : "build/.rcc/qmlcache/sliper_qml/Main_qml.cpp",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 96,
-			"path" : "qml/pages/LoginPage.qml",
-			"sourceGroupIndex" : 3
-		},
-		{
 			"backtrace" : 97,
-			"compileGroupIndex" : 0,
-			"isGenerated" : true,
-			"path" : "build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 98,
-			"path" : "qml/pages/DashboardPage.qml",
+			"path" : "qml/Main.qml",
 			"sourceGroupIndex" : 3
 		},
 		{
 			"backtrace" : 99,
 			"compileGroupIndex" : 0,
 			"isGenerated" : true,
-			"path" : "build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp",
+			"path" : "build/.rcc/qmlcache/sliper_qmlcache_loader.cpp",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 100,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "build/.rcc/qmlcache/sliper_qml/Main_qml.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 101,
+			"path" : "qml/pages/LoginPage.qml",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 102,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "build/.rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 103,
+			"path" : "qml/pages/DashboardPage.qml",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 104,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 105,
 			"path" : "qml/pages/OlcumPage.qml",
 			"sourceGroupIndex" : 3
 		},
 		{
-			"backtrace" : 101,
+			"backtrace" : 106,
 			"compileGroupIndex" : 0,
 			"isGenerated" : true,
 			"path" : "build/.rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp",
 			"sourceGroupIndex" : 1
 		},
 		{
-			"backtrace" : 102,
+			"backtrace" : 107,
 			"path" : "qml/pages/SonuclarPage.qml",
 			"sourceGroupIndex" : 3
 		},
 		{
-			"backtrace" : 103,
+			"backtrace" : 108,
 			"compileGroupIndex" : 0,
 			"isGenerated" : true,
 			"path" : "build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp",
 			"sourceGroupIndex" : 1
 		},
 		{
-			"backtrace" : 104,
+			"backtrace" : 109,
 			"path" : "qml/pages/GecmisPage.qml",
 			"sourceGroupIndex" : 3
 		},
 		{
-			"backtrace" : 105,
+			"backtrace" : 110,
 			"compileGroupIndex" : 0,
 			"isGenerated" : true,
 			"path" : "build/.rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp",
 			"sourceGroupIndex" : 1
 		},
 		{
-			"backtrace" : 106,
+			"backtrace" : 111,
 			"path" : "qml/pages/KalibrasyonPage.qml",
 			"sourceGroupIndex" : 3
 		},
 		{
-			"backtrace" : 107,
+			"backtrace" : 112,
 			"compileGroupIndex" : 0,
 			"isGenerated" : true,
 			"path" : "build/.rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp",
 			"sourceGroupIndex" : 1
 		},
 		{
-			"backtrace" : 111,
+			"backtrace" : 116,
 			"compileGroupIndex" : 0,
 			"isGenerated" : true,
 			"path" : "build/.qt/rcc/qrc_sliper_raw_qml_0.cpp",
 			"sourceGroupIndex" : 1
 		},
 		{
-			"backtrace" : 113,
+			"backtrace" : 118,
 			"isGenerated" : true,
 			"path" : "build/.qt/rcc/qmake_sliper.qrc",
 			"sourceGroupIndex" : 3
 		},
 		{
-			"backtrace" : 113,
+			"backtrace" : 118,
 			"isGenerated" : true,
 			"path" : "build/sliper/qmldir",
 			"sourceGroupIndex" : 3
 		},
 		{
-			"backtrace" : 113,
+			"backtrace" : 118,
 			"isGenerated" : true,
 			"path" : "build/.qt/rcc/sliper_raw_qml_0.qrc",
 			"sourceGroupIndex" : 3
 		},
 		{
-			"backtrace" : 113,
+			"backtrace" : 118,
 			"path" : "qml/assets/logo.png",
 			"sourceGroupIndex" : 4
 		},
@@ -1749,6 +1863,16 @@
 		{
 			"backtrace" : 5,
 			"path" : "C:/Qt/6.7.3/mingw_64/metatypes/qt6openglwidgets_relwithdebinfo_metatypes.json",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 5,
+			"path" : "C:/Qt/6.7.3/mingw_64/metatypes/qt6sql_relwithdebinfo_metatypes.json",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 5,
+			"path" : "C:/Qt/6.7.3/mingw_64/metatypes/qt6printsupport_relwithdebinfo_metatypes.json",
 			"sourceGroupIndex" : 0
 		}
 	],

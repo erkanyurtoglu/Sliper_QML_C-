@@ -13,13 +13,11 @@ QString Backend::durum() const
 
 bool Backend::girisYap(const QString &kullaniciAdi, const QString &sifre)
 {
-    if(kullaniciAdi == "admin" && sifre == "admin123")
-    {
-        qDebug() << "Giriş Başarılı:" << kullaniciAdi;
+    if (kullaniciAdi == "admin" && sifre == "admin123") {
+        qDebug() << "Giris Basarili:" << kullaniciAdi;
         return true;
     }
 
-    qDebug() << "Giriş Başarısız:" << kullaniciAdi;
+    qDebug() << "Giris Basarisiz:" << kullaniciAdi;
     return false;
-
 }

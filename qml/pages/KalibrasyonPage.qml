@@ -10,11 +10,40 @@ Rectangle {
     property int loadCellAdimi: 0
     property int mesafeAdimi: 0
 
+    property bool egimKayitliVar: false
+    property string egimSonTarih: ""
+
+    property bool loadCellKayitliVar: false
+    property real loadCellReferans: 0
+    property string loadCellSonTarih: ""
+
+    property bool mesafeUstKayitliVar: false
+    property bool mesafeAltKayitliVar: false
+    property string mesafeSonTarih: ""
+
+    onSeciliSensorChanged: {
+        if (seciliSensor === 0) {
+            var e = database.kalibrasyonGetir("egim")
+            egimKayitliVar = e.mevcut
+            egimSonTarih = e.mevcut ? e.tarih : ""
+        } else if (seciliSensor === 1) {
+            var l = database.kalibrasyonGetir("loadcell")
+            loadCellKayitliVar = l.mevcut
+            loadCellReferans = l.mevcut ? l.deger1 : 0
+            loadCellSonTarih = l.mevcut ? l.tarih : ""
+        } else if (seciliSensor === 2) {
+            var u = database.kalibrasyonGetir("mesafe_ust")
+            var a = database.kalibrasyonGetir("mesafe_alt")
+            mesafeUstKayitliVar = u.mevcut
+            mesafeAltKayitliVar = a.mevcut
+            mesafeSonTarih = u.mevcut ? u.tarih : (a.mevcut ? a.tarih : "")
+        }
+    }
+
     StackLayout {
         anchors.fill: parent
         currentIndex: seciliSensor === -1 ? 0 : 1
 
-        // Katman 0: Kart secim ekrani
         Item {
             Text {
                 anchors.top: parent.top
@@ -47,7 +76,7 @@ Rectangle {
 
                     Column {
                         anchors.centerIn: parent
-                        spacing: 16
+                        spacing: 14
 
                         Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -61,6 +90,24 @@ Rectangle {
 
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Eğim Sensörü"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 15; font.bold: true }
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Yatay hizalama kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11 }
+
+                        Rectangle {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            visible: egimKayitliVar
+                            width: kaliMetni1.implicitWidth + 16
+                            height: 20
+                            radius: 10
+                            color: "#123321"
+
+                            Text {
+                                id: kaliMetni1
+                                anchors.centerIn: parent
+                                text: "✓ Kalibre Edildi"
+                                color: "#4ade80"
+                                font.pixelSize: 10
+                                font.bold: true
+                            }
+                        }
                     }
 
                     MouseArea {
@@ -88,7 +135,7 @@ Rectangle {
 
                     Column {
                         anchors.centerIn: parent
-                        spacing: 16
+                        spacing: 14
 
                         Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -102,6 +149,24 @@ Rectangle {
 
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Load Cell"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 15; font.bold: true }
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Basınç sensörü kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11 }
+
+                        Rectangle {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            visible: loadCellKayitliVar
+                            width: kaliMetni2.implicitWidth + 16
+                            height: 20
+                            radius: 10
+                            color: "#123321"
+
+                            Text {
+                                id: kaliMetni2
+                                anchors.centerIn: parent
+                                text: "✓ Kalibre Edildi"
+                                color: "#4ade80"
+                                font.pixelSize: 10
+                                font.bold: true
+                            }
+                        }
                     }
 
                     MouseArea {
@@ -129,7 +194,7 @@ Rectangle {
 
                     Column {
                         anchors.centerIn: parent
-                        spacing: 16
+                        spacing: 14
 
                         Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -143,6 +208,24 @@ Rectangle {
 
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Mesafe Sensörü"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 15; font.bold: true }
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Konum ölçümü kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11 }
+
+                        Rectangle {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            visible: mesafeUstKayitliVar && mesafeAltKayitliVar
+                            width: kaliMetni3.implicitWidth + 16
+                            height: 20
+                            radius: 10
+                            color: "#123321"
+
+                            Text {
+                                id: kaliMetni3
+                                anchors.centerIn: parent
+                                text: "✓ Kalibre Edildi"
+                                color: "#4ade80"
+                                font.pixelSize: 10
+                                font.bold: true
+                            }
+                        }
                     }
 
                     MouseArea {
@@ -157,7 +240,6 @@ Rectangle {
             }
         }
 
-        // Katman 1: Secili sensorun kalibrasyon ekrani
         Item {
             Row {
                 anchors.top: parent.top
@@ -218,7 +300,6 @@ Rectangle {
                 }
             }
 
-            // ---- EĞİM SENSÖRÜ İÇERİĞİ (tek adım: sıfırlama) ----
             Item {
                 anchors.top: parent.top
                 anchors.left: parent.left
@@ -231,6 +312,25 @@ Rectangle {
                     anchors.centerIn: parent
                     spacing: 20
                     width: 360
+
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        visible: egimKayitliVar
+                        width: sonKaliMetni1.implicitWidth + 20
+                        height: 26
+                        radius: 13
+                        color: "#0f1420"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+
+                        Text {
+                            id: sonKaliMetni1
+                            anchors.centerIn: parent
+                            text: "Son kalibrasyon: " + egimSonTarih
+                            color: "#6b7280"
+                            font.pixelSize: 11
+                        }
+                    }
 
                     Text {
                         width: parent.width
@@ -268,6 +368,12 @@ Rectangle {
                         font.pixelSize: 14
                         font.bold: true
 
+                        onClicked: {
+                            database.kalibrasyonKaydet("egim", 0.0, 0.0)
+                            console.log("Egim sensoru kalibrasyonu kaydedildi.")
+                            seciliSensor = -1
+                        }
+
                         background: Rectangle {
                             radius: 8
                             color: parent.hovered ? "#4f8cf7" : "#3b82f6"
@@ -285,7 +391,6 @@ Rectangle {
                 }
             }
 
-            // ---- LOAD CELL İÇERİĞİ (iki adım: sıfırlama + referans agirlik) ----
             Item {
                 anchors.top: parent.top
                 anchors.left: parent.left
@@ -298,6 +403,25 @@ Rectangle {
                     anchors.centerIn: parent
                     spacing: 20
                     width: 360
+
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        visible: loadCellKayitliVar
+                        width: sonKaliMetni2.implicitWidth + 20
+                        height: 26
+                        radius: 13
+                        color: "#0f1420"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+
+                        Text {
+                            id: sonKaliMetni2
+                            anchors.centerIn: parent
+                            text: "Son referans: " + loadCellReferans.toFixed(1) + " kg — " + loadCellSonTarih
+                            color: "#6b7280"
+                            font.pixelSize: 11
+                        }
+                    }
 
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -324,7 +448,6 @@ Rectangle {
                         }
                     }
 
-                    // Adim 0: Sifirlama
                     Column {
                         width: parent.width
                         spacing: 20
@@ -384,7 +507,6 @@ Rectangle {
                         }
                     }
 
-                    // Adim 1: Referans agirlik
                     Column {
                         width: parent.width
                         spacing: 20
@@ -410,6 +532,12 @@ Rectangle {
                                 text: "1.6 kg"
                                 font.pixelSize: 13
 
+                                onClicked: {
+                                    database.kalibrasyonKaydet("loadcell", 1.6, 0.0)
+                                    console.log("Load cell referans 1.6kg kaydedildi.")
+                                    seciliSensor = -1
+                                }
+
                                 background: Rectangle {
                                     radius: 8
                                     color: parent.hovered ? "#1e2a3f" : "#0a0e17"
@@ -433,6 +561,12 @@ Rectangle {
                                 text: "4.8 kg"
                                 font.pixelSize: 13
 
+                                onClicked: {
+                                    database.kalibrasyonKaydet("loadcell", 4.8, 0.0)
+                                    console.log("Load cell referans 4.8kg kaydedildi.")
+                                    seciliSensor = -1
+                                }
+
                                 background: Rectangle {
                                     radius: 8
                                     color: parent.hovered ? "#1e2a3f" : "#0a0e17"
@@ -450,35 +584,10 @@ Rectangle {
                                 }
                             }
                         }
-
-                        Button {
-                            width: parent.width
-                            height: 44
-                            text: "Referansı Uygula ve Tamamla"
-                            font.pixelSize: 14
-                            font.bold: true
-
-                            background: Rectangle {
-                                radius: 8
-                                color: parent.hovered ? "#22c55e" : "#16a34a"
-                                Behavior on color { ColorAnimation { duration: 120 } }
-                            }
-
-                            contentItem: Text {
-                                text: parent.text
-                                color: "#ffffff"
-                                font: parent.font
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                            }
-
-                            onClicked: seciliSensor = -1
-                        }
                     }
                 }
             }
 
-            // ---- MESAFE SENSÖRÜ İÇERİĞİ (iki adım: ust pozisyon + alt pozisyon) ----
             Item {
                 anchors.top: parent.top
                 anchors.left: parent.left
@@ -491,6 +600,25 @@ Rectangle {
                     anchors.centerIn: parent
                     spacing: 20
                     width: 360
+
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        visible: mesafeUstKayitliVar || mesafeAltKayitliVar
+                        width: sonKaliMetni3.implicitWidth + 20
+                        height: 26
+                        radius: 13
+                        color: "#0f1420"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+
+                        Text {
+                            id: sonKaliMetni3
+                            anchors.centerIn: parent
+                            text: "Son kalibrasyon: " + mesafeSonTarih
+                            color: "#6b7280"
+                            font.pixelSize: 11
+                        }
+                    }
 
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -517,7 +645,6 @@ Rectangle {
                         }
                     }
 
-                    // Adim 0: Ust pozisyon
                     Column {
                         width: parent.width
                         spacing: 20
@@ -559,6 +686,11 @@ Rectangle {
                             font.pixelSize: 14
                             font.bold: true
 
+                            onClicked: {
+                                database.kalibrasyonKaydet("mesafe_ust", 0.0, 0.0)
+                                mesafeAdimi = 1
+                            }
+
                             background: Rectangle {
                                 radius: 8
                                 color: parent.hovered ? "#4f8cf7" : "#3b82f6"
@@ -572,12 +704,9 @@ Rectangle {
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }
-
-                            onClicked: mesafeAdimi = 1
                         }
                     }
 
-                    // Adim 1: Alt pozisyon
                     Column {
                         width: parent.width
                         spacing: 20
@@ -619,6 +748,11 @@ Rectangle {
                             font.pixelSize: 14
                             font.bold: true
 
+                            onClicked: {
+                                database.kalibrasyonKaydet("mesafe_alt", 0.0, 0.0)
+                                seciliSensor = -1
+                            }
+
                             background: Rectangle {
                                 radius: 8
                                 color: parent.hovered ? "#22c55e" : "#16a34a"
@@ -632,8 +766,6 @@ Rectangle {
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }
-
-                            onClicked: seciliSensor = -1
                         }
                     }
                 }

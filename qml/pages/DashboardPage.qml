@@ -2,18 +2,29 @@ import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Layouts 6.7
 
-
 Rectangle {
     color: "#0a0e17"
 
+    readonly property var navOgeleri: [
+        { etiket: "Ölçüm", ikon: "📊" },
+        { etiket: "Sonuçlar", ikon: "📈" },
+        { etiket: "Geçmiş", ikon: "🕒" },
+        { etiket: "Kalibrasyon", ikon: "⚙️" }
+    ]
+
     Row {
         anchors.fill: parent
+        spacing: 0
 
         Rectangle {
             id: sidebar
-            width: 220
+            width: 230
             height: parent.height
-            color: "#0f1420"
+
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "#121b30" }
+                GradientStop { position: 1.0; color: "#080b12" }
+            }
 
             Image {
                 anchors.top: parent.top
@@ -25,106 +36,112 @@ Rectangle {
                 fillMode: Image.PreserveAspectFit
             }
 
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 24
+                anchors.rightMargin: 24
+                anchors.topMargin: 188
+                height: 1
+                color: "#1f2c46"
+            }
+
             Column {
                 anchors.top: parent.top
-                anchors.topMargin: 210
+                anchors.topMargin: 206
                 width: parent.width
+                spacing: 2
 
-                Rectangle {
-                    width: parent.width
-                    height: 44
-                    color: icerikStack.currentIndex === 0 ? "#1e2a3f" : "transparent"
+                Repeater {
+                    model: navOgeleri
 
-                    Text {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 24
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "Ölçüm"
-                        color: icerikStack.currentIndex === 0 ? "#3b82f6" : "#9ca3af"
-                        font.pixelSize: 14
-                    }
+                    Rectangle {
+                        id: navOgesi
+                        width: parent.width
+                        height: 46
+                        property bool aktif: icerikStack.currentIndex === index
+                        property bool hoverli: false
+                        color: aktif ? "#182644" : (hoverli ? "#101a2c" : "transparent")
+                        Behavior on color { ColorAnimation { duration: 120 } }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: icerikStack.currentIndex = 0
-                    }
-                }
+                        Rectangle {
+                            width: 3
+                            height: parent.height
+                            color: "#3b82f6"
+                            visible: navOgesi.aktif
+                        }
 
-                Rectangle {
-                    width: parent.width
-                    height: 44
-                    color: icerikStack.currentIndex === 1 ? "#1e2a3f" : "transparent"
+                        Row {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 24
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 12
 
-                    Text {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 24
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "Sonuçlar"
-                        color: icerikStack.currentIndex === 1 ? "#3b82f6" : "#9ca3af"
-                        font.pixelSize: 14
-                    }
+                            Text {
+                                text: modelData.ikon
+                                font.pixelSize: 15
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: icerikStack.currentIndex = 1
-                    }
-                }
+                            Text {
+                                text: modelData.etiket
+                                color: navOgesi.aktif ? "#6ea8ff" : (navOgesi.hoverli ? "#dce8f5" : "#9ca3af")
+                                font.family: "Segoe UI"
+                                font.pixelSize: 14
+                                font.bold: navOgesi.aktif
+                                anchors.verticalCenter: parent.verticalCenter
+                                Behavior on color { ColorAnimation { duration: 120 } }
+                            }
+                        }
 
-                Rectangle {
-                    width: parent.width
-                    height: 44
-                    color: icerikStack.currentIndex === 2 ? "#1e2a3f" : "transparent"
-
-                    Text {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 24
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "Geçmiş"
-                        color: icerikStack.currentIndex === 2 ? "#3b82f6" : "#9ca3af"
-                        font.pixelSize: 14
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: icerikStack.currentIndex = 2
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: 44
-                    color: icerikStack.currentIndex === 3 ? "#1e2a3f" : "transparent"
-
-                    Text {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 24
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "Kalibrasyon"
-                        color: icerikStack.currentIndex === 3 ? "#3b82f6" : "#9ca3af"
-                        font.pixelSize: 14
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: icerikStack.currentIndex = 3
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onEntered: navOgesi.hoverli = true
+                            onExited: navOgesi.hoverli = false
+                            onClicked: icerikStack.currentIndex = index
+                        }
                     }
                 }
             }
         }
 
+        Rectangle {
+            id: sidebarAyraci
+            width: 3
+            height: parent.height
+            color: "#05070b"
+
+            Rectangle {
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: 1
+                color: "#403b82f6"
+            }
+        }
+
         StackLayout {
             id: icerikStack
-            width: parent.width - sidebar.width
+            width: parent.width - sidebar.width - sidebarAyraci.width
             height: parent.height
             currentIndex: 0
 
             OlcumPage {}
-            SonuclarPage {}
-            GecmisPage {}
+
+            SonuclarPage {
+                id: sonuclarSayfasi
+            }
+
+            GecmisPage {
+                onTestSecildi: function(id) {
+                    sonuclarSayfasi.olcumId = id
+                    icerikStack.currentIndex = 1
+                }
+            }
+
             KalibrasyonPage {}
         }
     }

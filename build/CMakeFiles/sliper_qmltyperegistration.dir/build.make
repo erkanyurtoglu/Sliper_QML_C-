@@ -82,6 +82,8 @@ sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6opengl_relwit
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6charts_relwithdebinfo_metatypes.json
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6widgets_relwithdebinfo_metatypes.json
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6openglwidgets_relwithdebinfo_metatypes.json
+sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6sql_relwithdebinfo_metatypes.json
+sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6printsupport_relwithdebinfo_metatypes.json
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic QML type registration for target sliper"
 	call .qt\bin\qt_setup_tool_path.bat C:/Qt/6.7.3/mingw_64/bin/qmltyperegistrar.exe --generate-qmltypes=C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/sliper.qmltypes --import-name=sliper --major-version=1 --minor-version=0 @C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/qmltypes/sliper_foreign_types.txt -o C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/meta_types/qt6sliper_debug_metatypes.json
 	C:\Qt\Tools\CMake_64\bin\cmake.exe -E make_directory C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/qmltypes

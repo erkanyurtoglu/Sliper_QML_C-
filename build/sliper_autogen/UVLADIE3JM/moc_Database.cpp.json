@@ -1,0 +1,144 @@
+{
+    "classes": [
+        {
+            "className": "Database",
+            "methods": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "musteri",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "recete",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "agirlik",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "olcumBaslat",
+                    "returnType": "int"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "olcumId",
+                            "type": "int"
+                        },
+                        {
+                            "name": "basinc",
+                            "type": "double"
+                        },
+                        {
+                            "name": "konum",
+                            "type": "double"
+                        },
+                        {
+                            "name": "debi",
+                            "type": "double"
+                        },
+                        {
+                            "name": "gecerli",
+                            "type": "bool"
+                        }
+                    ],
+                    "name": "strokeKaydet",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "tumOlcumleriGetir",
+                    "returnType": "QVariantList"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "olcumId",
+                            "type": "int"
+                        }
+                    ],
+                    "name": "strokeVerileriGetir",
+                    "returnType": "QVariantList"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "olcumId",
+                            "type": "int"
+                        }
+                    ],
+                    "name": "binghamHesapla",
+                    "returnType": "QVariantMap"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "sensor",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "deger1",
+                            "type": "double"
+                        },
+                        {
+                            "name": "deger2",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "kalibrasyonKaydet",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "sensor",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "kalibrasyonGetir",
+                    "returnType": "QVariantMap"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "olcumId",
+                            "type": "int"
+                        }
+                    ],
+                    "name": "olcumBilgisiGetir",
+                    "returnType": "QVariantMap"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "olcumId",
+                            "type": "int"
+                        }
+                    ],
+                    "name": "csvDisaAktar",
+                    "returnType": "bool"
+                }
+            ],
+            "object": true,
+            "qualifiedClassName": "Database",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "Database.h",
+    "outputRevision": 68
+}
