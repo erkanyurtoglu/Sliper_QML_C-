@@ -20,7 +20,10 @@ ad0bf0bb4c8c2197760fd2efb9402451 CMakeFiles/sliper_qmltyperegistration
 f78843eac0708364eb4e4b24ba68c85c meta_types/qt6sliper_debug_metatypes.json.gen
 35136424f5da517613b642c7bbd97771 meta_types/sliper_json_file_list.txt
 70d95ef62879ee249966b89c109d1903 sliper/qml/Main.qml
+a90b60aa23286774e7233e53112e54fb sliper/qml/assets/egim_sensor.png
+ee60b7f84ed8aba34d72c9aaace4780a sliper/qml/assets/loadcell.png
 3e04d82f1972d209e06097f5e2b2ab89 sliper/qml/assets/logo.png
+9d1db5430456b248341a2e62b52a1f13 sliper/qml/assets/mesafe_sensor.png
 8362889b1fd9f379f1d896619bd8adbc sliper/qml/pages/DashboardPage.qml
 f36d70333632cecaf09467d1e3bc897c sliper/qml/pages/GecmisPage.qml
 178a312326dd8732caa3916198f6f317 sliper/qml/pages/KalibrasyonPage.qml

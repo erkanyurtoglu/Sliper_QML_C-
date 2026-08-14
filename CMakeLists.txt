@@ -26,6 +26,7 @@ qt_add_executable(sliper
 qt_add_qml_module(sliper
     URI sliper
     VERSION 1.0
+
     QML_FILES
         qml/Main.qml
         qml/pages/LoginPage.qml
@@ -34,8 +35,12 @@ qt_add_qml_module(sliper
         qml/pages/SonuclarPage.qml
         qml/pages/GecmisPage.qml
         qml/pages/KalibrasyonPage.qml
+
     RESOURCES
         qml/assets/logo.png
+        qml/assets/egim_sensor.png
+        qml/assets/loadcell.png
+        qml/assets/mesafe_sensor.png
 )
 
 target_link_libraries(sliper PRIVATE

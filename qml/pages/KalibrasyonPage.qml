@@ -63,8 +63,8 @@ Rectangle {
 
                 Rectangle {
                     id: egimKarti
-                    width: 220
-                    height: 260
+                    width: 350
+                    height: 450
                     radius: 12
                     color: "#0f1420"
                     border.color: egimKarti.hovered ? "#14b8a6" : "#1e2a3f"
@@ -78,18 +78,22 @@ Rectangle {
                         anchors.centerIn: parent
                         spacing: 14
 
-                        Rectangle {
+                        Item {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            width: 88
-                            height: 88
-                            radius: 44
-                            color: "#0f2e2a"
+                            width: 210
+                            height: 150
 
-                            Text { anchors.centerIn: parent; text: "📐"; font.pixelSize: 40 }
+                            Image {
+                                anchors.centerIn: parent
+                                width: parent.width
+                                height: parent.height
+                                source: "../assets/egim_sensor.png"
+                                fillMode: Image.PreserveAspectFit
+                            }
                         }
 
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Eğim Sensörü"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 15; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Yatay hizalama kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11 }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Eğim Sensörü"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 24; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Yatay hizalama kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 14 }
 
                         Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -122,8 +126,8 @@ Rectangle {
 
                 Rectangle {
                     id: loadCellKarti
-                    width: 220
-                    height: 260
+                    width: 350
+                    height: 450
                     radius: 12
                     color: "#0f1420"
                     border.color: loadCellKarti.hovered ? "#3b82f6" : "#1e2a3f"
@@ -137,18 +141,22 @@ Rectangle {
                         anchors.centerIn: parent
                         spacing: 14
 
-                        Rectangle {
+                        Item {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            width: 88
-                            height: 88
-                            radius: 44
-                            color: "#132335"
+                            width: 210
+                            height: 150
 
-                            Text { anchors.centerIn: parent; text: "⚖️"; font.pixelSize: 40 }
+                            Image {
+                                anchors.centerIn: parent
+                                width: parent.width
+                                height: parent.height
+                                source: "../assets/loadcell.png"
+                                fillMode: Image.PreserveAspectFit
+                            }
                         }
 
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Load Cell"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 15; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Basınç sensörü kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11 }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Load Cell"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 24; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Basınç sensörü kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 14 }
 
                         Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -181,8 +189,8 @@ Rectangle {
 
                 Rectangle {
                     id: mesafeKarti
-                    width: 220
-                    height: 260
+                    width: 350
+                    height: 450
                     radius: 12
                     color: "#0f1420"
                     border.color: mesafeKarti.hovered ? "#9333ea" : "#1e2a3f"
@@ -196,18 +204,22 @@ Rectangle {
                         anchors.centerIn: parent
                         spacing: 14
 
-                        Rectangle {
+                        Item {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            width: 88
-                            height: 88
-                            radius: 44
-                            color: "#241a38"
+                            width: 210
+                            height: 150
 
-                            Text { anchors.centerIn: parent; text: "📏"; font.pixelSize: 40 }
+                            Image {
+                                anchors.centerIn: parent
+                                width: parent.width
+                                height: parent.height
+                                source: "../assets/mesafe_sensor.png"
+                                fillMode: Image.PreserveAspectFit
+                            }
                         }
 
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Mesafe Sensörü"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 15; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Konum ölçümü kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11 }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Mesafe Sensörü"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 24; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Konum ölçümü kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 14 }
 
                         Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter

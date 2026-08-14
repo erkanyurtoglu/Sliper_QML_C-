@@ -189,6 +189,9 @@ sliper/sliper.qmltypes: sliper_qmltyperegistrations.cpp
 .qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/GecmisPage.qml
 .qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/KalibrasyonPage.qml
 .qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/logo.png
+.qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/egim_sensor.png
+.qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/loadcell.png
+.qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/mesafe_sensor.png
 .qt/rcc/qrc_sliper_raw_qml_0.cpp: .qt/rcc/sliper_raw_qml_0.qrc
 .qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Qt/6.7.3/mingw_64/bin/rcc.exe
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Running rcc for resource sliper_raw_qml_0"

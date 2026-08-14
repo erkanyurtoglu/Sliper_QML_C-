@@ -97,8 +97,23 @@ sliper/qml/assets/logo.png: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/a
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Copying qml/assets/logo.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/logo.png"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/logo.png C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/logo.png
 
+sliper/qml/assets/egim_sensor.png: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/egim_sensor.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Copying qml/assets/egim_sensor.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/egim_sensor.png"
+	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/egim_sensor.png C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/egim_sensor.png
+
+sliper/qml/assets/loadcell.png: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/loadcell.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Copying qml/assets/loadcell.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/loadcell.png"
+	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/loadcell.png C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/loadcell.png
+
+sliper/qml/assets/mesafe_sensor.png: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/mesafe_sensor.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Copying qml/assets/mesafe_sensor.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/mesafe_sensor.png"
+	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/mesafe_sensor.png C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/mesafe_sensor.png
+
 sliper_tooling: sliper/qml/Main.qml
+sliper_tooling: sliper/qml/assets/egim_sensor.png
+sliper_tooling: sliper/qml/assets/loadcell.png
 sliper_tooling: sliper/qml/assets/logo.png
+sliper_tooling: sliper/qml/assets/mesafe_sensor.png
 sliper_tooling: sliper/qml/pages/DashboardPage.qml
 sliper_tooling: sliper/qml/pages/GecmisPage.qml
 sliper_tooling: sliper/qml/pages/KalibrasyonPage.qml
