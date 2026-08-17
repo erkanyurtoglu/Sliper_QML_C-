@@ -4,7 +4,7 @@ import QtQuick.Layouts 6.7
 
 Rectangle {
     color: "#0a0e17"
-
+    
     property int seciliSensor: -1
     property int egimAdimi: 0
     property int loadCellAdimi: 0
@@ -20,7 +20,7 @@ Rectangle {
     property bool mesafeUstKayitliVar: false
     property bool mesafeAltKayitliVar: false
     property string mesafeSonTarih: ""
-
+    
     onSeciliSensorChanged: {
         if (seciliSensor === 0) {
             var e = database.kalibrasyonGetir("egim")

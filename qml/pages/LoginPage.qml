@@ -193,7 +193,7 @@ Rectangle {
                     color: "#ffffff"
                     font.pixelSize: 13
                     leftPadding: 12
-                    rightPadding: 36
+                    rightPadding: 48
                     verticalAlignment: TextInput.AlignVCenter
                     background: Rectangle {
                         color: "#0a0e17"
@@ -202,13 +202,86 @@ Rectangle {
                         border.width: 1
                     }
 
+                    Rectangle {
+                        id: sifreGosterButonu
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.rightMargin: 8
+                        width: 28
+                        height: 28
+                        radius: 6
+                        color: sifreGosterMouse.pressed ? "#162033" : (sifreGosterMouse.containsMouse ? "#111827" : "transparent")
+                        border.color: sayfa.sifreGorunur ? "#334155" : "transparent"
+                        border.width: 1
+
+                        property color ikonRengi: sifreGosterMouse.containsMouse || sayfa.sifreGorunur ? "#cbd5e1" : "#6b7280"
+
+                        Canvas {
+                            id: sifreIkonu
+                            anchors.centerIn: parent
+                            width: 18
+                            height: 18
+
+                            onPaint: {
+                                var ctx = getContext("2d")
+                                ctx.clearRect(0, 0, width, height)
+                                ctx.lineWidth = 1.7
+                                ctx.lineCap = "round"
+                                ctx.lineJoin = "round"
+                                ctx.strokeStyle = sifreGosterButonu.ikonRengi
+
+                                ctx.beginPath()
+                                ctx.moveTo(1.5, 9)
+                                ctx.bezierCurveTo(4.2, 4.8, 7.0, 3.8, 9, 3.8)
+                                ctx.bezierCurveTo(11.0, 3.8, 13.8, 4.8, 16.5, 9)
+                                ctx.bezierCurveTo(13.8, 13.2, 11.0, 14.2, 9, 14.2)
+                                ctx.bezierCurveTo(7.0, 14.2, 4.2, 13.2, 1.5, 9)
+                                ctx.stroke()
+
+                                ctx.beginPath()
+                                ctx.arc(9, 9, 2.5, 0, Math.PI * 2, false)
+                                ctx.stroke()
+
+                                if (sayfa.sifreGorunur) {
+                                    ctx.beginPath()
+                                    ctx.moveTo(3, 15)
+                                    ctx.lineTo(15, 3)
+                                    ctx.stroke()
+                                }
+                            }
+
+                            Connections {
+                                target: sayfa
+                                function onSifreGorunurChanged() {
+                                    sifreIkonu.requestPaint()
+                                }
+                            }
+
+                            Connections {
+                                target: sifreGosterButonu
+                                function onIkonRengiChanged() {
+                                    sifreIkonu.requestPaint()
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            id: sifreGosterMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: sayfa.sifreGorunur = !sayfa.sifreGorunur
+                        }
+                    }
+
                     Text {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.rightMargin: 12
-                        text: sayfa.sifreGorunur ? "🙈" : "👁"
+                        text: sayfa.sifreGorunur ? "👁" : "👁"
                         color: "#6b7280"
                         font.pixelSize: 14
+                        visible: false
 
                         MouseArea {
                             anchors.fill: parent
@@ -216,67 +289,6 @@ Rectangle {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: sayfa.sifreGorunur = !sayfa.sifreGorunur
                         }
-                    }
-                }
-            }
-
-            Item {
-                width: parent.width
-                height: 20
-
-                Row {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 8
-
-                    Rectangle {
-                        id: hatirlaKutusu
-                        width: 16
-                        height: 16
-                        radius: 3
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: "#0a0e17"
-                        border.color: sayfa.beniHatirla ? "#3b82f6" : "#1e2a3f"
-                        border.width: 1
-
-                        Text {
-                            anchors.centerIn: parent
-                            visible: sayfa.beniHatirla
-                            text: "✓"
-                            color: "#3b82f6"
-                            font.pixelSize: 11
-                            font.bold: true
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: sayfa.beniHatirla = !sayfa.beniHatirla
-                        }
-                    }
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "Beni hatırla"
-                        color: "#9ca3af"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 12
-                    }
-                }
-
-                Text {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "Şifremi unuttum"
-                    color: "#3b82f6"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 12
-
-                    MouseArea {
-                        anchors.fill: parent
-                        anchors.margins: -4
-                        cursorShape: Qt.PointingHandCursor
                     }
                 }
             }
