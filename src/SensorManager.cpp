@@ -25,12 +25,22 @@ double SensorManager::debi() const
     return m_debi;
 }
 
+double SensorManager::egimX() const
+{
+    return m_egimX;
+}
+
+double SensorManager::egimY() const
+{
+    return m_egimY;
+}
+
 bool SensorManager::veriGecerli() const
 {
     return m_veriGecerli;
 }
 
-void SensorManager::veriGuncelle(double basinc, double konum, double hiz, double debi)
+void SensorManager::veriGuncelle(double basinc, double konum, double hiz, double debi, double egimX, double egimY)
 {
     const bool veriGecerliDegisti = !m_veriGecerli;
     m_veriGecerli = true;
@@ -39,22 +49,26 @@ void SensorManager::veriGuncelle(double basinc, double konum, double hiz, double
         m_basinc = basinc;
         emit basincChanged();
     }
-
     if (m_konum != konum) {
         m_konum = konum;
         emit konumChanged();
     }
-
     if (m_hiz != hiz) {
         m_hiz = hiz;
         emit hizChanged();
     }
-
     if (m_debi != debi) {
         m_debi = debi;
         emit debiChanged();
     }
-
+    if (m_egimX != egimX) {
+        m_egimX = egimX;
+        emit egimXChanged();
+    }
+    if (m_egimY != egimY) {
+        m_egimY = egimY;
+        emit egimYChanged();
+    }
     if (veriGecerliDegisti) {
         emit veriGecerliChanged();
     }
@@ -65,7 +79,6 @@ void SensorManager::veriyiGecersizYap()
     if (!m_veriGecerli) {
         return;
     }
-
     m_veriGecerli = false;
     emit veriGecerliChanged();
 }

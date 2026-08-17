@@ -4,7 +4,7 @@ project(sliper VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_PREFIX_PATH "C:/Qt/6.7.3/mingw_64")
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick Charts Widgets Sql PrintSupport)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick Charts Widgets Sql PrintSupport Network)
 
 qt_standard_project_setup()
 qt_policy(SET QTP0001 NEW)
@@ -21,6 +21,8 @@ qt_add_executable(sliper
     src/Database.cpp
     src/ReportManager.h
     src/ReportManager.cpp
+    src/WifiManager.h
+    src/WifiManager.cpp
 )
 
 qt_add_qml_module(sliper
@@ -50,4 +52,5 @@ target_link_libraries(sliper PRIVATE
     Qt6::Widgets
     Qt6::Sql
     Qt6::PrintSupport
+    Qt6::Network
 )

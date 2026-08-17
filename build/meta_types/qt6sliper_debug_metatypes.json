@@ -371,6 +371,14 @@
                             {
                                 "name": "debi",
                                 "type": "double"
+                            },
+                            {
+                                "name": "egimX",
+                                "type": "double"
+                            },
+                            {
+                                "name": "egimY",
+                                "type": "double"
                             }
                         ],
                         "name": "veriGuncelle",
@@ -445,6 +453,34 @@
                         "designable": true,
                         "final": false,
                         "index": 4,
+                        "name": "egimX",
+                        "notify": "egimXChanged",
+                        "read": "egimX",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 5,
+                        "name": "egimY",
+                        "notify": "egimYChanged",
+                        "read": "egimY",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 6,
                         "name": "veriGecerli",
                         "notify": "veriGecerliChanged",
                         "read": "veriGecerli",
@@ -479,6 +515,16 @@
                     },
                     {
                         "access": "public",
+                        "name": "egimXChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "egimYChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
                         "name": "veriGecerliChanged",
                         "returnType": "void"
                     }
@@ -492,6 +538,124 @@
             }
         ],
         "inputFile": "SensorManager.h",
+        "outputRevision": 68
+    },
+    {
+        "classes": [
+            {
+                "className": "WifiManager",
+                "methods": [
+                    {
+                        "access": "public",
+                        "name": "baglan",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "baglantiyiKes",
+                        "returnType": "void"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "baglandi",
+                        "notify": "baglandiChanged",
+                        "read": "baglandi",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "name": "baglaniyor",
+                        "notify": "baglaniyorChanged",
+                        "read": "baglaniyor",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "durumMesaji",
+                        "notify": "durumMesajiChanged",
+                        "read": "durumMesaji",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "WifiManager",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "baglandiChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "baglaniyorChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "durumMesajiChanged",
+                        "returnType": "void"
+                    }
+                ],
+                "slots": [
+                    {
+                        "access": "private",
+                        "name": "soketBaglandi",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "name": "soketAyrildi",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "arguments": [
+                            {
+                                "name": "hata",
+                                "type": "QAbstractSocket::SocketError"
+                            }
+                        ],
+                        "name": "soketHata",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "name": "veriHazir",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "WifiManager.h",
         "outputRevision": 68
     }
 ]

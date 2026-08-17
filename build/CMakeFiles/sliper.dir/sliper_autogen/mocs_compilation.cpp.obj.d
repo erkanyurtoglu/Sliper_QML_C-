@@ -343,4 +343,15 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_ReportManager.cpp \
  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_SensorManager.cpp \
- C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h
+ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_WifiManager.cpp \
+ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/QTcpSocket \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtcpsocket.h \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtnetworkglobal.h \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtnetwork-config.h \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtnetworkexports.h \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/qabstractsocket.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qiodevice.h \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/qhostaddress.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h

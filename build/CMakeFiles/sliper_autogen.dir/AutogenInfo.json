@@ -850,6 +850,12 @@
 			"MU",
 			"UVLADIE3JM/moc_SensorManager.cpp",
 			null
+		],
+		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h",
+			"MU",
+			"UVLADIE3JM/moc_WifiManager.cpp",
+			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
@@ -988,6 +994,11 @@
 		],
 		[
 			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.cpp",
 			"MU",
 			null
 		]

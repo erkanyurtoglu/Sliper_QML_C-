@@ -414,4 +414,10 @@ CMakeFiles/sliper.dir/main.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qstring.h \
- C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/ReportManager.h
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/ReportManager.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/WifiManager.h \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/QTcpSocket \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtcpsocket.h \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/qabstractsocket.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qiodevice.h \
+ C:/Qt/6.7.3/mingw_64/include/QtNetwork/qhostaddress.h

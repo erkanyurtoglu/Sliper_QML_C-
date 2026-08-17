@@ -21,6 +21,14 @@
                         {
                             "name": "debi",
                             "type": "double"
+                        },
+                        {
+                            "name": "egimX",
+                            "type": "double"
+                        },
+                        {
+                            "name": "egimY",
+                            "type": "double"
                         }
                     ],
                     "name": "veriGuncelle",
@@ -95,6 +103,34 @@
                     "designable": true,
                     "final": false,
                     "index": 4,
+                    "name": "egimX",
+                    "notify": "egimXChanged",
+                    "read": "egimX",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 5,
+                    "name": "egimY",
+                    "notify": "egimYChanged",
+                    "read": "egimY",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 6,
                     "name": "veriGecerli",
                     "notify": "veriGecerliChanged",
                     "read": "veriGecerli",
@@ -125,6 +161,16 @@
                 {
                     "access": "public",
                     "name": "debiChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "egimXChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "egimYChanged",
                     "returnType": "void"
                 },
                 {

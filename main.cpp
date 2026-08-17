@@ -8,6 +8,7 @@
 #include "src/Calculator.h"
 #include "src/Database.h"
 #include "src/ReportManager.h"
+#include "src/WifiManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,6 +21,7 @@ int main(int argc, char *argv[])
     Calculator calculator;
     Database database;
     ReportManager reportManager;
+    WifiManager wifiManager(&sensorManager);
 
     QQmlApplicationEngine engine;
 
@@ -28,6 +30,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("calculator", &calculator);
     engine.rootContext()->setContextProperty("database", &database);
     engine.rootContext()->setContextProperty("reportManager", &reportManager);
+    engine.rootContext()->setContextProperty("wifiManager", &wifiManager);
 
     QObject::connect(
         &engine,

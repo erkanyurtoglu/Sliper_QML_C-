@@ -1,0 +1,114 @@
+{
+    "classes": [
+        {
+            "className": "BluetoothManager",
+            "methods": [
+                {
+                    "access": "public",
+                    "name": "taramayaBasla",
+                    "returnType": "void"
+                }
+            ],
+            "object": true,
+            "properties": [
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 0,
+                    "name": "taraniyor",
+                    "notify": "taraniyorChanged",
+                    "read": "taraniyor",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "bool",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 1,
+                    "name": "baglandi",
+                    "notify": "baglandiChanged",
+                    "read": "baglandi",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "bool",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 2,
+                    "name": "durumMesaji",
+                    "notify": "durumMesajiChanged",
+                    "read": "durumMesaji",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QString",
+                    "user": false
+                }
+            ],
+            "qualifiedClassName": "BluetoothManager",
+            "signals": [
+                {
+                    "access": "public",
+                    "name": "taraniyorChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "baglandiChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "durumMesajiChanged",
+                    "returnType": "void"
+                }
+            ],
+            "slots": [
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "cihaz",
+                            "type": "QBluetoothDeviceInfo"
+                        }
+                    ],
+                    "name": "cihazBulundu",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "taramaTamamlandi",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "hata",
+                            "type": "QBluetoothDeviceDiscoveryAgent::Error"
+                        }
+                    ],
+                    "name": "taramaHatasi",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "BluetoothManager.h",
+    "outputRevision": 68
+}

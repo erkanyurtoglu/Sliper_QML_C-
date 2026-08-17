@@ -48,6 +48,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/sliper.dir/src/ReportManager.cpp.obj.d"
   "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj"
   "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj.d"
+  "CMakeFiles/sliper.dir/src/WifiManager.cpp.obj"
+  "CMakeFiles/sliper.dir/src/WifiManager.cpp.obj.d"
   "libsliper.dll.a"
   "meta_types/qt6sliper_debug_metatypes.json"
   "meta_types/qt6sliper_debug_metatypes.json.gen"

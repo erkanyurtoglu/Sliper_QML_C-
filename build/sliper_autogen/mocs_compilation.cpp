@@ -4,3 +4,4 @@
 #include "UVLADIE3JM/moc_Database.cpp"
 #include "UVLADIE3JM/moc_ReportManager.cpp"
 #include "UVLADIE3JM/moc_SensorManager.cpp"
+#include "UVLADIE3JM/moc_WifiManager.cpp"

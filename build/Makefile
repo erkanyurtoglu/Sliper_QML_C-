@@ -716,6 +716,30 @@ src/SensorManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/SensorManager.cpp.s
 .PHONY : src/SensorManager.cpp.s
 
+src/WifiManager.obj: src/WifiManager.cpp.obj
+.PHONY : src/WifiManager.obj
+
+# target to build an object file
+src/WifiManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/WifiManager.cpp.obj
+.PHONY : src/WifiManager.cpp.obj
+
+src/WifiManager.i: src/WifiManager.cpp.i
+.PHONY : src/WifiManager.i
+
+# target to preprocess a source file
+src/WifiManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/WifiManager.cpp.i
+.PHONY : src/WifiManager.cpp.i
+
+src/WifiManager.s: src/WifiManager.cpp.s
+.PHONY : src/WifiManager.s
+
+# target to generate assembly for a file
+src/WifiManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/WifiManager.cpp.s
+.PHONY : src/WifiManager.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -791,6 +815,9 @@ help:
 	@echo ... src/SensorManager.obj
 	@echo ... src/SensorManager.i
 	@echo ... src/SensorManager.s
+	@echo ... src/WifiManager.obj
+	@echo ... src/WifiManager.i
+	@echo ... src/WifiManager.s
 .PHONY : help
 
 
