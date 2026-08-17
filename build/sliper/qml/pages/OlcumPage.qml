@@ -7,6 +7,8 @@ Rectangle {
     property real zamanSayaci: 0
     property int aktifOlcumId: -1
 
+    signal olcumTamamlandi(int id)
+
     Row {
         anchors.fill: parent
         spacing: 0
@@ -204,8 +206,12 @@ Rectangle {
                         font.pixelSize: 13
 
                         onClicked: {
-                            aktifOlcumId = -1
-                            console.log("Olcum sonlandirildi.")
+                            if (aktifOlcumId > 0) {
+                                var bitenId = aktifOlcumId
+                                aktifOlcumId = -1
+                                console.log("Olcum sonlandirildi, id:", bitenId)
+                                olcumTamamlandi(bitenId)
+                            }
                         }
 
                         background: Rectangle {

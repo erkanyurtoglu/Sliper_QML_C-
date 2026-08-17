@@ -175,7 +175,12 @@ Rectangle {
             height: parent.height
             currentIndex: 0
 
-            OlcumPage {}
+            OlcumPage {
+                onOlcumTamamlandi: function(id) {
+                    sonuclarSayfasi.olcumId = id
+                    icerikStack.currentIndex = 1
+                }
+            }
 
             SonuclarPage {
                 id: sonuclarSayfasi

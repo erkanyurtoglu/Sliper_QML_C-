@@ -2,9 +2,24 @@ import QtQuick 6.7
 import QtQuick.Controls 6.7
 
 Rectangle {
+    id: gecmisSayfasi
     color: "#0a0e17"
 
     signal testSecildi(int id)
+
+    property var olcumListesi: []
+
+    function listeyiYenile() {
+        olcumListesi = database.tumOlcumleriGetir()
+    }
+
+    onVisibleChanged: {
+        if (visible) {
+            listeyiYenile()
+        }
+    }
+
+    Component.onCompleted: listeyiYenile()
 
     Column {
         anchors.fill: parent
@@ -71,7 +86,7 @@ Rectangle {
             clip: true
             spacing: 10
 
-            model: database.tumOlcumleriGetir()
+            model: gecmisSayfasi.olcumListesi
 
             delegate: Rectangle {
                 id: gecmisKarti
