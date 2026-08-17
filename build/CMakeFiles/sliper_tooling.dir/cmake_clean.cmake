@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "sliper/qml/assets/loadcell.png"
   "sliper/qml/assets/logo.png"
   "sliper/qml/assets/mesafe_sensor.png"
+  "sliper/qml/components/SuTerazisi.qml"
   "sliper/qml/pages/DashboardPage.qml"
   "sliper/qml/pages/GecmisPage.qml"
   "sliper/qml/pages/KalibrasyonPage.qml"

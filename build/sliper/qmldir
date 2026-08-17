@@ -8,4 +8,5 @@ OlcumPage 1.0 qml/pages/OlcumPage.qml
 SonuclarPage 1.0 qml/pages/SonuclarPage.qml
 GecmisPage 1.0 qml/pages/GecmisPage.qml
 KalibrasyonPage 1.0 qml/pages/KalibrasyonPage.qml
+SuTerazisi 1.0 qml/components/SuTerazisi.qml
 

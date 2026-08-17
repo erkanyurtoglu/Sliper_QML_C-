@@ -1,6 +1,7 @@
 import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Layouts 6.7
+import "../components"
 
 Rectangle {
     color: "#0a0e17"
@@ -355,6 +356,12 @@ Rectangle {
                         font.pixelSize: 14
                     }
 
+                    SuTerazisi {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        egimX: sensorManager.egimX
+                        egimY: sensorManager.egimY
+                    }
+                    
                     Rectangle {
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: 220

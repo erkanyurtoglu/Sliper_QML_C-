@@ -37,6 +37,7 @@ qt_add_qml_module(sliper
         qml/pages/SonuclarPage.qml
         qml/pages/GecmisPage.qml
         qml/pages/KalibrasyonPage.qml
+        qml/components/SuTerazisi.qml
 
     RESOURCES
         qml/assets/logo.png
