@@ -1,7 +1,9 @@
 #pragma once
 #include <QObject>
 #include <QTcpSocket>
+#include <QElapsedTimer>
 #include "SensorManager.h"
+#include "Database.h"
 
 class WifiManager : public QObject
 {
@@ -11,7 +13,7 @@ class WifiManager : public QObject
     Q_PROPERTY(QString durumMesaji READ durumMesaji NOTIFY durumMesajiChanged)
 
 public:
-    explicit WifiManager(SensorManager *sensorManager, QObject *parent = nullptr);
+    explicit WifiManager(SensorManager *sensorManager, Database *database, QObject *parent = nullptr);
 
     bool baglandi() const;
     bool baglaniyor() const;
@@ -34,15 +36,31 @@ private slots:
 private:
     void durumGuncelle(const QString &mesaj);
     void jsonSatiriIsle(const QByteArray &satir);
+    void egimHesapla(double accelX, double accelY, double accelZ, double &egimX, double &egimY) const;
+    void kalibrasyonYukle();
 
     QTcpSocket *m_soket = nullptr;
     SensorManager *m_sensorManager = nullptr;
+    Database *m_database = nullptr;
     QByteArray m_tamponVeri;
 
     bool m_baglandi = false;
     bool m_baglaniyor = false;
     QString m_durumMesaji = "Bağlı Değil";
 
+    bool m_ilkPaket = true;
+    double m_oncekiKonum = 0.0;
+    qint64 m_oncekiZamanMs = 0;
+    QElapsedTimer m_zamanlayici;
+
+    // --- Kayitli kalibrasyon degerleri (Database'den yuklenir) ---
+    double m_loadCellKatsayi = 2280.0;
+    double m_loadCellSifirOfset = 0.0;
+    double m_egimOfsetX = 0.0;
+    double m_egimOfsetY = 0.0;
+
     static constexpr const char *ESP32_IP = "192.168.4.1";
     static constexpr quint16 ESP32_PORT = 8888;
+
+    static constexpr double BORU_CAPI_M = 0.126;
 };

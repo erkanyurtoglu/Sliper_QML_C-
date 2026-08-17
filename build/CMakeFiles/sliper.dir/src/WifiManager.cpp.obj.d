@@ -326,7 +326,27 @@ CMakeFiles/sliper.dir/src/WifiManager.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtNetwork/qhostaddress.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/q23utility.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QElapsedTimer \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\SensorManager.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\Database.h \
+ C:/Qt/6.7.3/mingw_64/include/QtSql/QSqlDatabase \
+ C:/Qt/6.7.3/mingw_64/include/QtSql/qsqldatabase.h \
+ C:/Qt/6.7.3/mingw_64/include/QtSql/qtsqlglobal.h \
+ C:/Qt/6.7.3/mingw_64/include/QtSql/qtsql-config.h \
+ C:/Qt/6.7.3/mingw_64/include/QtSql/qtsqlexports.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantList \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QList \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qlist.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qstring.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QJsonDocument \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qjsondocument.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qjsonvalue.h \

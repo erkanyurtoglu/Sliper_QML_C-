@@ -1565,7 +1565,14 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h
  mdp:C:/msys64/mingw64/include/wchar.h
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h
  mmc:Q_OBJECT
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QElapsedTimer
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QList
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QMap
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QObject
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QString
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantList
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/q20type_traits.h
@@ -1598,6 +1605,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qdarwinhelpers.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qdatastream.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qexceptionhandling.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qflags.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qfloat16.h
@@ -1674,6 +1682,8 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qtypes.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qutf8stringview.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qversiontagging.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qxptype_traits.h
@@ -1685,6 +1695,11 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtnetwork-config.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtnetworkexports.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtnetworkglobal.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtSql/QSqlDatabase
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtSql/qsqldatabase.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtSql/qtsql-config.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtSql/qtsqlexports.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtSql/qtsqlglobal.h
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/algorithm
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/array
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/atomic
@@ -1845,6 +1860,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/mm_malloc.h
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/stdbool.h
  mdp:C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/moc_predefs.h
+ mdp:C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Database.h
  mdp:C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h
  mdp:C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h
  mdp:C:/msys64/mingw64/include/_mingw.h

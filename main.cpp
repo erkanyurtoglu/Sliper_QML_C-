@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     Calculator calculator;
     Database database;
     ReportManager reportManager;
-    WifiManager wifiManager(&sensorManager);
+    WifiManager wifiManager(&sensorManager, &database);
 
     QQmlApplicationEngine engine;
 

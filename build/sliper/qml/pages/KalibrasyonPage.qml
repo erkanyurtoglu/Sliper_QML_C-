@@ -16,6 +16,7 @@ Rectangle {
     property bool loadCellKayitliVar: false
     property real loadCellReferans: 0
     property string loadCellSonTarih: ""
+    property real loadCellSifirHam: 0
 
     property bool mesafeUstKayitliVar: false
     property bool mesafeAltKayitliVar: false
@@ -365,7 +366,7 @@ Rectangle {
 
                         Text {
                             anchors.centerIn: parent
-                            text: "X: 0.0°   Y: 0.0°"
+                            text: "X: " + sensorManager.egimX.toFixed(1) + "°   Y: " + sensorManager.egimY.toFixed(1) + "°"
                             color: "#2dd4bf"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -381,7 +382,12 @@ Rectangle {
                         font.bold: true
 
                         onClicked: {
-                            database.kalibrasyonKaydet("egim", 0.0, 0.0)
+                            var eskiKal = database.kalibrasyonGetir("egim")
+                            var eskiOfsetX = eskiKal.mevcut ? eskiKal.deger1 : 0.0
+                            var eskiOfsetY = eskiKal.mevcut ? eskiKal.deger2 : 0.0
+                            var yeniOfsetX = eskiOfsetX + sensorManager.egimX
+                            var yeniOfsetY = eskiOfsetY + sensorManager.egimY
+                            database.kalibrasyonKaydet("egim", yeniOfsetX, yeniOfsetY)
                             console.log("Egim sensoru kalibrasyonu kaydedildi.")
                             seciliSensor = -1
                         }
@@ -486,7 +492,7 @@ Rectangle {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: "0.0 mbar"
+                                text: "Ham deger: " + sensorManager.hamAgirlik.toFixed(0)
                                 color: "#3b82f6"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 22
@@ -515,7 +521,10 @@ Rectangle {
                                 verticalAlignment: Text.AlignVCenter
                             }
 
-                            onClicked: loadCellAdimi = 1
+                            onClicked: {
+                                loadCellSifirHam = sensorManager.hamAgirlik
+                                loadCellAdimi = 1
+                            }
                         }
                     }
 
@@ -545,8 +554,10 @@ Rectangle {
                                 font.pixelSize: 13
 
                                 onClicked: {
-                                    database.kalibrasyonKaydet("loadcell", 1.6, 0.0)
-                                    console.log("Load cell referans 1.6kg kaydedildi.")
+                                    var fark = sensorManager.hamAgirlik - loadCellSifirHam
+                                    var katsayi = fark !== 0 ? fark / (1.6 * 1000) : 2280.0
+                                    database.kalibrasyonKaydet("loadcell", katsayi, loadCellSifirHam)
+                                    console.log("Load cell kalibrasyonu kaydedildi (1.6kg referans).")
                                     seciliSensor = -1
                                 }
 
@@ -574,8 +585,10 @@ Rectangle {
                                 font.pixelSize: 13
 
                                 onClicked: {
-                                    database.kalibrasyonKaydet("loadcell", 4.8, 0.0)
-                                    console.log("Load cell referans 4.8kg kaydedildi.")
+                                    var fark = sensorManager.hamAgirlik - loadCellSifirHam
+                                    var katsayi = fark !== 0 ? fark / (4.8 * 1000) : 2280.0
+                                    database.kalibrasyonKaydet("loadcell", katsayi, loadCellSifirHam)
+                                    console.log("Load cell kalibrasyonu kaydedildi (4.8kg referans).")
                                     seciliSensor = -1
                                 }
 
@@ -683,7 +696,7 @@ Rectangle {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: "0.0 mm"
+                                text: sensorManager.konum.toFixed(1) + " mm"
                                 color: "#c084fc"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 22
@@ -699,7 +712,7 @@ Rectangle {
                             font.bold: true
 
                             onClicked: {
-                                database.kalibrasyonKaydet("mesafe_ust", 0.0, 0.0)
+                                database.kalibrasyonKaydet("mesafe_ust", sensorManager.konum, 0.0)
                                 mesafeAdimi = 1
                             }
 
@@ -745,7 +758,7 @@ Rectangle {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: "0.0 mm"
+                                text: sensorManager.konum.toFixed(1) + " mm"
                                 color: "#c084fc"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 22
@@ -761,7 +774,7 @@ Rectangle {
                             font.bold: true
 
                             onClicked: {
-                                database.kalibrasyonKaydet("mesafe_alt", 0.0, 0.0)
+                                database.kalibrasyonKaydet("mesafe_alt", sensorManager.konum, 0.0)
                                 seciliSensor = -1
                             }
 

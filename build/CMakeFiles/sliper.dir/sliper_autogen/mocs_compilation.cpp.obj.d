@@ -354,4 +354,6 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtNetwork/qabstractsocket.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qiodevice.h \
  C:/Qt/6.7.3/mingw_64/include/QtNetwork/qhostaddress.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QElapsedTimer \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h

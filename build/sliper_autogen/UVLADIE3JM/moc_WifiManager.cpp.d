@@ -1,6 +1,13 @@
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/moc_WifiManager.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h \
   C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/moc_predefs.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QElapsedTimer \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QList \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QObject \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantList \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap \
   C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/q20type_traits.h \
@@ -33,6 +40,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/qdarwinhelpers.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qdatastream.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qexceptionhandling.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qflags.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qfloat16.h \
@@ -109,6 +117,8 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/qtypes.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qutf8stringview.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qversiontagging.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qxptype_traits.h \
@@ -120,6 +130,11 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtnetwork-config.h \
   C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtnetworkexports.h \
   C:/Qt/6.7.3/mingw_64/include/QtNetwork/qtnetworkglobal.h \
+  C:/Qt/6.7.3/mingw_64/include/QtSql/QSqlDatabase \
+  C:/Qt/6.7.3/mingw_64/include/QtSql/qsqldatabase.h \
+  C:/Qt/6.7.3/mingw_64/include/QtSql/qtsql-config.h \
+  C:/Qt/6.7.3/mingw_64/include/QtSql/qtsqlexports.h \
+  C:/Qt/6.7.3/mingw_64/include/QtSql/qtsqlglobal.h \
   C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/algorithm \
   C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/array \
   C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/atomic \
@@ -279,6 +294,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32/bits/os_defines.h \
   C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/mm_malloc.h \
   C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/stdbool.h \
+  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Database.h \
   C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h \
   C:/msys64/mingw64/include/_mingw.h \
   C:/msys64/mingw64/include/_mingw_mac.h \
