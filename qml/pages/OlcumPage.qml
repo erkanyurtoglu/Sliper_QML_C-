@@ -6,8 +6,41 @@ Rectangle {
     color: "#0a0e17"
     property real zamanSayaci: 0
     property int aktifOlcumId: -1
+    property string uyariMesaji: ""
 
     signal olcumTamamlandi(int id)
+
+    Connections {
+        target: sensorManager
+        function onVeriGuncellendi() {
+            if (!sensorManager.veriGecerli || aktifOlcumId <= 0) return
+
+            zamanSayaci += 0.2
+
+            basincSerisi.append(zamanSayaci, sensorManager.basinc)
+            konumSerisi.append(zamanSayaci, sensorManager.konum)
+            hizSerisi.append(zamanSayaci, sensorManager.hiz)
+            debiSerisi.append(zamanSayaci, sensorManager.debi)
+
+            if (zamanSayaci > 60) {
+                basincSerisi.remove(0)
+                konumSerisi.remove(0)
+                hizSerisi.remove(0)
+                debiSerisi.remove(0)
+
+                xEkseni.min = zamanSayaci - 60
+                xEkseni.max = zamanSayaci
+                konumXEkseni.min = zamanSayaci - 60
+                konumXEkseni.max = zamanSayaci
+                hizXEkseni.min = zamanSayaci - 60
+                hizXEkseni.max = zamanSayaci
+                debiXEkseni.min = zamanSayaci - 60
+                debiXEkseni.max = zamanSayaci
+            }
+
+            calculator.konumGuncelle(sensorManager.konum)
+        }
+    }
 
     Row {
         anchors.fill: parent
@@ -134,8 +167,24 @@ Rectangle {
                     onClicked: {
                         if (!sensorManager.veriGecerli) {
                             console.warn("Gercek sensor verisi yok, olcum baslatilmadi.")
+                            uyariMesaji = "Cihaz bağlı değil. Lütfen önce sol alttan SLIPER-ESP32'ye bağlanın."
                             return
                         }
+
+                        uyariMesaji = ""
+                        zamanSayaci = 0
+                        basincSerisi.clear()
+                        konumSerisi.clear()
+                        hizSerisi.clear()
+                        debiSerisi.clear()
+                        xEkseni.min = 0
+                        xEkseni.max = 60
+                        konumXEkseni.min = 0
+                        konumXEkseni.max = 60
+                        hizXEkseni.min = 0
+                        hizXEkseni.max = 60
+                        debiXEkseni.min = 0
+                        debiXEkseni.max = 60
 
                         calculator.sifirla()
                         aktifOlcumId = database.olcumBaslat(
@@ -159,6 +208,16 @@ Rectangle {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
+                }
+
+                Text {
+                    width: parent.width
+                    visible: uyariMesaji.length > 0
+                    text: uyariMesaji
+                    color: "#f87171"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 11
+                    wrapMode: Text.WordWrap
                 }
 
                 Row {
@@ -209,8 +268,11 @@ Rectangle {
                             if (aktifOlcumId > 0) {
                                 var bitenId = aktifOlcumId
                                 aktifOlcumId = -1
+                                uyariMesaji = ""
                                 console.log("Olcum sonlandirildi, id:", bitenId)
                                 olcumTamamlandi(bitenId)
+                            } else {
+                                uyariMesaji = "Aktif bir ölçüm yok. Önce ölçümü başlatın."
                             }
                         }
 
@@ -637,28 +699,12 @@ Rectangle {
                             minorGridVisible: false
                         }
 
-                        SplineSeries {
+                        LineSeries {
                             id: basincSerisi
                             axisX: xEkseni
                             axisY: yEkseni
                             color: "#3b82f6"
                             width: 2
-                        }
-
-                        Connections {
-                            target: sensorManager
-                            function onBasincChanged() {
-                                if (!sensorManager.veriGecerli) return
-
-                                zamanSayaci += 0.2
-                                basincSerisi.append(zamanSayaci, sensorManager.basinc)
-
-                                if (zamanSayaci > 60) {
-                                    basincSerisi.remove(0)
-                                    xEkseni.min = zamanSayaci - 60
-                                    xEkseni.max = zamanSayaci
-                                }
-                            }
                         }
                     }
                 }
@@ -744,29 +790,12 @@ Rectangle {
                             minorGridVisible: false
                         }
 
-                        SplineSeries {
+                        LineSeries {
                             id: konumSerisi
                             axisX: konumXEkseni
                             axisY: konumYEkseni
                             color: "#9333ea"
                             width: 2
-                        }
-
-                        Connections {
-                            target: sensorManager
-                            function onKonumChanged() {
-                                if (!sensorManager.veriGecerli) return
-
-                                konumSerisi.append(zamanSayaci, sensorManager.konum)
-
-                                if (zamanSayaci > 60) {
-                                    konumSerisi.remove(0)
-                                    konumXEkseni.min = zamanSayaci - 60
-                                    konumXEkseni.max = zamanSayaci
-                                }
-
-                                calculator.konumGuncelle(sensorManager.konum)
-                            }
                         }
 
                         Connections {
@@ -861,27 +890,12 @@ Rectangle {
                             minorGridVisible: false
                         }
 
-                        SplineSeries {
+                        LineSeries {
                             id: hizSerisi
                             axisX: hizXEkseni
                             axisY: hizYEkseni
                             color: "#f59e0b"
                             width: 2
-                        }
-
-                        Connections {
-                            target: sensorManager
-                            function onHizChanged() {
-                                if (!sensorManager.veriGecerli) return
-
-                                hizSerisi.append(zamanSayaci, sensorManager.hiz)
-
-                                if (zamanSayaci > 60) {
-                                    hizSerisi.remove(0)
-                                    hizXEkseni.min = zamanSayaci - 60
-                                    hizXEkseni.max = zamanSayaci
-                                }
-                            }
                         }
                     }
                 }
@@ -967,27 +981,12 @@ Rectangle {
                             minorGridVisible: false
                         }
 
-                        SplineSeries {
+                        LineSeries {
                             id: debiSerisi
                             axisX: debiXEkseni
                             axisY: debiYEkseni
                             color: "#16a34a"
                             width: 2
-                        }
-
-                        Connections {
-                            target: sensorManager
-                            function onDebiChanged() {
-                                if (!sensorManager.veriGecerli) return
-
-                                debiSerisi.append(zamanSayaci, sensorManager.debi)
-
-                                if (zamanSayaci > 60) {
-                                    debiSerisi.remove(0)
-                                    debiXEkseni.min = zamanSayaci - 60
-                                    debiXEkseni.max = zamanSayaci
-                                }
-                            }
                         }
                     }
                 }

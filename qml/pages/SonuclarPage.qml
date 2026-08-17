@@ -11,6 +11,8 @@ Rectangle {
     property int playbackAdimi: -1
     property bool oynatiliyor: false
     property int playbackHizi: 1
+    property string musteriAdi: ""
+    property string receteAdi: ""
 
     onOlcumIdChanged: verileriYukle()
 
@@ -22,6 +24,10 @@ Rectangle {
         playbackAdimi = -1
         oynatiliyor = false
         playbackTimer.stop()
+
+        var bilgi = database.olcumBilgisiGetir(olcumId)
+        musteriAdi = bilgi.bulundu ? bilgi.musteri : "Bilinmiyor"
+        receteAdi = bilgi.bulundu ? bilgi.recete : "Bilinmiyor"
 
         var sonuc = database.binghamHesapla(olcumId)
 
@@ -412,8 +418,8 @@ Rectangle {
                         onClicked: {
                             reportManager.pdfOlustur(
                                 olcumId,
-                                "Musteri",
-                                "Recete",
+                                musteriAdi,
+                                receteAdi,
                                 hesaplananTau0,
                                 hesaplananMu,
                                 parseFloat(r2Metni.text)

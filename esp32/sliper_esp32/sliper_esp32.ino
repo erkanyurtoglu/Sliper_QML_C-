@@ -39,6 +39,10 @@ Adafruit_MPU6050 mpu;
 HX711 loadCell;
 Adafruit_ADS1115 ads;
 
+bool mpuHazir = false;
+unsigned long sonMpuDenemeMs = 0;
+const unsigned long MPU_DENEME_ARALIGI_MS = 2000;
+
 // ---------------- WiFi SoftAP Ayarlari ----------------
 const char *WIFI_SSID = "SLIPER-ESP32";
 const char *WIFI_SIFRE = "sliper1234"; // en az 8 karakter olmali
@@ -57,12 +61,14 @@ void setup() {
 
     // MPU6050 baslat
     if (!mpu.begin()) {
-        Serial.println("MPU6050 bulunamadi!");
+        Serial.println("MPU6050 bulunamadi! Loop icinde tekrar denenecek.");
+        mpuHazir = false;
     } else {
         mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
         mpu.setGyroRange(MPU6050_RANGE_250_DEG);
         mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
         Serial.println("MPU6050 hazir.");
+        mpuHazir = true;
     }
 
     // HX711 baslat
@@ -112,11 +118,29 @@ void loop() {
         }
     }
 
+    if (!mpuHazir && millis() - sonMpuDenemeMs > MPU_DENEME_ARALIGI_MS) {
+        sonMpuDenemeMs = millis();
+        if (mpu.begin()) {
+            mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
+            mpu.setGyroRange(MPU6050_RANGE_250_DEG);
+            mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+            Serial.println("MPU6050 sonradan hazir oldu.");
+            mpuHazir = true;
+        } else {
+            Serial.println("MPU6050 hala bulunamadi, tekrar denenecek...");
+        }
+    }
+
     long hamAgirlik = hamAgirlikOku();
     float konum = konumOku();
 
     sensors_event_t ivme, gyro, sicaklik;
-    mpu.getEvent(&ivme, &gyro, &sicaklik);
+    ivme.acceleration.x = 0;
+    ivme.acceleration.y = 0;
+    ivme.acceleration.z = 0;
+    if (mpuHazir) {
+        mpu.getEvent(&ivme, &gyro, &sicaklik);
+    }
 
     StaticJsonDocument<256> doc;
     doc["hamAgirlik"] = hamAgirlik;

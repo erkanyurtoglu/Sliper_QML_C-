@@ -26,6 +26,8 @@ void SensorManager::veriGuncelle(double basinc, double konum, double hiz, double
     if (m_egimX != egimX) { m_egimX = egimX; emit egimXChanged(); }
     if (m_egimY != egimY) { m_egimY = egimY; emit egimYChanged(); }
     if (veriGecerliDegisti) { emit veriGecerliChanged(); }
+
+    emit veriGuncellendi();
 }
 
 void SensorManager::hamAgirlikGuncelle(double hamAgirlik)

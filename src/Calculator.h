@@ -28,4 +28,5 @@ private:
     QString m_durum = "BEKLENIYOR";
     int m_strokeSayisi = 0;
     bool m_duraklatildi = false;
+    bool m_yukaridaGorulduMu = false;
 };

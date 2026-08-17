@@ -38,6 +38,7 @@ signals:
     void egimYChanged();
     void hamAgirlikChanged();
     void veriGecerliChanged();
+    void veriGuncellendi();
 
 private:
     double m_basinc = 0.0;

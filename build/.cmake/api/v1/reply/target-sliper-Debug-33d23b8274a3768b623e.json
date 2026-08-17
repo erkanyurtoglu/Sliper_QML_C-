@@ -26,12 +26,12 @@
 			"find_dependency",
 			"_qt_internal_find_qt_dependencies",
 			"add_dependencies",
-			"qt6_target_qml_sources",
 			"_qt_internal_scan_qml_imports",
 			"_qt_internal_generate_deploy_qml_imports_script",
 			"cmake_language",
 			"_qt_internal_finalize_executable",
 			"qt6_finalize_target",
+			"qt6_target_qml_sources",
 			"target_include_directories",
 			"_qt_internal_qml_type_registration",
 			"target_sources",
@@ -473,7 +473,48 @@
 				"parent" : 72
 			},
 			{
+				"file" : 1,
+				"line" : -1,
+				"parent" : 0
+			},
+			{
+				"command" : 17,
+				"file" : 28,
+				"line" : 1,
+				"parent" : 74
+			},
+			{
+				"command" : 16,
+				"file" : 0,
+				"line" : 780,
+				"parent" : 75
+			},
+			{
+				"command" : 15,
+				"file" : 0,
+				"line" : 684,
+				"parent" : 76
+			},
+			{
+				"command" : 14,
+				"file" : 0,
+				"line" : 684,
+				"parent" : 77
+			},
+			{
 				"command" : 13,
+				"file" : 5,
+				"line" : 3566,
+				"parent" : 78
+			},
+			{
+				"command" : 12,
+				"file" : 5,
+				"line" : 3371,
+				"parent" : 79
+			},
+			{
+				"command" : 18,
 				"file" : 5,
 				"line" : 647,
 				"parent" : 14
@@ -482,47 +523,6 @@
 				"command" : 12,
 				"file" : 5,
 				"line" : 2768,
-				"parent" : 74
-			},
-			{
-				"file" : 1,
-				"line" : -1,
-				"parent" : 0
-			},
-			{
-				"command" : 18,
-				"file" : 28,
-				"line" : 1,
-				"parent" : 76
-			},
-			{
-				"command" : 17,
-				"file" : 0,
-				"line" : 780,
-				"parent" : 77
-			},
-			{
-				"command" : 16,
-				"file" : 0,
-				"line" : 684,
-				"parent" : 78
-			},
-			{
-				"command" : 15,
-				"file" : 0,
-				"line" : 684,
-				"parent" : 79
-			},
-			{
-				"command" : 14,
-				"file" : 5,
-				"line" : 3566,
-				"parent" : 80
-			},
-			{
-				"command" : 12,
-				"file" : 5,
-				"line" : 3371,
 				"parent" : 81
 			},
 			{
@@ -595,13 +595,13 @@
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 27,
 				"file" : 5,
 				"line" : 2656,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
@@ -613,97 +613,97 @@
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2535,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 21,
 				"file" : 5,
 				"line" : 2704,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 26,
 				"file" : 5,
 				"line" : 2788,
-				"parent" : 74
+				"parent" : 81
 			},
 			{
 				"command" : 25,
@@ -727,7 +727,7 @@
 				"command" : 28,
 				"file" : 0,
 				"line" : 774,
-				"parent" : 77
+				"parent" : 75
 			},
 			{
 				"command" : 21,
@@ -1235,19 +1235,19 @@
 	"dependencies" : 
 	[
 		{
-			"backtrace" : 75,
-			"id" : "sliper_tooling::@6890427a1f51a3e7e1df"
+			"backtrace" : 0,
+			"id" : "sliper_autogen::@6890427a1f51a3e7e1df"
 		},
 		{
-			"backtrace" : 82,
+			"backtrace" : 80,
 			"id" : "sliper_qmlimportscan::@6890427a1f51a3e7e1df"
 		},
 		{
-			"id" : "sliper_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
+			"backtrace" : 82,
+			"id" : "sliper_tooling::@6890427a1f51a3e7e1df"
 		},
 		{
-			"backtrace" : 0,
-			"id" : "sliper_autogen::@6890427a1f51a3e7e1df"
+			"id" : "sliper_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "sliper::@6890427a1f51a3e7e1df",

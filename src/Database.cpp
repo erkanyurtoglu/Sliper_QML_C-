@@ -12,8 +12,11 @@
 Database::Database(QObject *parent)
     : QObject(parent)
 {
+    const QString klasor = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/database";
+    QDir().mkpath(klasor);
+
     m_db = QSqlDatabase::addDatabase("QSQLITE");
-    m_db.setDatabaseName("sliper.db");
+    m_db.setDatabaseName(klasor + "/sliper.db");
 
     if (!m_db.open()) {
         qWarning() << "Veritabani acilamadi:" << m_db.lastError().text();
@@ -49,8 +52,19 @@ void Database::tablolariOlustur()
         ")"
     );
 
-    QSqlQuery migrasyon;
-    migrasyon.exec("ALTER TABLE Strokelar ADD COLUMN debi REAL DEFAULT 0");
+    QSqlQuery kolonKontrol("PRAGMA table_info(Strokelar)");
+    bool debiKolonuVar = false;
+    while (kolonKontrol.next()) {
+        if (kolonKontrol.value("name").toString() == "debi") {
+            debiKolonuVar = true;
+            break;
+        }
+    }
+
+    if (!debiKolonuVar) {
+        QSqlQuery migrasyon;
+        migrasyon.exec("ALTER TABLE Strokelar ADD COLUMN debi REAL DEFAULT 0");
+    }
 
     sorgu.exec(
         "CREATE TABLE IF NOT EXISTS Kalibrasyonlar ("

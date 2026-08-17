@@ -36,8 +36,13 @@ void Calculator::konumGuncelle(double konum)
         yeniDurum = "TAMAMLANDI";
     }
 
-    if (yeniDurum == "TAMAMLANDI" && m_durum != "TAMAMLANDI") {
+    if (yeniDurum == "YUKARIDA") {
+        m_yukaridaGorulduMu = true;
+    }
+
+    if (yeniDurum == "TAMAMLANDI" && m_durum != "TAMAMLANDI" && m_yukaridaGorulduMu) {
         m_strokeSayisi++;
+        m_yukaridaGorulduMu = false;
         emit strokeSayisiChanged();
     }
 
@@ -72,6 +77,7 @@ void Calculator::sifirla()
     m_strokeSayisi = 0;
     m_durum = "BEKLENIYOR";
     m_duraklatildi = false;
+    m_yukaridaGorulduMu = false;
     emit strokeSayisiChanged();
     emit durumChanged();
     emit duraklatildiChanged();

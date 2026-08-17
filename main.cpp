@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
     qputenv("QT_QUICK_CONTROLS_STYLE", "Basic");
 
     QApplication app(argc, argv);
+    QApplication::setApplicationName("SLIPER");
 
     Backend backend;
     SensorManager sensorManager;

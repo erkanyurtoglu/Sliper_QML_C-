@@ -557,6 +557,11 @@
                         "access": "public",
                         "name": "veriGecerliChanged",
                         "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "veriGuncellendi",
+                        "returnType": "void"
                     }
                 ],
                 "superClasses": [
