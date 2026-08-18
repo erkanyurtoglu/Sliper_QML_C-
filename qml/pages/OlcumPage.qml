@@ -8,12 +8,26 @@ Rectangle {
     property int aktifOlcumId: -1
     property string uyariMesaji: ""
 
+    property var basincGecmis: []
+    property var konumGecmis: []
+    property var hizGecmis: []
+    property var debiGecmis: []
+
     signal olcumTamamlandi(int id)
+
+    function eksenTavaniHesapla(dizi, tavan, taban) {
+        if (dizi.length === 0) return taban
+        var maxDeger = Math.max.apply(null, dizi)
+        var hedef = maxDeger * 1.25
+        if (hedef < taban) hedef = taban
+        if (hedef > tavan) hedef = tavan
+        return hedef
+    }
 
     Connections {
         target: sensorManager
         function onVeriGuncellendi() {
-            if (!sensorManager.veriGecerli || aktifOlcumId <= 0) return
+            if (!sensorManager.veriGecerli || aktifOlcumId <= 0 || calculator.duraklatildi) return
 
             zamanSayaci += 0.2
 
@@ -22,11 +36,21 @@ Rectangle {
             hizSerisi.append(zamanSayaci, sensorManager.hiz)
             debiSerisi.append(zamanSayaci, sensorManager.debi)
 
+            basincGecmis.push(sensorManager.basinc)
+            konumGecmis.push(sensorManager.konum)
+            hizGecmis.push(sensorManager.hiz)
+            debiGecmis.push(sensorManager.debi)
+
             if (zamanSayaci > 60) {
                 basincSerisi.remove(0)
                 konumSerisi.remove(0)
                 hizSerisi.remove(0)
                 debiSerisi.remove(0)
+
+                basincGecmis.shift()
+                konumGecmis.shift()
+                hizGecmis.shift()
+                debiGecmis.shift()
 
                 xEkseni.min = zamanSayaci - 60
                 xEkseni.max = zamanSayaci
@@ -37,6 +61,11 @@ Rectangle {
                 debiXEkseni.min = zamanSayaci - 60
                 debiXEkseni.max = zamanSayaci
             }
+
+            yEkseni.max = eksenTavaniHesapla(basincGecmis, 300, 20)
+            konumYEkseni.max = eksenTavaniHesapla(konumGecmis, 500, 50)
+            hizYEkseni.max = eksenTavaniHesapla(hizGecmis, 4, 0.5)
+            debiYEkseni.max = eksenTavaniHesapla(debiGecmis, 180, 10)
 
             calculator.konumGuncelle(sensorManager.konum)
         }
@@ -163,6 +192,7 @@ Rectangle {
                     font.family: "Segoe UI"
                     font.pixelSize: 14
                     font.bold: true
+                    enabled: aktifOlcumId <= 0
 
                     onClicked: {
                         if (!sensorManager.veriGecerli) {
@@ -177,14 +207,22 @@ Rectangle {
                         konumSerisi.clear()
                         hizSerisi.clear()
                         debiSerisi.clear()
+                        basincGecmis = []
+                        konumGecmis = []
+                        hizGecmis = []
+                        debiGecmis = []
                         xEkseni.min = 0
                         xEkseni.max = 60
+                        yEkseni.max = 300
                         konumXEkseni.min = 0
                         konumXEkseni.max = 60
+                        konumYEkseni.max = 500
                         hizXEkseni.min = 0
                         hizXEkseni.max = 60
+                        hizYEkseni.max = 4
                         debiXEkseni.min = 0
                         debiXEkseni.max = 60
+                        debiYEkseni.max = 180
 
                         calculator.sifirla()
                         aktifOlcumId = database.olcumBaslat(
@@ -197,13 +235,15 @@ Rectangle {
 
                     background: Rectangle {
                         radius: 8
-                        color: baslatButonu.pressed ? "#15803d" : (baslatButonu.hovered ? "#22c55e" : "#16a34a")
+                        color: !baslatButonu.enabled ? "#14532d" : (baslatButonu.pressed ? "#15803d" : (baslatButonu.hovered ? "#22c55e" : "#16a34a"))
+                        opacity: baslatButonu.enabled ? 1.0 : 0.5
                         Behavior on color { ColorAnimation { duration: 120 } }
                     }
 
                     contentItem: Text {
                         text: baslatButonu.text
                         color: "#ffffff"
+                        opacity: baslatButonu.enabled ? 1.0 : 0.6
                         font: baslatButonu.font
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -266,11 +306,7 @@ Rectangle {
 
                         onClicked: {
                             if (aktifOlcumId > 0) {
-                                var bitenId = aktifOlcumId
-                                aktifOlcumId = -1
-                                uyariMesaji = ""
-                                console.log("Olcum sonlandirildi, id:", bitenId)
-                                olcumTamamlandi(bitenId)
+                                bitirOnayPopup.open()
                             } else {
                                 uyariMesaji = "Aktif bir ölçüm yok. Önce ölçümü başlatın."
                             }
@@ -691,7 +727,7 @@ Rectangle {
                         ValueAxis {
                             id: yEkseni
                             min: 0
-                            max: 30
+                            max: 300
                             gridLineColor: "#182131"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
@@ -973,7 +1009,7 @@ Rectangle {
                         ValueAxis {
                             id: debiYEkseni
                             min: 0
-                            max: 15
+                            max: 180
                             gridLineColor: "#182131"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
@@ -988,6 +1024,105 @@ Rectangle {
                             color: "#16a34a"
                             width: 2
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    Popup {
+        id: bitirOnayPopup
+        modal: true
+        focus: true
+        anchors.centerIn: parent
+        width: 340
+        padding: 24
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        background: Rectangle {
+            color: "#0f1420"
+            radius: 12
+            border.color: "#1e2a3f"
+            border.width: 1
+        }
+
+        Overlay.modal: Rectangle {
+            color: "#a6000000"
+        }
+
+        contentItem: Column {
+            spacing: 20
+
+            Text {
+                width: 292
+                text: "Ölçümü bitirmek istediğinize emin misiniz?"
+                color: "#dce8f5"
+                font.family: "Segoe UI"
+                font.pixelSize: 14
+                font.bold: true
+                wrapMode: Text.WordWrap
+            }
+
+            Row {
+                width: 292
+                spacing: 10
+
+                Button {
+                    id: vazgecButonu
+                    width: (parent.width - parent.spacing) / 2
+                    height: 40
+                    text: "Vazgeç"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 13
+
+                    onClicked: bitirOnayPopup.close()
+
+                    background: Rectangle {
+                        radius: 8
+                        color: vazgecButonu.pressed ? "#1e2a3f" : (vazgecButonu.hovered ? "#243349" : "#182131")
+                        border.color: "#2c3b52"
+                        border.width: 1
+                    }
+
+                    contentItem: Text {
+                        text: vazgecButonu.text
+                        color: "#dce8f5"
+                        font: vazgecButonu.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Button {
+                    id: evetBitirButonu
+                    width: (parent.width - parent.spacing) / 2
+                    height: 40
+                    text: "Evet, Bitir"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 13
+
+                    onClicked: {
+                        bitirOnayPopup.close()
+                        var bitenId = aktifOlcumId
+                        aktifOlcumId = -1
+                        uyariMesaji = ""
+                        console.log("Olcum sonlandirildi, id:", bitenId)
+                        olcumTamamlandi(bitenId)
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: evetBitirButonu.pressed ? "#7f1d1d" : (evetBitirButonu.hovered ? "#b91c1c" : "#991b1b")
+                        border.color: "#dc2626"
+                        border.width: 1
+                    }
+
+                    contentItem: Text {
+                        text: evetBitirButonu.text
+                        color: "#ffffff"
+                        font: evetBitirButonu.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
                 }
             }
