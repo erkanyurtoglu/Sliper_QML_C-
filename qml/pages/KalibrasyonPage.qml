@@ -23,9 +23,46 @@ Rectangle {
     property bool loadCellSayiSecildi: false
     property int loadCellDuzenlemeIndex: -1
 
+    property bool loadCellAraEkranGoster: false
+    property bool loadCellGoruntuleModu: false
+    property bool loadCellTamDuzenlemeModu: false
+    property bool loadCellYenidenOnayGoster: false
+    property bool loadCellTamamlandiOnayGoster: false
+
+    property bool loadCellBildirimGoster: false
+    property bool loadCellBildirimBasarili: true
+    property string loadCellBildirimMesaj: ""
+
     property bool mesafeUstKayitliVar: false
     property bool mesafeAltKayitliVar: false
     property string mesafeSonTarih: ""
+
+    function loadCellSiraliKopya(dizi) {
+        var kopya = dizi.slice()
+        kopya.sort(function(a, b) { return a.hamDeger - b.hamDeger })
+        return kopya
+    }
+
+    function loadCellKaydetVeBildir() {
+        var sirali = loadCellSiraliKopya(loadCellNoktalari)
+        var basarili = database.loadCellNoktalariKaydet(sirali)
+        loadCellBildirimBasarili = basarili
+        loadCellBildirimMesaj = basarili ? "✓ Kalibrasyon kaydedildi" : "✕ Kalibrasyon kaydedilemedi, tekrar deneyin"
+        loadCellBildirimGoster = true
+        loadCellBildirimTimer.restart()
+    }
+
+    Timer {
+        id: loadCellBildirimTimer
+        interval: loadCellBildirimBasarili ? 1800 : 2500
+        repeat: false
+        onTriggered: {
+            loadCellBildirimGoster = false
+            if (loadCellBildirimBasarili) {
+                seciliSensor = -1
+            }
+        }
+    }
 
     onSeciliSensorChanged: {
         if (seciliSensor === 0) {
@@ -38,6 +75,13 @@ Rectangle {
             loadCellNoktaSayisi = noktalar.length
             loadCellNoktalari = []
             loadCellSayiSecildi = false
+            loadCellDuzenlemeIndex = -1
+            loadCellTamDuzenlemeModu = false
+            loadCellGoruntuleModu = false
+            loadCellYenidenOnayGoster = false
+            loadCellTamamlandiOnayGoster = false
+            loadCellBildirimGoster = false
+            loadCellAraEkranGoster = loadCellKayitliVar
         } else if (seciliSensor === 2) {
             var u = database.kalibrasyonGetir("mesafe_ust")
             var a = database.kalibrasyonGetir("mesafe_alt")
@@ -190,7 +234,7 @@ Rectangle {
                         cursorShape: Qt.PointingHandCursor
                         onEntered: loadCellKarti.hovered = true
                         onExited: loadCellKarti.hovered = false
-                        onClicked: { seciliSensor = 1; loadCellNoktalari = []; loadCellSayiSecildi = false; loadCellDuzenlemeIndex = -1 }
+                        onClicked: seciliSensor = 1
                     }
                 }
 
@@ -432,8 +476,565 @@ Rectangle {
                 Column {
                     anchors.centerIn: parent
                     spacing: 24
+                    width: 420
+                    visible: loadCellAraEkranGoster
+
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: araEkranBadge.implicitWidth + 20
+                        height: 26
+                        radius: 13
+                        color: "#0f1420"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+
+                        Text {
+                            id: araEkranBadge
+                            anchors.centerIn: parent
+                            text: "Kayıtlı: " + loadCellNoktaSayisi + " nokta"
+                            color: "#6b7280"
+                            font.pixelSize: 11
+                        }
+                    }
+
+                    Text {
+                        width: parent.width
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                        text: "Bu sensör için kayıtlı bir kalibrasyon bulundu"
+                        color: "#dce8f5"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+
+                    Row {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 20
+
+                        Rectangle {
+                            id: goruntuleKarti
+                            width: 190
+                            height: 180
+                            radius: 14
+                            color: "#0f1420"
+                            border.color: goruntuleKarti.hovered ? "#3b82f6" : "#1e2a3f"
+                            border.width: 1
+                            property bool hovered: false
+                            Behavior on border.color { ColorAnimation { duration: 120 } }
+
+                            Column {
+                                anchors.centerIn: parent
+                                spacing: 12
+                                width: parent.width - 28
+
+                                Canvas {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    width: 32
+                                    height: 32
+                                    onPaint: {
+                                        var ctx = getContext("2d")
+                                        ctx.clearRect(0, 0, width, height)
+                                        ctx.lineWidth = 1.8
+                                        ctx.lineCap = "round"
+                                        ctx.lineJoin = "round"
+                                        ctx.strokeStyle = "#3b82f6"
+
+                                        ctx.beginPath()
+                                        ctx.moveTo(3, 16)
+                                        ctx.bezierCurveTo(7.5, 8.5, 12.5, 6.8, 16, 6.8)
+                                        ctx.bezierCurveTo(19.5, 6.8, 24.5, 8.5, 29, 16)
+                                        ctx.bezierCurveTo(24.5, 23.5, 19.5, 25.2, 16, 25.2)
+                                        ctx.bezierCurveTo(12.5, 25.2, 7.5, 23.5, 3, 16)
+                                        ctx.stroke()
+
+                                        ctx.beginPath()
+                                        ctx.arc(16, 16, 4.4, 0, Math.PI * 2, false)
+                                        ctx.stroke()
+                                    }
+                                }
+
+                                Text {
+                                    width: parent.width
+                                    horizontalAlignment: Text.AlignHCenter
+                                    wrapMode: Text.WordWrap
+                                    text: "Mevcut Kalibrasyonu Görüntüle"
+                                    color: "#dce8f5"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+
+                                Text {
+                                    width: parent.width
+                                    horizontalAlignment: Text.AlignHCenter
+                                    wrapMode: Text.WordWrap
+                                    text: "Kayıtlı noktaları incele"
+                                    color: "#6b7280"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 11
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onEntered: goruntuleKarti.hovered = true
+                                onExited: goruntuleKarti.hovered = false
+                                onClicked: {
+                                    loadCellNoktalari = database.loadCellNoktalariGetir()
+                                    loadCellAraEkranGoster = false
+                                    loadCellGoruntuleModu = true
+                                    loadCellDuzenlemeIndex = -1
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            id: yenidenKarti
+                            width: 190
+                            height: 180
+                            radius: 14
+                            color: "#0f1420"
+                            border.color: yenidenKarti.hovered ? "#9ca3af" : "#1e2a3f"
+                            border.width: 1
+                            property bool hovered: false
+                            Behavior on border.color { ColorAnimation { duration: 120 } }
+
+                            Column {
+                                anchors.centerIn: parent
+                                spacing: 12
+                                width: parent.width - 28
+
+                                Canvas {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    width: 32
+                                    height: 32
+                                    onPaint: {
+                                        var ctx = getContext("2d")
+                                        ctx.clearRect(0, 0, width, height)
+                                        ctx.strokeStyle = "#9ca3af"
+                                        ctx.fillStyle = "#9ca3af"
+                                        ctx.lineWidth = 3.4
+                                        ctx.lineCap = "butt"
+
+                                        function yayOku(startDeg, endDeg) {
+                                            var s = startDeg * Math.PI / 180
+                                            var e = endDeg * Math.PI / 180
+                                            var cx = 16, cy = 16, r = 10.5
+
+                                            ctx.beginPath()
+                                            ctx.arc(cx, cy, r, s, e, false)
+                                            ctx.stroke()
+
+                                            var ex = cx + r * Math.cos(e)
+                                            var ey = cy + r * Math.sin(e)
+                                            var tx = -Math.sin(e)
+                                            var ty = Math.cos(e)
+                                            var px = -ty
+                                            var py = tx
+                                            var geri = 6.2
+                                            var yaricap = 3.6
+                                            var bx = ex - tx * geri
+                                            var by = ey - ty * geri
+
+                                            ctx.beginPath()
+                                            ctx.moveTo(ex, ey)
+                                            ctx.lineTo(bx + px * yaricap, by + py * yaricap)
+                                            ctx.lineTo(bx - px * yaricap, by - py * yaricap)
+                                            ctx.closePath()
+                                            ctx.fill()
+                                        }
+
+                                        yayOku(195, 345)
+                                        yayOku(15, 165)
+                                    }
+                                }
+
+                                Text {
+                                    width: parent.width
+                                    horizontalAlignment: Text.AlignHCenter
+                                    wrapMode: Text.WordWrap
+                                    text: "Yeniden Kalibre Et"
+                                    color: "#dce8f5"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+
+                                Text {
+                                    width: parent.width
+                                    horizontalAlignment: Text.AlignHCenter
+                                    wrapMode: Text.WordWrap
+                                    text: "Sıfırdan yeni ölçüm al"
+                                    color: "#6b7280"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 11
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onEntered: yenidenKarti.hovered = true
+                                onExited: yenidenKarti.hovered = false
+                                onClicked: loadCellYenidenOnayGoster = true
+                            }
+                        }
+                    }
+                }
+
+                Column {
+                    anchors.centerIn: parent
+                    spacing: 16
+                    width: 340
+                    visible: loadCellGoruntuleModu
+
+                    Text {
+                        text: "KAYITLI KALİBRASYON NOKTALARI"
+                        color: "#6b7280"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 11
+                        font.bold: true
+                        font.letterSpacing: 1
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 320
+                        radius: 14
+                        color: "#0f1420"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+
+                        ListView {
+                            anchors.fill: parent
+                            anchors.margins: 16
+                            clip: true
+                            spacing: 8
+
+                            model: loadCellNoktalari
+
+                            delegate: Rectangle {
+                                width: ListView.view.width
+                                height: 48
+                                radius: 8
+                                color: "#0a0e17"
+                                border.color: "#1e2a3f"
+                                border.width: 1
+
+                                Row {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 12
+                                    anchors.rightMargin: 12
+                                    spacing: 8
+
+                                    Rectangle {
+                                        width: 22
+                                        height: 22
+                                        radius: 11
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        color: "#182644"
+                                        border.color: "#3b82f6"
+                                        border.width: 1
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: index + 1
+                                            color: "#3b82f6"
+                                            font.pixelSize: 10
+                                            font.bold: true
+                                        }
+                                    }
+
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 1
+
+                                        Text {
+                                            text: modelData.hedefKg.toFixed(2) + " kg"
+                                            color: "#dce8f5"
+                                            font.family: "Segoe UI"
+                                            font.pixelSize: 13
+                                            font.bold: true
+                                        }
+
+                                        Text {
+                                            text: "ADC: " + modelData.hamDeger.toFixed(0)
+                                            color: "#6b7280"
+                                            font.family: "Segoe UI"
+                                            font.pixelSize: 10
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Button {
+                        width: parent.width
+                        height: 46
+                        text: "Düzenle"
+                        font.pixelSize: 14
+                        font.bold: true
+
+                        onClicked: {
+                            loadCellToplamNokta = loadCellNoktalari.length
+                            loadCellGoruntuleModu = false
+                            loadCellTamDuzenlemeModu = true
+                            loadCellSayiSecildi = true
+                            loadCellDuzenlemeIndex = -1
+                        }
+
+                        background: Rectangle {
+                            radius: 8
+                            color: parent.hovered ? "#4f8cf7" : "#3b82f6"
+                            Behavior on color { ColorAnimation { duration: 120 } }
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#ffffff"
+                            font: parent.font
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "#000000b3"
+                    visible: loadCellYenidenOnayGoster
+                    z: 200
+
+                    MouseArea { anchors.fill: parent }
+
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: 360
+                        height: 200
+                        radius: 14
+                        color: "#0f1420"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: 18
+                            width: parent.width - 40
+
+                            Text {
+                                width: parent.width
+                                horizontalAlignment: Text.AlignHCenter
+                                wrapMode: Text.WordWrap
+                                text: "Mevcut kalibrasyon silinecek, emin misiniz?"
+                                color: "#dce8f5"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+
+                            Row {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                spacing: 12
+
+                                Button {
+                                    width: 150
+                                    height: 42
+                                    text: "Vazgeç"
+
+                                    onClicked: loadCellYenidenOnayGoster = false
+
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: parent.hovered ? "#1e2a3f" : "transparent"
+                                        border.color: "#1e2a3f"
+                                        border.width: 1
+                                        Behavior on color { ColorAnimation { duration: 120 } }
+                                    }
+
+                                    contentItem: Text {
+                                        text: parent.text
+                                        color: "#9ca3af"
+                                        font: parent.font
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
+
+                                Button {
+                                    width: 150
+                                    height: 42
+                                    text: "Evet, Yeniden Başla"
+                                    font.bold: true
+
+                                    onClicked: {
+                                        loadCellYenidenOnayGoster = false
+                                        loadCellAraEkranGoster = false
+                                        loadCellGoruntuleModu = false
+                                        loadCellTamDuzenlemeModu = false
+                                        loadCellNoktalari = []
+                                        loadCellSayiSecildi = false
+                                        loadCellDuzenlemeIndex = -1
+                                    }
+
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: parent.hovered ? "#b91c1c" : "#991b1b"
+                                        Behavior on color { ColorAnimation { duration: 120 } }
+                                    }
+
+                                    contentItem: Text {
+                                        text: parent.text
+                                        color: "#ffffff"
+                                        font: parent.font
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "#000000b3"
+                    visible: loadCellTamamlandiOnayGoster
+                    z: 200
+
+                    MouseArea { anchors.fill: parent }
+
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: 380
+                        height: 220
+                        radius: 14
+                        color: "#0f1420"
+                        border.color: "#16a34a"
+                        border.width: 1
+
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: 18
+                            width: parent.width - 40
+
+                            Column {
+                                width: parent.width
+                                spacing: 6
+
+                                Text {
+                                    width: parent.width
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text: "Kalibrasyon Tamamlandı"
+                                    color: "#4ade80"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 17
+                                    font.bold: true
+                                }
+
+                                Text {
+                                    width: parent.width
+                                    horizontalAlignment: Text.AlignHCenter
+                                    wrapMode: Text.WordWrap
+                                    text: "Toplam " + loadCellToplamNokta + " nokta girildi. Bu kalibrasyonu kaydetmek istiyor musunuz?"
+                                    color: "#9ca3af"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 13
+                                }
+                            }
+
+                            Row {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                spacing: 12
+
+                                Button {
+                                    width: 150
+                                    height: 42
+                                    text: "Noktaları Kontrol Et"
+
+                                    onClicked: loadCellTamamlandiOnayGoster = false
+
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: parent.hovered ? "#1e2a3f" : "transparent"
+                                        border.color: "#1e2a3f"
+                                        border.width: 1
+                                        Behavior on color { ColorAnimation { duration: 120 } }
+                                    }
+
+                                    contentItem: Text {
+                                        text: parent.text
+                                        color: "#9ca3af"
+                                        font: parent.font
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
+
+                                Button {
+                                    width: 150
+                                    height: 42
+                                    text: "Kaydet ve Bitir"
+                                    font.bold: true
+
+                                    onClicked: {
+                                        loadCellTamamlandiOnayGoster = false
+                                        loadCellKaydetVeBildir()
+                                    }
+
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: parent.hovered ? "#22c55e" : "#16a34a"
+                                        Behavior on color { ColorAnimation { duration: 120 } }
+                                    }
+
+                                    contentItem: Text {
+                                        text: parent.text
+                                        color: "#ffffff"
+                                        font: parent.font
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: loadCellBildirimKutusu
+                    anchors.top: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.topMargin: 12
+                    z: 100
+                    width: loadCellBildirimMetni.implicitWidth + 24
+                    height: 32
+                    radius: 16
+                    color: loadCellBildirimBasarili ? "#123321" : "#3a1414"
+                    opacity: loadCellBildirimGoster ? 1 : 0
+                    visible: opacity > 0
+                    Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                    Text {
+                        id: loadCellBildirimMetni
+                        anchors.centerIn: parent
+                        text: loadCellBildirimMesaj
+                        color: loadCellBildirimBasarili ? "#4ade80" : "#f87171"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+
+                Column {
+                    anchors.centerIn: parent
+                    spacing: 24
                     width: 360
-                    visible: !loadCellSayiSecildi
+                    visible: !loadCellSayiSecildi && !loadCellAraEkranGoster && !loadCellGoruntuleModu
 
                     Text {
                         width: parent.width
@@ -509,7 +1110,7 @@ Rectangle {
 
                     Rectangle {
                         width: 340
-                        height: 460
+                        height: 500
                         radius: 14
                         color: "#0f1420"
                         border.color: "#1e2a3f"
@@ -517,12 +1118,12 @@ Rectangle {
 
                         Column {
                             anchors.centerIn: parent
-                            spacing: 18
+                            spacing: 16
                             width: parent.width - 40
 
                             Rectangle {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                visible: loadCellKayitliVar
+                                visible: loadCellKayitliVar && !loadCellTamDuzenlemeModu
                                 width: sonKaliMetni2.implicitWidth + 20
                                 height: 24
                                 radius: 12
@@ -541,7 +1142,9 @@ Rectangle {
 
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                text: "Nokta " + (loadCellNoktalari.length + 1) + " / " + loadCellToplamNokta
+                                text: loadCellTamDuzenlemeModu
+                                      ? "Kalibrasyonu Düzenle"
+                                      : "Nokta " + (loadCellNoktalari.length + 1) + " / " + loadCellToplamNokta
                                 color: "#3b82f6"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 13
@@ -570,7 +1173,9 @@ Rectangle {
                                 wrapMode: Text.WordWrap
                                 text: loadCellDuzenlemeIndex >= 0
                                       ? "Nokta " + (loadCellDuzenlemeIndex + 1) + " düzenleniyor"
-                                      : "Hedef ağırlığı gir, sonra o ağırlığı load cell'e koy"
+                                      : (loadCellTamDuzenlemeModu
+                                         ? "Düzenlemek istediğiniz noktaya sağdaki listeden tıklayın"
+                                         : "Hedef ağırlığı gir, sonra o ağırlığı load cell'e koy")
                                 color: loadCellDuzenlemeIndex >= 0 ? "#3b82f6" : "#9ca3af"
                                 font.family: "Segoe UI"
                                 font.bold: loadCellDuzenlemeIndex >= 0
@@ -602,30 +1207,51 @@ Rectangle {
                                 height: 64
                                 radius: 12
                                 color: "#132335"
-                                border.color: "#3b82f6"
+                                border.color: wifiManager.baglandi ? "#3b82f6" : "#dc2626"
                                 border.width: 1
+                                Behavior on border.color { ColorAnimation { duration: 120 } }
 
                                 Text {
                                     anchors.centerIn: parent
                                     text: "Ham değer: " + sensorManager.hamAgirlik.toFixed(0)
-                                    color: "#3b82f6"
+                                    color: wifiManager.baglandi ? "#3b82f6" : "#f87171"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 20
                                     font.bold: true
                                 }
                             }
 
+                            Text {
+                                width: parent.width
+                                horizontalAlignment: Text.AlignHCenter
+                                wrapMode: Text.WordWrap
+                                visible: !wifiManager.baglandi
+                                text: "Cihaz bağlı değil — ham değer 0 olarak kaydedilecek"
+                                color: "#f87171"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 11
+                            }
+
                             Button {
+                                id: noktaKaydetButonu
                                 width: parent.width
                                 height: 46
+                                property bool tumNoktalarGirildi: !loadCellTamDuzenlemeModu && loadCellDuzenlemeIndex < 0 && loadCellNoktalari.length >= loadCellToplamNokta
                                 text: loadCellDuzenlemeIndex >= 0
                                       ? "Noktayı Güncelle"
-                                      : (loadCellNoktalari.length >= loadCellToplamNokta - 1 ? "Son Noktayı Kaydet ve Bitir" : "Bu Noktayı Kaydet")
+                                      : (tumNoktalarGirildi
+                                         ? "Kalibrasyonu Tamamla"
+                                         : (loadCellNoktalari.length >= loadCellToplamNokta - 1 ? "Son Noktayı Kaydet" : "Bu Noktayı Kaydet"))
                                 font.pixelSize: 14
                                 font.bold: true
-                                enabled: hedefKgKutusu.text.length > 0
+                                enabled: tumNoktalarGirildi || (hedefKgKutusu.text.length > 0 && (loadCellDuzenlemeIndex >= 0 || loadCellNoktalari.length < loadCellToplamNokta))
 
                                 onClicked: {
+                                    if (tumNoktalarGirildi) {
+                                        loadCellTamamlandiOnayGoster = true
+                                        return
+                                    }
+
                                     var yeniNokta = { hedefKg: parseFloat(hedefKgKutusu.text), hamDeger: sensorManager.hamAgirlik }
 
                                     if (loadCellDuzenlemeIndex >= 0) {
@@ -644,15 +1270,38 @@ Rectangle {
                                     hedefKgKutusu.text = ""
 
                                     if (loadCellNoktalari.length >= loadCellToplamNokta) {
-                                        database.loadCellNoktalariKaydet(loadCellNoktalari)
-                                        console.log("Load cell", loadCellToplamNokta, "noktali kalibrasyon kaydedildi.")
-                                        seciliSensor = -1
+                                        loadCellTamamlandiOnayGoster = true
                                     }
                                 }
 
                                 background: Rectangle {
                                     radius: 10
                                     color: parent.enabled ? (parent.hovered ? "#4f8cf7" : "#3b82f6") : "#1e2a3f"
+                                    Behavior on color { ColorAnimation { duration: 120 } }
+                                }
+
+                                contentItem: Text {
+                                    text: parent.text
+                                    color: "#ffffff"
+                                    font: parent.font
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+
+                            Button {
+                                width: parent.width
+                                height: 46
+                                visible: loadCellTamDuzenlemeModu
+                                text: "Değişiklikleri Kaydet"
+                                font.pixelSize: 14
+                                font.bold: true
+
+                                onClicked: loadCellKaydetVeBildir()
+
+                                background: Rectangle {
+                                    radius: 10
+                                    color: parent.hovered ? "#22c55e" : "#16a34a"
                                     Behavior on color { ColorAnimation { duration: 120 } }
                                 }
 
@@ -698,7 +1347,7 @@ Rectangle {
 
                     Rectangle {
                         width: 300
-                        height: 460
+                        height: 500
                         radius: 14
                         color: "#0f1420"
                         border.color: "#1e2a3f"

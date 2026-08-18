@@ -1235,19 +1235,19 @@
 	"dependencies" : 
 	[
 		{
-			"backtrace" : 0,
-			"id" : "sliper_autogen::@6890427a1f51a3e7e1df"
-		},
-		{
 			"backtrace" : 75,
 			"id" : "sliper_tooling::@6890427a1f51a3e7e1df"
 		},
 		{
-			"backtrace" : 82,
-			"id" : "sliper_qmlimportscan::@6890427a1f51a3e7e1df"
+			"id" : "sliper_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
 		},
 		{
-			"id" : "sliper_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
+			"backtrace" : 0,
+			"id" : "sliper_autogen::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 82,
+			"id" : "sliper_qmlimportscan::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "sliper::@6890427a1f51a3e7e1df",

@@ -364,10 +364,19 @@ bool Database::csvDisaAktar(int olcumId)
     return true;
 }
 
-void Database::loadCellNoktalariKaydet(const QVariantList &noktalar)
+bool Database::loadCellNoktalariKaydet(const QVariantList &noktalar)
 {
+    if (!m_db.transaction()) {
+        qWarning() << "Load cell noktalari icin transaction baslatilamadi:" << m_db.lastError().text();
+        return false;
+    }
+
     QSqlQuery temizle;
-    temizle.exec("DELETE FROM LoadCellNoktalari");
+    if (!temizle.exec("DELETE FROM LoadCellNoktalari")) {
+        qWarning() << "Load cell noktalari temizlenemedi:" << temizle.lastError().text();
+        m_db.rollback();
+        return false;
+    }
 
     QSqlQuery sorgu;
     sorgu.prepare(
@@ -379,10 +388,20 @@ void Database::loadCellNoktalariKaydet(const QVariantList &noktalar)
         QVariantMap nokta = v.toMap();
         sorgu.bindValue(":hedefKg", nokta["hedefKg"].toDouble());
         sorgu.bindValue(":hamDeger", nokta["hamDeger"].toDouble());
-        sorgu.exec();
+        if (!sorgu.exec()) {
+            qWarning() << "Load cell noktasi kaydedilemedi:" << sorgu.lastError().text();
+            m_db.rollback();
+            return false;
+        }
+    }
+
+    if (!m_db.commit()) {
+        qWarning() << "Load cell noktalari commit edilemedi:" << m_db.lastError().text();
+        return false;
     }
 
     qDebug() << "Load cell" << noktalar.size() << "nokta kaydedildi.";
+    return true;
 }
 
 QVariantList Database::loadCellNoktalariGetir()

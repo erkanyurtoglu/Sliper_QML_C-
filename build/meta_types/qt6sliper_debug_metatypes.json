@@ -293,7 +293,7 @@
                             }
                         ],
                         "name": "loadCellNoktalariKaydet",
-                        "returnType": "void"
+                        "returnType": "bool"
                     },
                     {
                         "access": "public",

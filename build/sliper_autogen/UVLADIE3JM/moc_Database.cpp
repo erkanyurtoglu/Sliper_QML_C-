@@ -102,7 +102,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
     QMetaType::QVariantMap, QMetaType::QString,   16,
     QMetaType::QVariantMap, QMetaType::Int,    7,
     QMetaType::Bool, QMetaType::Int,    7,
-    QMetaType::Void, QMetaType::QVariantList,   23,
+    QMetaType::Bool, QMetaType::QVariantList,   23,
     QMetaType::QVariantList,
 
        0        // eod
@@ -152,7 +152,7 @@ Q_CONSTINIT const QMetaObject Database::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
         // method 'loadCellNoktalariKaydet'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QVariantList &, std::false_type>,
         // method 'loadCellNoktalariGetir'
         QtPrivate::TypeAndForceComplete<QVariantList, std::false_type>
@@ -182,7 +182,8 @@ void Database::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
             if (_a[0]) *reinterpret_cast< QVariantMap*>(_a[0]) = std::move(_r); }  break;
         case 8: { bool _r = _t->csvDisaAktar((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 9: _t->loadCellNoktalariKaydet((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1]))); break;
+        case 9: { bool _r = _t->loadCellNoktalariKaydet((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])));
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
         case 10: { QVariantList _r = _t->loadCellNoktalariGetir();
             if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
         default: ;
