@@ -56,7 +56,10 @@ constexpr auto qt_meta_stringdata_CLASSDatabaseENDCLASS = QtMocHelpers::stringDa
     "deger2",
     "kalibrasyonGetir",
     "olcumBilgisiGetir",
-    "csvDisaAktar"
+    "csvDisaAktar",
+    "loadCellNoktalariKaydet",
+    "noktalar",
+    "loadCellNoktalariGetir"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -69,7 +72,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -77,15 +80,17 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
        0,       // signalCount
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    3,   68,    2, 0x02,    1 /* Public */,
-       6,    5,   75,    2, 0x02,    5 /* Public */,
-      12,    0,   86,    2, 0x02,   11 /* Public */,
-      13,    1,   87,    2, 0x02,   12 /* Public */,
-      14,    1,   90,    2, 0x02,   14 /* Public */,
-      15,    3,   93,    2, 0x02,   16 /* Public */,
-      19,    1,  100,    2, 0x02,   20 /* Public */,
-      20,    1,  103,    2, 0x02,   22 /* Public */,
-      21,    1,  106,    2, 0x02,   24 /* Public */,
+       1,    3,   80,    2, 0x02,    1 /* Public */,
+       6,    5,   87,    2, 0x02,    5 /* Public */,
+      12,    0,   98,    2, 0x02,   11 /* Public */,
+      13,    1,   99,    2, 0x02,   12 /* Public */,
+      14,    1,  102,    2, 0x02,   14 /* Public */,
+      15,    3,  105,    2, 0x02,   16 /* Public */,
+      19,    1,  112,    2, 0x02,   20 /* Public */,
+      20,    1,  115,    2, 0x02,   22 /* Public */,
+      21,    1,  118,    2, 0x02,   24 /* Public */,
+      22,    1,  121,    2, 0x02,   26 /* Public */,
+      24,    0,  124,    2, 0x02,   28 /* Public */,
 
  // methods: parameters
     QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::Double,    3,    4,    5,
@@ -97,6 +102,8 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
     QMetaType::QVariantMap, QMetaType::QString,   16,
     QMetaType::QVariantMap, QMetaType::Int,    7,
     QMetaType::Bool, QMetaType::Int,    7,
+    QMetaType::Void, QMetaType::QVariantList,   23,
+    QMetaType::QVariantList,
 
        0        // eod
 };
@@ -143,7 +150,12 @@ Q_CONSTINIT const QMetaObject Database::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
         // method 'csvDisaAktar'
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
-        QtPrivate::TypeAndForceComplete<int, std::false_type>
+        QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        // method 'loadCellNoktalariKaydet'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QVariantList &, std::false_type>,
+        // method 'loadCellNoktalariGetir'
+        QtPrivate::TypeAndForceComplete<QVariantList, std::false_type>
     >,
     nullptr
 } };
@@ -170,6 +182,9 @@ void Database::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
             if (_a[0]) *reinterpret_cast< QVariantMap*>(_a[0]) = std::move(_r); }  break;
         case 8: { bool _r = _t->csvDisaAktar((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
+        case 9: _t->loadCellNoktalariKaydet((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1]))); break;
+        case 10: { QVariantList _r = _t->loadCellNoktalariGetir();
+            if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
     }
@@ -194,13 +209,13 @@ int Database::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 11;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 9)
+        if (_id < 11)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 9;
+        _id -= 11;
     }
     return _id;
 }

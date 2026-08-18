@@ -10,6 +10,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/timestamp
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantList
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVector
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20type_traits.h
@@ -122,6 +123,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/timestamp
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qversiontagging.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qxptype_traits.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qyieldcpu.h
@@ -4222,6 +4224,7 @@ CMakeFiles/sliper.dir/main.cpp.obj
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantList
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVector
  C:/Qt/6.7.3/mingw_64/include/QtCore/QtGlobal
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h
@@ -4354,6 +4357,7 @@ CMakeFiles/sliper.dir/main.cpp.obj
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qversionnumber.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qversiontagging.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qxptype_traits.h
@@ -4644,6 +4648,7 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantList
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVector
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20type_traits.h
@@ -4757,6 +4762,7 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qversiontagging.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qxptype_traits.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qyieldcpu.h
@@ -7104,6 +7110,7 @@ CMakeFiles/sliper.dir/src/WifiManager.cpp.obj
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantList
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVector
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/q20type_traits.h
@@ -7228,6 +7235,7 @@ CMakeFiles/sliper.dir/src/WifiManager.cpp.obj
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qversiontagging.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qxptype_traits.h
  C:/Qt/6.7.3/mingw_64/include/QtCore/qyieldcpu.h

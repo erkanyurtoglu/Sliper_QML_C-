@@ -2,6 +2,7 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QElapsedTimer>
+#include <QVector>
 #include "SensorManager.h"
 #include "Database.h"
 
@@ -38,6 +39,7 @@ private:
     void jsonSatiriIsle(const QByteArray &satir);
     void egimHesapla(double accelX, double accelY, double accelZ, double &egimX, double &egimY) const;
     void kalibrasyonYukle();
+    double loadCellInterpolasyon(double hamDeger) const;
 
     QTcpSocket *m_soket = nullptr;
     SensorManager *m_sensorManager = nullptr;
@@ -54,8 +56,10 @@ private:
     QElapsedTimer m_zamanlayici;
 
     // --- Kayitli kalibrasyon degerleri (Database'den yuklenir) ---
-    double m_loadCellKatsayi = 2280.0;
-    double m_loadCellSifirOfset = 0.0;
+    
+    QVector<double> m_loadCellHamDegerleri;
+    QVector<double> m_loadCellKiloDegerleri;
+
     double m_egimOfsetX = 0.0;
     double m_egimOfsetY = 0.0;
 

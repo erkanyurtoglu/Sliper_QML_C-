@@ -20,6 +20,8 @@ public:
     Q_INVOKABLE QVariantMap kalibrasyonGetir(const QString &sensor);
     Q_INVOKABLE QVariantMap olcumBilgisiGetir(int olcumId);
     Q_INVOKABLE bool csvDisaAktar(int olcumId);
+    Q_INVOKABLE void loadCellNoktalariKaydet(const QVariantList &noktalar);
+    Q_INVOKABLE QVariantList loadCellNoktalariGetir();
 
 private:
     void tablolariOlustur();

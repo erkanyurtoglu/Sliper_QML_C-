@@ -8,6 +8,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantList \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QVector \
   C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/q20type_traits.h \
@@ -120,6 +121,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qversiontagging.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qxptype_traits.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qyieldcpu.h \

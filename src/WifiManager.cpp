@@ -41,12 +41,15 @@ void WifiManager::kalibrasyonYukle()
 {
     if (!m_database) return;
 
-    QVariantMap loadCell = m_database->kalibrasyonGetir("loadcell");
-    if (loadCell.value("mevcut").toBool()) {
-        m_loadCellKatsayi = loadCell.value("deger1").toDouble();
-        m_loadCellSifirOfset = loadCell.value("deger2").toDouble();
-        qDebug() << "Load cell kalibrasyonu yuklendi: katsayi=" << m_loadCellKatsayi << "ofset=" << m_loadCellSifirOfset;
+    m_loadCellHamDegerleri.clear();
+    m_loadCellKiloDegerleri.clear();
+    const QVariantList noktalar = m_database->loadCellNoktalariGetir();
+    for (const QVariant &v : noktalar) {
+        QVariantMap n = v.toMap();
+        m_loadCellHamDegerleri.append(n["hamDeger"].toDouble());
+        m_loadCellKiloDegerleri.append(n["hedefKg"].toDouble());
     }
+    qDebug() << "Load cell" << m_loadCellHamDegerleri.size() << "nokta yuklendi.";
 
     QVariantMap egim = m_database->kalibrasyonGetir("egim");
     if (egim.value("mevcut").toBool()) {
@@ -146,8 +149,8 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
     }
 
     // --- Basinc: kayitli kalibrasyon ile ---
-    const double agirlikGram = (hamAgirlik - m_loadCellSifirOfset) / m_loadCellKatsayi;
-    const double basinc = agirlikGram * 0.0981;
+    const double agirlikKg = loadCellInterpolasyon(hamAgirlik);
+    const double basinc = agirlikKg * 98.1;
 
     // --- Hiz ve debi: konum farkindan turetiliyor ---
     double hiz = 0.0;
@@ -188,4 +191,30 @@ void WifiManager::durumGuncelle(const QString &mesaj)
         m_durumMesaji = mesaj;
         emit durumMesajiChanged();
     }
+}
+
+double WifiManager::loadCellInterpolasyon(double hamDeger) const
+{
+    const int n = m_loadCellHamDegerleri.size();
+    if (n == 0) return 0.0;
+    if (n == 1) return m_loadCellKiloDegerleri[0];
+
+    int i;
+    if (hamDeger <= m_loadCellHamDegerleri[0]) {
+        i = 0;
+    } else if (hamDeger >= m_loadCellHamDegerleri[n - 1]) {
+        i = n - 2;
+    } else {
+        for (i = 0; i < n - 1; ++i) {
+            if (hamDeger <= m_loadCellHamDegerleri[i + 1]) break;
+        }
+    }
+
+    const double ham1 = m_loadCellHamDegerleri[i];
+    const double ham2 = m_loadCellHamDegerleri[i + 1];
+    const double kg1 = m_loadCellKiloDegerleri[i];
+    const double kg2 = m_loadCellKiloDegerleri[i + 1];
+
+    if (ham2 == ham1) return kg1;
+    return kg1 + (hamDeger - ham1) * (kg2 - kg1) / (ham2 - ham1);
 }

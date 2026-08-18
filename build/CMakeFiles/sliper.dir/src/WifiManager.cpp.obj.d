@@ -328,6 +328,8 @@ CMakeFiles/sliper.dir/src/WifiManager.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/q23utility.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QElapsedTimer \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVector \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\SensorManager.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\Database.h \
  C:/Qt/6.7.3/mingw_64/include/QtSql/QSqlDatabase \

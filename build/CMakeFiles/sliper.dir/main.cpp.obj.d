@@ -422,4 +422,6 @@ CMakeFiles/sliper.dir/main.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qiodevice.h \
  C:/Qt/6.7.3/mingw_64/include/QtNetwork/qhostaddress.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QElapsedTimer \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVector \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h

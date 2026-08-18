@@ -283,6 +283,22 @@
                         ],
                         "name": "csvDisaAktar",
                         "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "noktalar",
+                                "type": "QVariantList"
+                            }
+                        ],
+                        "name": "loadCellNoktalariKaydet",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "loadCellNoktalariGetir",
+                        "returnType": "QVariantList"
                     }
                 ],
                 "object": true,

@@ -75,6 +75,14 @@ void Database::tablolariOlustur()
         ")"
     );
 
+    sorgu.exec(
+        "CREATE TABLE IF NOT EXISTS LoadCellNoktalari ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "hedefKg REAL, "
+        "hamDeger REAL"
+        ")"
+    );
+
     qDebug() << "Tablolar hazir.";
 }
 
@@ -354,4 +362,41 @@ bool Database::csvDisaAktar(int olcumId)
     dosya.close();
     qDebug() << "CSV disa aktarildi:" << dosyaAdi;
     return true;
+}
+
+void Database::loadCellNoktalariKaydet(const QVariantList &noktalar)
+{
+    QSqlQuery temizle;
+    temizle.exec("DELETE FROM LoadCellNoktalari");
+
+    QSqlQuery sorgu;
+    sorgu.prepare(
+        "INSERT INTO LoadCellNoktalari (hedefKg, hamDeger) "
+        "VALUES (:hedefKg, :hamDeger)"
+    );
+
+    for (const QVariant &v : noktalar) {
+        QVariantMap nokta = v.toMap();
+        sorgu.bindValue(":hedefKg", nokta["hedefKg"].toDouble());
+        sorgu.bindValue(":hamDeger", nokta["hamDeger"].toDouble());
+        sorgu.exec();
+    }
+
+    qDebug() << "Load cell" << noktalar.size() << "nokta kaydedildi.";
+}
+
+QVariantList Database::loadCellNoktalariGetir()
+{
+    QVariantList sonuclar;
+
+    QSqlQuery sorgu("SELECT hedefKg, hamDeger FROM LoadCellNoktalari ORDER BY hamDeger ASC");
+
+    while (sorgu.next()) {
+        QVariantMap satir;
+        satir["hedefKg"] = sorgu.value("hedefKg");
+        satir["hamDeger"] = sorgu.value("hamDeger");
+        sonuclar.append(satir);
+    }
+
+    return sonuclar;
 }
