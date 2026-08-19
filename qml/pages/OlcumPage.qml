@@ -24,6 +24,16 @@ Rectangle {
         return hedef
     }
 
+    // Basınç (mbar) atmosferik seviyede sabit bir taban etrafında dalgalanır,
+    // bu yüzden sabit tavanlı ölçekleme yerine veriye göre kayan min/max kullanılır.
+    function basincEkseniHesapla(dizi) {
+        if (dizi.length === 0) return { min: 0, max: 1100 }
+        var maxDeger = Math.max.apply(null, dizi)
+        var minDeger = Math.min.apply(null, dizi)
+        var pad = Math.max((maxDeger - minDeger) * 0.2, maxDeger * 0.02, 5)
+        return { min: Math.max(0, minDeger - pad), max: maxDeger + pad }
+    }
+
     Connections {
         target: sensorManager
         function onVeriGuncellendi() {
@@ -62,7 +72,9 @@ Rectangle {
                 debiXEkseni.max = zamanSayaci
             }
 
-            yEkseni.max = eksenTavaniHesapla(basincGecmis, 300, 20)
+            var basincAralik = basincEkseniHesapla(basincGecmis)
+            yEkseni.min = basincAralik.min
+            yEkseni.max = basincAralik.max
             konumYEkseni.max = eksenTavaniHesapla(konumGecmis, 500, 50)
             hizYEkseni.max = eksenTavaniHesapla(hizGecmis, 4, 0.5)
             debiYEkseni.max = eksenTavaniHesapla(debiGecmis, 180, 10)
@@ -213,7 +225,8 @@ Rectangle {
                         debiGecmis = []
                         xEkseni.min = 0
                         xEkseni.max = 60
-                        yEkseni.max = 300
+                        yEkseni.min = 0
+                        yEkseni.max = 1100
                         konumXEkseni.min = 0
                         konumXEkseni.max = 60
                         konumYEkseni.max = 500
@@ -727,7 +740,7 @@ Rectangle {
                         ValueAxis {
                             id: yEkseni
                             min: 0
-                            max: 300
+                            max: 1100
                             gridLineColor: "#182131"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
