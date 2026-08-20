@@ -61,7 +61,15 @@ constexpr auto qt_meta_stringdata_CLASSDatabaseENDCLASS = QtMocHelpers::stringDa
     "noktalar",
     "loadCellNoktalariGetir",
     "mesafeNoktalariKaydet",
-    "mesafeNoktalariGetir"
+    "mesafeNoktalariGetir",
+    "egimKalibrasyonuKaydet",
+    "biasX",
+    "biasY",
+    "biasZ",
+    "gainX",
+    "gainY",
+    "gainZ",
+    "egimKalibrasyonuGetir"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -74,7 +82,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      13,   14, // methods
+      15,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -82,19 +90,21 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
        0,       // signalCount
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    3,   92,    2, 0x02,    1 /* Public */,
-       6,    5,   99,    2, 0x02,    5 /* Public */,
-      12,    0,  110,    2, 0x02,   11 /* Public */,
-      13,    1,  111,    2, 0x02,   12 /* Public */,
-      14,    1,  114,    2, 0x02,   14 /* Public */,
-      15,    3,  117,    2, 0x02,   16 /* Public */,
-      19,    1,  124,    2, 0x02,   20 /* Public */,
-      20,    1,  127,    2, 0x02,   22 /* Public */,
-      21,    1,  130,    2, 0x02,   24 /* Public */,
-      22,    1,  133,    2, 0x02,   26 /* Public */,
-      24,    0,  136,    2, 0x02,   28 /* Public */,
-      25,    1,  137,    2, 0x02,   29 /* Public */,
-      26,    0,  140,    2, 0x02,   31 /* Public */,
+       1,    3,  104,    2, 0x02,    1 /* Public */,
+       6,    5,  111,    2, 0x02,    5 /* Public */,
+      12,    0,  122,    2, 0x02,   11 /* Public */,
+      13,    1,  123,    2, 0x02,   12 /* Public */,
+      14,    1,  126,    2, 0x02,   14 /* Public */,
+      15,    3,  129,    2, 0x02,   16 /* Public */,
+      19,    1,  136,    2, 0x02,   20 /* Public */,
+      20,    1,  139,    2, 0x02,   22 /* Public */,
+      21,    1,  142,    2, 0x02,   24 /* Public */,
+      22,    1,  145,    2, 0x02,   26 /* Public */,
+      24,    0,  148,    2, 0x02,   28 /* Public */,
+      25,    1,  149,    2, 0x02,   29 /* Public */,
+      26,    0,  152,    2, 0x02,   31 /* Public */,
+      27,    6,  153,    2, 0x02,   32 /* Public */,
+      34,    0,  166,    2, 0x02,   39 /* Public */,
 
  // methods: parameters
     QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::Double,    3,    4,    5,
@@ -110,6 +120,8 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
     QMetaType::QVariantList,
     QMetaType::Bool, QMetaType::QVariantList,   23,
     QMetaType::QVariantList,
+    QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   28,   29,   30,   31,   32,   33,
+    QMetaType::QVariantMap,
 
        0        // eod
 };
@@ -166,7 +178,17 @@ Q_CONSTINIT const QMetaObject Database::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QVariantList &, std::false_type>,
         // method 'mesafeNoktalariGetir'
-        QtPrivate::TypeAndForceComplete<QVariantList, std::false_type>
+        QtPrivate::TypeAndForceComplete<QVariantList, std::false_type>,
+        // method 'egimKalibrasyonuKaydet'
+        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        // method 'egimKalibrasyonuGetir'
+        QtPrivate::TypeAndForceComplete<QVariantMap, std::false_type>
     >,
     nullptr
 } };
@@ -202,6 +224,10 @@ void Database::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
         case 12: { QVariantList _r = _t->mesafeNoktalariGetir();
             if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
+        case 13: { bool _r = _t->egimKalibrasyonuKaydet((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[5])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[6])));
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
+        case 14: { QVariantMap _r = _t->egimKalibrasyonuGetir();
+            if (_a[0]) *reinterpret_cast< QVariantMap*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
     }
@@ -226,13 +252,13 @@ int Database::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 13)
+        if (_id < 15)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 13;
+        _id -= 15;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 13)
+        if (_id < 15)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 13;
+        _id -= 15;
     }
     return _id;
 }

@@ -7,12 +7,14 @@ Rectangle {
     color: "#0a0e17"
 
     property int seciliSensor: -1
-    property int egimAdimi: 0
     property int loadCellAdimi: 0
     property int mesafeAdimi: 0
 
     property bool egimKayitliVar: false
     property string egimSonTarih: ""
+    property bool egimBildirimGoster: false
+    property bool egimBildirimBasarili: true
+    property string egimBildirimMesaj: ""
 
     property bool loadCellKayitliVar: false
     property string loadCellSonTarih: ""
@@ -133,11 +135,37 @@ Rectangle {
         }
     }
 
+    function egimSifirlaVeBildir() {
+        var biasX = sensorManager.hamAccelX
+        var biasY = sensorManager.hamAccelY
+        var basarili = database.egimKalibrasyonuKaydet(biasX, biasY, 0.0, 1.0, 1.0, 1.0)
+        if (basarili) {
+            wifiManager.kalibrasyonYenidenYukle()
+        }
+        egimBildirimBasarili = basarili
+        egimBildirimMesaj = basarili ? "✓ Kalibrasyon kaydedildi" : "✕ Kalibrasyon kaydedilemedi, tekrar deneyin"
+        egimBildirimGoster = true
+        egimBildirimTimer.restart()
+    }
+
+    Timer {
+        id: egimBildirimTimer
+        interval: egimBildirimBasarili ? 1800 : 2500
+        repeat: false
+        onTriggered: {
+            egimBildirimGoster = false
+            if (egimBildirimBasarili) {
+                seciliSensor = -1
+            }
+        }
+    }
+
     onSeciliSensorChanged: {
         if (seciliSensor === 0) {
-            var e = database.kalibrasyonGetir("egim")
-            egimKayitliVar = e.mevcut
-            egimSonTarih = e.mevcut ? e.tarih : ""
+            var egimKal = database.egimKalibrasyonuGetir()
+            egimKayitliVar = egimKal.mevcut
+            egimSonTarih = egimKal.mevcut ? egimKal.tarih : ""
+            egimBildirimGoster = false
         } else if (seciliSensor === 1) {
             var noktalar = database.loadCellNoktalariGetir()
             loadCellKayitliVar = noktalar.length > 0
@@ -260,7 +288,7 @@ Rectangle {
                         cursorShape: Qt.PointingHandCursor
                         onEntered: egimKarti.hovered = true
                         onExited: egimKarti.hovered = false
-                        onClicked: { seciliSensor = 0; egimAdimi = 0 }
+                        onClicked: seciliSensor = 0
                     }
                 }
 
@@ -468,7 +496,7 @@ Rectangle {
                     Rectangle {
                         anchors.horizontalCenter: parent.horizontalCenter
                         visible: egimKayitliVar
-                        width: sonKaliMetni1.implicitWidth + 20
+                        width: egimSonKaliMetni.implicitWidth + 20
                         height: 26
                         radius: 13
                         color: "#0f1420"
@@ -476,7 +504,7 @@ Rectangle {
                         border.width: 1
 
                         Text {
-                            id: sonKaliMetni1
+                            id: egimSonKaliMetni
                             anchors.centerIn: parent
                             text: "Son kalibrasyon: " + egimSonTarih
                             color: "#6b7280"
@@ -519,27 +547,30 @@ Rectangle {
                         }
                     }
 
+                    Text {
+                        width: parent.width
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                        visible: !wifiManager.baglandi
+                        text: "Cihaz bağlı değil — kalibrasyon kaydedilemez"
+                        color: "#f87171"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 11
+                    }
+
                     Button {
                         width: parent.width
                         height: 44
                         text: "Sıfırla (Zero)"
                         font.pixelSize: 14
                         font.bold: true
+                        enabled: wifiManager.baglandi
 
-                        onClicked: {
-                            var eskiKal = database.kalibrasyonGetir("egim")
-                            var eskiOfsetX = eskiKal.mevcut ? eskiKal.deger1 : 0.0
-                            var eskiOfsetY = eskiKal.mevcut ? eskiKal.deger2 : 0.0
-                            var yeniOfsetX = eskiOfsetX + sensorManager.egimX
-                            var yeniOfsetY = eskiOfsetY + sensorManager.egimY
-                            database.kalibrasyonKaydet("egim", yeniOfsetX, yeniOfsetY)
-                            console.log("Egim sensoru kalibrasyonu kaydedildi.")
-                            seciliSensor = -1
-                        }
+                        onClicked: egimSifirlaVeBildir()
 
                         background: Rectangle {
                             radius: 8
-                            color: parent.hovered ? "#4f8cf7" : "#3b82f6"
+                            color: parent.enabled ? (parent.hovered ? "#2dd4bf" : "#14b8a6") : "#1e2a3f"
                             Behavior on color { ColorAnimation { duration: 120 } }
                         }
 
@@ -550,6 +581,31 @@ Rectangle {
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
+                    }
+                }
+
+                Rectangle {
+                    id: egimBildirimKutusu
+                    anchors.top: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.topMargin: 12
+                    z: 100
+                    width: egimBildirimMetni.implicitWidth + 24
+                    height: 32
+                    radius: 16
+                    color: egimBildirimBasarili ? "#123321" : "#3a1414"
+                    opacity: egimBildirimGoster ? 1 : 0
+                    visible: opacity > 0
+                    Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                    Text {
+                        id: egimBildirimMetni
+                        anchors.centerIn: parent
+                        text: egimBildirimMesaj
+                        color: egimBildirimBasarili ? "#4ade80" : "#f87171"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 12
+                        font.bold: true
                     }
                 }
             }

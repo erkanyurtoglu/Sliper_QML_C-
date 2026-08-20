@@ -66,11 +66,15 @@ void WifiManager::kalibrasyonYukle()
     }
     qDebug() << "Mesafe" << m_mesafeHamDegerleri.size() << "nokta yuklendi.";
 
-    QVariantMap egim = m_database->kalibrasyonGetir("egim");
-    if (egim.value("mevcut").toBool()) {
-        m_egimOfsetX = egim.value("deger1").toDouble();
-        m_egimOfsetY = egim.value("deger2").toDouble();
-        qDebug() << "Egim kalibrasyonu yuklendi: X=" << m_egimOfsetX << "Y=" << m_egimOfsetY;
+    QVariantMap egimKal = m_database->egimKalibrasyonuGetir();
+    if (egimKal.value("mevcut").toBool()) {
+        m_egimBiasX = egimKal.value("biasX").toDouble();
+        m_egimBiasY = egimKal.value("biasY").toDouble();
+        m_egimBiasZ = egimKal.value("biasZ").toDouble();
+        m_egimGainX = egimKal.value("gainX").toDouble();
+        m_egimGainY = egimKal.value("gainY").toDouble();
+        m_egimGainZ = egimKal.value("gainZ").toDouble();
+        qDebug() << "Egim ivme kalibrasyonu yuklendi.";
     }
 }
 
@@ -164,6 +168,7 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
     if (m_sensorManager) {
         m_sensorManager->hamAgirlikGuncelle(hamAgirlik);
         m_sensorManager->hamMesafeGuncelle(hamMesafe);
+        m_sensorManager->hamAccelGuncelle(accelX, accelY, accelZ);
     }
 
     const double konum = m_mesafeHamDegerleri.isEmpty()
@@ -194,13 +199,13 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
     m_oncekiKonum = konum;
     m_oncekiZamanMs = simdikiZamanMs;
 
-    // --- Egim: ham ivmeden aci, sonra kayitli ofset uygulanir ---
-    double egimXHam = 0.0;
-    double egimYHam = 0.0;
-    egimHesapla(accelX, accelY, accelZ, egimXHam, egimYHam);
+    // --- Egim: once ham ivme bias/gain ile duzeltilir, sonra aciya cevrilir ---
+    const double duzeltilmisX = (accelX - m_egimBiasX) / m_egimGainX;
+    const double duzeltilmisY = (accelY - m_egimBiasY) / m_egimGainY;
+    const double duzeltilmisZ = (accelZ - m_egimBiasZ) / m_egimGainZ;
 
-    const double egimX = egimXHam - m_egimOfsetX;
-    const double egimY = egimYHam - m_egimOfsetY;
+    double egimX = 0.0, egimY = 0.0;
+    egimHesapla(duzeltilmisX, duzeltilmisY, duzeltilmisZ, egimX, egimY);
 
     if (m_sensorManager) {
         m_sensorManager->veriGuncelle(basinc, konum, hiz, debi, egimX, egimY);

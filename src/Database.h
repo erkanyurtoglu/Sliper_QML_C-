@@ -24,6 +24,9 @@ public:
     Q_INVOKABLE QVariantList loadCellNoktalariGetir();
     Q_INVOKABLE bool mesafeNoktalariKaydet(const QVariantList &noktalar);
     Q_INVOKABLE QVariantList mesafeNoktalariGetir();
+    Q_INVOKABLE bool egimKalibrasyonuKaydet(double biasX, double biasY, double biasZ,
+                                             double gainX, double gainY, double gainZ);
+    Q_INVOKABLE QVariantMap egimKalibrasyonuGetir();
 
 private:
     void tablolariOlustur();

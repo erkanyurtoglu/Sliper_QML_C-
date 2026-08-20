@@ -363,6 +363,42 @@
                         "access": "public",
                         "name": "mesafeNoktalariGetir",
                         "returnType": "QVariantList"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "biasX",
+                                "type": "double"
+                            },
+                            {
+                                "name": "biasY",
+                                "type": "double"
+                            },
+                            {
+                                "name": "biasZ",
+                                "type": "double"
+                            },
+                            {
+                                "name": "gainX",
+                                "type": "double"
+                            },
+                            {
+                                "name": "gainY",
+                                "type": "double"
+                            },
+                            {
+                                "name": "gainZ",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "egimKalibrasyonuKaydet",
+                        "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
+                        "name": "egimKalibrasyonuGetir",
+                        "returnType": "QVariantMap"
                     }
                 ],
                 "object": true,
@@ -484,6 +520,25 @@
                             }
                         ],
                         "name": "hamMesafeGuncelle",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "x",
+                                "type": "double"
+                            },
+                            {
+                                "name": "y",
+                                "type": "double"
+                            },
+                            {
+                                "name": "z",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "hamAccelGuncelle",
                         "returnType": "void"
                     },
                     {
@@ -611,6 +666,48 @@
                         "designable": true,
                         "final": false,
                         "index": 8,
+                        "name": "hamAccelX",
+                        "notify": "hamAccelDegisti",
+                        "read": "hamAccelX",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 9,
+                        "name": "hamAccelY",
+                        "notify": "hamAccelDegisti",
+                        "read": "hamAccelY",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 10,
+                        "name": "hamAccelZ",
+                        "notify": "hamAccelDegisti",
+                        "read": "hamAccelZ",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 11,
                         "name": "veriGecerli",
                         "notify": "veriGecerliChanged",
                         "read": "veriGecerli",
@@ -661,6 +758,11 @@
                     {
                         "access": "public",
                         "name": "hamMesafeChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "hamAccelDegisti",
                         "returnType": "void"
                     },
                     {

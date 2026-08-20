@@ -91,6 +91,15 @@ void Database::tablolariOlustur()
         ")"
     );
 
+    sorgu.exec(
+        "CREATE TABLE IF NOT EXISTS EgimKalibrasyon ("
+        "id INTEGER PRIMARY KEY CHECK (id = 1), "
+        "biasX REAL, biasY REAL, biasZ REAL, "
+        "gainX REAL, gainY REAL, gainZ REAL, "
+        "tarih TEXT"
+        ")"
+    );
+
     qDebug() << "Tablolar hazir.";
 }
 
@@ -484,4 +493,52 @@ QVariantList Database::mesafeNoktalariGetir()
     }
 
     return sonuclar;
+}
+
+bool Database::egimKalibrasyonuKaydet(double biasX, double biasY, double biasZ,
+                                       double gainX, double gainY, double gainZ)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare(
+        "INSERT OR REPLACE INTO EgimKalibrasyon (id, biasX, biasY, biasZ, gainX, gainY, gainZ, tarih) "
+        "VALUES (1, :biasX, :biasY, :biasZ, :gainX, :gainY, :gainZ, :tarih)"
+    );
+
+    sorgu.bindValue(":biasX", biasX);
+    sorgu.bindValue(":biasY", biasY);
+    sorgu.bindValue(":biasZ", biasZ);
+    sorgu.bindValue(":gainX", gainX);
+    sorgu.bindValue(":gainY", gainY);
+    sorgu.bindValue(":gainZ", gainZ);
+    sorgu.bindValue(":tarih", QDateTime::currentDateTime().toString("dd.MM.yyyy HH:mm"));
+
+    if (!sorgu.exec()) {
+        qWarning() << "Egim kalibrasyonu kaydedilemedi:" << sorgu.lastError().text();
+        return false;
+    }
+
+    qDebug() << "Egim kalibrasyonu kaydedildi.";
+    return true;
+}
+
+QVariantMap Database::egimKalibrasyonuGetir()
+{
+    QVariantMap sonuc;
+
+    QSqlQuery sorgu("SELECT biasX, biasY, biasZ, gainX, gainY, gainZ, tarih FROM EgimKalibrasyon WHERE id = 1");
+
+    if (sorgu.exec() && sorgu.next()) {
+        sonuc["biasX"] = sorgu.value("biasX");
+        sonuc["biasY"] = sorgu.value("biasY");
+        sonuc["biasZ"] = sorgu.value("biasZ");
+        sonuc["gainX"] = sorgu.value("gainX");
+        sonuc["gainY"] = sorgu.value("gainY");
+        sonuc["gainZ"] = sorgu.value("gainZ");
+        sonuc["tarih"] = sorgu.value("tarih");
+        sonuc["mevcut"] = true;
+    } else {
+        sonuc["mevcut"] = false;
+    }
+
+    return sonuc;
 }

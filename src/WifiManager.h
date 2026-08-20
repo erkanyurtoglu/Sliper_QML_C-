@@ -65,8 +65,8 @@ private:
     QVector<double> m_mesafeHamDegerleri;
     QVector<double> m_mesafeMmDegerleri;
 
-    double m_egimOfsetX = 0.0;
-    double m_egimOfsetY = 0.0;
+    double m_egimBiasX = 0.0, m_egimBiasY = 0.0, m_egimBiasZ = 0.0;
+    double m_egimGainX = 1.0, m_egimGainY = 1.0, m_egimGainZ = 1.0;
 
     static constexpr const char *ESP32_IP = "192.168.4.1";
     static constexpr quint16 ESP32_PORT = 8888;

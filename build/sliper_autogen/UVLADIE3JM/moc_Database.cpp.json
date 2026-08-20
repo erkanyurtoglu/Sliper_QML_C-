@@ -159,6 +159,42 @@
                     "access": "public",
                     "name": "mesafeNoktalariGetir",
                     "returnType": "QVariantList"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "biasX",
+                            "type": "double"
+                        },
+                        {
+                            "name": "biasY",
+                            "type": "double"
+                        },
+                        {
+                            "name": "biasZ",
+                            "type": "double"
+                        },
+                        {
+                            "name": "gainX",
+                            "type": "double"
+                        },
+                        {
+                            "name": "gainY",
+                            "type": "double"
+                        },
+                        {
+                            "name": "gainZ",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "egimKalibrasyonuKaydet",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "name": "egimKalibrasyonuGetir",
+                    "returnType": "QVariantMap"
                 }
             ],
             "object": true,
