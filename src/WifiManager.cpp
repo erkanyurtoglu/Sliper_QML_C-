@@ -37,6 +37,11 @@ void WifiManager::baglantiyiKes()
     m_soket->disconnectFromHost();
 }
 
+void WifiManager::kalibrasyonYenidenYukle()
+{
+    kalibrasyonYukle();
+}
+
 void WifiManager::kalibrasyonYukle()
 {
     if (!m_database) return;
@@ -50,6 +55,16 @@ void WifiManager::kalibrasyonYukle()
         m_loadCellKiloDegerleri.append(n["hedefKg"].toDouble());
     }
     qDebug() << "Load cell" << m_loadCellHamDegerleri.size() << "nokta yuklendi.";
+
+    m_mesafeHamDegerleri.clear();
+    m_mesafeMmDegerleri.clear();
+    const QVariantList mesafeNoktalari = m_database->mesafeNoktalariGetir();
+    for (const QVariant &v : mesafeNoktalari) {
+        QVariantMap n = v.toMap();
+        m_mesafeHamDegerleri.append(n["hamDeger"].toDouble());
+        m_mesafeMmDegerleri.append(n["hedefMm"].toDouble());
+    }
+    qDebug() << "Mesafe" << m_mesafeHamDegerleri.size() << "nokta yuklendi.";
 
     QVariantMap egim = m_database->kalibrasyonGetir("egim");
     if (egim.value("mevcut").toBool()) {
@@ -138,7 +153,9 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
     QJsonObject obj = belge.object();
 
     const double hamAgirlik = obj.value("hamAgirlik").toDouble();
-    const double konum = obj.value("konum").toDouble();
+    const double hamMesafe = obj.contains("hamMesafe")
+        ? obj.value("hamMesafe").toDouble()
+        : obj.value("konum").toDouble();
     const double accelX = obj.value("accelX").toDouble();
     const double accelY = obj.value("accelY").toDouble();
     const double accelZ = obj.value("accelZ").toDouble();
@@ -146,7 +163,12 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
     // Kalibrasyon ekraninda gerekiyor: ham deger her zaman guncellensin
     if (m_sensorManager) {
         m_sensorManager->hamAgirlikGuncelle(hamAgirlik);
+        m_sensorManager->hamMesafeGuncelle(hamMesafe);
     }
+
+    const double konum = m_mesafeHamDegerleri.isEmpty()
+        ? hamMesafe
+        : mesafeInterpolasyon(hamMesafe);
 
     // --- Basinc: kayitli kalibrasyon ile ---
     const double agirlikKg = loadCellInterpolasyon(hamAgirlik);
@@ -217,4 +239,30 @@ double WifiManager::loadCellInterpolasyon(double hamDeger) const
 
     if (ham2 == ham1) return kg1;
     return kg1 + (hamDeger - ham1) * (kg2 - kg1) / (ham2 - ham1);
+}
+
+double WifiManager::mesafeInterpolasyon(double hamDeger) const
+{
+    const int n = m_mesafeHamDegerleri.size();
+    if (n == 0) return 0.0;
+    if (n == 1) return m_mesafeMmDegerleri[0];
+
+    int i;
+    if (hamDeger <= m_mesafeHamDegerleri[0]) {
+        i = 0;
+    } else if (hamDeger >= m_mesafeHamDegerleri[n - 1]) {
+        i = n - 2;
+    } else {
+        for (i = 0; i < n - 1; ++i) {
+            if (hamDeger <= m_mesafeHamDegerleri[i + 1]) break;
+        }
+    }
+
+    const double ham1 = m_mesafeHamDegerleri[i];
+    const double ham2 = m_mesafeHamDegerleri[i + 1];
+    const double mm1 = m_mesafeMmDegerleri[i];
+    const double mm2 = m_mesafeMmDegerleri[i + 1];
+
+    if (ham2 == ham1) return mm1;
+    return mm1 + (hamDeger - ham1) * (mm2 - mm1) / (ham2 - ham1);
 }

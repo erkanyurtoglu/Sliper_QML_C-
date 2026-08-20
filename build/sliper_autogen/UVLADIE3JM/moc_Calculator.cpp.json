@@ -28,6 +28,21 @@
                     "access": "public",
                     "name": "sifirla",
                     "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "ust",
+                            "type": "double"
+                        },
+                        {
+                            "name": "alt",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "esikleriAyarla",
+                    "returnType": "void"
                 }
             ],
             "object": true,
@@ -73,6 +88,34 @@
                     "stored": true,
                     "type": "bool",
                     "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 3,
+                    "name": "ustEsik",
+                    "notify": "esiklerChanged",
+                    "read": "ustEsik",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 4,
+                    "name": "altEsik",
+                    "notify": "esiklerChanged",
+                    "read": "altEsik",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
                 }
             ],
             "qualifiedClassName": "Calculator",
@@ -90,6 +133,11 @@
                 {
                     "access": "public",
                     "name": "duraklatildiChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "esiklerChanged",
                     "returnType": "void"
                 }
             ],

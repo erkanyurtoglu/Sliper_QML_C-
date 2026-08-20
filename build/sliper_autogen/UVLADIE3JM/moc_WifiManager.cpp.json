@@ -12,6 +12,11 @@
                     "access": "public",
                     "name": "baglantiyiKes",
                     "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "kalibrasyonYenidenYukle",
+                    "returnType": "void"
                 }
             ],
             "object": true,

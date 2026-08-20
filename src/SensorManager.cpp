@@ -12,6 +12,7 @@ double SensorManager::debi() const { return m_debi; }
 double SensorManager::egimX() const { return m_egimX; }
 double SensorManager::egimY() const { return m_egimY; }
 double SensorManager::hamAgirlik() const { return m_hamAgirlik; }
+double SensorManager::hamMesafe() const { return m_hamMesafe; }
 bool SensorManager::veriGecerli() const { return m_veriGecerli; }
 
 void SensorManager::veriGuncelle(double basinc, double konum, double hiz, double debi, double egimX, double egimY)
@@ -35,6 +36,14 @@ void SensorManager::hamAgirlikGuncelle(double hamAgirlik)
     if (m_hamAgirlik != hamAgirlik) {
         m_hamAgirlik = hamAgirlik;
         emit hamAgirlikChanged();
+    }
+}
+
+void SensorManager::hamMesafeGuncelle(double hamMesafe)
+{
+    if (m_hamMesafe != hamMesafe) {
+        m_hamMesafe = hamMesafe;
+        emit hamMesafeChanged();
     }
 }
 

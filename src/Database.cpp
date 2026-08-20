@@ -83,6 +83,14 @@ void Database::tablolariOlustur()
         ")"
     );
 
+    sorgu.exec(
+        "CREATE TABLE IF NOT EXISTS MesafeNoktalari ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "hedefMm REAL, "
+        "hamDeger REAL"
+        ")"
+    );
+
     qDebug() << "Tablolar hazir.";
 }
 
@@ -254,7 +262,7 @@ QVariantMap Database::binghamHesapla(int olcumId)
     return sonuc;
 }
 
-void Database::kalibrasyonKaydet(const QString &sensor, double deger1, double deger2)
+bool Database::kalibrasyonKaydet(const QString &sensor, double deger1, double deger2)
 {
     QSqlQuery sorgu;
     sorgu.prepare(
@@ -271,9 +279,11 @@ void Database::kalibrasyonKaydet(const QString &sensor, double deger1, double de
 
     if (!sorgu.exec()) {
         qWarning() << "Kalibrasyon kaydedilemedi:" << sorgu.lastError().text();
-    } else {
-        qDebug() << "Kalibrasyon kaydedildi:" << sensor;
+        return false;
     }
+
+    qDebug() << "Kalibrasyon kaydedildi:" << sensor;
+    return true;
 }
 
 QVariantMap Database::kalibrasyonGetir(const QString &sensor)
@@ -413,6 +423,62 @@ QVariantList Database::loadCellNoktalariGetir()
     while (sorgu.next()) {
         QVariantMap satir;
         satir["hedefKg"] = sorgu.value("hedefKg");
+        satir["hamDeger"] = sorgu.value("hamDeger");
+        sonuclar.append(satir);
+    }
+
+    return sonuclar;
+}
+
+bool Database::mesafeNoktalariKaydet(const QVariantList &noktalar)
+{
+    if (!m_db.transaction()) {
+        qWarning() << "Mesafe noktalari icin transaction baslatilamadi:" << m_db.lastError().text();
+        return false;
+    }
+
+    QSqlQuery temizle;
+    if (!temizle.exec("DELETE FROM MesafeNoktalari")) {
+        qWarning() << "Mesafe noktalari temizlenemedi:" << temizle.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    QSqlQuery sorgu;
+    sorgu.prepare(
+        "INSERT INTO MesafeNoktalari (hedefMm, hamDeger) "
+        "VALUES (:hedefMm, :hamDeger)"
+    );
+
+    for (const QVariant &v : noktalar) {
+        QVariantMap nokta = v.toMap();
+        sorgu.bindValue(":hedefMm", nokta["hedefMm"].toDouble());
+        sorgu.bindValue(":hamDeger", nokta["hamDeger"].toDouble());
+        if (!sorgu.exec()) {
+            qWarning() << "Mesafe noktasi kaydedilemedi:" << sorgu.lastError().text();
+            m_db.rollback();
+            return false;
+        }
+    }
+
+    if (!m_db.commit()) {
+        qWarning() << "Mesafe noktalari commit edilemedi:" << m_db.lastError().text();
+        return false;
+    }
+
+    qDebug() << "Mesafe" << noktalar.size() << "nokta kaydedildi.";
+    return true;
+}
+
+QVariantList Database::mesafeNoktalariGetir()
+{
+    QVariantList sonuclar;
+
+    QSqlQuery sorgu("SELECT hedefMm, hamDeger FROM MesafeNoktalari ORDER BY hamDeger ASC");
+
+    while (sorgu.next()) {
+        QVariantMap satir;
+        satir["hedefMm"] = sorgu.value("hedefMm");
         satir["hamDeger"] = sorgu.value("hamDeger");
         sonuclar.append(satir);
     }

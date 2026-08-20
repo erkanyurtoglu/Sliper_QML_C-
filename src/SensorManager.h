@@ -11,6 +11,7 @@ class SensorManager : public QObject
     Q_PROPERTY(double egimX READ egimX NOTIFY egimXChanged)
     Q_PROPERTY(double egimY READ egimY NOTIFY egimYChanged)
     Q_PROPERTY(double hamAgirlik READ hamAgirlik NOTIFY hamAgirlikChanged)
+    Q_PROPERTY(double hamMesafe READ hamMesafe NOTIFY hamMesafeChanged)
     Q_PROPERTY(bool veriGecerli READ veriGecerli NOTIFY veriGecerliChanged)
 
 public:
@@ -23,10 +24,12 @@ public:
     double egimX() const;
     double egimY() const;
     double hamAgirlik() const;
+    double hamMesafe() const;
     bool veriGecerli() const;
 
     Q_INVOKABLE void veriGuncelle(double basinc, double konum, double hiz, double debi, double egimX, double egimY);
     Q_INVOKABLE void hamAgirlikGuncelle(double hamAgirlik);
+    Q_INVOKABLE void hamMesafeGuncelle(double hamMesafe);
     Q_INVOKABLE void veriyiGecersizYap();
 
 signals:
@@ -37,6 +40,7 @@ signals:
     void egimXChanged();
     void egimYChanged();
     void hamAgirlikChanged();
+    void hamMesafeChanged();
     void veriGecerliChanged();
     void veriGuncellendi();
 
@@ -48,5 +52,6 @@ private:
     double m_egimX = 0.0;
     double m_egimY = 0.0;
     double m_hamAgirlik = 0.0;
+    double m_hamMesafe = 0.0;
     bool m_veriGecerli = false;
 };

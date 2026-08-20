@@ -22,6 +22,7 @@ public:
 
     Q_INVOKABLE void baglan();
     Q_INVOKABLE void baglantiyiKes();
+    Q_INVOKABLE void kalibrasyonYenidenYukle();
 
 signals:
     void baglandiChanged();
@@ -40,6 +41,7 @@ private:
     void egimHesapla(double accelX, double accelY, double accelZ, double &egimX, double &egimY) const;
     void kalibrasyonYukle();
     double loadCellInterpolasyon(double hamDeger) const;
+    double mesafeInterpolasyon(double hamDeger) const;
 
     QTcpSocket *m_soket = nullptr;
     SensorManager *m_sensorManager = nullptr;
@@ -59,6 +61,9 @@ private:
     
     QVector<double> m_loadCellHamDegerleri;
     QVector<double> m_loadCellKiloDegerleri;
+
+    QVector<double> m_mesafeHamDegerleri;
+    QVector<double> m_mesafeMmDegerleri;
 
     double m_egimOfsetX = 0.0;
     double m_egimOfsetY = 0.0;

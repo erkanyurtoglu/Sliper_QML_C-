@@ -78,6 +78,21 @@
                         "access": "public",
                         "name": "sifirla",
                         "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "ust",
+                                "type": "double"
+                            },
+                            {
+                                "name": "alt",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "esikleriAyarla",
+                        "returnType": "void"
                     }
                 ],
                 "object": true,
@@ -123,6 +138,34 @@
                         "stored": true,
                         "type": "bool",
                         "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "name": "ustEsik",
+                        "notify": "esiklerChanged",
+                        "read": "ustEsik",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "name": "altEsik",
+                        "notify": "esiklerChanged",
+                        "read": "altEsik",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
                     }
                 ],
                 "qualifiedClassName": "Calculator",
@@ -140,6 +183,11 @@
                     {
                         "access": "public",
                         "name": "duraklatildiChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "esiklerChanged",
                         "returnType": "void"
                     }
                 ],
@@ -249,7 +297,7 @@
                             }
                         ],
                         "name": "kalibrasyonKaydet",
-                        "returnType": "void"
+                        "returnType": "bool"
                     },
                     {
                         "access": "public",
@@ -298,6 +346,22 @@
                     {
                         "access": "public",
                         "name": "loadCellNoktalariGetir",
+                        "returnType": "QVariantList"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "noktalar",
+                                "type": "QVariantList"
+                            }
+                        ],
+                        "name": "mesafeNoktalariKaydet",
+                        "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
+                        "name": "mesafeNoktalariGetir",
                         "returnType": "QVariantList"
                     }
                 ],
@@ -413,6 +477,17 @@
                     },
                     {
                         "access": "public",
+                        "arguments": [
+                            {
+                                "name": "hamMesafe",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "hamMesafeGuncelle",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
                         "name": "veriyiGecersizYap",
                         "returnType": "void"
                     }
@@ -522,6 +597,20 @@
                         "designable": true,
                         "final": false,
                         "index": 7,
+                        "name": "hamMesafe",
+                        "notify": "hamMesafeChanged",
+                        "read": "hamMesafe",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 8,
                         "name": "veriGecerli",
                         "notify": "veriGecerliChanged",
                         "read": "veriGecerli",
@@ -571,6 +660,11 @@
                     },
                     {
                         "access": "public",
+                        "name": "hamMesafeChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
                         "name": "veriGecerliChanged",
                         "returnType": "void"
                     },
@@ -604,6 +698,11 @@
                     {
                         "access": "public",
                         "name": "baglantiyiKes",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "kalibrasyonYenidenYukle",
                         "returnType": "void"
                     }
                 ],

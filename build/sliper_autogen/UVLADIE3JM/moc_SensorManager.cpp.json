@@ -47,6 +47,17 @@
                 },
                 {
                     "access": "public",
+                    "arguments": [
+                        {
+                            "name": "hamMesafe",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "hamMesafeGuncelle",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
                     "name": "veriyiGecersizYap",
                     "returnType": "void"
                 }
@@ -156,6 +167,20 @@
                     "designable": true,
                     "final": false,
                     "index": 7,
+                    "name": "hamMesafe",
+                    "notify": "hamMesafeChanged",
+                    "read": "hamMesafe",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 8,
                     "name": "veriGecerli",
                     "notify": "veriGecerliChanged",
                     "read": "veriGecerli",
@@ -201,6 +226,11 @@
                 {
                     "access": "public",
                     "name": "hamAgirlikChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "hamMesafeChanged",
                     "returnType": "void"
                 },
                 {

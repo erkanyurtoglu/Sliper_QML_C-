@@ -4,7 +4,7 @@
  * Sensorler:
  *   - MPU6050        : Ham ivme (X/Y/Z)        -> I2C
  *   - HX711 + S-tipi load cell : Ham agirlik    -> Dijital (DT/SCK)
- *   - ATEK LMS lazer : Konum (mm, ADS1115 uzerinden) -> I2C
+ *   - ATEK LMS lazer : Konum (ham ADC, Qt tarafinda mm'e kalibre ediliyor, ADS1115 uzerinden) -> I2C
  *
  * NOT: Turetilmis hesaplamalar (basinc kalibrasyonu, hiz, debi, egim acisi)
  * artik ESP32'de degil, Qt/PC tarafinda yapiliyor. ESP32 sadece ham veri
@@ -29,10 +29,6 @@
 
 #define HX711_DT 39
 #define HX711_SCK 40
-
-// ---------------- Lazer Mesafe Sensoru Olcek Sabitleri ----------------
-const float LAZER_MAX_MESAFE_MM = 2000.0f;
-const float LAZER_MAX_VOLTAJ = 5.0f;
 
 // ---------------- Nesneler ----------------
 Adafruit_MPU6050 mpu;
@@ -101,12 +97,8 @@ long hamAgirlikOku() {
     return loadCell.read_average(3);
 }
 
-float konumOku() {
-    int16_t adcDeger = ads.readADC_SingleEnded(3);
-    float voltaj = ads.computeVolts(adcDeger);
-    if (voltaj < 0) voltaj = 0;
-    if (voltaj > LAZER_MAX_VOLTAJ) voltaj = LAZER_MAX_VOLTAJ;
-    return (voltaj / LAZER_MAX_VOLTAJ) * LAZER_MAX_MESAFE_MM;
+int16_t hamMesafeOku() {
+    return ads.readADC_SingleEnded(3);
 }
 
 void loop() {
@@ -132,7 +124,7 @@ void loop() {
     }
 
     long hamAgirlik = hamAgirlikOku();
-    float konum = konumOku();
+    int16_t hamMesafe = hamMesafeOku();
 
     sensors_event_t ivme, gyro, sicaklik;
     ivme.acceleration.x = 0;
@@ -144,7 +136,7 @@ void loop() {
 
     StaticJsonDocument<256> doc;
     doc["hamAgirlik"] = hamAgirlik;
-    doc["konum"] = round(konum * 100) / 100.0;
+    doc["hamMesafe"] = hamMesafe;
     doc["accelX"] = round(ivme.acceleration.x * 1000) / 1000.0;
     doc["accelY"] = round(ivme.acceleration.y * 1000) / 1000.0;
     doc["accelZ"] = round(ivme.acceleration.z * 1000) / 1000.0;

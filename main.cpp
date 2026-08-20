@@ -24,6 +24,13 @@ int main(int argc, char *argv[])
     ReportManager reportManager;
     WifiManager wifiManager(&sensorManager, &database);
 
+    QVariantMap mesafeUst = database.kalibrasyonGetir("mesafe_ust");
+    QVariantMap mesafeAlt = database.kalibrasyonGetir("mesafe_alt");
+    if (mesafeUst.value("mevcut").toBool() && mesafeAlt.value("mevcut").toBool()) {
+        calculator.esikleriAyarla(mesafeUst.value("deger1").toDouble(),
+                                   mesafeAlt.value("deger1").toDouble());
+    }
+
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("backend", &backend);

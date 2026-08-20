@@ -48,6 +48,7 @@ constexpr auto qt_meta_stringdata_CLASSWifiManagerENDCLASS = QtMocHelpers::strin
     "veriHazir",
     "baglan",
     "baglantiyiKes",
+    "kalibrasyonYenidenYukle",
     "baglandi",
     "baglaniyor",
     "durumMesaji"
@@ -63,27 +64,28 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSWifiManagerENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
-       3,   79, // properties
+      10,   14, // methods
+       3,   86, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
        3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   68,    2, 0x06,    4 /* Public */,
-       3,    0,   69,    2, 0x06,    5 /* Public */,
-       4,    0,   70,    2, 0x06,    6 /* Public */,
+       1,    0,   74,    2, 0x06,    4 /* Public */,
+       3,    0,   75,    2, 0x06,    5 /* Public */,
+       4,    0,   76,    2, 0x06,    6 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       5,    0,   71,    2, 0x08,    7 /* Private */,
-       6,    0,   72,    2, 0x08,    8 /* Private */,
-       7,    1,   73,    2, 0x08,    9 /* Private */,
-      10,    0,   76,    2, 0x08,   11 /* Private */,
+       5,    0,   77,    2, 0x08,    7 /* Private */,
+       6,    0,   78,    2, 0x08,    8 /* Private */,
+       7,    1,   79,    2, 0x08,    9 /* Private */,
+      10,    0,   82,    2, 0x08,   11 /* Private */,
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-      11,    0,   77,    2, 0x02,   12 /* Public */,
-      12,    0,   78,    2, 0x02,   13 /* Public */,
+      11,    0,   83,    2, 0x02,   12 /* Public */,
+      12,    0,   84,    2, 0x02,   13 /* Public */,
+      13,    0,   85,    2, 0x02,   14 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -99,11 +101,12 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSWifiManagerENDCLASS[] = {
  // methods: parameters
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
 
  // properties: name, type, flags
-      13, QMetaType::Bool, 0x00015001, uint(0), 0,
-      14, QMetaType::Bool, 0x00015001, uint(1), 0,
-      15, QMetaType::QString, 0x00015001, uint(2), 0,
+      14, QMetaType::Bool, 0x00015001, uint(0), 0,
+      15, QMetaType::Bool, 0x00015001, uint(1), 0,
+      16, QMetaType::QString, 0x00015001, uint(2), 0,
 
        0        // eod
 };
@@ -141,6 +144,8 @@ Q_CONSTINIT const QMetaObject WifiManager::staticMetaObject = { {
         // method 'baglan'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'baglantiyiKes'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'kalibrasyonYenidenYukle'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -161,6 +166,7 @@ void WifiManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 6: _t->veriHazir(); break;
         case 7: _t->baglan(); break;
         case 8: _t->baglantiyiKes(); break;
+        case 9: _t->kalibrasyonYenidenYukle(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -232,13 +238,13 @@ int WifiManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 10;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 9)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 10;
     }else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::BindableProperty
             || _c == QMetaObject::RegisterPropertyMetaType) {

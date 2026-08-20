@@ -93,7 +93,7 @@
                         }
                     ],
                     "name": "kalibrasyonKaydet",
-                    "returnType": "void"
+                    "returnType": "bool"
                 },
                 {
                     "access": "public",
@@ -142,6 +142,22 @@
                 {
                     "access": "public",
                     "name": "loadCellNoktalariGetir",
+                    "returnType": "QVariantList"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "noktalar",
+                            "type": "QVariantList"
+                        }
+                    ],
+                    "name": "mesafeNoktalariKaydet",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "name": "mesafeNoktalariGetir",
                     "returnType": "QVariantList"
                 }
             ],

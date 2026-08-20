@@ -59,7 +59,9 @@ constexpr auto qt_meta_stringdata_CLASSDatabaseENDCLASS = QtMocHelpers::stringDa
     "csvDisaAktar",
     "loadCellNoktalariKaydet",
     "noktalar",
-    "loadCellNoktalariGetir"
+    "loadCellNoktalariGetir",
+    "mesafeNoktalariKaydet",
+    "mesafeNoktalariGetir"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -72,7 +74,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      11,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -80,17 +82,19 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
        0,       // signalCount
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    3,   80,    2, 0x02,    1 /* Public */,
-       6,    5,   87,    2, 0x02,    5 /* Public */,
-      12,    0,   98,    2, 0x02,   11 /* Public */,
-      13,    1,   99,    2, 0x02,   12 /* Public */,
-      14,    1,  102,    2, 0x02,   14 /* Public */,
-      15,    3,  105,    2, 0x02,   16 /* Public */,
-      19,    1,  112,    2, 0x02,   20 /* Public */,
-      20,    1,  115,    2, 0x02,   22 /* Public */,
-      21,    1,  118,    2, 0x02,   24 /* Public */,
-      22,    1,  121,    2, 0x02,   26 /* Public */,
-      24,    0,  124,    2, 0x02,   28 /* Public */,
+       1,    3,   92,    2, 0x02,    1 /* Public */,
+       6,    5,   99,    2, 0x02,    5 /* Public */,
+      12,    0,  110,    2, 0x02,   11 /* Public */,
+      13,    1,  111,    2, 0x02,   12 /* Public */,
+      14,    1,  114,    2, 0x02,   14 /* Public */,
+      15,    3,  117,    2, 0x02,   16 /* Public */,
+      19,    1,  124,    2, 0x02,   20 /* Public */,
+      20,    1,  127,    2, 0x02,   22 /* Public */,
+      21,    1,  130,    2, 0x02,   24 /* Public */,
+      22,    1,  133,    2, 0x02,   26 /* Public */,
+      24,    0,  136,    2, 0x02,   28 /* Public */,
+      25,    1,  137,    2, 0x02,   29 /* Public */,
+      26,    0,  140,    2, 0x02,   31 /* Public */,
 
  // methods: parameters
     QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::Double,    3,    4,    5,
@@ -98,10 +102,12 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
     QMetaType::QVariantList,
     QMetaType::QVariantList, QMetaType::Int,    7,
     QMetaType::QVariantMap, QMetaType::Int,    7,
-    QMetaType::Void, QMetaType::QString, QMetaType::Double, QMetaType::Double,   16,   17,   18,
+    QMetaType::Bool, QMetaType::QString, QMetaType::Double, QMetaType::Double,   16,   17,   18,
     QMetaType::QVariantMap, QMetaType::QString,   16,
     QMetaType::QVariantMap, QMetaType::Int,    7,
     QMetaType::Bool, QMetaType::Int,    7,
+    QMetaType::Bool, QMetaType::QVariantList,   23,
+    QMetaType::QVariantList,
     QMetaType::Bool, QMetaType::QVariantList,   23,
     QMetaType::QVariantList,
 
@@ -138,7 +144,7 @@ Q_CONSTINIT const QMetaObject Database::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<QVariantMap, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
         // method 'kalibrasyonKaydet'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
         QtPrivate::TypeAndForceComplete<double, std::false_type>,
         QtPrivate::TypeAndForceComplete<double, std::false_type>,
@@ -155,6 +161,11 @@ Q_CONSTINIT const QMetaObject Database::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QVariantList &, std::false_type>,
         // method 'loadCellNoktalariGetir'
+        QtPrivate::TypeAndForceComplete<QVariantList, std::false_type>,
+        // method 'mesafeNoktalariKaydet'
+        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QVariantList &, std::false_type>,
+        // method 'mesafeNoktalariGetir'
         QtPrivate::TypeAndForceComplete<QVariantList, std::false_type>
     >,
     nullptr
@@ -175,7 +186,8 @@ void Database::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
             if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
         case 4: { QVariantMap _r = _t->binghamHesapla((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])));
             if (_a[0]) *reinterpret_cast< QVariantMap*>(_a[0]) = std::move(_r); }  break;
-        case 5: _t->kalibrasyonKaydet((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3]))); break;
+        case 5: { bool _r = _t->kalibrasyonKaydet((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])));
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
         case 6: { QVariantMap _r = _t->kalibrasyonGetir((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])));
             if (_a[0]) *reinterpret_cast< QVariantMap*>(_a[0]) = std::move(_r); }  break;
         case 7: { QVariantMap _r = _t->olcumBilgisiGetir((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])));
@@ -185,6 +197,10 @@ void Database::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         case 9: { bool _r = _t->loadCellNoktalariKaydet((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
         case 10: { QVariantList _r = _t->loadCellNoktalariGetir();
+            if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
+        case 11: { bool _r = _t->mesafeNoktalariKaydet((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])));
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
+        case 12: { QVariantList _r = _t->mesafeNoktalariGetir();
             if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
@@ -210,13 +226,13 @@ int Database::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 11)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 11;
+        _id -= 13;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 11)
+        if (_id < 13)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 11;
+        _id -= 13;
     }
     return _id;
 }

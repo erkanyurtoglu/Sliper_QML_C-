@@ -1,4 +1,5 @@
 #include "Calculator.h"
+#include <QDebug>
 
 Calculator::Calculator(QObject *parent)
     : QObject(parent)
@@ -20,6 +21,16 @@ bool Calculator::duraklatildi() const
     return m_duraklatildi;
 }
 
+double Calculator::ustEsik() const
+{
+    return m_ustEsik;
+}
+
+double Calculator::altEsik() const
+{
+    return m_altEsik;
+}
+
 void Calculator::konumGuncelle(double konum)
 {
     if (m_duraklatildi) {
@@ -28,9 +39,9 @@ void Calculator::konumGuncelle(double konum)
 
     QString yeniDurum;
 
-    if (konum > 450) {
+    if (konum > m_ustEsik) {
         yeniDurum = "YUKARIDA";
-    } else if (konum > 20) {
+    } else if (konum > m_altEsik) {
         yeniDurum = "INIYOR";
     } else {
         yeniDurum = "TAMAMLANDI";
@@ -81,4 +92,16 @@ void Calculator::sifirla()
     emit strokeSayisiChanged();
     emit durumChanged();
     emit duraklatildiChanged();
+}
+
+void Calculator::esikleriAyarla(double ust, double alt)
+{
+    if (ust <= alt) {
+        qWarning() << "Gecersiz esik degerleri, ust alt'tan buyuk olmali:" << ust << alt;
+        return;
+    }
+
+    m_ustEsik = ust;
+    m_altEsik = alt;
+    emit esiklerChanged();
 }
