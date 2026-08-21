@@ -77,7 +77,8 @@
 				5,
 				6,
 				7,
-				8
+				8,
+				13
 			]
 		},
 		{
@@ -94,7 +95,6 @@
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				13,
 				14,
 				15,
 				16,
@@ -106,7 +106,9 @@
 				22,
 				23,
 				24,
-				25
+				25,
+				26,
+				27
 			]
 		}
 	],
@@ -191,6 +193,12 @@
 			"sourceGroupIndex" : 1
 		},
 		{
+			"backtrace" : 5,
+			"isGenerated" : true,
+			"path" : "build/sliper/qml/assets/slipergif.mp4",
+			"sourceGroupIndex" : 0
+		},
+		{
 			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/sliper/qml/Main.qml.rule",
@@ -266,6 +274,12 @@
 			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/sliper/qml/assets/mesafe_sensor.png.rule",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/sliper/qml/assets/slipergif.mp4.rule",
 			"sourceGroupIndex" : 2
 		}
 	],

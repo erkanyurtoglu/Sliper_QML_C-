@@ -1,6 +1,7 @@
 import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Layouts 6.7
+import QtMultimedia
 
 Rectangle {
     color: "#0a0e17"
@@ -127,6 +128,7 @@ Rectangle {
             }
 
             Column {
+                id: navColumn
                 anchors.top: parent.top
                 anchors.topMargin: 242
                 width: parent.width
@@ -185,6 +187,29 @@ Rectangle {
                     }
                 }
             }
+
+            MediaPlayer {
+                id: simulasyonOynatici
+                source: "../assets/slipergif.mp4"
+                videoOutput: simulasyonVideo
+                loops: 1
+            }
+
+            Item {
+                id: simulasyonAlani
+                anchors.top: navColumn.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 16
+                anchors.topMargin: 20
+                clip: true
+
+                VideoOutput {
+                    id: simulasyonVideo
+                    anchors.fill: parent
+                }
+            }
         }
 
         Rectangle {
@@ -212,6 +237,10 @@ Rectangle {
                 onOlcumTamamlandi: function(id) {
                     sonuclarSayfasi.olcumId = id
                     icerikStack.currentIndex = 1
+                }
+                onAgirlikEklendi: {
+                    simulasyonOynatici.stop()
+                    simulasyonOynatici.play()
                 }
             }
 

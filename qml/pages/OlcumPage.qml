@@ -13,6 +13,10 @@ Rectangle {
     property var hizGecmis: []
     property var debiGecmis: []
 
+    readonly property real agirlikBirim: 1.6
+    property int agirlikAdedi: 0
+    readonly property real agirlikToplam: agirlikAdedi * agirlikBirim
+
     // TS EN 206 / TS 13515 normal beton dayanım sınıfları (C sınıfı) — çimento dozajı
     // ve azami su/çimento oranı, ilgili sınıfın minimum bağlayıcı gereksinimine göre.
     readonly property var receteListesi: [
@@ -29,13 +33,14 @@ Rectangle {
     ]
 
     signal olcumTamamlandi(int id)
+    signal agirlikEklendi()
 
     function resetMeasurementScreen() {
         aktifOlcumId = -1
         uyariMesaji = ""
         musteriKutusu.text = ""
         receteKutusu.currentIndex = 0
-        agirlikKutusu.text = ""
+        agirlikAdedi = 0
         calculator.sifirla()
         grafikleriSifirla()
     }
@@ -262,22 +267,118 @@ Rectangle {
                     font.pixelSize: 12
                 }
 
-                TextField {
-                    id: agirlikKutusu
+                Column {
                     width: parent.width
-                    height: 38
-                    placeholderText: "orn: 4.8"
-                    placeholderTextColor: "#4b5563"
-                    color: "#ffffff"
-                    font.pixelSize: 13
-                    leftPadding: 10
-                    verticalAlignment: TextInput.AlignVCenter
-                    validator: DoubleValidator { bottom: 0; top: 20; decimals: 1 }
-                    background: Rectangle {
-                        color: "#0a0e17"
+                    spacing: 8
+
+                    Row {
+                        width: parent.width
+                        spacing: 8
+
+                        Button {
+                            id: agirlikEkleButonu
+                            width: (parent.width - 2 * parent.spacing) / 3
+                            height: 38
+                            text: "+ 1.6"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 12
+
+                            onClicked: {
+                                agirlikAdedi += 1
+                                agirlikEklendi()
+                            }
+
+                            background: Rectangle {
+                                radius: 6
+                                color: agirlikEkleButonu.pressed ? "#1e3a8a" : (agirlikEkleButonu.hovered ? "#2563eb" : "#1d4ed8")
+                                border.color: "#3b82f6"
+                                border.width: 1
+                            }
+
+                            contentItem: Text {
+                                text: agirlikEkleButonu.text
+                                color: "#ffffff"
+                                font: agirlikEkleButonu.font
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                        }
+
+                        Button {
+                            id: agirlikAzaltButonu
+                            width: (parent.width - 2 * parent.spacing) / 3
+                            height: 38
+                            text: "− Geri"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 12
+                            enabled: agirlikAdedi > 0
+
+                            onClicked: agirlikAdedi -= 1
+
+                            background: Rectangle {
+                                radius: 6
+                                color: agirlikAzaltButonu.pressed ? "#78350f" : (agirlikAzaltButonu.hovered ? "#a16207" : "#92400e")
+                                opacity: agirlikAzaltButonu.enabled ? 1.0 : 0.4
+                                border.color: "#d97706"
+                                border.width: 1
+                            }
+
+                            contentItem: Text {
+                                text: agirlikAzaltButonu.text
+                                color: "#ffffff"
+                                opacity: agirlikAzaltButonu.enabled ? 1.0 : 0.6
+                                font: agirlikAzaltButonu.font
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                        }
+
+                        Button {
+                            id: sifirlaButonu
+                            width: (parent.width - 2 * parent.spacing) / 3
+                            height: 38
+                            text: "↺ Sıfırla"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 12
+                            enabled: agirlikAdedi > 0
+
+                            onClicked: agirlikAdedi = 0
+
+                            background: Rectangle {
+                                radius: 6
+                                color: sifirlaButonu.pressed ? "#7f1d1d" : (sifirlaButonu.hovered ? "#b91c1c" : "#991b1b")
+                                opacity: sifirlaButonu.enabled ? 1.0 : 0.4
+                                border.color: "#dc2626"
+                                border.width: 1
+                            }
+
+                            contentItem: Text {
+                                text: sifirlaButonu.text
+                                color: "#ffffff"
+                                opacity: sifirlaButonu.enabled ? 1.0 : 0.6
+                                font: sifirlaButonu.font
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 34
                         radius: 6
-                        border.color: agirlikKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
+                        color: "#0a0e17"
+                        border.color: "#1e2a3f"
                         border.width: 1
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: agirlikAdedi + " x " + agirlikBirim.toFixed(1) + " = " + agirlikToplam.toFixed(1) + " kg"
+                            color: agirlikAdedi > 0 ? "#dce8f5" : "#4b5563"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
                     }
                 }
 
@@ -317,7 +418,7 @@ Rectangle {
                         aktifOlcumId = database.olcumBaslat(
                             musteriKutusu.text,
                             receteKutusu.currentText,
-                            parseFloat(agirlikKutusu.text)
+                            agirlikToplam
                         )
                         console.log("Aktif olcum id:", aktifOlcumId)
                     }

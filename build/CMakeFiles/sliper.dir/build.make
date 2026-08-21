@@ -90,6 +90,7 @@ sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6widgets_relwi
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6openglwidgets_relwithdebinfo_metatypes.json
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6sql_relwithdebinfo_metatypes.json
 sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6printsupport_relwithdebinfo_metatypes.json
+sliper_qmltyperegistrations.cpp: C:/Qt/6.7.3/mingw_64/metatypes/qt6multimedia_relwithdebinfo_metatypes.json
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Automatic QML type registration for target sliper"
 	call .qt\bin\qt_setup_tool_path.bat C:/Qt/6.7.3/mingw_64/bin/qmltyperegistrar.exe --generate-qmltypes=C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/sliper.qmltypes --import-name=sliper --major-version=1 --minor-version=0 @C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/qmltypes/sliper_foreign_types.txt -o C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_qmltyperegistrations.cpp C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/meta_types/qt6sliper_debug_metatypes.json
 	C:\Qt\Tools\CMake_64\bin\cmake.exe -E make_directory C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.qt/qmltypes
@@ -214,6 +215,7 @@ sliper/sliper.qmltypes: sliper_qmltyperegistrations.cpp
 .qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/egim_sensor.png
 .qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/loadcell.png
 .qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/mesafe_sensor.png
+.qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/slipergif.mp4
 .qt/rcc/qrc_sliper_raw_qml_0.cpp: .qt/rcc/sliper_raw_qml_0.qrc
 .qt/rcc/qrc_sliper_raw_qml_0.cpp: C:/Qt/6.7.3/mingw_64/bin/rcc.exe
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Running rcc for resource sliper_raw_qml_0"
@@ -603,13 +605,14 @@ sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Quick.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Charts.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Sql.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6PrintSupport.a
+sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Multimedia.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6QmlModels.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Qml.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6QmlBuiltins.a
-sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Network.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6OpenGLWidgets.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6OpenGL.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Widgets.a
+sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Network.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Gui.a
 sliper.exe: C:/Qt/6.7.3/mingw_64/lib/libQt6Core.a
 sliper.exe: CMakeFiles/sliper.dir/linkLibs.rsp

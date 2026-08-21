@@ -4,7 +4,7 @@ project(sliper VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_PREFIX_PATH "C:/Qt/6.7.3/mingw_64")
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick Charts Widgets Sql PrintSupport Network)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick Charts Widgets Sql PrintSupport Network Multimedia)
 
 qt_standard_project_setup()
 qt_policy(SET QTP0001 NEW)
@@ -45,6 +45,7 @@ qt_add_qml_module(sliper
         qml/assets/egim_sensor.png
         qml/assets/loadcell.png
         qml/assets/mesafe_sensor.png
+        qml/assets/slipergif.mp4
 )
 
 target_link_libraries(sliper PRIVATE
@@ -55,4 +56,5 @@ target_link_libraries(sliper PRIVATE
     Qt6::Sql
     Qt6::PrintSupport
     Qt6::Network
+    Qt6::Multimedia
 )

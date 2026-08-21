@@ -26,6 +26,7 @@ a90b60aa23286774e7233e53112e54fb sliper/qml/assets/egim_sensor.png
 ee60b7f84ed8aba34d72c9aaace4780a sliper/qml/assets/loadcell.png
 3e04d82f1972d209e06097f5e2b2ab89 sliper/qml/assets/logo.png
 9d1db5430456b248341a2e62b52a1f13 sliper/qml/assets/mesafe_sensor.png
+631f91a2bb1453881896d8340a76de17 sliper/qml/assets/slipergif.mp4
 8ce6f030e83e48f0f0349567222763e9 sliper/qml/components/SuTerazisi.qml
 db8c5705d700f9a0bc817901bf06a21f sliper/qml/components/TarihSecici.qml
 8362889b1fd9f379f1d896619bd8adbc sliper/qml/pages/DashboardPage.qml

@@ -13,6 +13,7 @@
     <file alias="qml/assets/egim_sensor.png">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/egim_sensor.png</file>
     <file alias="qml/assets/loadcell.png">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/loadcell.png</file>
     <file alias="qml/assets/mesafe_sensor.png">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/mesafe_sensor.png</file>
+    <file alias="qml/assets/slipergif.mp4">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/slipergif.mp4</file>
   </qresource>
 </RCC>
 
