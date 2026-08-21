@@ -21,3 +21,8 @@ bool Backend::girisYap(const QString &kullaniciAdi, const QString &sifre)
     qDebug() << "Giris Basarisiz:" << kullaniciAdi;
     return false;
 }
+
+bool Backend::sifreDogrula(const QString &sifre)
+{
+    return sifre == "admin123";
+}

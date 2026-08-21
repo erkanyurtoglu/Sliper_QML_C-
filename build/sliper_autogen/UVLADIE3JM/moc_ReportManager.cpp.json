@@ -31,8 +31,39 @@
                             "type": "double"
                         }
                     ],
+                    "name": "pdfOnizlemeHtml",
+                    "returnType": "QString"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "olcumId",
+                            "type": "int"
+                        },
+                        {
+                            "name": "musteri",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "recete",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "tau0",
+                            "type": "double"
+                        },
+                        {
+                            "name": "mu",
+                            "type": "double"
+                        },
+                        {
+                            "name": "r2",
+                            "type": "double"
+                        }
+                    ],
                     "name": "pdfOlustur",
-                    "returnType": "bool"
+                    "returnType": "QString"
                 }
             ],
             "object": true,

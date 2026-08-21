@@ -51,6 +51,17 @@
                 },
                 {
                     "access": "public",
+                    "arguments": [
+                        {
+                            "name": "olcumId",
+                            "type": "int"
+                        }
+                    ],
+                    "name": "olcumSil",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
                     "name": "tumOlcumleriGetir",
                     "returnType": "QVariantList"
                 },
@@ -126,7 +137,7 @@
                         }
                     ],
                     "name": "csvDisaAktar",
-                    "returnType": "bool"
+                    "returnType": "QString"
                 },
                 {
                     "access": "public",
@@ -195,6 +206,28 @@
                     "access": "public",
                     "name": "egimKalibrasyonuGetir",
                     "returnType": "QVariantMap"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "sensor",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "kalibrasyonTarihiKaydet",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "sensor",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "kalibrasyonTarihiGetir",
+                    "returnType": "QString"
                 }
             ],
             "object": true,

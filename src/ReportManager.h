@@ -7,6 +7,12 @@ class ReportManager : public QObject
 
 public:
     explicit ReportManager(QObject *parent = nullptr);
-    Q_INVOKABLE bool pdfOlustur(int olcumId, const QString &musteri, const QString &recete,
-                                  double tau0, double mu, double r2);
+    Q_INVOKABLE QString pdfOnizlemeHtml(int olcumId, const QString &musteri, const QString &recete,
+                                         double tau0, double mu, double r2);
+    Q_INVOKABLE QString pdfOlustur(int olcumId, const QString &musteri, const QString &recete,
+                                     double tau0, double mu, double r2);
+
+private:
+    QString raporHtmlOlustur(int olcumId, const QString &musteri, const QString &recete,
+                              double tau0, double mu, double r2);
 };

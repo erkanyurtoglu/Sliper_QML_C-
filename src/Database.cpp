@@ -100,6 +100,13 @@ void Database::tablolariOlustur()
         ")"
     );
 
+    sorgu.exec(
+        "CREATE TABLE IF NOT EXISTS KalibrasyonTarihleri ("
+        "sensor TEXT PRIMARY KEY, "
+        "tarih TEXT"
+        ")"
+    );
+
     qDebug() << "Tablolar hazir.";
 }
 
@@ -150,6 +157,45 @@ void Database::strokeKaydet(int olcumId, double basinc, double konum, double deb
     } else {
         qDebug() << "Stroke kaydedildi, olcumId:" << olcumId;
     }
+}
+
+bool Database::olcumSil(int olcumId)
+{
+    if (olcumId <= 0) {
+        qWarning() << "Gecersiz olcumId, olcum silinemedi.";
+        return false;
+    }
+
+    if (!m_db.transaction()) {
+        qWarning() << "Olcum silme icin transaction baslatilamadi:" << m_db.lastError().text();
+        return false;
+    }
+
+    QSqlQuery strokeSil;
+    strokeSil.prepare("DELETE FROM Strokelar WHERE olcumId = :olcumId");
+    strokeSil.bindValue(":olcumId", olcumId);
+    if (!strokeSil.exec()) {
+        qWarning() << "Strokelar silinemedi:" << strokeSil.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    QSqlQuery olcumSil;
+    olcumSil.prepare("DELETE FROM Olcumler WHERE id = :id");
+    olcumSil.bindValue(":id", olcumId);
+    if (!olcumSil.exec()) {
+        qWarning() << "Olcum silinemedi:" << olcumSil.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    if (!m_db.commit()) {
+        qWarning() << "Olcum silme commit edilemedi:" << m_db.lastError().text();
+        return false;
+    }
+
+    qDebug() << "Olcum silindi, id:" << olcumId;
+    return true;
 }
 
 QVariantList Database::tumOlcumleriGetir()
@@ -315,6 +361,35 @@ QVariantMap Database::kalibrasyonGetir(const QString &sensor)
     return sonuc;
 }
 
+void Database::kalibrasyonTarihiKaydet(const QString &sensor)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare(
+        "INSERT INTO KalibrasyonTarihleri (sensor, tarih) VALUES (:sensor, :tarih) "
+        "ON CONFLICT(sensor) DO UPDATE SET tarih = :tarih"
+    );
+
+    sorgu.bindValue(":sensor", sensor);
+    sorgu.bindValue(":tarih", QDateTime::currentDateTime().toString("dd.MM.yyyy HH:mm"));
+
+    if (!sorgu.exec()) {
+        qWarning() << "Kalibrasyon tarihi kaydedilemedi:" << sorgu.lastError().text();
+    }
+}
+
+QString Database::kalibrasyonTarihiGetir(const QString &sensor)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare("SELECT tarih FROM KalibrasyonTarihleri WHERE sensor = :sensor");
+    sorgu.bindValue(":sensor", sensor);
+
+    if (sorgu.exec() && sorgu.next()) {
+        return sorgu.value("tarih").toString();
+    }
+
+    return QString();
+}
+
 QVariantMap Database::olcumBilgisiGetir(int olcumId)
 {
     QVariantMap sonuc;
@@ -336,16 +411,19 @@ QVariantMap Database::olcumBilgisiGetir(int olcumId)
     return sonuc;
 }
 
-bool Database::csvDisaAktar(int olcumId)
+QString Database::csvDisaAktar(int olcumId)
 {
     QVariantMap bilgi = olcumBilgisiGetir(olcumId);
     if (!bilgi["bulundu"].toBool()) {
         qWarning() << "Olcum bulunamadi, csv olusturulamadi.";
-        return false;
+        return QString();
     }
 
     QString klasor = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/SliperRaporlari";
-    QDir().mkpath(klasor);
+    if (!QDir().mkpath(klasor)) {
+        qWarning() << "Rapor klasoru olusturulamadi:" << klasor;
+        return QString();
+    }
 
     QString dosyaAdi = klasor + QString("/SLIPER_Veri_%1_%2.csv")
         .arg(olcumId)
@@ -354,7 +432,7 @@ bool Database::csvDisaAktar(int olcumId)
     QFile dosya(dosyaAdi);
     if (!dosya.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qWarning() << "CSV dosyasi acilamadi:" << dosyaAdi;
-        return false;
+        return QString();
     }
 
     QTextStream akis(&dosya);
@@ -380,7 +458,7 @@ bool Database::csvDisaAktar(int olcumId)
 
     dosya.close();
     qDebug() << "CSV disa aktarildi:" << dosyaAdi;
-    return true;
+    return dosyaAdi;
 }
 
 bool Database::loadCellNoktalariKaydet(const QVariantList &noktalar)
@@ -420,6 +498,7 @@ bool Database::loadCellNoktalariKaydet(const QVariantList &noktalar)
     }
 
     qDebug() << "Load cell" << noktalar.size() << "nokta kaydedildi.";
+    kalibrasyonTarihiKaydet("loadcell");
     return true;
 }
 
@@ -476,6 +555,7 @@ bool Database::mesafeNoktalariKaydet(const QVariantList &noktalar)
     }
 
     qDebug() << "Mesafe" << noktalar.size() << "nokta kaydedildi.";
+    kalibrasyonTarihiKaydet("mesafe_olcum");
     return true;
 }
 

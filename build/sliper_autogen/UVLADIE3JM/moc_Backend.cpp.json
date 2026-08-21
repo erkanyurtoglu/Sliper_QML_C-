@@ -17,6 +17,17 @@
                     ],
                     "name": "girisYap",
                     "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "sifre",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "sifreDogrula",
+                    "returnType": "bool"
                 }
             ],
             "object": true,

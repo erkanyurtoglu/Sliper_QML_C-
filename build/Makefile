@@ -380,6 +380,30 @@ build/.rcc/qmlcache/sliper_qml/components/SuTerazisi_qml.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/components/SuTerazisi_qml.cpp.s
 .PHONY : build/.rcc/qmlcache/sliper_qml/components/SuTerazisi_qml.cpp.s
 
+build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.obj: build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.obj
+
+# target to build an object file
+build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.obj
+.PHONY : build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.obj
+
+build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.i: build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.i
+
+# target to preprocess a source file
+build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.i
+.PHONY : build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.i
+
+build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.s: build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.s
+
+# target to generate assembly for a file
+build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.s
+.PHONY : build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp.s
+
 build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.obj: build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp.obj
 .PHONY : build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.obj
 
@@ -797,6 +821,9 @@ help:
 	@echo ... build/.rcc/qmlcache/sliper_qml/components/SuTerazisi_qml.obj
 	@echo ... build/.rcc/qmlcache/sliper_qml/components/SuTerazisi_qml.i
 	@echo ... build/.rcc/qmlcache/sliper_qml/components/SuTerazisi_qml.s
+	@echo ... build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.obj
+	@echo ... build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.i
+	@echo ... build/.rcc/qmlcache/sliper_qml/components/TarihSecici_qml.s
 	@echo ... build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.obj
 	@echo ... build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.i
 	@echo ... build/.rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.s

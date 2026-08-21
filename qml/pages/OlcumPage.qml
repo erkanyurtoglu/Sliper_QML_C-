@@ -13,7 +13,57 @@ Rectangle {
     property var hizGecmis: []
     property var debiGecmis: []
 
+    // TS EN 206 / TS 13515 normal beton dayanım sınıfları (C sınıfı) — çimento dozajı
+    // ve azami su/çimento oranı, ilgili sınıfın minimum bağlayıcı gereksinimine göre.
+    readonly property var receteListesi: [
+        { sinif: "Reçete Seçin...", cimento: "", suCimento: "", aciklama: "" },
+        { sinif: "C16/20", cimento: "min. 260 kg/m³", suCimento: "maks. 0.65", aciklama: "Hafif yükte yalın/donatılı beton" },
+        { sinif: "C20/25", cimento: "min. 280 kg/m³", suCimento: "maks. 0.60", aciklama: "Standart betonarme" },
+        { sinif: "C25/30", cimento: "min. 300 kg/m³", suCimento: "maks. 0.55", aciklama: "Standart betonarme (TS EN 206)" },
+        { sinif: "C30/37", cimento: "min. 320 kg/m³", suCimento: "maks. 0.50", aciklama: "Standart betonarme" },
+        { sinif: "C30/37 SCC", cimento: "min. 380 kg/m³", suCimento: "maks. 0.45", aciklama: "Kendiliğinden yerleşen beton (SF2)" },
+        { sinif: "C35/45", cimento: "min. 340 kg/m³", suCimento: "maks. 0.45", aciklama: "Orta-yüksek dayanım" },
+        { sinif: "C40/50", cimento: "min. 360 kg/m³", suCimento: "maks. 0.40", aciklama: "Yüksek dayanım" },
+        { sinif: "C45/55", cimento: "min. 380 kg/m³", suCimento: "maks. 0.38", aciklama: "Yüksek dayanım" },
+        { sinif: "C50/60", cimento: "min. 400 kg/m³", suCimento: "maks. 0.35", aciklama: "Yüksek dayanım (TS EN 206 normal beton sınırı)" }
+    ]
+
     signal olcumTamamlandi(int id)
+
+    function resetMeasurementScreen() {
+        aktifOlcumId = -1
+        uyariMesaji = ""
+        musteriKutusu.text = ""
+        receteKutusu.currentIndex = 0
+        agirlikKutusu.text = ""
+        calculator.sifirla()
+        grafikleriSifirla()
+    }
+
+    function grafikleriSifirla() {
+        zamanSayaci = 0
+        basincSerisi.clear()
+        konumSerisi.clear()
+        hizSerisi.clear()
+        debiSerisi.clear()
+        basincGecmis = []
+        konumGecmis = []
+        hizGecmis = []
+        debiGecmis = []
+        xEkseni.min = 0
+        xEkseni.max = 60
+        yEkseni.min = 0
+        yEkseni.max = 1100
+        konumXEkseni.min = 0
+        konumXEkseni.max = 60
+        konumYEkseni.max = 500
+        hizXEkseni.min = 0
+        hizXEkseni.max = 60
+        hizYEkseni.max = 4
+        debiXEkseni.min = 0
+        debiXEkseni.max = 60
+        debiYEkseni.max = 180
+    }
 
     function eksenTavaniHesapla(dizi, tavan, taban) {
         if (dizi.length === 0) return taban
@@ -150,7 +200,8 @@ Rectangle {
                     id: receteKutusu
                     width: parent.width
                     height: 38
-                    model: ["Reçete Seçin...", "C25/30 Standart", "C30/37 SCC", "C35/45 Yuksek Mukavemet"]
+                    model: receteListesi
+                    textRole: "sinif"
 
                     background: Rectangle {
                         color: "#0a0e17"
@@ -165,6 +216,42 @@ Rectangle {
                         font.pixelSize: 13
                         leftPadding: 10
                         verticalAlignment: Text.AlignVCenter
+                    }
+
+                    delegate: ItemDelegate {
+                        id: receteDelege
+                        width: receteKutusu.width
+                        height: modelData.cimento.length > 0 ? 52 : 36
+                        highlighted: receteKutusu.highlightedIndex === index
+
+                        background: Rectangle {
+                            color: receteDelege.highlighted ? "#182644" : "#0a0e17"
+                        }
+
+                        contentItem: Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: 10
+                            anchors.right: parent.right
+                            anchors.rightMargin: 10
+                            spacing: 2
+
+                            Text {
+                                text: modelData.sinif
+                                color: "#dce8f5"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Text {
+                                visible: modelData.cimento.length > 0
+                                text: "Çimento " + modelData.cimento + "  •  Su/Çimento " + modelData.suCimento
+                                color: "#6b7280"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 10
+                            }
+                        }
                     }
                 }
 
@@ -207,6 +294,16 @@ Rectangle {
                     enabled: aktifOlcumId <= 0
 
                     onClicked: {
+                        if (musteriKutusu.text.trim().length === 0) {
+                            uyariMesaji = "Lütfen müşteri adını girin."
+                            return
+                        }
+
+                        if (receteKutusu.currentIndex <= 0) {
+                            uyariMesaji = "Lütfen bir beton reçetesi seçin."
+                            return
+                        }
+
                         if (!sensorManager.veriGecerli) {
                             console.warn("Gercek sensor verisi yok, olcum baslatilmadi.")
                             uyariMesaji = "Cihaz bağlı değil. Lütfen önce sol alttan SLIPER-ESP32'ye bağlanın."
@@ -214,28 +311,7 @@ Rectangle {
                         }
 
                         uyariMesaji = ""
-                        zamanSayaci = 0
-                        basincSerisi.clear()
-                        konumSerisi.clear()
-                        hizSerisi.clear()
-                        debiSerisi.clear()
-                        basincGecmis = []
-                        konumGecmis = []
-                        hizGecmis = []
-                        debiGecmis = []
-                        xEkseni.min = 0
-                        xEkseni.max = 60
-                        yEkseni.min = 0
-                        yEkseni.max = 1100
-                        konumXEkseni.min = 0
-                        konumXEkseni.max = 60
-                        konumYEkseni.max = 500
-                        hizXEkseni.min = 0
-                        hizXEkseni.max = 60
-                        hizYEkseni.max = 4
-                        debiXEkseni.min = 0
-                        debiXEkseni.max = 60
-                        debiYEkseni.max = 180
+                        grafikleriSifirla()
 
                         calculator.sifirla()
                         aktifOlcumId = database.olcumBaslat(
@@ -1076,15 +1152,79 @@ Rectangle {
                 wrapMode: Text.WordWrap
             }
 
-            Row {
+            Column {
                 width: 292
                 spacing: 10
 
                 Button {
-                    id: vazgecButonu
-                    width: (parent.width - parent.spacing) / 2
+                    id: kaydetBitirButonu
+                    width: parent.width
                     height: 40
-                    text: "Vazgeç"
+                    text: "💾  Kaydet ve Bitir"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 13
+
+                    onClicked: {
+                        bitirOnayPopup.close()
+                        var bitenId = aktifOlcumId
+                        console.log("Olcum kaydedilip sonlandirildi, id:", bitenId)
+                        resetMeasurementScreen()
+                        olcumTamamlandi(bitenId)
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: kaydetBitirButonu.pressed ? "#14532d" : (kaydetBitirButonu.hovered ? "#15803d" : "#16a34a")
+                        border.color: "#22c55e"
+                        border.width: 1
+                    }
+
+                    contentItem: Text {
+                        text: kaydetBitirButonu.text
+                        color: "#ffffff"
+                        font: kaydetBitirButonu.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Button {
+                    id: silBitirButonu
+                    width: parent.width
+                    height: 40
+                    text: "🗑  Testi Sil ve Bitir"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 13
+
+                    onClicked: {
+                        bitirOnayPopup.close()
+                        var silinecekId = aktifOlcumId
+                        var basarili = database.olcumSil(silinecekId)
+                        console.log("Olcum silinip sonlandirildi, id:", silinecekId, "basarili:", basarili)
+                        resetMeasurementScreen()
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: silBitirButonu.pressed ? "#7f1d1d" : (silBitirButonu.hovered ? "#b91c1c" : "#991b1b")
+                        border.color: "#dc2626"
+                        border.width: 1
+                    }
+
+                    contentItem: Text {
+                        text: silBitirButonu.text
+                        color: "#ffffff"
+                        font: silBitirButonu.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Button {
+                    id: vazgecButonu
+                    width: parent.width
+                    height: 40
+                    text: "Vazgeç, Teste Devam Et"
                     font.family: "Segoe UI"
                     font.pixelSize: 13
 
@@ -1101,39 +1241,6 @@ Rectangle {
                         text: vazgecButonu.text
                         color: "#dce8f5"
                         font: vazgecButonu.font
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                }
-
-                Button {
-                    id: evetBitirButonu
-                    width: (parent.width - parent.spacing) / 2
-                    height: 40
-                    text: "Evet, Bitir"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 13
-
-                    onClicked: {
-                        bitirOnayPopup.close()
-                        var bitenId = aktifOlcumId
-                        aktifOlcumId = -1
-                        uyariMesaji = ""
-                        console.log("Olcum sonlandirildi, id:", bitenId)
-                        olcumTamamlandi(bitenId)
-                    }
-
-                    background: Rectangle {
-                        radius: 8
-                        color: evetBitirButonu.pressed ? "#7f1d1d" : (evetBitirButonu.hovered ? "#b91c1c" : "#991b1b")
-                        border.color: "#dc2626"
-                        border.width: 1
-                    }
-
-                    contentItem: Text {
-                        text: evetBitirButonu.text
-                        color: "#ffffff"
-                        font: evetBitirButonu.font
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }

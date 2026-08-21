@@ -10,4 +10,5 @@ public:
     explicit Backend(QObject *parent = nullptr);
     QString durum() const;
     Q_INVOKABLE bool girisYap(const QString &kullaniciAdi, const QString &sifre);
+    Q_INVOKABLE bool sifreDogrula(const QString &sifre);
 };

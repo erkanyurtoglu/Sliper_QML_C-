@@ -4,6 +4,7 @@ ae6fcaaa038189ae5f14e4f120261116 .qt/rcc/qrc_qmake_sliper.cpp
 82f6fddada608781e216111cb153073f .qt/rcc/qrc_sliper_raw_qml_0.cpp
 dc88050dab06e6b15722edca2c1ba8e1 .rcc/qmlcache/sliper_qml/Main_qml.cpp
 5d5ba1d8122304a6849e36e4320cd41c .rcc/qmlcache/sliper_qml/components/SuTerazisi_qml.cpp
+62a3adb2e2c217a275e334befaa0c0f2 .rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp
 94c68d1a7dcbda56f54ebaf0e675d2b6 .rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp
 a7296b82e6edeb4f1bc6de21f3ecbde8 .rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.cpp
 8a4fb97b7087eaec882f6589b7a72e9d .rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp
@@ -26,6 +27,7 @@ ee60b7f84ed8aba34d72c9aaace4780a sliper/qml/assets/loadcell.png
 3e04d82f1972d209e06097f5e2b2ab89 sliper/qml/assets/logo.png
 9d1db5430456b248341a2e62b52a1f13 sliper/qml/assets/mesafe_sensor.png
 8ce6f030e83e48f0f0349567222763e9 sliper/qml/components/SuTerazisi.qml
+db8c5705d700f9a0bc817901bf06a21f sliper/qml/components/TarihSecici.qml
 8362889b1fd9f379f1d896619bd8adbc sliper/qml/pages/DashboardPage.qml
 f36d70333632cecaf09467d1e3bc897c sliper/qml/pages/GecmisPage.qml
 178a312326dd8732caa3916198f6f317 sliper/qml/pages/KalibrasyonPage.qml

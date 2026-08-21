@@ -8,7 +8,6 @@ Rectangle {
 
     property int seciliSensor: -1
     property int loadCellAdimi: 0
-    property int mesafeAdimi: 0
 
     property bool egimKayitliVar: false
     property string egimSonTarih: ""
@@ -35,15 +34,8 @@ Rectangle {
     property bool loadCellBildirimBasarili: true
     property string loadCellBildirimMesaj: ""
 
-    property bool mesafeUstKayitliVar: false
-    property bool mesafeAltKayitliVar: false
     property string mesafeSonTarih: ""
-    property real mesafeUstDeger: 0.0
-    property real mesafeAltDeger: 0.0
-    property bool mesafeBAraEkranGoster: false
-    property bool mesafeYakinUyariGoster: false
 
-    property int mesafeAsama: 0
     property bool mesafeOlcumKayitliVar: false
     property int mesafeOlcumNoktaSayisi: 0
     property var mesafeNoktalari: []
@@ -106,19 +98,6 @@ Rectangle {
         mesafeBildirimTimer.restart()
     }
 
-    function mesafeBKaydetVeBitir() {
-        var basarili1 = database.kalibrasyonKaydet("mesafe_ust", mesafeUstDeger, 0.0)
-        var basarili2 = database.kalibrasyonKaydet("mesafe_alt", mesafeAltDeger, 0.0)
-        var basarili = basarili1 && basarili2
-        if (basarili) {
-            calculator.esikleriAyarla(mesafeUstDeger, mesafeAltDeger)
-        }
-        mesafeBildirimBasarili = basarili
-        mesafeBildirimMesaj = basarili ? "✓ Stroke sınırları kaydedildi" : "✕ Kaydedilemedi, tekrar deneyin"
-        mesafeBildirimGoster = true
-        mesafeBildirimTimer.restart()
-    }
-
     Timer {
         id: mesafeBildirimTimer
         interval: mesafeBildirimBasarili ? 1800 : 2500
@@ -126,11 +105,7 @@ Rectangle {
         onTriggered: {
             mesafeBildirimGoster = false
             if (mesafeBildirimBasarili) {
-                if (mesafeAsama === 0) {
-                    mesafeAsama = 1
-                } else {
-                    seciliSensor = -1
-                }
+                seciliSensor = -1
             }
         }
     }
@@ -160,6 +135,33 @@ Rectangle {
         }
     }
 
+    // Sensör kartlarının "Kalibre Edildi" rozeti ve tarihi kalıcı depodan (SQLite)
+    // okunur; sadece o an kalibrasyon yapılınca değil, sayfa her açıldığında yeniden
+    // yüklenmeli ki uygulama yeniden başlatıldığında da rozet doğru görünsün.
+    function kalibrasyonDurumunuYukle() {
+        var egimKal = database.egimKalibrasyonuGetir()
+        egimKayitliVar = egimKal.mevcut
+        egimSonTarih = egimKal.mevcut ? egimKal.tarih : ""
+
+        var lcNoktalar = database.loadCellNoktalariGetir()
+        loadCellKayitliVar = lcNoktalar.length > 0
+        loadCellNoktaSayisi = lcNoktalar.length
+        loadCellSonTarih = loadCellKayitliVar ? database.kalibrasyonTarihiGetir("loadcell") : ""
+
+        var mNoktalar = database.mesafeNoktalariGetir()
+        mesafeOlcumKayitliVar = mNoktalar.length > 0
+        mesafeOlcumNoktaSayisi = mNoktalar.length
+        mesafeSonTarih = mesafeOlcumKayitliVar ? database.kalibrasyonTarihiGetir("mesafe_olcum") : ""
+    }
+
+    Component.onCompleted: kalibrasyonDurumunuYukle()
+
+    onVisibleChanged: {
+        if (visible) {
+            kalibrasyonDurumunuYukle()
+        }
+    }
+
     onSeciliSensorChanged: {
         if (seciliSensor === 0) {
             var egimKal = database.egimKalibrasyonuGetir()
@@ -170,6 +172,7 @@ Rectangle {
             var noktalar = database.loadCellNoktalariGetir()
             loadCellKayitliVar = noktalar.length > 0
             loadCellNoktaSayisi = noktalar.length
+            loadCellSonTarih = loadCellKayitliVar ? database.kalibrasyonTarihiGetir("loadcell") : ""
             loadCellNoktalari = []
             loadCellSayiSecildi = false
             loadCellDuzenlemeIndex = -1
@@ -183,6 +186,7 @@ Rectangle {
             var mNoktalar = database.mesafeNoktalariGetir()
             mesafeOlcumKayitliVar = mNoktalar.length > 0
             mesafeOlcumNoktaSayisi = mNoktalar.length
+            mesafeSonTarih = mesafeOlcumKayitliVar ? database.kalibrasyonTarihiGetir("mesafe_olcum") : ""
             mesafeNoktalari = []
             mesafeSayiSecildi = false
             mesafeDuzenlemeIndex = -1
@@ -192,19 +196,6 @@ Rectangle {
             mesafeTamamlandiOnayGoster = false
             mesafeBildirimGoster = false
             mesafeAraEkranGoster = mesafeOlcumKayitliVar
-
-            var u = database.kalibrasyonGetir("mesafe_ust")
-            var a = database.kalibrasyonGetir("mesafe_alt")
-            mesafeUstKayitliVar = u.mevcut
-            mesafeAltKayitliVar = a.mevcut
-            mesafeSonTarih = u.mevcut ? u.tarih : (a.mevcut ? a.tarih : "")
-            mesafeUstDeger = u.mevcut ? u.deger1 : 0.0
-            mesafeAltDeger = a.mevcut ? a.deger1 : 0.0
-            mesafeBAraEkranGoster = mesafeUstKayitliVar && mesafeAltKayitliVar
-            mesafeYakinUyariGoster = false
-            mesafeAdimi = 0
-
-            mesafeAsama = mesafeOlcumKayitliVar ? 1 : 0
         }
     }
 
@@ -274,7 +265,7 @@ Rectangle {
                             Text {
                                 id: kaliMetni1
                                 anchors.centerIn: parent
-                                text: "✓ Kalibre Edildi"
+                                text: "✓ Kalibre Edildi: " + egimSonTarih
                                 color: "#4ade80"
                                 font.pixelSize: 10
                                 font.bold: true
@@ -337,7 +328,7 @@ Rectangle {
                             Text {
                                 id: kaliMetni2
                                 anchors.centerIn: parent
-                                text: "✓ Kalibre Edildi"
+                                text: "✓ Kalibre Edildi: " + loadCellSonTarih
                                 color: "#4ade80"
                                 font.pixelSize: 10
                                 font.bold: true
@@ -391,7 +382,7 @@ Rectangle {
 
                         Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            visible: mesafeUstKayitliVar && mesafeAltKayitliVar
+                            visible: mesafeOlcumKayitliVar
                             width: kaliMetni3.implicitWidth + 16
                             height: 20
                             radius: 10
@@ -400,7 +391,7 @@ Rectangle {
                             Text {
                                 id: kaliMetni3
                                 anchors.centerIn: parent
-                                text: "✓ Kalibre Edildi"
+                                text: "✓ Kalibre Edildi: " + mesafeSonTarih
                                 color: "#4ade80"
                                 font.pixelSize: 10
                                 font.bold: true
@@ -414,7 +405,7 @@ Rectangle {
                         cursorShape: Qt.PointingHandCursor
                         onEntered: mesafeKarti.hovered = true
                         onExited: mesafeKarti.hovered = false
-                        onClicked: { seciliSensor = 2; mesafeAdimi = 0 }
+                        onClicked: seciliSensor = 2
                     }
                 }
             }
@@ -1622,27 +1613,11 @@ Rectangle {
                 anchors.topMargin: 70
                 visible: seciliSensor === 2
 
-                Text {
-                    anchors.top: parent.top
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: mesafeAsama === 0 ? "AŞAMA 1/2 — ÖLÇÜM KALİBRASYONU" : "AŞAMA 2/2 — STROKE SINIRLARI"
-                    color: "#6b7280"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 11
-                    font.bold: true
-                    font.letterSpacing: 1
-                }
-
                 // =========================================================
-                // A) OLCUM KALIBRASYONU — cok nokta (load cell birebir kopyasi)
+                // OLCUM KALIBRASYONU — cok nokta (load cell birebir kopyasi)
                 // =========================================================
                 Item {
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.topMargin: 30
-                    visible: mesafeAsama === 0
+                    anchors.fill: parent
 
                     Column {
                         anchors.centerIn: parent
@@ -2607,377 +2582,6 @@ Rectangle {
                                         onClicked: {
                                             hedefCmKutusu.text = (modelData.hedefMm / 10).toString()
                                             mesafeDuzenlemeIndex = index
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // =========================================================
-                // B) STROKE SINIRLARI — 2 nokta, sadelestirilmis
-                // =========================================================
-                Item {
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.topMargin: 30
-                    visible: mesafeAsama === 1
-
-                    Column {
-                        anchors.centerIn: parent
-                        spacing: 20
-                        width: 380
-                        visible: mesafeBAraEkranGoster
-
-                        Text {
-                            width: parent.width
-                            horizontalAlignment: Text.AlignHCenter
-                            wrapMode: Text.WordWrap
-                            text: "Bu sensör için kayıtlı bir stroke sınırı bulundu"
-                            color: "#dce8f5"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 16
-                            font.bold: true
-                        }
-
-                        Rectangle {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            width: 280
-                            height: 72
-                            radius: 12
-                            color: "#241a38"
-                            border.color: "#9333ea"
-                            border.width: 1
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: "Üst: " + mesafeUstDeger.toFixed(1) + " mm    Alt: " + mesafeAltDeger.toFixed(1) + " mm"
-                                color: "#c084fc"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 15
-                                font.bold: true
-                            }
-                        }
-
-                        Button {
-                            width: parent.width
-                            height: 44
-                            text: "Yeniden Kalibre Et"
-                            font.pixelSize: 14
-                            font.bold: true
-
-                            onClicked: {
-                                mesafeBAraEkranGoster = false
-                                mesafeAdimi = 0
-                            }
-
-                            background: Rectangle {
-                                radius: 8
-                                color: parent.hovered ? "#a855f7" : "#9333ea"
-                                Behavior on color { ColorAnimation { duration: 120 } }
-                            }
-
-                            contentItem: Text {
-                                text: parent.text
-                                color: "#ffffff"
-                                font: parent.font
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                            }
-                        }
-                    }
-
-                    Column {
-                        anchors.centerIn: parent
-                        spacing: 20
-                        width: 360
-                        visible: !mesafeBAraEkranGoster
-
-                        Rectangle {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            visible: mesafeUstKayitliVar || mesafeAltKayitliVar
-                            width: sonKaliMetni3.implicitWidth + 20
-                            height: 26
-                            radius: 13
-                            color: "#0f1420"
-                            border.color: "#1e2a3f"
-                            border.width: 1
-
-                            Text {
-                                id: sonKaliMetni3
-                                anchors.centerIn: parent
-                                text: "Son kalibrasyon: " + mesafeSonTarih
-                                color: "#6b7280"
-                                font.pixelSize: 11
-                            }
-                        }
-
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: "Adım " + (mesafeAdimi + 1) + " / 2"
-                            color: "#6b7280"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 11
-                            font.letterSpacing: 1
-                        }
-
-                        Row {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            spacing: 6
-
-                            Repeater {
-                                model: 2
-                                Rectangle {
-                                    width: index === mesafeAdimi ? 22 : 8
-                                    height: 8
-                                    radius: 4
-                                    color: index <= mesafeAdimi ? "#9333ea" : "#1e2a3f"
-                                    Behavior on width { NumberAnimation { duration: 150 } }
-                                }
-                            }
-                        }
-
-                        Column {
-                            width: parent.width
-                            spacing: 20
-                            visible: mesafeAdimi === 0
-
-                            Text {
-                                width: parent.width
-                                horizontalAlignment: Text.AlignHCenter
-                                wrapMode: Text.WordWrap
-                                text: "Boruyu üst pozisyona getirin ve sabitleyin"
-                                color: "#dce8f5"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 14
-                            }
-
-                            Rectangle {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                width: 220
-                                height: 72
-                                radius: 12
-                                color: "#241a38"
-                                border.color: "#9333ea"
-                                border.width: 1
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: sensorManager.konum.toFixed(1) + " mm"
-                                    color: "#c084fc"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 22
-                                    font.bold: true
-                                }
-                            }
-
-                            Button {
-                                width: parent.width
-                                height: 44
-                                text: "Üst Pozisyonu Kaydet"
-                                font.pixelSize: 14
-                                font.bold: true
-
-                                onClicked: {
-                                    mesafeUstDeger = sensorManager.konum
-                                    mesafeAdimi = 1
-                                }
-
-                                background: Rectangle {
-                                    radius: 8
-                                    color: parent.hovered ? "#a855f7" : "#9333ea"
-                                    Behavior on color { ColorAnimation { duration: 120 } }
-                                }
-
-                                contentItem: Text {
-                                    text: parent.text
-                                    color: "#ffffff"
-                                    font: parent.font
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-                        }
-
-                        Column {
-                            width: parent.width
-                            spacing: 16
-                            visible: mesafeAdimi === 1
-
-                            Text {
-                                width: parent.width
-                                horizontalAlignment: Text.AlignHCenter
-                                wrapMode: Text.WordWrap
-                                text: "Boruyu alt pozisyona getirin ve sabitleyin"
-                                color: "#dce8f5"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 14
-                            }
-
-                            Rectangle {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                width: 220
-                                height: 72
-                                radius: 12
-                                color: "#241a38"
-                                border.color: "#9333ea"
-                                border.width: 1
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: sensorManager.konum.toFixed(1) + " mm"
-                                    color: "#c084fc"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 22
-                                    font.bold: true
-                                }
-                            }
-
-                            Button {
-                                width: parent.width
-                                height: 44
-                                text: "Alt Pozisyonu Kaydet ve Tamamla"
-                                font.pixelSize: 14
-                                font.bold: true
-
-                                onClicked: {
-                                    mesafeAltDeger = sensorManager.konum
-                                    if (Math.abs(mesafeUstDeger - mesafeAltDeger) < 30) {
-                                        mesafeYakinUyariGoster = true
-                                    } else {
-                                        mesafeBKaydetVeBitir()
-                                    }
-                                }
-
-                                background: Rectangle {
-                                    radius: 8
-                                    color: parent.hovered ? "#22c55e" : "#16a34a"
-                                    Behavior on color { ColorAnimation { duration: 120 } }
-                                }
-
-                                contentItem: Text {
-                                    text: parent.text
-                                    color: "#ffffff"
-                                    font: parent.font
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-
-                            Button {
-                                width: parent.width
-                                height: 38
-                                text: "← Geri"
-                                font.pixelSize: 13
-
-                                onClicked: mesafeAdimi = 0
-
-                                background: Rectangle {
-                                    radius: 8
-                                    color: parent.hovered ? "#1e2a3f" : "transparent"
-                                    border.color: "#1e2a3f"
-                                    border.width: 1
-                                    Behavior on color { ColorAnimation { duration: 120 } }
-                                }
-
-                                contentItem: Text {
-                                    text: parent.text
-                                    color: "#9ca3af"
-                                    font: parent.font
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        anchors.fill: parent
-                        color: "#000000b3"
-                        visible: mesafeYakinUyariGoster
-                        z: 200
-
-                        MouseArea { anchors.fill: parent }
-
-                        Rectangle {
-                            anchors.centerIn: parent
-                            width: 380
-                            height: 200
-                            radius: 14
-                            color: "#0f1420"
-                            border.color: "#1e2a3f"
-                            border.width: 1
-
-                            Column {
-                                anchors.centerIn: parent
-                                spacing: 18
-                                width: parent.width - 40
-
-                                Text {
-                                    width: parent.width
-                                    horizontalAlignment: Text.AlignHCenter
-                                    wrapMode: Text.WordWrap
-                                    text: "Üst ve alt pozisyon birbirine çok yakın, emin misiniz?"
-                                    color: "#dce8f5"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 14
-                                    font.bold: true
-                                }
-
-                                Row {
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    spacing: 12
-
-                                    Button {
-                                        width: 150
-                                        height: 42
-                                        text: "Vazgeç"
-
-                                        onClicked: mesafeYakinUyariGoster = false
-
-                                        background: Rectangle {
-                                            radius: 8
-                                            color: parent.hovered ? "#1e2a3f" : "transparent"
-                                            border.color: "#1e2a3f"
-                                            border.width: 1
-                                            Behavior on color { ColorAnimation { duration: 120 } }
-                                        }
-
-                                        contentItem: Text {
-                                            text: parent.text
-                                            color: "#9ca3af"
-                                            font: parent.font
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-                                        }
-                                    }
-
-                                    Button {
-                                        width: 150
-                                        height: 42
-                                        text: "Evet, Devam Et"
-                                        font.bold: true
-
-                                        onClicked: {
-                                            mesafeYakinUyariGoster = false
-                                            mesafeBKaydetVeBitir()
-                                        }
-
-                                        background: Rectangle {
-                                            radius: 8
-                                            color: parent.hovered ? "#22c55e" : "#16a34a"
-                                            Behavior on color { ColorAnimation { duration: 120 } }
-                                        }
-
-                                        contentItem: Text {
-                                            text: parent.text
-                                            color: "#ffffff"
-                                            font: parent.font
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
                                         }
                                     }
                                 }

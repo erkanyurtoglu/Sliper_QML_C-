@@ -102,12 +102,13 @@ int16_t hamMesafeOku() {
 }
 
 void loop() {
-    if (!bagliIstemci || !bagliIstemci.connected()) {
-        WiFiClient yeniIstemci = tcpSunucu.available();
-        if (yeniIstemci) {
-            bagliIstemci = yeniIstemci;
-            Serial.println("PC baglandi.");
+    WiFiClient yeniIstemci = tcpSunucu.available();
+    if (yeniIstemci) {
+        if (bagliIstemci && bagliIstemci.connected()) {
+            bagliIstemci.stop();
         }
+        bagliIstemci = yeniIstemci;
+        Serial.println("PC baglandi.");
     }
 
     if (!mpuHazir && millis() - sonMpuDenemeMs > MPU_DENEME_ARALIGI_MS) {

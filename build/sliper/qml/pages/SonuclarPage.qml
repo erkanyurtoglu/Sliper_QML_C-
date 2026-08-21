@@ -13,6 +13,8 @@ Rectangle {
     property int playbackHizi: 1
     property string musteriAdi: ""
     property string receteAdi: ""
+    property real agirlikDegeri: 0
+    property string olcumTarihi: ""
 
     onOlcumIdChanged: verileriYukle()
 
@@ -28,6 +30,8 @@ Rectangle {
         var bilgi = database.olcumBilgisiGetir(olcumId)
         musteriAdi = bilgi.bulundu ? bilgi.musteri : "Bilinmiyor"
         receteAdi = bilgi.bulundu ? bilgi.recete : "Bilinmiyor"
+        agirlikDegeri = bilgi.bulundu ? bilgi.agirlik : 0
+        olcumTarihi = bilgi.bulundu ? bilgi.tarih : ""
 
         var sonuc = database.binghamHesapla(olcumId)
 
@@ -48,14 +52,26 @@ Rectangle {
         strokeModeli.clear()
 
         var strokeListesi = database.strokeVerileriGetir(olcumId)
+        var pMaks = 0
+        var qMaks = 0
         for (var i = 0; i < strokeListesi.length; i++) {
             var s = strokeListesi[i]
             pqSerisi.append(s.debi, s.basinc)
             strokeModeli.append({ stroke: s.stroke, p: s.basinc, q: s.debi, gecerli: s.gecerli })
+            if (s.basinc > pMaks) pMaks = s.basinc
+            if (s.debi > qMaks) qMaks = s.debi
         }
 
+        // Eksenler gerçek ölçüm verisine göre ayarlanır; sabit aralık kullanılırsa
+        // basınç/debi bu aralığı aştığında noktalar (ve oynatma imleci) grafik
+        // dışına taşıp görünmez olur.
+        qMaks = Math.max(qMaks, 5)
         regresyonCizgisi.append(0, sonuc.tau0)
-        regresyonCizgisi.append(20, sonuc.tau0 + sonuc.mu * 20)
+        regresyonCizgisi.append(qMaks, sonuc.tau0 + sonuc.mu * qMaks)
+
+        pMaks = Math.max(pMaks, sonuc.tau0 + sonuc.mu * qMaks, 10)
+        pEkseni.max = pMaks * 1.15
+        qEkseni.max = qMaks * 1.15
     }
 
     Timer {
@@ -410,13 +426,13 @@ Rectangle {
                     Button {
                         width: parent.width
                         height: 40
-                        text: "📄  PDF Rapor Oluştur"
+                        text: "📄  PDF Rapor Önizle"
                         font.pixelSize: 13
                         font.bold: true
                         enabled: olcumId > 0
 
                         onClicked: {
-                            reportManager.pdfOlustur(
+                            pdfOnizlemePopup.onizlemeHtml = reportManager.pdfOnizlemeHtml(
                                 olcumId,
                                 musteriAdi,
                                 receteAdi,
@@ -424,7 +440,7 @@ Rectangle {
                                 hesaplananMu,
                                 parseFloat(r2Metni.text)
                             )
-                            console.log("PDF rapor olusturuldu.")
+                            pdfOnizlemePopup.open()
                         }
 
                         background: Rectangle {
@@ -445,14 +461,14 @@ Rectangle {
                     Button {
                         width: parent.width
                         height: 40
-                        text: "📊  Excel (CSV) Olarak Dışa Aktar"
+                        text: "📊  Excel (CSV) Önizle"
                         font.pixelSize: 13
                         font.bold: true
                         enabled: olcumId > 0
 
                         onClicked: {
-                            database.csvDisaAktar(olcumId)
-                            console.log("CSV disa aktarildi.")
+                            csvOnizlemePopup.satirlar = database.strokeVerileriGetir(olcumId)
+                            csvOnizlemePopup.open()
                         }
 
                         background: Rectangle {
@@ -504,12 +520,12 @@ Rectangle {
                                 font.pixelSize: 12
                             }
 
-                            Row {
+                            Flow {
                                 width: parent.width
-                                spacing: 8
+                                spacing: 5
 
                                 Button {
-                                    width: 44
+                                    width: 40
                                     height: 34
                                     text: oynatiliyor ? "⏸" : "▶"
                                     font.pixelSize: 14
@@ -547,7 +563,7 @@ Rectangle {
                                     model: [1, 2, 5, 10]
 
                                     Button {
-                                        width: 44
+                                        width: 38
                                         height: 34
                                         text: modelData + "x"
                                         font.pixelSize: 12
@@ -853,6 +869,381 @@ Rectangle {
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Rectangle {
+        id: bildirimKutusu
+        property bool hataMi: false
+
+        function goster(mesaj, hata) {
+            bildirimMetni.text = mesaj
+            hataMi = hata
+            opacity = 1
+            bildirimTimer.restart()
+        }
+
+        visible: opacity > 0
+        opacity: 0
+        z: 100
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: 24
+        width: bildirimMetni.implicitWidth + 40
+        height: 44
+        radius: 10
+        color: hataMi ? "#7f1d1d" : "#14532d"
+        border.color: hataMi ? "#dc2626" : "#22c55e"
+        border.width: 1
+
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+
+        Text {
+            id: bildirimMetni
+            anchors.centerIn: parent
+            text: ""
+            color: "#ffffff"
+            font.family: "Segoe UI"
+            font.pixelSize: 13
+            font.bold: true
+        }
+
+        Timer {
+            id: bildirimTimer
+            interval: 3000
+            onTriggered: bildirimKutusu.opacity = 0
+        }
+    }
+
+    Popup {
+        id: pdfOnizlemePopup
+        modal: true
+        focus: true
+        anchors.centerIn: parent
+        width: 640
+        height: Math.min(720, parent.height - 40)
+        padding: 0
+        closePolicy: Popup.CloseOnEscape
+
+        property string onizlemeHtml: ""
+
+        background: Rectangle {
+            color: "#0f1420"
+            radius: 12
+            border.color: "#1e2a3f"
+            border.width: 1
+        }
+
+        Overlay.modal: Rectangle {
+            color: "#a6000000"
+        }
+
+        contentItem: Column {
+            width: pdfOnizlemePopup.width
+            spacing: 0
+
+            Rectangle {
+                width: parent.width
+                height: 52
+                color: "#0a0e17"
+
+                Text {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 20
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "PDF Rapor Önizleme"
+                    color: "#dce8f5"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 14
+                    font.bold: true
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: pdfOnizlemePopup.height - 52 - 64
+                color: "#f3f4f6"
+
+                Flickable {
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    contentWidth: width
+                    contentHeight: onizlemeMetni.implicitHeight
+                    clip: true
+                    boundsBehavior: Flickable.StopAtBounds
+
+                    TextEdit {
+                        id: onizlemeMetni
+                        width: parent.width
+                        readOnly: true
+                        selectByMouse: true
+                        textFormat: TextEdit.RichText
+                        wrapMode: Text.WordWrap
+                        text: pdfOnizlemePopup.onizlemeHtml
+                        color: "#111827"
+                        font.pixelSize: 13
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#0a0e17"
+
+                Row {
+                    anchors.centerIn: parent
+                    spacing: 12
+
+                    Button {
+                        width: 140
+                        height: 38
+                        text: "💾  İndir (PDF)"
+                        font.pixelSize: 13
+                        font.bold: true
+
+                        onClicked: {
+                            var yol = reportManager.pdfOlustur(
+                                olcumId,
+                                musteriAdi,
+                                receteAdi,
+                                hesaplananTau0,
+                                hesaplananMu,
+                                parseFloat(r2Metni.text)
+                            )
+                            pdfOnizlemePopup.close()
+                            if (yol.length > 0) {
+                                bildirimKutusu.goster("PDF kaydedildi: " + yol, false)
+                            } else {
+                                bildirimKutusu.goster("PDF oluşturulamadı.", true)
+                            }
+                        }
+
+                        background: Rectangle {
+                            radius: 8
+                            color: parent.hovered ? "#4f8cf7" : "#3b82f6"
+                            Behavior on color { ColorAnimation { duration: 120 } }
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#ffffff"
+                            font: parent.font
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
+                    Button {
+                        width: 100
+                        height: 38
+                        text: "Kapat"
+                        font.pixelSize: 13
+
+                        onClicked: pdfOnizlemePopup.close()
+
+                        background: Rectangle {
+                            radius: 8
+                            color: parent.hovered ? "#1e2a3f" : "transparent"
+                            border.color: "#1e2a3f"
+                            border.width: 1
+                            Behavior on color { ColorAnimation { duration: 120 } }
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#9ca3af"
+                            font: parent.font
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Popup {
+        id: csvOnizlemePopup
+        modal: true
+        focus: true
+        anchors.centerIn: parent
+        width: 640
+        height: Math.min(680, parent.height - 40)
+        padding: 0
+        closePolicy: Popup.CloseOnEscape
+
+        property var satirlar: []
+
+        background: Rectangle {
+            color: "#0f1420"
+            radius: 12
+            border.color: "#1e2a3f"
+            border.width: 1
+        }
+
+        Overlay.modal: Rectangle {
+            color: "#a6000000"
+        }
+
+        contentItem: Column {
+            width: csvOnizlemePopup.width
+            spacing: 0
+
+            Rectangle {
+                width: parent.width
+                height: 52
+                color: "#0a0e17"
+
+                Text {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 20
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "Excel (CSV) Önizleme"
+                    color: "#dce8f5"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 14
+                    font.bold: true
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: csvBilgiSutunu.implicitHeight + 32
+
+                Column {
+                    id: csvBilgiSutunu
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 20
+                    spacing: 4
+
+                    Text { text: "Ölçüm ID: " + olcumId; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                    Text { text: "Tarih: " + olcumTarihi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                    Text { text: "Müşteri: " + musteriAdi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                    Text { text: "Reçete: " + receteAdi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                    Text { text: "Ağırlık (kg): " + agirlikDegeri.toFixed(1); color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: csvOnizlemePopup.height - 52 - 130 - 64
+                color: "#0a0e17"
+                border.color: "#1e2a3f"
+                border.width: 1
+
+                Row {
+                    id: csvTabloBasligi
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: 12
+
+                    Text { width: parent.width * 0.2; text: "STROKE"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    Text { width: parent.width * 0.2; text: "BASINÇ (mbar)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    Text { width: parent.width * 0.2; text: "KONUM (mm)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    Text { width: parent.width * 0.2; text: "DEBİ (m³/h)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    Text { width: parent.width * 0.2; text: "GEÇERLİ"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                }
+
+                ListView {
+                    anchors.top: csvTabloBasligi.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 12
+                    anchors.topMargin: 8
+                    clip: true
+
+                    model: csvOnizlemePopup.satirlar
+
+                    delegate: Rectangle {
+                        width: ListView.view.width
+                        height: 26
+                        color: index % 2 === 0 ? "transparent" : "#0f1420"
+
+                        Row {
+                            anchors.fill: parent
+
+                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.stroke; color: "#dce8f5"; font.pixelSize: 12 }
+                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.basinc.toFixed(1); color: "#dce8f5"; font.pixelSize: 12 }
+                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.konum.toFixed(1); color: "#dce8f5"; font.pixelSize: 12 }
+                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.debi.toFixed(2); color: "#dce8f5"; font.pixelSize: 12 }
+                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.gecerli ? "Evet" : "Hayır"; color: modelData.gecerli ? "#4ade80" : "#f87171"; font.pixelSize: 12 }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#0a0e17"
+
+                Row {
+                    anchors.centerIn: parent
+                    spacing: 12
+
+                    Button {
+                        width: 140
+                        height: 38
+                        text: "💾  İndir (CSV)"
+                        font.pixelSize: 13
+                        font.bold: true
+
+                        onClicked: {
+                            var yol = database.csvDisaAktar(olcumId)
+                            csvOnizlemePopup.close()
+                            if (yol.length > 0) {
+                                bildirimKutusu.goster("CSV kaydedildi: " + yol, false)
+                            } else {
+                                bildirimKutusu.goster("CSV oluşturulamadı.", true)
+                            }
+                        }
+
+                        background: Rectangle {
+                            radius: 8
+                            color: parent.hovered ? "#22c55e" : "#16a34a"
+                            Behavior on color { ColorAnimation { duration: 120 } }
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#ffffff"
+                            font: parent.font
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
+                    Button {
+                        width: 100
+                        height: 38
+                        text: "Kapat"
+                        font.pixelSize: 13
+
+                        onClicked: csvOnizlemePopup.close()
+
+                        background: Rectangle {
+                            radius: 8
+                            color: parent.hovered ? "#1e2a3f" : "transparent"
+                            border.color: "#1e2a3f"
+                            border.width: 1
+                            Behavior on color { ColorAnimation { duration: 120 } }
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#9ca3af"
+                            font: parent.font
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
                         }
                     }
                 }

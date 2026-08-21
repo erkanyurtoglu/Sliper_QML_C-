@@ -18,6 +18,17 @@
                         ],
                         "name": "girisYap",
                         "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "sifre",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "sifreDogrula",
+                        "returnType": "bool"
                     }
                 ],
                 "object": true,
@@ -78,21 +89,6 @@
                         "access": "public",
                         "name": "sifirla",
                         "returnType": "void"
-                    },
-                    {
-                        "access": "public",
-                        "arguments": [
-                            {
-                                "name": "ust",
-                                "type": "double"
-                            },
-                            {
-                                "name": "alt",
-                                "type": "double"
-                            }
-                        ],
-                        "name": "esikleriAyarla",
-                        "returnType": "void"
                     }
                 ],
                 "object": true,
@@ -138,34 +134,6 @@
                         "stored": true,
                         "type": "bool",
                         "user": false
-                    },
-                    {
-                        "constant": false,
-                        "designable": true,
-                        "final": false,
-                        "index": 3,
-                        "name": "ustEsik",
-                        "notify": "esiklerChanged",
-                        "read": "ustEsik",
-                        "required": false,
-                        "scriptable": true,
-                        "stored": true,
-                        "type": "double",
-                        "user": false
-                    },
-                    {
-                        "constant": false,
-                        "designable": true,
-                        "final": false,
-                        "index": 4,
-                        "name": "altEsik",
-                        "notify": "esiklerChanged",
-                        "read": "altEsik",
-                        "required": false,
-                        "scriptable": true,
-                        "stored": true,
-                        "type": "double",
-                        "user": false
                     }
                 ],
                 "qualifiedClassName": "Calculator",
@@ -183,11 +151,6 @@
                     {
                         "access": "public",
                         "name": "duraklatildiChanged",
-                        "returnType": "void"
-                    },
-                    {
-                        "access": "public",
-                        "name": "esiklerChanged",
                         "returnType": "void"
                     }
                 ],
@@ -252,6 +215,17 @@
                         ],
                         "name": "strokeKaydet",
                         "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "olcumId",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "olcumSil",
+                        "returnType": "bool"
                     },
                     {
                         "access": "public",
@@ -330,7 +304,7 @@
                             }
                         ],
                         "name": "csvDisaAktar",
-                        "returnType": "bool"
+                        "returnType": "QString"
                     },
                     {
                         "access": "public",
@@ -399,6 +373,28 @@
                         "access": "public",
                         "name": "egimKalibrasyonuGetir",
                         "returnType": "QVariantMap"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "sensor",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "kalibrasyonTarihiKaydet",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "sensor",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "kalibrasyonTarihiGetir",
+                        "returnType": "QString"
                     }
                 ],
                 "object": true,
@@ -447,8 +443,39 @@
                                 "type": "double"
                             }
                         ],
+                        "name": "pdfOnizlemeHtml",
+                        "returnType": "QString"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "olcumId",
+                                "type": "int"
+                            },
+                            {
+                                "name": "musteri",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "recete",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "tau0",
+                                "type": "double"
+                            },
+                            {
+                                "name": "mu",
+                                "type": "double"
+                            },
+                            {
+                                "name": "r2",
+                                "type": "double"
+                            }
+                        ],
                         "name": "pdfOlustur",
-                        "returnType": "bool"
+                        "returnType": "QString"
                     }
                 ],
                 "object": true,

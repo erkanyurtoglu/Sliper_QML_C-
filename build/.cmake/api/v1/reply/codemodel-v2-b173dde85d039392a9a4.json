@@ -1,0 +1,168 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "sliper",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint-Debug-ca182ffd95cc9b8409ed.json",
+					"name" : "all_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_json-Debug-9aecb3f26687a9f439c8.json",
+					"name" : "all_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_module-Debug-d954cf92fa946828fce4.json",
+					"name" : "all_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmltyperegistrations::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmltyperegistrations-Debug-8f5c6cf11170722572de.json",
+					"name" : "all_qmltyperegistrations",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sliper::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sliper-Debug-775e136ef1041bf46980.json",
+					"name" : "sliper",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sliper_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sliper_autogen-Debug-dc2a960467418e829c27.json",
+					"name" : "sliper_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sliper_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sliper_autogen_timestamp_deps-Debug-ed45d80929a52a0a9103.json",
+					"name" : "sliper_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sliper_qmlimportscan::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sliper_qmlimportscan-Debug-0497d4936104f2873363.json",
+					"name" : "sliper_qmlimportscan",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sliper_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sliper_qmllint-Debug-00990cc19ff86d775e5c.json",
+					"name" : "sliper_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sliper_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sliper_qmllint_json-Debug-3c1e5d9209c2da7571b9.json",
+					"name" : "sliper_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sliper_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sliper_qmllint_module-Debug-68d47b42c18832c5a421.json",
+					"name" : "sliper_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sliper_qmltyperegistration::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sliper_qmltyperegistration-Debug-f3d52fe2af4281b1e556.json",
+					"name" : "sliper_qmltyperegistration",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sliper_tooling::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sliper_tooling-Debug-7c25a3a7de450a6a410e.json",
+					"name" : "sliper_tooling",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build",
+		"source" : "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

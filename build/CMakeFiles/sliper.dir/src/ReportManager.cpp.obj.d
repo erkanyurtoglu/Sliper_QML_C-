@@ -406,5 +406,7 @@ CMakeFiles/sliper.dir/src/ReportManager.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qtimezone.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QDateTime \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qdatetime.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QFile \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qfile.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QDebug \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h

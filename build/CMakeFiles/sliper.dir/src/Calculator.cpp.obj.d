@@ -302,17 +302,4 @@ CMakeFiles/sliper.dir/src/Calculator.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qbindingstorage.h \
  C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/chrono \
  C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/ratio \
- C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/ctime \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QDebug \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qtextstream.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qcontiguouscache.h \
- C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/climits \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer_impl.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata_impl.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qset.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qhash.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/ctime
