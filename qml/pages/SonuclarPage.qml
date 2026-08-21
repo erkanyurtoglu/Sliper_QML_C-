@@ -264,10 +264,30 @@ Rectangle {
                             }
 
                             TextField {
+                                id: capKutusu
+                                width: parent.width
+                                height: 34
+                                placeholderText: "Hedef Boru Çapı (mm)"
+                                placeholderTextColor: "#4b5563"
+                                color: "#ffffff"
+                                font.pixelSize: 12
+                                leftPadding: 10
+                                text: "125"
+                                verticalAlignment: TextInput.AlignVCenter
+                                validator: DoubleValidator { bottom: 10; top: 500; decimals: 0 }
+                                background: Rectangle {
+                                    color: "#060d17"
+                                    radius: 6
+                                    border.color: capKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
+                                    border.width: 1
+                                }
+                            }
+
+                            TextField {
                                 id: uzunlukKutusu
                                 width: parent.width
                                 height: 34
-                                placeholderText: "Boru Uzunluğu (m)"
+                                placeholderText: "Boru Uzunluğu (m) - karşılaştırma referansı"
                                 placeholderTextColor: "#4b5563"
                                 color: "#ffffff"
                                 font.pixelSize: 12
@@ -301,6 +321,100 @@ Rectangle {
                                 }
                             }
 
+                            Row {
+                                width: parent.width
+                                spacing: 8
+
+                                Text {
+                                    text: "Hata Payı:"
+                                    color: "#9ca3af"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 11
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                ComboBox {
+                                    id: hataPayiSecici
+                                    width: 90
+                                    height: 28
+                                    model: ["0", "10", "20"]
+                                    currentIndex: 1
+
+                                    background: Rectangle {
+                                        color: "#060d17"
+                                        radius: 6
+                                        border.color: hataPayiSecici.activeFocus ? "#3b82f6" : "#1e2a3f"
+                                        border.width: 1
+                                    }
+
+                                    contentItem: Text {
+                                        text: hataPayiSecici.displayText
+                                        color: "#dce8f5"
+                                        font.family: "Segoe UI"
+                                        font.pixelSize: 11
+                                        leftPadding: 10
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    indicator: Text {
+                                        x: hataPayiSecici.width - width - 8
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: "▾"
+                                        color: "#6b7280"
+                                        font.pixelSize: 11
+                                    }
+
+                                    popup: Popup {
+                                        y: hataPayiSecici.height + 2
+                                        width: hataPayiSecici.width
+                                        implicitHeight: contentItem.implicitHeight
+                                        padding: 1
+
+                                        background: Rectangle {
+                                            color: "#0a0e17"
+                                            radius: 6
+                                            border.color: "#1e2a3f"
+                                            border.width: 1
+                                        }
+
+                                        contentItem: ListView {
+                                            implicitHeight: contentHeight
+                                            model: hataPayiSecici.popup.visible ? hataPayiSecici.delegateModel : null
+                                            currentIndex: hataPayiSecici.highlightedIndex
+                                            clip: true
+                                        }
+                                    }
+
+                                    delegate: ItemDelegate {
+                                        id: hataPayiDelege
+                                        width: hataPayiSecici.width
+                                        height: 28
+                                        highlighted: hataPayiSecici.highlightedIndex === index
+
+                                        background: Rectangle {
+                                            color: hataPayiDelege.highlighted ? "#182644" : "#0a0e17"
+                                        }
+
+                                        contentItem: Text {
+                                            text: modelData
+                                            color: "#dce8f5"
+                                            font.family: "Segoe UI"
+                                            font.pixelSize: 11
+                                            leftPadding: 10
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                    }
+                                }
+
+                                Text {
+                                    text: "%"
+                                    color: "#9ca3af"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 11
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
                             Button {
                                 width: parent.width
                                 height: 36
@@ -323,17 +437,42 @@ Rectangle {
                                 }
 
                                 onClicked: {
+                                    var D = parseFloat(capKutusu.text)
                                     var L = parseFloat(uzunlukKutusu.text)
                                     var Q = parseFloat(debiKutusu.text)
+                                    var tolerans = parseFloat(hataPayiSecici.currentText)
 
-                                    if (isNaN(L) || isNaN(Q) || L <= 0) {
+                                    if (isNaN(D) || isNaN(L) || isNaN(Q) || D <= 0 || L <= 0) {
                                         tahminSonucu.text = "Geçerli değer girin"
+                                        tahminKarsilastirma.text = ""
                                         return
                                     }
 
-                                    var basincMbar = (hesaplananTau0 + hesaplananMu * Q) * (L / 50)
-                                    var basincBar = basincMbar / 1000
-                                    tahminSonucu.text = basincBar.toFixed(2) + " bar"
+                                    var sonuc = calculator.boruHattiTahminHesapla(
+                                        hesaplananTau0, hesaplananMu, Q, D, L, tolerans)
+
+                                    if (!sonuc.gecerliGiris) {
+                                        tahminSonucu.text = "Hesaplanamadı"
+                                        tahminKarsilastirma.text = ""
+                                        return
+                                    }
+
+                                    tahminSonucu.text = sonuc.basincBar.toFixed(2) + " bar"
+                                    if (tolerans > 0) {
+                                        tahminSonucu.text += "  (±%1: %2 – %3 bar)".arg(tolerans.toFixed(0))
+                                            .arg(sonuc.altSinirBar.toFixed(2)).arg(sonuc.ustSinirBar.toFixed(2))
+                                    }
+
+                                    // Aynı D/Q icin farkli boru uzunluklarinda karsilastirma
+                                    // (orijinal SLIPER'daki "birden fazla boru uzunlugu" karsilastirmasi)
+                                    var uzunluklar = [L * 0.5, L, L * 2]
+                                    var satirlar = []
+                                    for (var i = 0; i < uzunluklar.length; i++) {
+                                        var s = calculator.boruHattiTahminHesapla(
+                                            hesaplananTau0, hesaplananMu, Q, D, uzunluklar[i], 0)
+                                        satirlar.push(uzunluklar[i].toFixed(0) + " m: " + s.basincBar.toFixed(2) + " bar")
+                                    }
+                                    tahminKarsilastirma.text = satirlar.join("   |   ")
                                 }
                             }
 
@@ -345,6 +484,18 @@ Rectangle {
                                 font.family: "Segoe UI"
                                 font.pixelSize: 18
                                 font.bold: true
+                                wrapMode: Text.WordWrap
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                id: tahminKarsilastirma
+                                width: parent.width
+                                text: ""
+                                color: "#6b7280"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 10
+                                wrapMode: Text.WordWrap
                                 horizontalAlignment: Text.AlignHCenter
                             }
                         }
@@ -483,6 +634,56 @@ Rectangle {
                             font: parent.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
+                    Button {
+                        width: parent.width
+                        height: 40
+                        text: "📑  Excel (XML) Dışa Aktar"
+                        font.pixelSize: 13
+                        font.bold: true
+                        enabled: olcumId > 0
+
+                        onClicked: {
+                            var yol = database.xmlDisaAktar(olcumId)
+                            xmlDisaAktarBildirim.text = yol.length > 0
+                                ? "✓ Dışa aktarıldı: " + yol
+                                : "✕ Dışa aktarılamadı"
+                            xmlDisaAktarBildirim.visible = true
+                            xmlDisaAktarTimer.restart()
+                        }
+
+                        background: Rectangle {
+                            radius: 8
+                            color: parent.enabled ? (parent.hovered ? "#4f8cf7" : "#3b82f6") : "#1e2a3f"
+                            Behavior on color { ColorAnimation { duration: 120 } }
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#ffffff"
+                            font: parent.font
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
+                    Text {
+                        id: xmlDisaAktarBildirim
+                        width: parent.width
+                        visible: false
+                        text: ""
+                        color: "#9ca3af"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 10
+                        wrapMode: Text.WrapAnywhere
+                        horizontalAlignment: Text.AlignHCenter
+
+                        Timer {
+                            id: xmlDisaAktarTimer
+                            interval: 4000
+                            onTriggered: xmlDisaAktarBildirim.visible = false
                         }
                     }
 

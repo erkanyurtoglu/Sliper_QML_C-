@@ -70,6 +70,10 @@
                             {
                                 "name": "konum",
                                 "type": "double"
+                            },
+                            {
+                                "name": "hiz",
+                                "type": "double"
                             }
                         ],
                         "name": "konumGuncelle",
@@ -89,6 +93,37 @@
                         "access": "public",
                         "name": "sifirla",
                         "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "tau0Mbar",
+                                "type": "double"
+                            },
+                            {
+                                "name": "muMbarHm3",
+                                "type": "double"
+                            },
+                            {
+                                "name": "debiM3h",
+                                "type": "double"
+                            },
+                            {
+                                "name": "boruCapiMm",
+                                "type": "double"
+                            },
+                            {
+                                "name": "boruUzunluguM",
+                                "type": "double"
+                            },
+                            {
+                                "name": "hataPayiYuzde",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "boruHattiTahminHesapla",
+                        "returnType": "QVariantMap"
                     }
                 ],
                 "object": true,
@@ -134,6 +169,20 @@
                         "stored": true,
                         "type": "bool",
                         "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "name": "sonStrokeGecerli",
+                        "notify": "sonStrokeGecerliChanged",
+                        "read": "sonStrokeGecerli",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
                     }
                 ],
                 "qualifiedClassName": "Calculator",
@@ -151,6 +200,11 @@
                     {
                         "access": "public",
                         "name": "duraklatildiChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "sonStrokeGecerliChanged",
                         "returnType": "void"
                     }
                 ],
@@ -305,6 +359,38 @@
                         ],
                         "name": "csvDisaAktar",
                         "returnType": "QString"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "olcumId",
+                                "type": "int"
+                            }
+                        ],
+                        "name": "xmlDisaAktar",
+                        "returnType": "QString"
+                    },
+                    {
+                        "access": "public",
+                        "name": "veriTabaniDisaAktar",
+                        "returnType": "QString"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "kaynakDosyaYolu",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "veriTabaniIcaAktar",
+                        "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
+                        "name": "tumVeriyiSil",
+                        "returnType": "bool"
                     },
                     {
                         "access": "public",
@@ -570,6 +656,17 @@
                     },
                     {
                         "access": "public",
+                        "arguments": [
+                            {
+                                "name": "voltaj",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "bataryaVoltajGuncelle",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
                         "name": "veriyiGecersizYap",
                         "returnType": "void"
                     }
@@ -743,6 +840,20 @@
                         "stored": true,
                         "type": "bool",
                         "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 12,
+                        "name": "bataryaVoltaj",
+                        "notify": "bataryaVoltajChanged",
+                        "read": "bataryaVoltaj",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
                     }
                 ],
                 "qualifiedClassName": "SensorManager",
@@ -800,6 +911,11 @@
                     {
                         "access": "public",
                         "name": "veriGuncellendi",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "bataryaVoltajChanged",
                         "returnType": "void"
                     }
                 ],
@@ -896,6 +1012,11 @@
                         "access": "public",
                         "name": "durumMesajiChanged",
                         "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "hareketsizlikNedeniyleBaglantiKesildi",
+                        "returnType": "void"
                     }
                 ],
                 "slots": [
@@ -923,6 +1044,11 @@
                     {
                         "access": "private",
                         "name": "veriHazir",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "name": "hareketsizlikKontrolEt",
                         "returnType": "void"
                     }
                 ],

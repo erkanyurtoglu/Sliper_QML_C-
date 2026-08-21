@@ -92,7 +92,7 @@ Rectangle {
 
             TextField {
                 id: aramaKutusu
-                width: parent.width - filtreKutusu.width - parent.spacing
+                width: parent.width - filtreKutusu.width - gelismisAyarlarButonu.width - parent.spacing * 2
                 height: 40
                 placeholderText: "Müşteri veya reçete ara..."
                 placeholderTextColor: "#4b5563"
@@ -135,6 +135,37 @@ Rectangle {
                     color: "#9ca3af"
                     font.pixelSize: 13
                     leftPadding: 10
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Button {
+                id: gelismisAyarlarButonu
+                width: 44
+                height: 40
+                text: "⚙️"
+                font.pixelSize: 15
+
+                onClicked: {
+                    gelismisAyarlarPopup.pinDogrulandi = false
+                    pinKutusu.text = ""
+                    gelismisAyarlarBildirim.text = ""
+                    gelismisAyarlarPopup.open()
+                }
+
+                background: Rectangle {
+                    radius: 8
+                    color: parent.hovered ? "#162033" : "#0f1420"
+                    border.color: "#1e2a3f"
+                    border.width: 1
+                    Behavior on color { ColorAnimation { duration: 120 } }
+                }
+
+                contentItem: Text {
+                    text: parent.text
+                    color: "#9ca3af"
+                    font: parent.font
+                    horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
             }
@@ -493,6 +524,380 @@ Rectangle {
                     font.pixelSize: 13
 
                     onClicked: silOnayPopup.close()
+
+                    background: Rectangle {
+                        radius: 8
+                        color: parent.hovered ? "#162033" : "#0f1420"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#9ca3af"
+                        font: parent.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+            }
+        }
+    }
+
+    // Orijinal SLIPER'daki "Expert Settings > Database Export / Import / Delete"
+    // özelliklerine karşılık gelir (bkz. slipermanV13.pdf bölüm 6). Şifre
+    // doğrulaması, uygulamada zaten var olan giriş şifresini (backend.sifreDogrula)
+    // kullanır; orijinal cihazdaki ayrı "2603" servis şifresi yerine bu tercih
+    // edildi çünkü uygulamada zaten tek bir şifre akışı var.
+    Popup {
+        id: gelismisAyarlarPopup
+        anchors.centerIn: parent
+        width: 420
+        padding: 24
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape
+
+        property bool pinDogrulandi: false
+
+        background: Rectangle {
+            color: "#0f1420"
+            radius: 14
+            border.color: "#1e2a3f"
+            border.width: 1
+        }
+
+        contentItem: Column {
+            width: gelismisAyarlarPopup.availableWidth
+            spacing: 16
+
+            Text {
+                text: "Gelişmiş Ayarlar"
+                color: "#ffffff"
+                font.family: "Segoe UI"
+                font.pixelSize: 17
+                font.bold: true
+            }
+
+            Column {
+                width: parent.width
+                spacing: 6
+                visible: !gelismisAyarlarPopup.pinDogrulandi
+
+                Text {
+                    text: "ŞİFRE"
+                    color: "#6b7280"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 10
+                    font.letterSpacing: 1
+                }
+
+                TextField {
+                    id: pinKutusu
+                    width: parent.width
+                    height: 40
+                    echoMode: TextInput.Password
+                    placeholderText: "Şifrenizi girin"
+                    placeholderTextColor: "#4b5563"
+                    color: "#ffffff"
+                    font.pixelSize: 13
+                    leftPadding: 12
+                    verticalAlignment: TextInput.AlignVCenter
+                    background: Rectangle {
+                        color: "#0a0e17"
+                        radius: 6
+                        border.color: pinKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
+                        border.width: 1
+                    }
+                    Keys.onReturnPressed: pinDogrulaButonu.clicked()
+                }
+
+                Text {
+                    id: pinHataMetni
+                    text: "Şifre hatalı, tekrar deneyin."
+                    color: "#ef4444"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 11
+                    visible: false
+                }
+
+                Button {
+                    id: pinDogrulaButonu
+                    width: parent.width
+                    height: 40
+                    text: "Onayla"
+                    font.pixelSize: 13
+                    font.bold: true
+
+                    onClicked: {
+                        if (backend.sifreDogrula(pinKutusu.text)) {
+                            gelismisAyarlarPopup.pinDogrulandi = true
+                            pinHataMetni.visible = false
+                        } else {
+                            pinHataMetni.visible = true
+                            pinKutusu.text = ""
+                            pinKutusu.forceActiveFocus()
+                        }
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: parent.hovered ? "#4f8cf7" : "#3b82f6"
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#ffffff"
+                        font: parent.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+            }
+
+            Column {
+                width: parent.width
+                spacing: 10
+                visible: gelismisAyarlarPopup.pinDogrulandi
+
+                Button {
+                    width: parent.width
+                    height: 40
+                    text: "Veritabanını Dışa Aktar"
+                    font.pixelSize: 13
+
+                    onClicked: {
+                        var yol = database.veriTabaniDisaAktar()
+                        gelismisAyarlarBildirim.text = yol.length > 0
+                            ? "✓ Dışa aktarıldı: " + yol
+                            : "✕ Dışa aktarılamadı"
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: parent.hovered ? "#162033" : "#0f1420"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#dce8f5"
+                        font: parent.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Column {
+                    width: parent.width
+                    spacing: 6
+
+                    Text {
+                        text: "İÇE AKTARILACAK .DB DOSYA YOLU"
+                        color: "#6b7280"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 10
+                        font.letterSpacing: 1
+                    }
+
+                    TextField {
+                        id: icaAktarYoluKutusu
+                        width: parent.width
+                        height: 40
+                        placeholderText: "ör. C:/Users/.../SliperRaporlari/sliper_yedek_....db"
+                        placeholderTextColor: "#4b5563"
+                        color: "#ffffff"
+                        font.pixelSize: 12
+                        leftPadding: 12
+                        verticalAlignment: TextInput.AlignVCenter
+                        background: Rectangle {
+                            color: "#0a0e17"
+                            radius: 6
+                            border.color: icaAktarYoluKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
+                            border.width: 1
+                        }
+                    }
+                }
+
+                Button {
+                    width: parent.width
+                    height: 40
+                    text: "Veritabanını İçe Aktar"
+                    font.pixelSize: 13
+
+                    onClicked: {
+                        var basarili = database.veriTabaniIcaAktar(icaAktarYoluKutusu.text)
+                        gelismisAyarlarBildirim.text = basarili
+                            ? "✓ İçe aktarıldı, uygulamayı yeniden başlatmanız önerilir."
+                            : "✕ İçe aktarılamadı, dosya yolunu kontrol edin."
+                        if (basarili) {
+                            gecmisSayfasi.listeyiYenile()
+                        }
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: parent.hovered ? "#162033" : "#0f1420"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#dce8f5"
+                        font: parent.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Button {
+                    width: parent.width
+                    height: 40
+                    text: "Tüm Verileri Sil"
+                    font.pixelSize: 13
+                    font.bold: true
+
+                    onClicked: tumVeriyiSilOnayPopup.open()
+
+                    background: Rectangle {
+                        radius: 8
+                        color: parent.pressed ? "#b91c1c" : (parent.hovered ? "#ef4444" : "#dc2626")
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#ffffff"
+                        font: parent.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Text {
+                    id: gelismisAyarlarBildirim
+                    width: parent.width
+                    text: ""
+                    color: "#9ca3af"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 10
+                    wrapMode: Text.WrapAnywhere
+                }
+
+                Button {
+                    width: parent.width
+                    height: 36
+                    text: "Kapat"
+                    font.pixelSize: 12
+
+                    onClicked: gelismisAyarlarPopup.close()
+
+                    background: Rectangle {
+                        radius: 8
+                        color: parent.hovered ? "#162033" : "transparent"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#9ca3af"
+                        font: parent.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+            }
+        }
+    }
+
+    // "Tüm Verileri Sil" için çift onay (orijinal cihazdaki "Confirm if you
+    // are really sure" uyarısına karşılık gelir).
+    Popup {
+        id: tumVeriyiSilOnayPopup
+        anchors.centerIn: parent
+        width: 380
+        padding: 24
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape
+
+        background: Rectangle {
+            color: "#0f1420"
+            radius: 14
+            border.color: "#dc2626"
+            border.width: 1
+        }
+
+        contentItem: Column {
+            width: tumVeriyiSilOnayPopup.availableWidth
+            spacing: 16
+
+            Text {
+                text: "Tüm Verileri Sil"
+                color: "#ffffff"
+                font.family: "Segoe UI"
+                font.pixelSize: 17
+                font.bold: true
+            }
+
+            Text {
+                width: parent.width
+                wrapMode: Text.WordWrap
+                text: "Tüm ölçüm ve stroke verileri kalıcı olarak silinecek. Sensör kalibrasyonları etkilenmez. Bu işlem GERİ ALINAMAZ, emin misiniz?"
+                color: "#9ca3af"
+                font.family: "Segoe UI"
+                font.pixelSize: 13
+            }
+
+            Row {
+                width: parent.width
+                spacing: 10
+                layoutDirection: Qt.RightToLeft
+
+                Button {
+                    width: (parent.width - 10) / 2
+                    height: 40
+                    text: "Evet, Hepsini Sil"
+                    font.pixelSize: 13
+                    font.bold: true
+
+                    onClicked: {
+                        database.tumVeriyiSil()
+                        gecmisSayfasi.listeyiYenile()
+                        tumVeriyiSilOnayPopup.close()
+                        gelismisAyarlarBildirim.text = "✓ Tüm veriler silindi."
+                    }
+
+                    background: Rectangle {
+                        radius: 8
+                        color: parent.pressed ? "#b91c1c" : (parent.hovered ? "#ef4444" : "#dc2626")
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#ffffff"
+                        font: parent.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Button {
+                    width: (parent.width - 10) / 2
+                    height: 40
+                    text: "İptal"
+                    font.pixelSize: 13
+
+                    onClicked: tumVeriyiSilOnayPopup.close()
 
                     background: Rectangle {
                         radius: 8

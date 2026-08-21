@@ -307,6 +307,28 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qtmochelpers.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_Calculator.cpp \
  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata_impl.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qtextstream.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qcontiguouscache.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/climits \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer_impl.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qset.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qhash.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/q23utility.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qobject.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qstring.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_Database.cpp \
  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Database.h \
  C:/Qt/6.7.3/mingw_64/include/QtSql/QSqlDatabase \
@@ -318,28 +340,6 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QList \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qlist.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qtextstream.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qcontiguouscache.h \
- C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/climits \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer_impl.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata_impl.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qset.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qhash.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/q23utility.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qobject.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qstring.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_ReportManager.cpp \
  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_SensorManager.cpp \
@@ -357,5 +357,8 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QElapsedTimer \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QTimer \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qtimer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qbasictimer.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVector \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h

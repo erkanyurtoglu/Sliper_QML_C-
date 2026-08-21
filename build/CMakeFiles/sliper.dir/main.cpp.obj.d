@@ -396,6 +396,14 @@ CMakeFiles/sliper.dir/main.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qobject.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/SensorManager.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/Calculator.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qstring.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/Database.h \
  C:/Qt/6.7.3/mingw_64/include/QtSql/QSqlDatabase \
  C:/Qt/6.7.3/mingw_64/include/QtSql/qsqldatabase.h \
@@ -406,14 +414,6 @@ CMakeFiles/sliper.dir/main.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QList \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qlist.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qstring.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/ReportManager.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/WifiManager.h \
  C:/Qt/6.7.3/mingw_64/include/QtNetwork/QTcpSocket \
@@ -423,5 +423,8 @@ CMakeFiles/sliper.dir/main.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtNetwork/qhostaddress.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QElapsedTimer \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QTimer \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qtimer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qbasictimer.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVector \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h

@@ -15,6 +15,13 @@ WifiManager::WifiManager(SensorManager *sensorManager, Database *database, QObje
     connect(m_soket, &QTcpSocket::disconnected, this, &WifiManager::soketAyrildi);
     connect(m_soket, &QTcpSocket::errorOccurred, this, &WifiManager::soketHata);
     connect(m_soket, &QTcpSocket::readyRead, this, &WifiManager::veriHazir);
+
+    // Hareketsizlik kontrolu: baglanti acikken 2 dakikada bir kontrol edilir,
+    // en son veri geldigi zamandan itibaren HAREKETSIZLIK_LIMIT_MS gecmisse
+    // baglanti otomatik kesilir (orijinal cihazin "2 saat sonra otomatik
+    // kapanma" davranisinin yazilimsal karsiligi).
+    m_hareketsizlikTimer.setInterval(2 * 60 * 1000);
+    connect(&m_hareketsizlikTimer, &QTimer::timeout, this, &WifiManager::hareketsizlikKontrolEt);
 }
 
 bool WifiManager::baglandi() const { return m_baglandi; }
@@ -88,6 +95,8 @@ void WifiManager::soketBaglandi()
 
     m_ilkPaket = true;
     m_zamanlayici.restart();
+    m_hareketsizlikZamanlayici.restart();
+    m_hareketsizlikTimer.start();
     kalibrasyonYukle();
 
     if (m_sensorManager) {
@@ -101,6 +110,7 @@ void WifiManager::soketAyrildi()
 {
     m_baglandi = false;
     m_baglaniyor = false;
+    m_hareketsizlikTimer.stop();
     emit baglandiChanged();
     emit baglaniyorChanged();
     durumGuncelle("Bağlı Değil");
@@ -110,6 +120,18 @@ void WifiManager::soketAyrildi()
     }
 
     qDebug() << "ESP32 baglantisi kesildi.";
+}
+
+void WifiManager::hareketsizlikKontrolEt()
+{
+    if (!m_baglandi) return;
+
+    if (m_hareketsizlikZamanlayici.elapsed() >= HAREKETSIZLIK_LIMIT_MS) {
+        qWarning() << "2 saatten uzun suredir veri akisi yok, baglanti otomatik kesiliyor.";
+        durumGuncelle("Hareketsizlik nedeniyle baglanti kesildi");
+        emit hareketsizlikNedeniyleBaglantiKesildi();
+        baglantiyiKes();
+    }
 }
 
 void WifiManager::soketHata(QAbstractSocket::SocketError hata)
@@ -125,6 +147,10 @@ void WifiManager::soketHata(QAbstractSocket::SocketError hata)
 
 void WifiManager::veriHazir()
 {
+    if (m_hareketsizlikZamanlayici.isValid()) {
+        m_hareketsizlikZamanlayici.restart();
+    }
+
     m_tamponVeri.append(m_soket->readAll());
 
     int satirSonu;
@@ -169,6 +195,15 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
         m_sensorManager->hamAgirlikGuncelle(hamAgirlik);
         m_sensorManager->hamMesafeGuncelle(hamMesafe);
         m_sensorManager->hamAccelGuncelle(accelX, accelY, accelZ);
+
+        // Batarya voltaji: firmware "hamBatarya" alanini gondermiyorsa
+        // (henuz donanim baglanmadiysa) 0 olarak kalir, QML tarafinda
+        // gosterge "bilinmiyor" durumunda birakilmalidir.
+        if (obj.contains("hamBatarya")) {
+            const double hamBatarya = obj.value("hamBatarya").toDouble();
+            const double voltaj = hamBatarya * ADS1115_LSB_VOLT * BATARYA_BOLUCU_ORANI;
+            m_sensorManager->bataryaVoltajGuncelle(voltaj);
+        }
     }
 
     const double konum = m_mesafeHamDegerleri.isEmpty()

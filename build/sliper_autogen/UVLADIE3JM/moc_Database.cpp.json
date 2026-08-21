@@ -143,6 +143,38 @@
                     "access": "public",
                     "arguments": [
                         {
+                            "name": "olcumId",
+                            "type": "int"
+                        }
+                    ],
+                    "name": "xmlDisaAktar",
+                    "returnType": "QString"
+                },
+                {
+                    "access": "public",
+                    "name": "veriTabaniDisaAktar",
+                    "returnType": "QString"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "kaynakDosyaYolu",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "veriTabaniIcaAktar",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "name": "tumVeriyiSil",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
                             "name": "noktalar",
                             "type": "QVariantList"
                         }

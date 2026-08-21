@@ -40,14 +40,24 @@ constexpr auto qt_meta_stringdata_CLASSCalculatorENDCLASS = QtMocHelpers::string
     "",
     "strokeSayisiChanged",
     "duraklatildiChanged",
+    "sonStrokeGecerliChanged",
     "konumGuncelle",
     "konum",
+    "hiz",
     "duraklat",
     "devamEt",
     "sifirla",
+    "boruHattiTahminHesapla",
+    "tau0Mbar",
+    "muMbarHm3",
+    "debiM3h",
+    "boruCapiMm",
+    "boruUzunluguM",
+    "hataPayiYuzde",
     "durum",
     "strokeSayisi",
-    "duraklatildi"
+    "duraklatildi",
+    "sonStrokeGecerli"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -60,39 +70,44 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSCalculatorENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
-       3,   65, // properties
+       9,   14, // methods
+       4,   93, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       3,       // signalCount
+       4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   56,    2, 0x06,    4 /* Public */,
-       3,    0,   57,    2, 0x06,    5 /* Public */,
-       4,    0,   58,    2, 0x06,    6 /* Public */,
+       1,    0,   68,    2, 0x06,    5 /* Public */,
+       3,    0,   69,    2, 0x06,    6 /* Public */,
+       4,    0,   70,    2, 0x06,    7 /* Public */,
+       5,    0,   71,    2, 0x06,    8 /* Public */,
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-       5,    1,   59,    2, 0x02,    7 /* Public */,
-       7,    0,   62,    2, 0x02,    9 /* Public */,
-       8,    0,   63,    2, 0x02,   10 /* Public */,
-       9,    0,   64,    2, 0x02,   11 /* Public */,
+       6,    2,   72,    2, 0x02,    9 /* Public */,
+       9,    0,   77,    2, 0x02,   12 /* Public */,
+      10,    0,   78,    2, 0x02,   13 /* Public */,
+      11,    0,   79,    2, 0x02,   14 /* Public */,
+      12,    6,   80,    2, 0x102,   15 /* Public | MethodIsConst  */,
 
  // signals: parameters
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
 
  // methods: parameters
-    QMetaType::Void, QMetaType::Double,    6,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double,    7,    8,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::QVariantMap, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   13,   14,   15,   16,   17,   18,
 
  // properties: name, type, flags
-      10, QMetaType::QString, 0x00015001, uint(0), 0,
-      11, QMetaType::Int, 0x00015001, uint(1), 0,
-      12, QMetaType::Bool, 0x00015001, uint(2), 0,
+      19, QMetaType::QString, 0x00015001, uint(0), 0,
+      20, QMetaType::Int, 0x00015001, uint(1), 0,
+      21, QMetaType::Bool, 0x00015001, uint(2), 0,
+      22, QMetaType::Bool, 0x00015001, uint(3), 0,
 
        0        // eod
 };
@@ -110,6 +125,8 @@ Q_CONSTINIT const QMetaObject Calculator::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<int, std::true_type>,
         // property 'duraklatildi'
         QtPrivate::TypeAndForceComplete<bool, std::true_type>,
+        // property 'sonStrokeGecerli'
+        QtPrivate::TypeAndForceComplete<bool, std::true_type>,
         // Q_OBJECT / Q_GADGET
         QtPrivate::TypeAndForceComplete<Calculator, std::true_type>,
         // method 'durumChanged'
@@ -118,15 +135,26 @@ Q_CONSTINIT const QMetaObject Calculator::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'duraklatildiChanged'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'sonStrokeGecerliChanged'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'konumGuncelle'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
         QtPrivate::TypeAndForceComplete<double, std::false_type>,
         // method 'duraklat'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'devamEt'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'sifirla'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'boruHattiTahminHesapla'
+        QtPrivate::TypeAndForceComplete<QVariantMap, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>
     >,
     nullptr
 } };
@@ -140,10 +168,13 @@ void Calculator::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 0: _t->durumChanged(); break;
         case 1: _t->strokeSayisiChanged(); break;
         case 2: _t->duraklatildiChanged(); break;
-        case 3: _t->konumGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
-        case 4: _t->duraklat(); break;
-        case 5: _t->devamEt(); break;
-        case 6: _t->sifirla(); break;
+        case 3: _t->sonStrokeGecerliChanged(); break;
+        case 4: _t->konumGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2]))); break;
+        case 5: _t->duraklat(); break;
+        case 6: _t->devamEt(); break;
+        case 7: _t->sifirla(); break;
+        case 8: { QVariantMap _r = _t->boruHattiTahminHesapla((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[5])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[6])));
+            if (_a[0]) *reinterpret_cast< QVariantMap*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -169,6 +200,13 @@ void Calculator::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
                 return;
             }
         }
+        {
+            using _t = void (Calculator::*)();
+            if (_t _q_method = &Calculator::sonStrokeGecerliChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 3;
+                return;
+            }
+        }
     } else if (_c == QMetaObject::ReadProperty) {
         auto *_t = static_cast<Calculator *>(_o);
         (void)_t;
@@ -177,6 +215,7 @@ void Calculator::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 0: *reinterpret_cast< QString*>(_v) = _t->durum(); break;
         case 1: *reinterpret_cast< int*>(_v) = _t->strokeSayisi(); break;
         case 2: *reinterpret_cast< bool*>(_v) = _t->duraklatildi(); break;
+        case 3: *reinterpret_cast< bool*>(_v) = _t->sonStrokeGecerli(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -204,18 +243,18 @@ int Calculator::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 9)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 9;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 9)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 7;
+        _id -= 9;
     }else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::BindableProperty
             || _c == QMetaObject::RegisterPropertyMetaType) {
         qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     }
     return _id;
 }
@@ -236,5 +275,11 @@ void Calculator::strokeSayisiChanged()
 void Calculator::duraklatildiChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 2, nullptr);
+}
+
+// SIGNAL 3
+void Calculator::sonStrokeGecerliChanged()
+{
+    QMetaObject::activate(this, &staticMetaObject, 3, nullptr);
 }
 QT_WARNING_POP

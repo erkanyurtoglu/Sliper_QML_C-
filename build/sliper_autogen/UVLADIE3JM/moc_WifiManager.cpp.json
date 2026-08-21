@@ -80,6 +80,11 @@
                     "access": "public",
                     "name": "durumMesajiChanged",
                     "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "hareketsizlikNedeniyleBaglantiKesildi",
+                    "returnType": "void"
                 }
             ],
             "slots": [
@@ -107,6 +112,11 @@
                 {
                     "access": "private",
                     "name": "veriHazir",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "hareketsizlikKontrolEt",
                     "returnType": "void"
                 }
             ],

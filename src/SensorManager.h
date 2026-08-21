@@ -16,6 +16,7 @@ class SensorManager : public QObject
     Q_PROPERTY(double hamAccelY READ hamAccelY NOTIFY hamAccelDegisti)
     Q_PROPERTY(double hamAccelZ READ hamAccelZ NOTIFY hamAccelDegisti)
     Q_PROPERTY(bool veriGecerli READ veriGecerli NOTIFY veriGecerliChanged)
+    Q_PROPERTY(double bataryaVoltaj READ bataryaVoltaj NOTIFY bataryaVoltajChanged)
 
 public:
     explicit SensorManager(QObject *parent = nullptr);
@@ -32,11 +33,13 @@ public:
     double hamAccelY() const;
     double hamAccelZ() const;
     bool veriGecerli() const;
+    double bataryaVoltaj() const;
 
     Q_INVOKABLE void veriGuncelle(double basinc, double konum, double hiz, double debi, double egimX, double egimY);
     Q_INVOKABLE void hamAgirlikGuncelle(double hamAgirlik);
     Q_INVOKABLE void hamMesafeGuncelle(double hamMesafe);
     Q_INVOKABLE void hamAccelGuncelle(double x, double y, double z);
+    Q_INVOKABLE void bataryaVoltajGuncelle(double voltaj);
     Q_INVOKABLE void veriyiGecersizYap();
 
 signals:
@@ -51,6 +54,7 @@ signals:
     void hamAccelDegisti();
     void veriGecerliChanged();
     void veriGuncellendi();
+    void bataryaVoltajChanged();
 
 private:
     double m_basinc = 0.0;
@@ -65,4 +69,5 @@ private:
     double m_hamAccelY = 0.0;
     double m_hamAccelZ = 0.0;
     bool m_veriGecerli = false;
+    double m_bataryaVoltaj = 0.0;
 };

@@ -58,6 +58,11 @@ constexpr auto qt_meta_stringdata_CLASSDatabaseENDCLASS = QtMocHelpers::stringDa
     "kalibrasyonGetir",
     "olcumBilgisiGetir",
     "csvDisaAktar",
+    "xmlDisaAktar",
+    "veriTabaniDisaAktar",
+    "veriTabaniIcaAktar",
+    "kaynakDosyaYolu",
+    "tumVeriyiSil",
     "loadCellNoktalariKaydet",
     "noktalar",
     "loadCellNoktalariGetir",
@@ -85,7 +90,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      18,   14, // methods
+      22,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -93,24 +98,28 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
        0,       // signalCount
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    3,  122,    2, 0x02,    1 /* Public */,
-       6,    5,  129,    2, 0x02,    5 /* Public */,
-      12,    1,  140,    2, 0x02,   11 /* Public */,
-      13,    0,  143,    2, 0x02,   13 /* Public */,
-      14,    1,  144,    2, 0x02,   14 /* Public */,
-      15,    1,  147,    2, 0x02,   16 /* Public */,
-      16,    3,  150,    2, 0x02,   18 /* Public */,
-      20,    1,  157,    2, 0x02,   22 /* Public */,
-      21,    1,  160,    2, 0x02,   24 /* Public */,
-      22,    1,  163,    2, 0x02,   26 /* Public */,
-      23,    1,  166,    2, 0x02,   28 /* Public */,
-      25,    0,  169,    2, 0x02,   30 /* Public */,
-      26,    1,  170,    2, 0x02,   31 /* Public */,
-      27,    0,  173,    2, 0x02,   33 /* Public */,
-      28,    6,  174,    2, 0x02,   34 /* Public */,
-      35,    0,  187,    2, 0x02,   41 /* Public */,
-      36,    1,  188,    2, 0x02,   42 /* Public */,
-      37,    1,  191,    2, 0x02,   44 /* Public */,
+       1,    3,  146,    2, 0x02,    1 /* Public */,
+       6,    5,  153,    2, 0x02,    5 /* Public */,
+      12,    1,  164,    2, 0x02,   11 /* Public */,
+      13,    0,  167,    2, 0x02,   13 /* Public */,
+      14,    1,  168,    2, 0x02,   14 /* Public */,
+      15,    1,  171,    2, 0x02,   16 /* Public */,
+      16,    3,  174,    2, 0x02,   18 /* Public */,
+      20,    1,  181,    2, 0x02,   22 /* Public */,
+      21,    1,  184,    2, 0x02,   24 /* Public */,
+      22,    1,  187,    2, 0x02,   26 /* Public */,
+      23,    1,  190,    2, 0x02,   28 /* Public */,
+      24,    0,  193,    2, 0x02,   30 /* Public */,
+      25,    1,  194,    2, 0x02,   31 /* Public */,
+      27,    0,  197,    2, 0x02,   33 /* Public */,
+      28,    1,  198,    2, 0x02,   34 /* Public */,
+      30,    0,  201,    2, 0x02,   36 /* Public */,
+      31,    1,  202,    2, 0x02,   37 /* Public */,
+      32,    0,  205,    2, 0x02,   39 /* Public */,
+      33,    6,  206,    2, 0x02,   40 /* Public */,
+      40,    0,  219,    2, 0x02,   47 /* Public */,
+      41,    1,  220,    2, 0x02,   48 /* Public */,
+      42,    1,  223,    2, 0x02,   50 /* Public */,
 
  // methods: parameters
     QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::Double,    3,    4,    5,
@@ -123,11 +132,15 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSDatabaseENDCLASS[] = {
     QMetaType::QVariantMap, QMetaType::QString,   17,
     QMetaType::QVariantMap, QMetaType::Int,    7,
     QMetaType::QString, QMetaType::Int,    7,
-    QMetaType::Bool, QMetaType::QVariantList,   24,
+    QMetaType::QString, QMetaType::Int,    7,
+    QMetaType::QString,
+    QMetaType::Bool, QMetaType::QString,   26,
+    QMetaType::Bool,
+    QMetaType::Bool, QMetaType::QVariantList,   29,
     QMetaType::QVariantList,
-    QMetaType::Bool, QMetaType::QVariantList,   24,
+    QMetaType::Bool, QMetaType::QVariantList,   29,
     QMetaType::QVariantList,
-    QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   29,   30,   31,   32,   33,   34,
+    QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   34,   35,   36,   37,   38,   39,
     QMetaType::QVariantMap,
     QMetaType::Void, QMetaType::QString,   17,
     QMetaType::QString, QMetaType::QString,   17,
@@ -181,6 +194,16 @@ Q_CONSTINIT const QMetaObject Database::staticMetaObject = { {
         // method 'csvDisaAktar'
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        // method 'xmlDisaAktar'
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        // method 'veriTabaniDisaAktar'
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        // method 'veriTabaniIcaAktar'
+        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
+        // method 'tumVeriyiSil'
+        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         // method 'loadCellNoktalariKaydet'
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QVariantList &, std::false_type>,
@@ -236,20 +259,28 @@ void Database::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
             if (_a[0]) *reinterpret_cast< QVariantMap*>(_a[0]) = std::move(_r); }  break;
         case 9: { QString _r = _t->csvDisaAktar((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
-        case 10: { bool _r = _t->loadCellNoktalariKaydet((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])));
+        case 10: { QString _r = _t->xmlDisaAktar((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])));
+            if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
+        case 11: { QString _r = _t->veriTabaniDisaAktar();
+            if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
+        case 12: { bool _r = _t->veriTabaniIcaAktar((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 11: { QVariantList _r = _t->loadCellNoktalariGetir();
+        case 13: { bool _r = _t->tumVeriyiSil();
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
+        case 14: { bool _r = _t->loadCellNoktalariKaydet((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])));
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
+        case 15: { QVariantList _r = _t->loadCellNoktalariGetir();
             if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
-        case 12: { bool _r = _t->mesafeNoktalariKaydet((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])));
+        case 16: { bool _r = _t->mesafeNoktalariKaydet((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 13: { QVariantList _r = _t->mesafeNoktalariGetir();
+        case 17: { QVariantList _r = _t->mesafeNoktalariGetir();
             if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
-        case 14: { bool _r = _t->egimKalibrasyonuKaydet((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[5])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[6])));
+        case 18: { bool _r = _t->egimKalibrasyonuKaydet((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[5])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[6])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 15: { QVariantMap _r = _t->egimKalibrasyonuGetir();
+        case 19: { QVariantMap _r = _t->egimKalibrasyonuGetir();
             if (_a[0]) *reinterpret_cast< QVariantMap*>(_a[0]) = std::move(_r); }  break;
-        case 16: _t->kalibrasyonTarihiKaydet((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
-        case 17: { QString _r = _t->kalibrasyonTarihiGetir((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])));
+        case 20: _t->kalibrasyonTarihiKaydet((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 21: { QString _r = _t->kalibrasyonTarihiGetir((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
@@ -275,13 +306,13 @@ int Database::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 18)
+        if (_id < 22)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 18;
+        _id -= 22;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 18)
+        if (_id < 22)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 18;
+        _id -= 22;
     }
     return _id;
 }

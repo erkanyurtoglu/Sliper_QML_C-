@@ -17,6 +17,7 @@ double SensorManager::hamAccelX() const { return m_hamAccelX; }
 double SensorManager::hamAccelY() const { return m_hamAccelY; }
 double SensorManager::hamAccelZ() const { return m_hamAccelZ; }
 bool SensorManager::veriGecerli() const { return m_veriGecerli; }
+double SensorManager::bataryaVoltaj() const { return m_bataryaVoltaj; }
 
 void SensorManager::veriGuncelle(double basinc, double konum, double hiz, double debi, double egimX, double egimY)
 {
@@ -57,6 +58,14 @@ void SensorManager::hamAccelGuncelle(double x, double y, double z)
         m_hamAccelY = y;
         m_hamAccelZ = z;
         emit hamAccelDegisti();
+    }
+}
+
+void SensorManager::bataryaVoltajGuncelle(double voltaj)
+{
+    if (m_bataryaVoltaj != voltaj) {
+        m_bataryaVoltaj = voltaj;
+        emit bataryaVoltajChanged();
     }
 }
 

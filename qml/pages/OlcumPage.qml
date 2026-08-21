@@ -129,7 +129,7 @@ Rectangle {
             hizYEkseni.max = eksenTavaniHesapla(hizGecmis, 4, 0.5)
             debiYEkseni.max = eksenTavaniHesapla(debiGecmis, 180, 10)
 
-            calculator.konumGuncelle(sensorManager.konum)
+            calculator.konumGuncelle(sensorManager.konum, sensorManager.hiz)
         }
     }
 
@@ -927,7 +927,9 @@ Rectangle {
                             target: calculator
                             function onStrokeSayisiChanged() {
                                 if (aktifOlcumId > 0 && sensorManager.veriGecerli) {
-                                    database.strokeKaydet(aktifOlcumId, sensorManager.basinc, sensorManager.konum, sensorManager.debi, true)
+                                    // gecerli parametresi artik Calculator'un hiz>0 kontrolunden geliyor
+                                    // (orijinal SLIPER'daki "invalid stroke" mantigi), sabit "true" degil.
+                                    database.strokeKaydet(aktifOlcumId, sensorManager.basinc, sensorManager.konum, sensorManager.debi, calculator.sonStrokeGecerli)
                                 }
                             }
                         }

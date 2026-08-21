@@ -77,6 +77,17 @@
                 },
                 {
                     "access": "public",
+                    "arguments": [
+                        {
+                            "name": "voltaj",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "bataryaVoltajGuncelle",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
                     "name": "veriyiGecersizYap",
                     "returnType": "void"
                 }
@@ -250,6 +261,20 @@
                     "stored": true,
                     "type": "bool",
                     "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 12,
+                    "name": "bataryaVoltaj",
+                    "notify": "bataryaVoltajChanged",
+                    "read": "bataryaVoltaj",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
                 }
             ],
             "qualifiedClassName": "SensorManager",
@@ -307,6 +332,11 @@
                 {
                     "access": "public",
                     "name": "veriGuncellendi",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "bataryaVoltajChanged",
                     "returnType": "void"
                 }
             ],

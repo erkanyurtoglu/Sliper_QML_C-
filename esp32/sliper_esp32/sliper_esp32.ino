@@ -30,6 +30,14 @@
 #define HX711_DT 39
 #define HX711_SCK 40
 
+// Batarya voltaj olcumu: ADS1115'in 3. kanali (index 3) mesafe sensoru
+// icin kullaniliyor, bu yuzden batarya icin 0. kanal ayrildi.
+// TODO: Gercek voltaj bolucu direnc degerleri (R1/R2) donanima baglanip
+// bir multimetreyle dogrulandiktan sonra Qt tarafindaki
+// WifiManager::BATARYA_BOLUCU_ORANI degeri buna gore kalibre edilmelidir.
+// Su an bu deger yer tutucu (placeholder) bir varsayimdir.
+#define BATARYA_ADS_KANALI 0
+
 // ---------------- Nesneler ----------------
 Adafruit_MPU6050 mpu;
 HX711 loadCell;
@@ -101,6 +109,10 @@ int16_t hamMesafeOku() {
     return ads.readADC_SingleEnded(3);
 }
 
+int16_t hamBataryaOku() {
+    return ads.readADC_SingleEnded(BATARYA_ADS_KANALI);
+}
+
 void loop() {
     WiFiClient yeniIstemci = tcpSunucu.available();
     if (yeniIstemci) {
@@ -126,6 +138,7 @@ void loop() {
 
     long hamAgirlik = hamAgirlikOku();
     int16_t hamMesafe = hamMesafeOku();
+    int16_t hamBatarya = hamBataryaOku();
 
     sensors_event_t ivme, gyro, sicaklik;
     ivme.acceleration.x = 0;
@@ -138,6 +151,7 @@ void loop() {
     StaticJsonDocument<256> doc;
     doc["hamAgirlik"] = hamAgirlik;
     doc["hamMesafe"] = hamMesafe;
+    doc["hamBatarya"] = hamBatarya;
     doc["accelX"] = round(ivme.acceleration.x * 1000) / 1000.0;
     doc["accelY"] = round(ivme.acceleration.y * 1000) / 1000.0;
     doc["accelZ"] = round(ivme.acceleration.z * 1000) / 1000.0;

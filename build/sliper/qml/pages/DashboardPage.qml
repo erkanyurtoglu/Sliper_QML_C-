@@ -83,6 +83,39 @@ Rectangle {
             }
 
             Rectangle {
+                id: bataryaGostergesi
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 24
+                anchors.rightMargin: 24
+                anchors.topMargin: 190
+                height: 22
+                radius: 4
+                visible: wifiManager.baglandi && sensorManager.bataryaVoltaj > 0.1
+                color: {
+                    if (sensorManager.bataryaVoltaj >= 14.5) return "#0f2417"
+                    if (sensorManager.bataryaVoltaj >= 14.0) return "#2a2414"
+                    return "#2a1414"
+                }
+
+                Text {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 8
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "🔋 Batarya: " + sensorManager.bataryaVoltaj.toFixed(2) + " V"
+                    color: {
+                        if (sensorManager.bataryaVoltaj >= 14.5) return "#4ade80"
+                        if (sensorManager.bataryaVoltaj >= 14.0) return "#e8a020"
+                        return "#f87171"
+                    }
+                    font.family: "Segoe UI"
+                    font.pixelSize: 11
+                    font.bold: true
+                }
+            }
+
+            Rectangle {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right

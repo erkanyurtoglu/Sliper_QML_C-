@@ -5,6 +5,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QObject \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QTimer \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantList \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap \
@@ -22,6 +23,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/qatomic.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qatomic_cxx11.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qbasicatomic.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/qbasictimer.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qbindingstorage.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qbytearray.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qbytearrayalgorithms.h \
@@ -106,6 +108,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/qtdeprecationmarkers.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qtenvironmentvariables.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qtextstream.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/qtimer.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qtmetamacros.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qtnoop.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qtpreprocessorsupport.h \

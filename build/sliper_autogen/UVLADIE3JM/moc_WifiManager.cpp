@@ -40,12 +40,14 @@ constexpr auto qt_meta_stringdata_CLASSWifiManagerENDCLASS = QtMocHelpers::strin
     "",
     "baglaniyorChanged",
     "durumMesajiChanged",
+    "hareketsizlikNedeniyleBaglantiKesildi",
     "soketBaglandi",
     "soketAyrildi",
     "soketHata",
     "QAbstractSocket::SocketError",
     "hata",
     "veriHazir",
+    "hareketsizlikKontrolEt",
     "baglan",
     "baglantiyiKes",
     "kalibrasyonYenidenYukle",
@@ -64,30 +66,33 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSWifiManagerENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
-       3,   86, // properties
+      12,   14, // methods
+       3,  100, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       3,       // signalCount
+       4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   74,    2, 0x06,    4 /* Public */,
-       3,    0,   75,    2, 0x06,    5 /* Public */,
-       4,    0,   76,    2, 0x06,    6 /* Public */,
+       1,    0,   86,    2, 0x06,    4 /* Public */,
+       3,    0,   87,    2, 0x06,    5 /* Public */,
+       4,    0,   88,    2, 0x06,    6 /* Public */,
+       5,    0,   89,    2, 0x06,    7 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       5,    0,   77,    2, 0x08,    7 /* Private */,
-       6,    0,   78,    2, 0x08,    8 /* Private */,
-       7,    1,   79,    2, 0x08,    9 /* Private */,
-      10,    0,   82,    2, 0x08,   11 /* Private */,
+       6,    0,   90,    2, 0x08,    8 /* Private */,
+       7,    0,   91,    2, 0x08,    9 /* Private */,
+       8,    1,   92,    2, 0x08,   10 /* Private */,
+      11,    0,   95,    2, 0x08,   12 /* Private */,
+      12,    0,   96,    2, 0x08,   13 /* Private */,
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-      11,    0,   83,    2, 0x02,   12 /* Public */,
-      12,    0,   84,    2, 0x02,   13 /* Public */,
-      13,    0,   85,    2, 0x02,   14 /* Public */,
+      13,    0,   97,    2, 0x02,   14 /* Public */,
+      14,    0,   98,    2, 0x02,   15 /* Public */,
+      15,    0,   99,    2, 0x02,   16 /* Public */,
 
  // signals: parameters
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -95,7 +100,8 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSWifiManagerENDCLASS[] = {
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 8,    9,
+    QMetaType::Void, 0x80000000 | 9,   10,
+    QMetaType::Void,
     QMetaType::Void,
 
  // methods: parameters
@@ -104,9 +110,9 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSWifiManagerENDCLASS[] = {
     QMetaType::Void,
 
  // properties: name, type, flags
-      14, QMetaType::Bool, 0x00015001, uint(0), 0,
-      15, QMetaType::Bool, 0x00015001, uint(1), 0,
-      16, QMetaType::QString, 0x00015001, uint(2), 0,
+      16, QMetaType::Bool, 0x00015001, uint(0), 0,
+      17, QMetaType::Bool, 0x00015001, uint(1), 0,
+      18, QMetaType::QString, 0x00015001, uint(2), 0,
 
        0        // eod
 };
@@ -132,6 +138,8 @@ Q_CONSTINIT const QMetaObject WifiManager::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'durumMesajiChanged'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'hareketsizlikNedeniyleBaglantiKesildi'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'soketBaglandi'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'soketAyrildi'
@@ -140,6 +148,8 @@ Q_CONSTINIT const QMetaObject WifiManager::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<QAbstractSocket::SocketError, std::false_type>,
         // method 'veriHazir'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'hareketsizlikKontrolEt'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'baglan'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
@@ -160,19 +170,21 @@ void WifiManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 0: _t->baglandiChanged(); break;
         case 1: _t->baglaniyorChanged(); break;
         case 2: _t->durumMesajiChanged(); break;
-        case 3: _t->soketBaglandi(); break;
-        case 4: _t->soketAyrildi(); break;
-        case 5: _t->soketHata((*reinterpret_cast< std::add_pointer_t<QAbstractSocket::SocketError>>(_a[1]))); break;
-        case 6: _t->veriHazir(); break;
-        case 7: _t->baglan(); break;
-        case 8: _t->baglantiyiKes(); break;
-        case 9: _t->kalibrasyonYenidenYukle(); break;
+        case 3: _t->hareketsizlikNedeniyleBaglantiKesildi(); break;
+        case 4: _t->soketBaglandi(); break;
+        case 5: _t->soketAyrildi(); break;
+        case 6: _t->soketHata((*reinterpret_cast< std::add_pointer_t<QAbstractSocket::SocketError>>(_a[1]))); break;
+        case 7: _t->veriHazir(); break;
+        case 8: _t->hareketsizlikKontrolEt(); break;
+        case 9: _t->baglan(); break;
+        case 10: _t->baglantiyiKes(); break;
+        case 11: _t->kalibrasyonYenidenYukle(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
-        case 5:
+        case 6:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
             case 0:
@@ -200,6 +212,13 @@ void WifiManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
             using _t = void (WifiManager::*)();
             if (_t _q_method = &WifiManager::durumMesajiChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
                 *result = 2;
+                return;
+            }
+        }
+        {
+            using _t = void (WifiManager::*)();
+            if (_t _q_method = &WifiManager::hareketsizlikNedeniyleBaglantiKesildi; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 3;
                 return;
             }
         }
@@ -238,13 +257,13 @@ int WifiManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 12)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 12;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 10)
+        if (_id < 12)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 12;
     }else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::BindableProperty
             || _c == QMetaObject::RegisterPropertyMetaType) {
@@ -270,5 +289,11 @@ void WifiManager::baglaniyorChanged()
 void WifiManager::durumMesajiChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 2, nullptr);
+}
+
+// SIGNAL 3
+void WifiManager::hareketsizlikNedeniyleBaglantiKesildi()
+{
+    QMetaObject::activate(this, &staticMetaObject, 3, nullptr);
 }
 QT_WARNING_POP

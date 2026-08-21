@@ -15,8 +15,10 @@ Database::Database(QObject *parent)
     const QString klasor = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/database";
     QDir().mkpath(klasor);
 
+    m_veriTabaniDosyaYolu = klasor + "/sliper.db";
+
     m_db = QSqlDatabase::addDatabase("QSQLITE");
-    m_db.setDatabaseName(klasor + "/sliper.db");
+    m_db.setDatabaseName(m_veriTabaniDosyaYolu);
 
     if (!m_db.open()) {
         qWarning() << "Veritabani acilamadi:" << m_db.lastError().text();
@@ -409,6 +411,205 @@ QVariantMap Database::olcumBilgisiGetir(int olcumId)
     }
 
     return sonuc;
+}
+
+// Orijinal SLIPER'daki çok sayfalı Excel/XML dışa aktarıma (bkz. slipermanV13.pdf
+// bölüm 5.6) yakın format: Office 2003 "SpreadsheetML" XML'i. Ek kütüphane
+// gerektirmez, Excel bu formatı doğrudan açar. "Results" sayfasında temel
+// veri + Bingham sonuçları, "Stroke_1".."Stroke_N" sayfalarında ham stroke
+// verisi bulunur.
+QString Database::xmlDisaAktar(int olcumId)
+{
+    QVariantMap bilgi = olcumBilgisiGetir(olcumId);
+    if (!bilgi["bulundu"].toBool()) {
+        qWarning() << "Olcum bulunamadi, xml olusturulamadi.";
+        return QString();
+    }
+
+    QString klasor = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/SliperRaporlari";
+    if (!QDir().mkpath(klasor)) {
+        qWarning() << "Rapor klasoru olusturulamadi:" << klasor;
+        return QString();
+    }
+
+    QString dosyaAdi = klasor + QString("/SLIPER_Export_%1_%2.xml")
+        .arg(olcumId)
+        .arg(QDateTime::currentDateTime().toString("ddMMyyyy_HHmmss"));
+
+    QFile dosya(dosyaAdi);
+    if (!dosya.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "XML dosyasi acilamadi:" << dosyaAdi;
+        return QString();
+    }
+
+    QVariantMap bingham = binghamHesapla(olcumId);
+    QVariantList strokelar = strokeVerileriGetir(olcumId);
+
+    auto kacisliMetin = [](const QString &s) {
+        QString sonuc = s;
+        sonuc.replace("&", "&amp;");
+        sonuc.replace("<", "&lt;");
+        sonuc.replace(">", "&gt;");
+        return sonuc;
+    };
+
+    QTextStream akis(&dosya);
+    akis.setEncoding(QStringConverter::Utf8);
+
+    akis << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    akis << "<?mso-application progid=\"Excel.Sheet\"?>\n";
+    akis << "<Workbook xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\" "
+            "xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
+            "xmlns:x=\"urn:schemas-microsoft-com:office:excel\" "
+            "xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">\n";
+
+    // --- Results sayfasi ---
+    akis << "<Worksheet ss:Name=\"Results\">\n<Table>\n";
+    akis << "<Row><Cell><Data ss:Type=\"String\">Olcum ID</Data></Cell><Cell><Data ss:Type=\"Number\">"
+         << olcumId << "</Data></Cell></Row>\n";
+    akis << "<Row><Cell><Data ss:Type=\"String\">Tarih</Data></Cell><Cell><Data ss:Type=\"String\">"
+         << kacisliMetin(bilgi["tarih"].toString()) << "</Data></Cell></Row>\n";
+    akis << "<Row><Cell><Data ss:Type=\"String\">Musteri</Data></Cell><Cell><Data ss:Type=\"String\">"
+         << kacisliMetin(bilgi["musteri"].toString()) << "</Data></Cell></Row>\n";
+    akis << "<Row><Cell><Data ss:Type=\"String\">Recete</Data></Cell><Cell><Data ss:Type=\"String\">"
+         << kacisliMetin(bilgi["recete"].toString()) << "</Data></Cell></Row>\n";
+    akis << "<Row><Cell><Data ss:Type=\"String\">Agirlik (kg)</Data></Cell><Cell><Data ss:Type=\"Number\">"
+         << bilgi["agirlik"].toDouble() << "</Data></Cell></Row>\n";
+    akis << "<Row><Cell><Data ss:Type=\"String\">Stroke Sayisi</Data></Cell><Cell><Data ss:Type=\"Number\">"
+         << strokelar.size() << "</Data></Cell></Row>\n";
+    akis << "<Row></Row>\n";
+    akis << "<Row><Cell><Data ss:Type=\"String\">Akma Gerilmesi tau0 (mbar)</Data></Cell><Cell><Data ss:Type=\"Number\">"
+         << bingham["tau0"].toDouble() << "</Data></Cell></Row>\n";
+    akis << "<Row><Cell><Data ss:Type=\"String\">Plastik Viskozite mu (mbar.h/m3)</Data></Cell><Cell><Data ss:Type=\"Number\">"
+         << bingham["mu"].toDouble() << "</Data></Cell></Row>\n";
+    akis << "<Row><Cell><Data ss:Type=\"String\">Uyum Kalitesi R2</Data></Cell><Cell><Data ss:Type=\"Number\">"
+         << bingham["r2"].toDouble() << "</Data></Cell></Row>\n";
+    akis << "</Table>\n</Worksheet>\n";
+
+    // --- Her stroke icin ayri sayfa ---
+    for (int i = 0; i < strokelar.size(); ++i) {
+        QVariantMap s = strokelar[i].toMap();
+        akis << "<Worksheet ss:Name=\"Stroke_" << (i + 1) << "\">\n<Table>\n";
+        akis << "<Row><Cell><Data ss:Type=\"String\">Basinc (mbar)</Data></Cell>"
+                "<Cell><Data ss:Type=\"String\">Konum (mm)</Data></Cell>"
+                "<Cell><Data ss:Type=\"String\">Debi (m3/h)</Data></Cell>"
+                "<Cell><Data ss:Type=\"String\">Gecerli</Data></Cell></Row>\n";
+        akis << "<Row><Cell><Data ss:Type=\"Number\">" << s["basinc"].toDouble() << "</Data></Cell>"
+             << "<Cell><Data ss:Type=\"Number\">" << s["konum"].toDouble() << "</Data></Cell>"
+             << "<Cell><Data ss:Type=\"Number\">" << s["debi"].toDouble() << "</Data></Cell>"
+             << "<Cell><Data ss:Type=\"String\">" << (s["gecerli"].toBool() ? "Evet" : "Hayir") << "</Data></Cell></Row>\n";
+        akis << "</Table>\n</Worksheet>\n";
+    }
+
+    akis << "</Workbook>\n";
+
+    dosya.close();
+    qDebug() << "XML disa aktarildi:" << dosyaAdi;
+    return dosyaAdi;
+}
+
+// Orijinal SLIPER'daki (Expert Settings > Database Export, sifre korumali)
+// veritabani disa aktarim ozelligine karsilik gelir. Aktif SQLite baglantisi
+// dosya uzerinde kilit tutabileceginden, kopyalamadan once WAL/journal'in
+// diske yazilmasi icin basit bir bekleme (checkpoint) yapilir.
+QString Database::veriTabaniDisaAktar()
+{
+    if (m_veriTabaniDosyaYolu.isEmpty() || !QFile::exists(m_veriTabaniDosyaYolu)) {
+        qWarning() << "Disa aktarilacak veritabani bulunamadi.";
+        return QString();
+    }
+
+    QString klasor = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/SliperRaporlari";
+    if (!QDir().mkpath(klasor)) {
+        qWarning() << "Rapor klasoru olusturulamadi:" << klasor;
+        return QString();
+    }
+
+    // Bekleyen yazmalarin diske gitmesini garantiye almak icin.
+    QSqlQuery checkpoint(m_db);
+    checkpoint.exec("PRAGMA wal_checkpoint(FULL)");
+
+    QString hedefDosya = klasor + QString("/sliper_yedek_%1.db")
+        .arg(QDateTime::currentDateTime().toString("ddMMyyyy_HHmmss"));
+
+    if (!QFile::copy(m_veriTabaniDosyaYolu, hedefDosya)) {
+        qWarning() << "Veritabani disa aktarilamadi.";
+        return QString();
+    }
+
+    qDebug() << "Veritabani disa aktarildi:" << hedefDosya;
+    return hedefDosya;
+}
+
+// Orijinal SLIPER'daki "Database Import" ozelligine karsilik gelir. Ice
+// aktarmadan once mevcut veritabaninin bir yedegi otomatik alinir; sonra
+// baglanti kapatilip yeni dosya yerine kopyalanir ve yeniden acilir.
+bool Database::veriTabaniIcaAktar(const QString &kaynakDosyaYolu)
+{
+    if (!QFile::exists(kaynakDosyaYolu)) {
+        qWarning() << "Ice aktarilacak dosya bulunamadi:" << kaynakDosyaYolu;
+        return false;
+    }
+
+    // Guvenlik: mevcut veriyi kaybetmemek icin otomatik yedek al.
+    veriTabaniDisaAktar();
+
+    m_db.close();
+
+    QFile hedef(m_veriTabaniDosyaYolu);
+    if (hedef.exists() && !hedef.remove()) {
+        qWarning() << "Eski veritabani silinemedi, ice aktarim iptal edildi.";
+        m_db.open();
+        return false;
+    }
+
+    if (!QFile::copy(kaynakDosyaYolu, m_veriTabaniDosyaYolu)) {
+        qWarning() << "Veritabani ice aktarilamadi.";
+        m_db.open();
+        return false;
+    }
+
+    if (!m_db.open()) {
+        qWarning() << "Ice aktarim sonrasi veritabani acilamadi:" << m_db.lastError().text();
+        return false;
+    }
+
+    tablolariOlustur();
+    qDebug() << "Veritabani ice aktarildi:" << kaynakDosyaYolu;
+    return true;
+}
+
+// Orijinal SLIPER'daki "Database Delete" ozelligine karsilik gelir. Sadece
+// olcum/stroke verilerini siler; sensor kalibrasyonlari (load cell, mesafe,
+// egim) korunur, cunku bunlar donanimsal kalibrasyon olup ayri bir islemdir.
+bool Database::tumVeriyiSil()
+{
+    if (!m_db.transaction()) {
+        qWarning() << "Tum veriyi silme icin transaction baslatilamadi:" << m_db.lastError().text();
+        return false;
+    }
+
+    QSqlQuery strokeSil;
+    if (!strokeSil.exec("DELETE FROM Strokelar")) {
+        qWarning() << "Strokelar silinemedi:" << strokeSil.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    QSqlQuery olcumSil;
+    if (!olcumSil.exec("DELETE FROM Olcumler")) {
+        qWarning() << "Olcumler silinemedi:" << olcumSil.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    if (!m_db.commit()) {
+        qWarning() << "Tum veriyi silme commit edilemedi:" << m_db.lastError().text();
+        return false;
+    }
+
+    qDebug() << "Tum olcum verileri silindi.";
+    return true;
 }
 
 QString Database::csvDisaAktar(int olcumId)
