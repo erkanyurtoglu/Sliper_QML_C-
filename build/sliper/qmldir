@@ -2,6 +2,7 @@ module sliper
 typeinfo sliper.qmltypes
 prefer :/qt/qml/sliper/
 Main 1.0 qml/Main.qml
+singleton Translations 1.0 qml/Translations.qml
 LoginPage 1.0 qml/pages/LoginPage.qml
 DashboardPage 1.0 qml/pages/DashboardPage.qml
 OlcumPage 1.0 qml/pages/OlcumPage.qml

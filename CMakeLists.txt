@@ -29,12 +29,17 @@ qt_add_executable(sliper
     src/VoiceRecognitionWorker.cpp
 )
 
+set_source_files_properties(qml/Translations.qml PROPERTIES
+    QT_QML_SINGLETON_TYPE TRUE
+)
+
 qt_add_qml_module(sliper
     URI sliper
     VERSION 1.0
 
     QML_FILES
         qml/Main.qml
+        qml/Translations.qml
         qml/pages/LoginPage.qml
         qml/pages/DashboardPage.qml
         qml/pages/OlcumPage.qml

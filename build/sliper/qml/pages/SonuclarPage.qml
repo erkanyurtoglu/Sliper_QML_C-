@@ -1,6 +1,7 @@
-import QtQuick 6.7
+﻿import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtCharts 6.7
+import sliper
 
 Rectangle {
     color: "#0a0e17"
@@ -16,6 +17,69 @@ Rectangle {
     property real agirlikDegeri: 0
     property string olcumTarihi: ""
 
+    readonly property var metinler: ({
+        sonucOzeti: { tr: "SONUÇ ÖZETİ", en: "RESULT SUMMARY" },
+        akmaGerilmesi: { tr: "AKMA GERİLMESİ (τ₀)", en: "YIELD STRESS (τ₀)" },
+        plastikViskozite: { tr: "PLASTİK VİSKOZİTE (μ)", en: "PLASTIC VISCOSITY (μ)" },
+        uyumKalitesi: { tr: "UYUM KALİTESİ (R²)", en: "FIT QUALITY (R²)" },
+        boruHattiTahmini: { tr: "BORU HATTI TAHMİNİ", en: "PIPELINE ESTIMATE" },
+        hedefBoruCapi: { tr: "Hedef Boru Çapı (mm)", en: "Target Pipe Diameter (mm)" },
+        boruUzunlugu: { tr: "Boru Uzunluğu (m) - karşılaştırma referansı", en: "Pipe Length (m) - comparison reference" },
+        hedefDebi: { tr: "Hedef Debi (m³/h)", en: "Target Flow Rate (m³/h)" },
+        hataPayi: { tr: "Hata Payı:", en: "Margin of Error:" },
+        tahminiHesapla: { tr: "Tahmini Hesapla", en: "Calculate Estimate" },
+        gecerliDegerGirin: { tr: "Geçerli değer girin", en: "Enter a valid value" },
+        hesaplanamadi: { tr: "Hesaplanamadı", en: "Could not calculate" },
+        pompalanabilir: { tr: "POMPALANABİLİR", en: "PUMPABLE" },
+        pompalamaSorunu: { tr: "POMPALAMA SORUNU", en: "PUMPING ISSUE" },
+        durumHerIkisiYuksek: { tr: "Hem akma gerilmesi hem plastik viskozite yüksek. Su/çimento oranını artırın ve agrega gradasyonunu gözden geçirin.", en: "Both yield stress and plastic viscosity are high. Increase the water/cement ratio and review the aggregate gradation." },
+        durumTau0Yuksek: { tr: "Akma gerilmesi yüksek. Su/çimento oranını artırmayı veya süperakışkanlaştırıcı dozajını yükseltmeyi değerlendirin.", en: "Yield stress is high. Consider increasing the water/cement ratio or raising the superplasticizer dosage." },
+        durumMuYuksek: { tr: "Plastik viskozite yüksek. İnce agrega oranını azaltmayı veya su azaltıcı katkı eklemeyi değerlendirin.", en: "Plastic viscosity is high. Consider reducing the fine aggregate ratio or adding a water-reducing admixture." },
+        durumYetersizVeri: { tr: "Yeterli stroke verisi bulunamadı.", en: "Not enough stroke data found." },
+        pdfRaporOnizle: { tr: "📄  PDF Rapor Önizle", en: "📄  Preview PDF Report" },
+        excelCsvOnizle: { tr: "📊  Excel (CSV) Önizle", en: "📊  Preview Excel (CSV)" },
+        excelXmlDisaAktar: { tr: "📑  Excel (XML) Dışa Aktar", en: "📑  Export Excel (XML)" },
+        disaAktarildi: { tr: "✓ Dışa aktarıldı: ", en: "✓ Exported: " },
+        disaAktarilamadi: { tr: "✕ Dışa aktarılamadı", en: "✕ Export failed" },
+        oynatmaPlayback: { tr: "OYNATMA (PLAYBACK)", en: "PLAYBACK" },
+        strokeEtiket: { tr: "Stroke", en: "Stroke" },
+        oynatilacakStrokeYok: { tr: "Oynatilacak stroke yok", en: "No stroke to play back" },
+        pqDagilimGrafigi: { tr: "P-Q Dağılım Grafiği", en: "P-Q Distribution Chart" },
+        olcumNoktalari: { tr: "Ölçüm Noktaları", en: "Measurement Points" },
+        regresyonDogrusu: { tr: "Regresyon Doğrusu", en: "Regression Line" },
+        oynatmaEtiket: { tr: "Oynatma", en: "Playback" },
+        strokeTablosu: { tr: "Stroke Tablosu", en: "Stroke Table" },
+        strokeBaslik: { tr: "STROKE", en: "STROKE" },
+        durumBaslik: { tr: "DURUM", en: "STATUS" },
+        gecerliEtiket: { tr: "Geçerli", en: "Valid" },
+        hataliEtiket: { tr: "Hatalı", en: "Invalid" },
+        pdfRaporOnizlemeBaslik: { tr: "PDF Rapor Önizleme", en: "PDF Report Preview" },
+        indirPdf: { tr: "💾  İndir (PDF)", en: "💾  Download (PDF)" },
+        pdfKaydedildi: { tr: "PDF kaydedildi: ", en: "PDF saved: " },
+        pdfOlusturulamadi: { tr: "PDF oluşturulamadı.", en: "Could not generate PDF." },
+        kapat: { tr: "Kapat", en: "Close" },
+        excelCsvOnizlemeBaslik: { tr: "Excel (CSV) Önizleme", en: "Excel (CSV) Preview" },
+        olcumIdEtiket: { tr: "Ölçüm ID: ", en: "Measurement ID: " },
+        tarihEtiket: { tr: "Tarih: ", en: "Date: " },
+        musteriEtiket: { tr: "Müşteri: ", en: "Customer: " },
+        receteEtiket: { tr: "Reçete: ", en: "Recipe: " },
+        agirlikEtiket: { tr: "Ağırlık (kg): ", en: "Weight (kg): " },
+        basincBaslik: { tr: "BASINÇ (mbar)", en: "PRESSURE (mbar)" },
+        konumBaslik: { tr: "KONUM (mm)", en: "POSITION (mm)" },
+        debiBuyukBaslik: { tr: "DEBİ (m³/h)", en: "FLOW (m³/h)" },
+        gecerliBuyukBaslik: { tr: "GEÇERLİ", en: "VALID" },
+        evet: { tr: "Evet", en: "Yes" },
+        hayir: { tr: "Hayır", en: "No" },
+        indirCsv: { tr: "💾  İndir (CSV)", en: "💾  Download (CSV)" },
+        csvKaydedildi: { tr: "CSV kaydedildi: ", en: "CSV saved: " },
+        csvOlusturulamadi: { tr: "CSV oluşturulamadı.", en: "Could not generate CSV." },
+        bilinmiyor: { tr: "Bilinmiyor", en: "Unknown" }
+    })
+
+    function txt(anahtar) {
+        return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
+    }
+
     onOlcumIdChanged: verileriYukle()
 
     function verileriYukle() {
@@ -28,8 +92,8 @@ Rectangle {
         playbackTimer.stop()
 
         var bilgi = database.olcumBilgisiGetir(olcumId)
-        musteriAdi = bilgi.bulundu ? bilgi.musteri : "Bilinmiyor"
-        receteAdi = bilgi.bulundu ? bilgi.recete : "Bilinmiyor"
+        musteriAdi = bilgi.bulundu ? bilgi.musteri : txt("bilinmiyor")
+        receteAdi = bilgi.bulundu ? bilgi.recete : txt("bilinmiyor")
         agirlikDegeri = bilgi.bulundu ? bilgi.agirlik : 0
         olcumTarihi = bilgi.bulundu ? bilgi.tarih : ""
 
@@ -107,7 +171,7 @@ Rectangle {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.margins: 20
-                text: "SONUÇ ÖZETİ"
+                text: txt("sonucOzeti")
                 color: "#6b7280"
                 font.family: "Segoe UI"
                 font.pixelSize: 12
@@ -149,7 +213,7 @@ Rectangle {
                             spacing: 2
 
                             Text {
-                                text: "AKMA GERİLMESİ (τ₀)"
+                                text: txt("akmaGerilmesi")
                                 color: "#6b7280"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 10
@@ -185,7 +249,7 @@ Rectangle {
                             spacing: 2
 
                             Text {
-                                text: "PLASTİK VİSKOZİTE (μ)"
+                                text: txt("plastikViskozite")
                                 color: "#6b7280"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 10
@@ -221,7 +285,7 @@ Rectangle {
                             spacing: 2
 
                             Text {
-                                text: "UYUM KALİTESİ (R²)"
+                                text: txt("uyumKalitesi")
                                 color: "#6b7280"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 10
@@ -256,7 +320,7 @@ Rectangle {
                             spacing: 8
 
                             Text {
-                                text: "BORU HATTI TAHMİNİ"
+                                text: txt("boruHattiTahmini")
                                 color: "#6b7280"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 10
@@ -267,7 +331,7 @@ Rectangle {
                                 id: capKutusu
                                 width: parent.width
                                 height: 34
-                                placeholderText: "Hedef Boru Çapı (mm)"
+                                placeholderText: txt("hedefBoruCapi")
                                 placeholderTextColor: "#4b5563"
                                 color: "#ffffff"
                                 font.pixelSize: 12
@@ -287,7 +351,7 @@ Rectangle {
                                 id: uzunlukKutusu
                                 width: parent.width
                                 height: 34
-                                placeholderText: "Boru Uzunluğu (m) - karşılaştırma referansı"
+                                placeholderText: txt("boruUzunlugu")
                                 placeholderTextColor: "#4b5563"
                                 color: "#ffffff"
                                 font.pixelSize: 12
@@ -306,7 +370,7 @@ Rectangle {
                                 id: debiKutusu
                                 width: parent.width
                                 height: 34
-                                placeholderText: "Hedef Debi (m³/h)"
+                                placeholderText: txt("hedefDebi")
                                 placeholderTextColor: "#4b5563"
                                 color: "#ffffff"
                                 font.pixelSize: 12
@@ -326,7 +390,7 @@ Rectangle {
                                 spacing: 8
 
                                 Text {
-                                    text: "Hata Payı:"
+                                    text: txt("hataPayi")
                                     color: "#9ca3af"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 11
@@ -418,7 +482,7 @@ Rectangle {
                             Button {
                                 width: parent.width
                                 height: 36
-                                text: "Tahmini Hesapla"
+                                text: txt("tahminiHesapla")
                                 font.pixelSize: 12
                                 font.bold: true
 
@@ -443,7 +507,7 @@ Rectangle {
                                     var tolerans = parseFloat(hataPayiSecici.currentText)
 
                                     if (isNaN(D) || isNaN(L) || isNaN(Q) || D <= 0 || L <= 0) {
-                                        tahminSonucu.text = "Geçerli değer girin"
+                                        tahminSonucu.text = txt("gecerliDegerGirin")
                                         tahminKarsilastirma.text = ""
                                         return
                                     }
@@ -452,7 +516,7 @@ Rectangle {
                                         hesaplananTau0, hesaplananMu, Q, D, L, tolerans)
 
                                     if (!sonuc.gecerliGiris) {
-                                        tahminSonucu.text = "Hesaplanamadı"
+                                        tahminSonucu.text = txt("hesaplanamadi")
                                         tahminKarsilastirma.text = ""
                                         return
                                     }
@@ -544,7 +608,7 @@ Rectangle {
 
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    text: durumKutusu.durumIyiMi ? "POMPALANABİLİR" : "POMPALAMA SORUNU"
+                                    text: durumKutusu.durumIyiMi ? txt("pompalanabilir") : txt("pompalamaSorunu")
                                     color: durumKutusu.durumIyiMi ? "#4ade80" : "#f87171"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 15
@@ -558,13 +622,13 @@ Rectangle {
                                 visible: !durumKutusu.durumIyiMi
                                 text: {
                                     if (durumKutusu.tau0Yuksek && durumKutusu.muYuksek) {
-                                        return "Hem akma gerilmesi hem plastik viskozite yüksek. Su/çimento oranını artırın ve agrega gradasyonunu gözden geçirin."
+                                        return txt("durumHerIkisiYuksek")
                                     } else if (durumKutusu.tau0Yuksek) {
-                                        return "Akma gerilmesi yüksek. Su/çimento oranını artırmayı veya süperakışkanlaştırıcı dozajını yükseltmeyi değerlendirin."
+                                        return txt("durumTau0Yuksek")
                                     } else if (durumKutusu.muYuksek) {
-                                        return "Plastik viskozite yüksek. İnce agrega oranını azaltmayı veya su azaltıcı katkı eklemeyi değerlendirin."
+                                        return txt("durumMuYuksek")
                                     }
-                                    return "Yeterli stroke verisi bulunamadı."
+                                    return txt("durumYetersizVeri")
                                 }
                                 color: "#9ca3af"
                                 font.family: "Segoe UI"
@@ -577,7 +641,7 @@ Rectangle {
                     Button {
                         width: parent.width
                         height: 40
-                        text: "📄  PDF Rapor Önizle"
+                        text: txt("pdfRaporOnizle")
                         font.pixelSize: 13
                         font.bold: true
                         enabled: olcumId > 0
@@ -612,7 +676,7 @@ Rectangle {
                     Button {
                         width: parent.width
                         height: 40
-                        text: "📊  Excel (CSV) Önizle"
+                        text: txt("excelCsvOnizle")
                         font.pixelSize: 13
                         font.bold: true
                         enabled: olcumId > 0
@@ -640,7 +704,7 @@ Rectangle {
                     Button {
                         width: parent.width
                         height: 40
-                        text: "📑  Excel (XML) Dışa Aktar"
+                        text: txt("excelXmlDisaAktar")
                         font.pixelSize: 13
                         font.bold: true
                         enabled: olcumId > 0
@@ -648,8 +712,8 @@ Rectangle {
                         onClicked: {
                             var yol = database.xmlDisaAktar(olcumId)
                             xmlDisaAktarBildirim.text = yol.length > 0
-                                ? "✓ Dışa aktarıldı: " + yol
-                                : "✕ Dışa aktarılamadı"
+                                ? txt("disaAktarildi") + yol
+                                : txt("disaAktarilamadi")
                             xmlDisaAktarBildirim.visible = true
                             xmlDisaAktarTimer.restart()
                         }
@@ -705,7 +769,7 @@ Rectangle {
                             spacing: 8
 
                             Text {
-                                text: "OYNATMA (PLAYBACK)"
+                                text: txt("oynatmaPlayback")
                                 color: "#6b7280"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 10
@@ -714,8 +778,8 @@ Rectangle {
 
                             Text {
                                 text: strokeModeli.count > 0
-                                      ? "Stroke " + (playbackAdimi + 1) + " / " + strokeModeli.count
-                                      : "Oynatilacak stroke yok"
+                                      ? txt("strokeEtiket") + " " + (playbackAdimi + 1) + " / " + strokeModeli.count
+                                      : txt("oynatilacakStrokeYok")
                                 color: "#dce8f5"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 12
@@ -836,7 +900,7 @@ Rectangle {
                     Text {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "P-Q Dağılım Grafiği"
+                        text: txt("pqDagilimGrafigi")
                         color: "#9ca3af"
                         font.family: "Segoe UI"
                         font.pixelSize: 13
@@ -861,7 +925,7 @@ Rectangle {
                             }
 
                             Text {
-                                text: "Ölçüm Noktaları"
+                                text: txt("olcumNoktalari")
                                 color: "#6b7280"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 11
@@ -881,7 +945,7 @@ Rectangle {
                             }
 
                             Text {
-                                text: "Regresyon Doğrusu"
+                                text: txt("regresyonDogrusu")
                                 color: "#6b7280"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 11
@@ -902,7 +966,7 @@ Rectangle {
                             }
 
                             Text {
-                                text: "Oynatma"
+                                text: txt("oynatmaEtiket")
                                 color: "#6b7280"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 11
@@ -927,7 +991,7 @@ Rectangle {
                         id: qEkseni
                         min: 0
                         max: 20
-                        titleText: "Debi (Q) m³/h"
+                        titleText: Translations.turkish ? "Debi (Q) m³/h" : "Flow Rate (Q) m³/h"
                         gridLineColor: "#182131"
                         labelsColor: "#4b5563"
                         labelsFont.pixelSize: 9
@@ -939,7 +1003,7 @@ Rectangle {
                         id: pEkseni
                         min: 0
                         max: 100
-                        titleText: "Basınç (P) mbar"
+                        titleText: Translations.turkish ? "Basınç (P) mbar" : "Pressure (P) mbar"
                         gridLineColor: "#182131"
                         labelsColor: "#4b5563"
                         labelsFont.pixelSize: 9
@@ -989,7 +1053,7 @@ Rectangle {
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.margins: 14
-                    text: "Stroke Tablosu"
+                    text: txt("strokeTablosu")
                     color: "#9ca3af"
                     font.family: "Segoe UI"
                     font.pixelSize: 13
@@ -1005,10 +1069,10 @@ Rectangle {
                     anchors.leftMargin: 12
                     anchors.rightMargin: 12
 
-                    Text { width: parent.width * 0.25; text: "STROKE"; color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
+                    Text { width: parent.width * 0.25; text: txt("strokeBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
                     Text { width: parent.width * 0.25; text: "P (mbar)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
                     Text { width: parent.width * 0.25; text: "Q (m³/h)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
-                    Text { width: parent.width * 0.25; text: "DURUM"; color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
+                    Text { width: parent.width * 0.25; text: txt("durumBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
                 }
 
                 Rectangle {
@@ -1063,7 +1127,7 @@ Rectangle {
                                     Text {
                                         id: durumMetni
                                         anchors.centerIn: parent
-                                        text: gecerli ? "Geçerli" : "Hatalı"
+                                        text: gecerli ? txt("gecerliEtiket") : txt("hataliEtiket")
                                         color: gecerli ? "#4ade80" : "#f87171"
                                         font.pixelSize: 11
                                         font.bold: true
@@ -1156,7 +1220,7 @@ Rectangle {
                     anchors.left: parent.left
                     anchors.leftMargin: 20
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "PDF Rapor Önizleme"
+                    text: txt("pdfRaporOnizlemeBaslik")
                     color: "#dce8f5"
                     font.family: "Segoe UI"
                     font.pixelSize: 14
@@ -1203,7 +1267,7 @@ Rectangle {
                     Button {
                         width: 140
                         height: 38
-                        text: "💾  İndir (PDF)"
+                        text: txt("indirPdf")
                         font.pixelSize: 13
                         font.bold: true
 
@@ -1218,9 +1282,9 @@ Rectangle {
                             )
                             pdfOnizlemePopup.close()
                             if (yol.length > 0) {
-                                bildirimKutusu.goster("PDF kaydedildi: " + yol, false)
+                                bildirimKutusu.goster(txt("pdfKaydedildi") + yol, false)
                             } else {
-                                bildirimKutusu.goster("PDF oluşturulamadı.", true)
+                                bildirimKutusu.goster(txt("pdfOlusturulamadi"), true)
                             }
                         }
 
@@ -1242,7 +1306,7 @@ Rectangle {
                     Button {
                         width: 100
                         height: 38
-                        text: "Kapat"
+                        text: txt("kapat")
                         font.pixelSize: 13
 
                         onClicked: pdfOnizlemePopup.close()
@@ -1304,7 +1368,7 @@ Rectangle {
                     anchors.left: parent.left
                     anchors.leftMargin: 20
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "Excel (CSV) Önizleme"
+                    text: txt("excelCsvOnizlemeBaslik")
                     color: "#dce8f5"
                     font.family: "Segoe UI"
                     font.pixelSize: 14
@@ -1324,11 +1388,11 @@ Rectangle {
                     anchors.margins: 20
                     spacing: 4
 
-                    Text { text: "Ölçüm ID: " + olcumId; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
-                    Text { text: "Tarih: " + olcumTarihi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
-                    Text { text: "Müşteri: " + musteriAdi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
-                    Text { text: "Reçete: " + receteAdi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
-                    Text { text: "Ağırlık (kg): " + agirlikDegeri.toFixed(1); color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                    Text { text: txt("olcumIdEtiket") + olcumId; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                    Text { text: txt("tarihEtiket") + olcumTarihi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                    Text { text: txt("musteriEtiket") + musteriAdi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                    Text { text: txt("receteEtiket") + receteAdi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                    Text { text: txt("agirlikEtiket") + agirlikDegeri.toFixed(1); color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
                 }
             }
 
@@ -1346,11 +1410,11 @@ Rectangle {
                     anchors.right: parent.right
                     anchors.margins: 12
 
-                    Text { width: parent.width * 0.2; text: "STROKE"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.2; text: "BASINÇ (mbar)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.2; text: "KONUM (mm)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.2; text: "DEBİ (m³/h)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.2; text: "GEÇERLİ"; color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    Text { width: parent.width * 0.2; text: txt("strokeBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    Text { width: parent.width * 0.2; text: txt("basincBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    Text { width: parent.width * 0.2; text: txt("konumBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    Text { width: parent.width * 0.2; text: txt("debiBuyukBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    Text { width: parent.width * 0.2; text: txt("gecerliBuyukBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true }
                 }
 
                 ListView {
@@ -1376,7 +1440,7 @@ Rectangle {
                             Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.basinc.toFixed(1); color: "#dce8f5"; font.pixelSize: 12 }
                             Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.konum.toFixed(1); color: "#dce8f5"; font.pixelSize: 12 }
                             Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.debi.toFixed(2); color: "#dce8f5"; font.pixelSize: 12 }
-                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.gecerli ? "Evet" : "Hayır"; color: modelData.gecerli ? "#4ade80" : "#f87171"; font.pixelSize: 12 }
+                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.gecerli ? txt("evet") : txt("hayir"); color: modelData.gecerli ? "#4ade80" : "#f87171"; font.pixelSize: 12 }
                         }
                     }
                 }
@@ -1394,7 +1458,7 @@ Rectangle {
                     Button {
                         width: 140
                         height: 38
-                        text: "💾  İndir (CSV)"
+                        text: txt("indirCsv")
                         font.pixelSize: 13
                         font.bold: true
 
@@ -1402,9 +1466,9 @@ Rectangle {
                             var yol = database.csvDisaAktar(olcumId)
                             csvOnizlemePopup.close()
                             if (yol.length > 0) {
-                                bildirimKutusu.goster("CSV kaydedildi: " + yol, false)
+                                bildirimKutusu.goster(txt("csvKaydedildi") + yol, false)
                             } else {
-                                bildirimKutusu.goster("CSV oluşturulamadı.", true)
+                                bildirimKutusu.goster(txt("csvOlusturulamadi"), true)
                             }
                         }
 
@@ -1426,7 +1490,7 @@ Rectangle {
                     Button {
                         width: 100
                         height: 38
-                        text: "Kapat"
+                        text: txt("kapat")
                         font.pixelSize: 13
 
                         onClicked: csvOnizlemePopup.close()

@@ -1,10 +1,70 @@
-import QtQuick 6.7
+﻿import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Layouts 6.7
 import "../components"
+import sliper
 
 Rectangle {
     color: "#0a0e17"
+
+    readonly property var metinler: ({
+        baslikSensorSec: { tr: "KALİBRASYON — Sensör Seçin", en: "CALIBRATION — Select Sensor" },
+        egimSensoru: { tr: "Eğim Sensörü", en: "Incline Sensor" },
+        egimAciklama: { tr: "Yatay hizalama kalibrasyonu", en: "Level alignment calibration" },
+        kalibreEdildiOnEk: { tr: "✓ Kalibre Edildi: ", en: "✓ Calibrated: " },
+        loadCellAdi: { tr: "Load Cell", en: "Load Cell" },
+        loadCellAciklama: { tr: "Basınç sensörü kalibrasyonu", en: "Load pressure sensor calibration" },
+        mesafeSensoru: { tr: "Mesafe Sensörü", en: "Distance Sensor" },
+        mesafeAciklama: { tr: "Konum ölçümü kalibrasyonu", en: "Position measurement calibration" },
+        geriButon: { tr: "← Geri", en: "← Back" },
+        egimBaslik: { tr: "Eğim Sensörü Kalibrasyonu", en: "Incline Sensor Calibration" },
+        loadCellBaslik: { tr: "Load Cell Kalibrasyonu", en: "Load Cell Calibration" },
+        mesafeBaslik: { tr: "Mesafe Sensörü Kalibrasyonu", en: "Distance Sensor Calibration" },
+        sonKalibrasyonOnEk: { tr: "Son kalibrasyon: ", en: "Last calibration: " },
+        cihaziYerlestir: { tr: "Cihazı düz ve sabit bir yüzeye yerleştirin", en: "Place the device on a flat, stable surface" },
+        cihazBagliDegilKalibrasyon: { tr: "Cihaz bağlı değil — kalibrasyon kaydedilemez", en: "Device not connected — calibration cannot be saved" },
+        sifirlaButon: { tr: "Sıfırla (Zero)", en: "Zero (Reset)" },
+        kalibrasyonKaydedildiMesaj: { tr: "✓ Kalibrasyon kaydedildi", en: "✓ Calibration saved" },
+        kalibrasyonKaydedilemediMesaj: { tr: "✕ Kalibrasyon kaydedilemedi, tekrar deneyin", en: "✕ Calibration could not be saved, try again" },
+        kayitliOnEk: { tr: "Kayıtlı: ", en: "Saved: " },
+        noktaSonEk: { tr: " nokta", en: " points" },
+        kayitliKalibrasyonBulundu: { tr: "Bu sensör için kayıtlı bir kalibrasyon bulundu", en: "A saved calibration was found for this sensor" },
+        mevcutGoruntule: { tr: "Mevcut Kalibrasyonu Görüntüle", en: "View Current Calibration" },
+        kayitliNoktalariIncele: { tr: "Kayıtlı noktaları incele", en: "Review saved points" },
+        yenidenKalibreEt: { tr: "Yeniden Kalibre Et", en: "Recalibrate" },
+        sifirdanYeniOlcum: { tr: "Sıfırdan yeni ölçüm al", en: "Take a fresh measurement" },
+        kayitliNoktalarBaslik: { tr: "KAYITLI KALİBRASYON NOKTALARI", en: "SAVED CALIBRATION POINTS" },
+        duzenleButon: { tr: "Düzenle", en: "Edit" },
+        silinecekOnay: { tr: "Mevcut kalibrasyon silinecek, emin misiniz?", en: "The current calibration will be deleted, are you sure?" },
+        vazgecButon: { tr: "Vazgeç", en: "Cancel" },
+        evetYenidenBaslaButon: { tr: "Evet, Yeniden Başla", en: "Yes, Start Over" },
+        kalibrasyonTamamlandiBaslik: { tr: "Kalibrasyon Tamamlandı", en: "Calibration Complete" },
+        toplamOnEk: { tr: "Toplam ", en: "Total " },
+        noktaGirildiSonEk: { tr: " nokta girildi. Bu kalibrasyonu kaydetmek istiyor musunuz?", en: " points entered. Do you want to save this calibration?" },
+        noktalariKontrolEt: { tr: "Noktaları Kontrol Et", en: "Review Points" },
+        kaydetVeBitir: { tr: "Kaydet ve Bitir", en: "Save and Finish" },
+        kacNoktaSoru: { tr: "Kaç noktalı kalibrasyon yapmak istersiniz?", en: "How many calibration points would you like to use?" },
+        dahaFazlaNokta: { tr: "Daha fazla nokta, daha hassas kalibrasyon sağlar", en: "More points provide a more precise calibration" },
+        hamDegerOnEk: { tr: "Ham değer: ", en: "Raw value: " },
+        hamDegerSifirUyari: { tr: "Cihaz bağlı değil — ham değer 0 olarak kaydedilecek", en: "Device not connected — raw value will be saved as 0" },
+        degisiklikleriKaydet: { tr: "Değişiklikleri Kaydet", en: "Save Changes" },
+        kaydedilenNoktalarBaslik: { tr: "KAYDEDİLEN NOKTALAR", en: "SAVED POINTS" },
+        duzeltmekIcinTikla: { tr: "Düzeltmek için bir noktaya tıkla", en: "Click a point to correct it" },
+        kalibrasyonuDuzenle: { tr: "Kalibrasyonu Düzenle", en: "Edit Calibration" },
+        noktaOnEk: { tr: "Nokta ", en: "Point " },
+        duzenleniyorSonEk: { tr: " düzenleniyor", en: " being edited" },
+        duzenlemekIcinTikla: { tr: "Düzenlemek istediğiniz noktaya sağdaki listeden tıklayın", en: "Click the point you want to edit from the list on the right" },
+        hedefAgirlikYonerge: { tr: "Hedef ağırlığı gir, sonra o ağırlığı load cell'e koy", en: "Enter the target weight, then place that weight on the load cell" },
+        hedefMesafeYonerge: { tr: "Hedef mesafeyi gir, sonra boruyu o mesafeye getir", en: "Enter the target distance, then move the tube to that distance" },
+        noktayiGuncelle: { tr: "Noktayı Güncelle", en: "Update Point" },
+        kalibrasyonuTamamla: { tr: "Kalibrasyonu Tamamla", en: "Complete Calibration" },
+        sonNoktayiKaydet: { tr: "Son Noktayı Kaydet", en: "Save Last Point" },
+        buNoktayiKaydet: { tr: "Bu Noktayı Kaydet", en: "Save This Point" }
+    })
+
+    function txt(anahtar) {
+        return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
+    }
 
     property int seciliSensor: -1
     property int loadCellAdimi: 0
@@ -63,7 +123,7 @@ Rectangle {
         var sirali = loadCellSiraliKopya(loadCellNoktalari)
         var basarili = database.loadCellNoktalariKaydet(sirali)
         loadCellBildirimBasarili = basarili
-        loadCellBildirimMesaj = basarili ? "✓ Kalibrasyon kaydedildi" : "✕ Kalibrasyon kaydedilemedi, tekrar deneyin"
+        loadCellBildirimMesaj = basarili ? txt("kalibrasyonKaydedildiMesaj") : txt("kalibrasyonKaydedilemediMesaj")
         loadCellBildirimGoster = true
         loadCellBildirimTimer.restart()
     }
@@ -93,7 +153,7 @@ Rectangle {
             wifiManager.kalibrasyonYenidenYukle()
         }
         mesafeBildirimBasarili = basarili
-        mesafeBildirimMesaj = basarili ? "✓ Kalibrasyon kaydedildi" : "✕ Kalibrasyon kaydedilemedi, tekrar deneyin"
+        mesafeBildirimMesaj = basarili ? txt("kalibrasyonKaydedildiMesaj") : txt("kalibrasyonKaydedilemediMesaj")
         mesafeBildirimGoster = true
         mesafeBildirimTimer.restart()
     }
@@ -118,7 +178,7 @@ Rectangle {
             wifiManager.kalibrasyonYenidenYukle()
         }
         egimBildirimBasarili = basarili
-        egimBildirimMesaj = basarili ? "✓ Kalibrasyon kaydedildi" : "✕ Kalibrasyon kaydedilemedi, tekrar deneyin"
+        egimBildirimMesaj = basarili ? txt("kalibrasyonKaydedildiMesaj") : txt("kalibrasyonKaydedilemediMesaj")
         egimBildirimGoster = true
         egimBildirimTimer.restart()
     }
@@ -208,7 +268,7 @@ Rectangle {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.margins: 20
-                text: "KALİBRASYON — Sensör Seçin"
+                text: txt("baslikSensorSec")
                 color: "#6b7280"
                 font.family: "Segoe UI"
                 font.pixelSize: 12
@@ -251,8 +311,8 @@ Rectangle {
                             }
                         }
 
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Eğim Sensörü"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 24; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Yatay hizalama kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 14 }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: txt("egimSensoru"); color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 24; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: txt("egimAciklama"); color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 14 }
 
                         Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -265,7 +325,7 @@ Rectangle {
                             Text {
                                 id: kaliMetni1
                                 anchors.centerIn: parent
-                                text: "✓ Kalibre Edildi: " + egimSonTarih
+                                text: txt("kalibreEdildiOnEk") + egimSonTarih
                                 color: "#4ade80"
                                 font.pixelSize: 10
                                 font.bold: true
@@ -314,8 +374,8 @@ Rectangle {
                             }
                         }
 
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Load Cell"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 24; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Basınç sensörü kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 14 }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: txt("loadCellAdi"); color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 24; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: txt("loadCellAciklama"); color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 14 }
 
                         Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -328,7 +388,7 @@ Rectangle {
                             Text {
                                 id: kaliMetni2
                                 anchors.centerIn: parent
-                                text: "✓ Kalibre Edildi: " + loadCellSonTarih
+                                text: txt("kalibreEdildiOnEk") + loadCellSonTarih
                                 color: "#4ade80"
                                 font.pixelSize: 10
                                 font.bold: true
@@ -377,8 +437,8 @@ Rectangle {
                             }
                         }
 
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Mesafe Sensörü"; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 24; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Konum ölçümü kalibrasyonu"; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 14 }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: txt("mesafeSensoru"); color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 24; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: txt("mesafeAciklama"); color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 14 }
 
                         Rectangle {
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -391,7 +451,7 @@ Rectangle {
                             Text {
                                 id: kaliMetni3
                                 anchors.centerIn: parent
-                                text: "✓ Kalibre Edildi: " + mesafeSonTarih
+                                text: txt("kalibreEdildiOnEk") + mesafeSonTarih
                                 color: "#4ade80"
                                 font.pixelSize: 10
                                 font.bold: true
@@ -419,7 +479,7 @@ Rectangle {
                 spacing: 12
 
                 Button {
-                    text: "← Geri"
+                    text: txt("geriButon")
                     font.pixelSize: 13
 
                     background: Rectangle {
@@ -459,9 +519,9 @@ Rectangle {
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     text: {
-                        if (seciliSensor === 0) return "Eğim Sensörü Kalibrasyonu"
-                        if (seciliSensor === 1) return "Load Cell Kalibrasyonu"
-                        if (seciliSensor === 2) return "Mesafe Sensörü Kalibrasyonu"
+                        if (seciliSensor === 0) return txt("egimBaslik")
+                        if (seciliSensor === 1) return txt("loadCellBaslik")
+                        if (seciliSensor === 2) return txt("mesafeBaslik")
                         return ""
                     }
                     color: "#dce8f5"
@@ -497,7 +557,7 @@ Rectangle {
                         Text {
                             id: egimSonKaliMetni
                             anchors.centerIn: parent
-                            text: "Son kalibrasyon: " + egimSonTarih
+                            text: txt("sonKalibrasyonOnEk") + egimSonTarih
                             color: "#6b7280"
                             font.pixelSize: 11
                         }
@@ -507,7 +567,7 @@ Rectangle {
                         width: parent.width
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
-                        text: "Cihazı düz ve sabit bir yüzeye yerleştirin"
+                        text: txt("cihaziYerlestir")
                         color: "#dce8f5"
                         font.family: "Segoe UI"
                         font.pixelSize: 14
@@ -543,7 +603,7 @@ Rectangle {
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
                         visible: !wifiManager.baglandi
-                        text: "Cihaz bağlı değil — kalibrasyon kaydedilemez"
+                        text: txt("cihazBagliDegilKalibrasyon")
                         color: "#f87171"
                         font.family: "Segoe UI"
                         font.pixelSize: 11
@@ -552,7 +612,7 @@ Rectangle {
                     Button {
                         width: parent.width
                         height: 44
-                        text: "Sıfırla (Zero)"
+                        text: txt("sifirlaButon")
                         font.pixelSize: 14
                         font.bold: true
                         enabled: wifiManager.baglandi
@@ -627,7 +687,7 @@ Rectangle {
                         Text {
                             id: araEkranBadge
                             anchors.centerIn: parent
-                            text: "Kayıtlı: " + loadCellNoktaSayisi + " nokta"
+                            text: txt("kayitliOnEk") + loadCellNoktaSayisi + txt("noktaSonEk")
                             color: "#6b7280"
                             font.pixelSize: 11
                         }
@@ -637,7 +697,7 @@ Rectangle {
                         width: parent.width
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
-                        text: "Bu sensör için kayıtlı bir kalibrasyon bulundu"
+                        text: txt("kayitliKalibrasyonBulundu")
                         color: "#dce8f5"
                         font.family: "Segoe UI"
                         font.pixelSize: 16
@@ -694,7 +754,7 @@ Rectangle {
                                     width: parent.width
                                     horizontalAlignment: Text.AlignHCenter
                                     wrapMode: Text.WordWrap
-                                    text: "Mevcut Kalibrasyonu Görüntüle"
+                                    text: txt("mevcutGoruntule")
                                     color: "#dce8f5"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 13
@@ -705,7 +765,7 @@ Rectangle {
                                     width: parent.width
                                     horizontalAlignment: Text.AlignHCenter
                                     wrapMode: Text.WordWrap
-                                    text: "Kayıtlı noktaları incele"
+                                    text: txt("kayitliNoktalariIncele")
                                     color: "#6b7280"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 11
@@ -792,7 +852,7 @@ Rectangle {
                                     width: parent.width
                                     horizontalAlignment: Text.AlignHCenter
                                     wrapMode: Text.WordWrap
-                                    text: "Yeniden Kalibre Et"
+                                    text: txt("yenidenKalibreEt")
                                     color: "#dce8f5"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 13
@@ -803,7 +863,7 @@ Rectangle {
                                     width: parent.width
                                     horizontalAlignment: Text.AlignHCenter
                                     wrapMode: Text.WordWrap
-                                    text: "Sıfırdan yeni ölçüm al"
+                                    text: txt("sifirdanYeniOlcum")
                                     color: "#6b7280"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 11
@@ -829,7 +889,7 @@ Rectangle {
                     visible: loadCellGoruntuleModu
 
                     Text {
-                        text: "KAYITLI KALİBRASYON NOKTALARI"
+                        text: txt("kayitliNoktalarBaslik")
                         color: "#6b7280"
                         font.family: "Segoe UI"
                         font.pixelSize: 11
@@ -912,7 +972,7 @@ Rectangle {
                     Button {
                         width: parent.width
                         height: 46
-                        text: "Düzenle"
+                        text: txt("duzenleButon")
                         font.pixelSize: 14
                         font.bold: true
 
@@ -966,7 +1026,7 @@ Rectangle {
                                 width: parent.width
                                 horizontalAlignment: Text.AlignHCenter
                                 wrapMode: Text.WordWrap
-                                text: "Mevcut kalibrasyon silinecek, emin misiniz?"
+                                text: txt("silinecekOnay")
                                 color: "#dce8f5"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 14
@@ -980,7 +1040,7 @@ Rectangle {
                                 Button {
                                     width: 150
                                     height: 42
-                                    text: "Vazgeç"
+                                    text: txt("vazgecButon")
 
                                     onClicked: loadCellYenidenOnayGoster = false
 
@@ -1004,7 +1064,7 @@ Rectangle {
                                 Button {
                                     width: 150
                                     height: 42
-                                    text: "Evet, Yeniden Başla"
+                                    text: txt("evetYenidenBaslaButon")
                                     font.bold: true
 
                                     onClicked: {
@@ -1065,7 +1125,7 @@ Rectangle {
                                 Text {
                                     width: parent.width
                                     horizontalAlignment: Text.AlignHCenter
-                                    text: "Kalibrasyon Tamamlandı"
+                                    text: txt("kalibrasyonTamamlandiBaslik")
                                     color: "#4ade80"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 17
@@ -1076,7 +1136,7 @@ Rectangle {
                                     width: parent.width
                                     horizontalAlignment: Text.AlignHCenter
                                     wrapMode: Text.WordWrap
-                                    text: "Toplam " + loadCellToplamNokta + " nokta girildi. Bu kalibrasyonu kaydetmek istiyor musunuz?"
+                                    text: txt("toplamOnEk") + loadCellToplamNokta + txt("noktaGirildiSonEk")
                                     color: "#9ca3af"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 13
@@ -1090,7 +1150,7 @@ Rectangle {
                                 Button {
                                     width: 150
                                     height: 42
-                                    text: "Noktaları Kontrol Et"
+                                    text: txt("noktalariKontrolEt")
 
                                     onClicked: loadCellTamamlandiOnayGoster = false
 
@@ -1114,7 +1174,7 @@ Rectangle {
                                 Button {
                                     width: 150
                                     height: 42
-                                    text: "Kaydet ve Bitir"
+                                    text: txt("kaydetVeBitir")
                                     font.bold: true
 
                                     onClicked: {
@@ -1176,7 +1236,7 @@ Rectangle {
                         width: parent.width
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
-                        text: "Kaç noktalı kalibrasyon yapmak istersiniz?"
+                        text: txt("kacNoktaSoru")
                         color: "#dce8f5"
                         font.family: "Segoe UI"
                         font.pixelSize: 16
@@ -1187,7 +1247,7 @@ Rectangle {
                         width: parent.width
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
-                        text: "Daha fazla nokta, daha hassas kalibrasyon sağlar"
+                        text: txt("dahaFazlaNokta")
                         color: "#6b7280"
                         font.family: "Segoe UI"
                         font.pixelSize: 12
@@ -1270,7 +1330,7 @@ Rectangle {
                                 Text {
                                     id: sonKaliMetni2
                                     anchors.centerIn: parent
-                                    text: "Kayıtlı: " + loadCellNoktaSayisi + " nokta"
+                                    text: txt("kayitliOnEk") + loadCellNoktaSayisi + txt("noktaSonEk")
                                     color: "#6b7280"
                                     font.pixelSize: 11
                                 }
@@ -1279,8 +1339,8 @@ Rectangle {
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 text: loadCellTamDuzenlemeModu
-                                      ? "Kalibrasyonu Düzenle"
-                                      : "Nokta " + (loadCellNoktalari.length + 1) + " / " + loadCellToplamNokta
+                                      ? txt("kalibrasyonuDuzenle")
+                                      : txt("noktaOnEk") + (loadCellNoktalari.length + 1) + " / " + loadCellToplamNokta
                                 color: "#3b82f6"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 13
@@ -1308,10 +1368,10 @@ Rectangle {
                                 horizontalAlignment: Text.AlignHCenter
                                 wrapMode: Text.WordWrap
                                 text: loadCellDuzenlemeIndex >= 0
-                                      ? "Nokta " + (loadCellDuzenlemeIndex + 1) + " düzenleniyor"
+                                      ? txt("noktaOnEk") + (loadCellDuzenlemeIndex + 1) + txt("duzenleniyorSonEk")
                                       : (loadCellTamDuzenlemeModu
-                                         ? "Düzenlemek istediğiniz noktaya sağdaki listeden tıklayın"
-                                         : "Hedef ağırlığı gir, sonra o ağırlığı load cell'e koy")
+                                         ? txt("duzenlemekIcinTikla")
+                                         : txt("hedefAgirlikYonerge"))
                                 color: loadCellDuzenlemeIndex >= 0 ? "#3b82f6" : "#9ca3af"
                                 font.family: "Segoe UI"
                                 font.bold: loadCellDuzenlemeIndex >= 0
@@ -1349,7 +1409,7 @@ Rectangle {
 
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "Ham değer: " + sensorManager.hamAgirlik.toFixed(0)
+                                    text: txt("hamDegerOnEk") + sensorManager.hamAgirlik.toFixed(0)
                                     color: wifiManager.baglandi ? "#3b82f6" : "#f87171"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 20
@@ -1362,7 +1422,7 @@ Rectangle {
                                 horizontalAlignment: Text.AlignHCenter
                                 wrapMode: Text.WordWrap
                                 visible: !wifiManager.baglandi
-                                text: "Cihaz bağlı değil — ham değer 0 olarak kaydedilecek"
+                                text: txt("hamDegerSifirUyari")
                                 color: "#f87171"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 11
@@ -1374,10 +1434,10 @@ Rectangle {
                                 height: 46
                                 property bool tumNoktalarGirildi: !loadCellTamDuzenlemeModu && loadCellDuzenlemeIndex < 0 && loadCellNoktalari.length >= loadCellToplamNokta
                                 text: loadCellDuzenlemeIndex >= 0
-                                      ? "Noktayı Güncelle"
+                                      ? txt("noktayiGuncelle")
                                       : (tumNoktalarGirildi
-                                         ? "Kalibrasyonu Tamamla"
-                                         : (loadCellNoktalari.length >= loadCellToplamNokta - 1 ? "Son Noktayı Kaydet" : "Bu Noktayı Kaydet"))
+                                         ? txt("kalibrasyonuTamamla")
+                                         : (loadCellNoktalari.length >= loadCellToplamNokta - 1 ? txt("sonNoktayiKaydet") : txt("buNoktayiKaydet")))
                                 font.pixelSize: 14
                                 font.bold: true
                                 enabled: tumNoktalarGirildi || (hedefKgKutusu.text.length > 0 && (loadCellDuzenlemeIndex >= 0 || loadCellNoktalari.length < loadCellToplamNokta))
@@ -1429,7 +1489,7 @@ Rectangle {
                                 width: parent.width
                                 height: 46
                                 visible: loadCellTamDuzenlemeModu
-                                text: "Değişiklikleri Kaydet"
+                                text: txt("degisiklikleriKaydet")
                                 font.pixelSize: 14
                                 font.bold: true
 
@@ -1454,7 +1514,7 @@ Rectangle {
                                 width: parent.width
                                 height: 38
                                 visible: loadCellDuzenlemeIndex >= 0
-                                text: "Vazgeç"
+                                text: txt("vazgecButon")
                                 font.pixelSize: 13
 
                                 onClicked: {
@@ -1497,7 +1557,7 @@ Rectangle {
                             spacing: 4
 
                             Text {
-                                text: "KAYDEDİLEN NOKTALAR"
+                                text: txt("kaydedilenNoktalarBaslik")
                                 color: "#6b7280"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 11
@@ -1506,7 +1566,7 @@ Rectangle {
                             }
 
                             Text {
-                                text: "Düzeltmek için bir noktaya tıkla"
+                                text: txt("duzeltmekIcinTikla")
                                 color: "#4b5563"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 10
@@ -1637,7 +1697,7 @@ Rectangle {
                             Text {
                                 id: mesafeAraEkranBadge
                                 anchors.centerIn: parent
-                                text: "Kayıtlı: " + mesafeOlcumNoktaSayisi + " nokta"
+                                text: txt("kayitliOnEk") + mesafeOlcumNoktaSayisi + txt("noktaSonEk")
                                 color: "#6b7280"
                                 font.pixelSize: 11
                             }
@@ -1647,7 +1707,7 @@ Rectangle {
                             width: parent.width
                             horizontalAlignment: Text.AlignHCenter
                             wrapMode: Text.WordWrap
-                            text: "Bu sensör için kayıtlı bir kalibrasyon bulundu"
+                            text: txt("kayitliKalibrasyonBulundu")
                             color: "#dce8f5"
                             font.family: "Segoe UI"
                             font.pixelSize: 16
@@ -1704,7 +1764,7 @@ Rectangle {
                                         width: parent.width
                                         horizontalAlignment: Text.AlignHCenter
                                         wrapMode: Text.WordWrap
-                                        text: "Mevcut Kalibrasyonu Görüntüle"
+                                        text: txt("mevcutGoruntule")
                                         color: "#dce8f5"
                                         font.family: "Segoe UI"
                                         font.pixelSize: 13
@@ -1715,7 +1775,7 @@ Rectangle {
                                         width: parent.width
                                         horizontalAlignment: Text.AlignHCenter
                                         wrapMode: Text.WordWrap
-                                        text: "Kayıtlı noktaları incele"
+                                        text: txt("kayitliNoktalariIncele")
                                         color: "#6b7280"
                                         font.family: "Segoe UI"
                                         font.pixelSize: 11
@@ -1802,7 +1862,7 @@ Rectangle {
                                         width: parent.width
                                         horizontalAlignment: Text.AlignHCenter
                                         wrapMode: Text.WordWrap
-                                        text: "Yeniden Kalibre Et"
+                                        text: txt("yenidenKalibreEt")
                                         color: "#dce8f5"
                                         font.family: "Segoe UI"
                                         font.pixelSize: 13
@@ -1813,7 +1873,7 @@ Rectangle {
                                         width: parent.width
                                         horizontalAlignment: Text.AlignHCenter
                                         wrapMode: Text.WordWrap
-                                        text: "Sıfırdan yeni ölçüm al"
+                                        text: txt("sifirdanYeniOlcum")
                                         color: "#6b7280"
                                         font.family: "Segoe UI"
                                         font.pixelSize: 11
@@ -1839,7 +1899,7 @@ Rectangle {
                         visible: mesafeGoruntuleModu
 
                         Text {
-                            text: "KAYITLI KALİBRASYON NOKTALARI"
+                            text: txt("kayitliNoktalarBaslik")
                             color: "#6b7280"
                             font.family: "Segoe UI"
                             font.pixelSize: 11
@@ -1922,7 +1982,7 @@ Rectangle {
                         Button {
                             width: parent.width
                             height: 46
-                            text: "Düzenle"
+                            text: txt("duzenleButon")
                             font.pixelSize: 14
                             font.bold: true
 
@@ -1976,7 +2036,7 @@ Rectangle {
                                     width: parent.width
                                     horizontalAlignment: Text.AlignHCenter
                                     wrapMode: Text.WordWrap
-                                    text: "Mevcut kalibrasyon silinecek, emin misiniz?"
+                                    text: txt("silinecekOnay")
                                     color: "#dce8f5"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 14
@@ -1990,7 +2050,7 @@ Rectangle {
                                     Button {
                                         width: 150
                                         height: 42
-                                        text: "Vazgeç"
+                                        text: txt("vazgecButon")
 
                                         onClicked: mesafeYenidenOnayGoster = false
 
@@ -2014,7 +2074,7 @@ Rectangle {
                                     Button {
                                         width: 150
                                         height: 42
-                                        text: "Evet, Yeniden Başla"
+                                        text: txt("evetYenidenBaslaButon")
                                         font.bold: true
 
                                         onClicked: {
@@ -2075,7 +2135,7 @@ Rectangle {
                                     Text {
                                         width: parent.width
                                         horizontalAlignment: Text.AlignHCenter
-                                        text: "Kalibrasyon Tamamlandı"
+                                        text: txt("kalibrasyonTamamlandiBaslik")
                                         color: "#4ade80"
                                         font.family: "Segoe UI"
                                         font.pixelSize: 17
@@ -2086,7 +2146,7 @@ Rectangle {
                                         width: parent.width
                                         horizontalAlignment: Text.AlignHCenter
                                         wrapMode: Text.WordWrap
-                                        text: "Toplam " + mesafeToplamNokta + " nokta girildi. Bu kalibrasyonu kaydetmek istiyor musunuz?"
+                                        text: txt("toplamOnEk") + mesafeToplamNokta + txt("noktaGirildiSonEk")
                                         color: "#9ca3af"
                                         font.family: "Segoe UI"
                                         font.pixelSize: 13
@@ -2100,7 +2160,7 @@ Rectangle {
                                     Button {
                                         width: 150
                                         height: 42
-                                        text: "Noktaları Kontrol Et"
+                                        text: txt("noktalariKontrolEt")
 
                                         onClicked: mesafeTamamlandiOnayGoster = false
 
@@ -2124,7 +2184,7 @@ Rectangle {
                                     Button {
                                         width: 150
                                         height: 42
-                                        text: "Kaydet ve Bitir"
+                                        text: txt("kaydetVeBitir")
                                         font.bold: true
 
                                         onClicked: {
@@ -2161,7 +2221,7 @@ Rectangle {
                             width: parent.width
                             horizontalAlignment: Text.AlignHCenter
                             wrapMode: Text.WordWrap
-                            text: "Kaç noktalı kalibrasyon yapmak istersiniz?"
+                            text: txt("kacNoktaSoru")
                             color: "#dce8f5"
                             font.family: "Segoe UI"
                             font.pixelSize: 16
@@ -2172,7 +2232,7 @@ Rectangle {
                             width: parent.width
                             horizontalAlignment: Text.AlignHCenter
                             wrapMode: Text.WordWrap
-                            text: "Daha fazla nokta, daha hassas kalibrasyon sağlar"
+                            text: txt("dahaFazlaNokta")
                             color: "#6b7280"
                             font.family: "Segoe UI"
                             font.pixelSize: 12
@@ -2255,7 +2315,7 @@ Rectangle {
                                     Text {
                                         id: mesafeSonKaliMetni
                                         anchors.centerIn: parent
-                                        text: "Kayıtlı: " + mesafeOlcumNoktaSayisi + " nokta"
+                                        text: txt("kayitliOnEk") + mesafeOlcumNoktaSayisi + txt("noktaSonEk")
                                         color: "#6b7280"
                                         font.pixelSize: 11
                                     }
@@ -2264,8 +2324,8 @@ Rectangle {
                                 Text {
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     text: mesafeTamDuzenlemeModu
-                                          ? "Kalibrasyonu Düzenle"
-                                          : "Nokta " + (mesafeNoktalari.length + 1) + " / " + mesafeToplamNokta
+                                          ? txt("kalibrasyonuDuzenle")
+                                          : txt("noktaOnEk") + (mesafeNoktalari.length + 1) + " / " + mesafeToplamNokta
                                     color: "#9333ea"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 13
@@ -2293,10 +2353,10 @@ Rectangle {
                                     horizontalAlignment: Text.AlignHCenter
                                     wrapMode: Text.WordWrap
                                     text: mesafeDuzenlemeIndex >= 0
-                                          ? "Nokta " + (mesafeDuzenlemeIndex + 1) + " düzenleniyor"
+                                          ? txt("noktaOnEk") + (mesafeDuzenlemeIndex + 1) + txt("duzenleniyorSonEk")
                                           : (mesafeTamDuzenlemeModu
-                                             ? "Düzenlemek istediğiniz noktaya sağdaki listeden tıklayın"
-                                             : "Hedef mesafeyi gir, sonra boruyu o mesafeye getir")
+                                             ? txt("duzenlemekIcinTikla")
+                                             : txt("hedefMesafeYonerge"))
                                     color: mesafeDuzenlemeIndex >= 0 ? "#9333ea" : "#9ca3af"
                                     font.family: "Segoe UI"
                                     font.bold: mesafeDuzenlemeIndex >= 0
@@ -2334,7 +2394,7 @@ Rectangle {
 
                                     Text {
                                         anchors.centerIn: parent
-                                        text: "Ham değer: " + sensorManager.hamMesafe.toFixed(0)
+                                        text: txt("hamDegerOnEk") + sensorManager.hamMesafe.toFixed(0)
                                         color: wifiManager.baglandi ? "#c084fc" : "#f87171"
                                         font.family: "Segoe UI"
                                         font.pixelSize: 20
@@ -2347,7 +2407,7 @@ Rectangle {
                                     horizontalAlignment: Text.AlignHCenter
                                     wrapMode: Text.WordWrap
                                     visible: !wifiManager.baglandi
-                                    text: "Cihaz bağlı değil — ham değer 0 olarak kaydedilecek"
+                                    text: txt("hamDegerSifirUyari")
                                     color: "#f87171"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 11
@@ -2359,10 +2419,10 @@ Rectangle {
                                     height: 46
                                     property bool tumNoktalarGirildi: !mesafeTamDuzenlemeModu && mesafeDuzenlemeIndex < 0 && mesafeNoktalari.length >= mesafeToplamNokta
                                     text: mesafeDuzenlemeIndex >= 0
-                                          ? "Noktayı Güncelle"
+                                          ? txt("noktayiGuncelle")
                                           : (tumNoktalarGirildi
-                                             ? "Kalibrasyonu Tamamla"
-                                             : (mesafeNoktalari.length >= mesafeToplamNokta - 1 ? "Son Noktayı Kaydet" : "Bu Noktayı Kaydet"))
+                                             ? txt("kalibrasyonuTamamla")
+                                             : (mesafeNoktalari.length >= mesafeToplamNokta - 1 ? txt("sonNoktayiKaydet") : txt("buNoktayiKaydet")))
                                     font.pixelSize: 14
                                     font.bold: true
                                     enabled: tumNoktalarGirildi || (hedefCmKutusu.text.length > 0 && (mesafeDuzenlemeIndex >= 0 || mesafeNoktalari.length < mesafeToplamNokta))
@@ -2414,7 +2474,7 @@ Rectangle {
                                     width: parent.width
                                     height: 46
                                     visible: mesafeTamDuzenlemeModu
-                                    text: "Değişiklikleri Kaydet"
+                                    text: txt("degisiklikleriKaydet")
                                     font.pixelSize: 14
                                     font.bold: true
 
@@ -2439,7 +2499,7 @@ Rectangle {
                                     width: parent.width
                                     height: 38
                                     visible: mesafeDuzenlemeIndex >= 0
-                                    text: "Vazgeç"
+                                    text: txt("vazgecButon")
                                     font.pixelSize: 13
 
                                     onClicked: {
@@ -2482,7 +2542,7 @@ Rectangle {
                                 spacing: 4
 
                                 Text {
-                                    text: "KAYDEDİLEN NOKTALAR"
+                                    text: txt("kaydedilenNoktalarBaslik")
                                     color: "#6b7280"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 11
@@ -2491,7 +2551,7 @@ Rectangle {
                                 }
 
                                 Text {
-                                    text: "Düzeltmek için bir noktaya tıkla"
+                                    text: txt("duzeltmekIcinTikla")
                                     color: "#4b5563"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 10

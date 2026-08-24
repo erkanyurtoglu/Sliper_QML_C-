@@ -1,17 +1,36 @@
-import QtQuick 6.7
+﻿import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Layouts 6.7
 import QtMultimedia
+import sliper
 
 Rectangle {
     color: "#0a0e17"
 
+    signal cikisYapildi()
+
     readonly property var navOgeleri: [
-        { etiket: "Ölçüm", ikon: "📊" },
-        { etiket: "Sonuçlar", ikon: "📈" },
-        { etiket: "Geçmiş", ikon: "🕒" },
-        { etiket: "Kalibrasyon", ikon: "⚙️" }
+        { etiketTr: "Ölçüm", etiketEn: "Measurement", ikon: "📊" },
+        { etiketTr: "Sonuçlar", etiketEn: "Results", ikon: "📈" },
+        { etiketTr: "Geçmiş", etiketEn: "History", ikon: "🕒" },
+        { etiketTr: "Kalibrasyon", etiketEn: "Calibration", ikon: "⚙️" }
     ]
+
+    readonly property var metinler: ({
+        baglandi: { tr: "SLIPER-ESP32 Bağlı", en: "SLIPER-ESP32 Connected" },
+        baglaniyor: { tr: "Bağlanıyor...", en: "Connecting..." },
+        bagliDegil: { tr: "Bağlı Değil", en: "Not Connected" },
+        batarya: { tr: "🔋 Batarya: ", en: "🔋 Battery: " },
+        sesliKomut: { tr: "🎙 Sesli Komut: ", en: "🎙 Voice Command: " },
+        yukleniyor: { tr: "Yükleniyor...", en: "Loading..." },
+        acik: { tr: "Açık", en: "On" },
+        kapali: { tr: "Kapalı", en: "Off" },
+        cikisYap: { tr: "Çıkış Yap", en: "Log Out" }
+    })
+
+    function txt(anahtar) {
+        return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
+    }
 
     Row {
         anchors.fill: parent
@@ -38,13 +57,106 @@ Rectangle {
             }
 
             Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 24
+                anchors.rightMargin: 24
+                anchors.topMargin: 172
+                height: 1
+                color: "#1f2c46"
+            }
+
+            Row {
+                anchors.top: parent.top
+                anchors.topMargin: 184
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 6
+
+                Rectangle {
+                    width: 32
+                    height: 22
+                    radius: 5
+                    color: "#0f1420"
+                    border.color: Translations.turkish ? "#3b82f6" : "#1e2a3f"
+                    border.width: 1
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "TR"
+                        color: Translations.turkish ? "#ffffff" : "#6b7280"
+                        font.pixelSize: 10
+                        font.bold: Translations.turkish
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Translations.turkish = true
+                    }
+                }
+
+                Rectangle {
+                    width: 32
+                    height: 22
+                    radius: 5
+                    color: "#0f1420"
+                    border.color: !Translations.turkish ? "#3b82f6" : "#1e2a3f"
+                    border.width: 1
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "EN"
+                        color: !Translations.turkish ? "#ffffff" : "#6b7280"
+                        font.pixelSize: 10
+                        font.bold: !Translations.turkish
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Translations.turkish = false
+                    }
+                }
+
+                Rectangle {
+                    id: cikisButonu
+                    width: cikisMetni.implicitWidth + 16
+                    height: 22
+                    radius: 5
+                    color: cikisAlani.pressed ? "#4c1414" : (cikisAlani.containsMouse ? "#3a1414" : "#1f1414")
+                    border.color: "#7f1d1d"
+                    border.width: 1
+                    Behavior on color { ColorAnimation { duration: 120 } }
+
+                    Text {
+                        id: cikisMetni
+                        anchors.centerIn: parent
+                        text: txt("cikisYap")
+                        color: "#f87171"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 10
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        id: cikisAlani
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: cikisYapildi()
+                    }
+                }
+            }
+
+            Rectangle {
                 id: baglantiDurumu
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.leftMargin: 24
                 anchors.rightMargin: 24
-                anchors.topMargin: 178
+                anchors.topMargin: 224
                 height: 36
                 radius: 6
                 color: baglantiAlani.hoverli ? "#101a2c" : "transparent"
@@ -65,7 +177,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: wifiManager.baglandi ? "SLIPER-ESP32 Bağlı" : (wifiManager.baglaniyor ? "Bağlanıyor..." : "Bağlı Değil")
+                        text: wifiManager.baglandi ? txt("baglandi") : (wifiManager.baglaniyor ? txt("baglaniyor") : txt("bagliDegil"))
                         color: "#9ca3af"
                         font.family: "Segoe UI"
                         font.pixelSize: 12
@@ -90,7 +202,7 @@ Rectangle {
                 anchors.right: parent.right
                 anchors.leftMargin: 24
                 anchors.rightMargin: 24
-                anchors.topMargin: 190
+                anchors.topMargin: 236
                 height: 22
                 radius: 4
                 visible: wifiManager.baglandi && sensorManager.bataryaVoltaj > 0.1
@@ -104,7 +216,7 @@ Rectangle {
                     anchors.left: parent.left
                     anchors.leftMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "🔋 Batarya: " + sensorManager.bataryaVoltaj.toFixed(2) + " V"
+                    text: txt("batarya") + sensorManager.bataryaVoltaj.toFixed(2) + " V"
                     color: {
                         if (sensorManager.bataryaVoltaj >= 14.5) return "#4ade80"
                         if (sensorManager.bataryaVoltaj >= 14.0) return "#e8a020"
@@ -123,7 +235,7 @@ Rectangle {
                 anchors.right: parent.right
                 anchors.leftMargin: 24
                 anchors.rightMargin: 24
-                anchors.topMargin: 218
+                anchors.topMargin: 264
                 height: 30
                 radius: 6
                 color: sesKontroluAlani.hoverli ? "#101a2c" : "transparent"
@@ -144,7 +256,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: "🎙 Sesli Komut: " + (!voiceCommandManager.modelHazir ? "Yükleniyor..." : (voiceCommandManager.etkin ? "Açık" : "Kapalı"))
+                        text: txt("sesliKomut") + (!voiceCommandManager.modelHazir ? txt("yukleniyor") : (voiceCommandManager.etkin ? txt("acik") : txt("kapali")))
                         color: "#9ca3af"
                         font.family: "Segoe UI"
                         font.pixelSize: 12
@@ -171,7 +283,7 @@ Rectangle {
                 anchors.right: parent.right
                 anchors.leftMargin: 24
                 anchors.rightMargin: 24
-                anchors.topMargin: 256
+                anchors.topMargin: 302
                 height: 1
                 color: "#1f2c46"
             }
@@ -179,7 +291,7 @@ Rectangle {
             Column {
                 id: navColumn
                 anchors.top: parent.top
-                anchors.topMargin: 274
+                anchors.topMargin: 320
                 width: parent.width
                 spacing: 2
 
@@ -215,7 +327,7 @@ Rectangle {
                             }
 
                             Text {
-                                text: modelData.etiket
+                                text: Translations.turkish ? modelData.etiketTr : modelData.etiketEn
                                 color: navOgesi.aktif ? "#6ea8ff" : (navOgesi.hoverli ? "#dce8f5" : "#9ca3af")
                                 font.family: "Segoe UI"
                                 font.pixelSize: 14

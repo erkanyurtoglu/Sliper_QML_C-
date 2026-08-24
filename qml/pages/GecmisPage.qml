@@ -1,6 +1,7 @@
-import QtQuick 6.7
+﻿import QtQuick 6.7
 import QtQuick.Controls 6.7
 import "../components"
+import sliper
 
 Rectangle {
     id: gecmisSayfasi
@@ -11,6 +12,47 @@ Rectangle {
     property var olcumListesi: []
     property string baslangicTarihi: ""
     property string bitisTarihi: ""
+
+    readonly property var filtreAnahtarlari: ["tumTestler", "son7Gun", "son30Gun"]
+
+    readonly property var metinler: ({
+        aramaPlaceholder: { tr: "Müşteri veya reçete ara...", en: "Search by customer or recipe..." },
+        tumTestler: { tr: "Tüm Testler", en: "All Tests" },
+        son7Gun: { tr: "Son 7 Gün", en: "Last 7 Days" },
+        son30Gun: { tr: "Son 30 Gün", en: "Last 30 Days" },
+        ozelTarih: { tr: "Özel Tarih:", en: "Custom Date:" },
+        temizle: { tr: "Temizle", en: "Clear" },
+        musteriEtiket: { tr: "Müşteri: ", en: "Customer: " },
+        receteEtiket: { tr: "  •  Reçete: ", en: "  •  Recipe: " },
+        goruntule: { tr: "Görüntüle", en: "View" },
+        kayitSilBaslik: { tr: "Kaydı Sil", en: "Delete Record" },
+        kayitSilOnSoru: { tr: "'", en: "Are you sure you want to delete the measurement for '" },
+        kayitSilSonSoru: { tr: "' ölçümünü silmek istediğinize emin misiniz? Bu işlem geri alınamaz.", en: "'? This action cannot be undone." },
+        sifreEtiket: { tr: "ŞİFRE", en: "PASSWORD" },
+        sifrenizGirin: { tr: "Şifrenizi girin", en: "Enter your password" },
+        sifreHatali: { tr: "Şifre hatalı, tekrar deneyin.", en: "Incorrect password, please try again." },
+        sil: { tr: "Sil", en: "Delete" },
+        iptal: { tr: "İptal", en: "Cancel" },
+        gelismisAyarlarBaslik: { tr: "Gelişmiş Ayarlar", en: "Advanced Settings" },
+        onayla: { tr: "Onayla", en: "Confirm" },
+        veriTabaniDisaAktar: { tr: "Veritabanını Dışa Aktar", en: "Export Database" },
+        disaAktarildi: { tr: "✓ Dışa aktarıldı: ", en: "✓ Exported: " },
+        disaAktarilamadi: { tr: "✕ Dışa aktarılamadı", en: "✕ Export failed" },
+        icaAktarYoluEtiket: { tr: "İÇE AKTARILACAK .DB DOSYA YOLU", en: ".DB FILE PATH TO IMPORT" },
+        icaAktarPlaceholder: { tr: "ör. C:/Users/.../SliperRaporlari/sliper_yedek_....db", en: "e.g. C:/Users/.../SliperRaporlari/sliper_yedek_....db" },
+        veriTabaniIcaAktar: { tr: "Veritabanını İçe Aktar", en: "Import Database" },
+        icaAktarildi: { tr: "✓ İçe aktarıldı, uygulamayı yeniden başlatmanız önerilir.", en: "✓ Imported, it is recommended to restart the application." },
+        icaAktarilamadi: { tr: "✕ İçe aktarılamadı, dosya yolunu kontrol edin.", en: "✕ Import failed, please check the file path." },
+        tumVeriyiSil: { tr: "Tüm Verileri Sil", en: "Delete All Data" },
+        kapat: { tr: "Kapat", en: "Close" },
+        tumVeriyiSilMesaj: { tr: "Tüm ölçüm ve stroke verileri kalıcı olarak silinecek. Sensör kalibrasyonları etkilenmez. Bu işlem GERİ ALINAMAZ, emin misiniz?", en: "All measurement and stroke data will be permanently deleted. Sensor calibrations will not be affected. This action CANNOT BE UNDONE, are you sure?" },
+        evetHepsiniSil: { tr: "Evet, Hepsini Sil", en: "Yes, Delete All" },
+        tumVerilerSilindi: { tr: "✓ Tüm veriler silindi.", en: "✓ All data deleted." }
+    })
+
+    function txt(anahtar) {
+        return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
+    }
 
     function listeyiYenile() {
         olcumListesi = database.tumOlcumleriGetir()
@@ -94,7 +136,7 @@ Rectangle {
                 id: aramaKutusu
                 width: parent.width - filtreKutusu.width - gelismisAyarlarButonu.width - parent.spacing * 2
                 height: 40
-                placeholderText: "Müşteri veya reçete ara..."
+                placeholderText: txt("aramaPlaceholder")
                 placeholderTextColor: "#4b5563"
                 color: "#ffffff"
                 font.pixelSize: 13
@@ -121,7 +163,7 @@ Rectangle {
                 id: filtreKutusu
                 width: 160
                 height: 40
-                model: ["Tüm Testler", "Son 7 Gün", "Son 30 Gün"]
+                model: filtreAnahtarlari.map(function(anahtar) { return txt(anahtar) })
 
                 background: Rectangle {
                     color: "#0f1420"
@@ -176,7 +218,7 @@ Rectangle {
             spacing: 10
 
             Text {
-                text: "Özel Tarih:"
+                text: txt("ozelTarih")
                 color: "#9ca3af"
                 font.family: "Segoe UI"
                 font.pixelSize: 12
@@ -217,7 +259,7 @@ Rectangle {
                 Text {
                     id: temizleMetni
                     anchors.centerIn: parent
-                    text: "Temizle"
+                    text: txt("temizle")
                     color: "#9ca3af"
                     font.family: "Segoe UI"
                     font.pixelSize: 12
@@ -317,7 +359,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: "Müşteri: " + modelData.musteri + "  •  Reçete: " + modelData.recete
+                        text: txt("musteriEtiket") + modelData.musteri + txt("receteEtiket") + modelData.recete
                         color: "#dce8f5"
                         font.family: "Segoe UI"
                         font.pixelSize: 13
@@ -363,7 +405,7 @@ Rectangle {
                     Button {
                         anchors.verticalCenter: parent.verticalCenter
                         height: 34
-                        text: "Görüntüle"
+                        text: txt("goruntule")
                         font.pixelSize: 12
 
                         onClicked: testSecildi(modelData.id)
@@ -419,7 +461,7 @@ Rectangle {
             spacing: 16
 
             Text {
-                text: "Kaydı Sil"
+                text: txt("kayitSilBaslik")
                 color: "#ffffff"
                 font.family: "Segoe UI"
                 font.pixelSize: 17
@@ -429,7 +471,7 @@ Rectangle {
             Text {
                 width: parent.width
                 wrapMode: Text.WordWrap
-                text: "'" + silOnayPopup.hedefMusteri + "' ölçümünü silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+                text: txt("kayitSilOnSoru") + silOnayPopup.hedefMusteri + txt("kayitSilSonSoru")
                 color: "#9ca3af"
                 font.family: "Segoe UI"
                 font.pixelSize: 13
@@ -440,7 +482,7 @@ Rectangle {
                 spacing: 6
 
                 Text {
-                    text: "ŞİFRE"
+                    text: txt("sifreEtiket")
                     color: "#6b7280"
                     font.family: "Segoe UI"
                     font.pixelSize: 10
@@ -452,7 +494,7 @@ Rectangle {
                     width: parent.width
                     height: 40
                     echoMode: TextInput.Password
-                    placeholderText: "Şifrenizi girin"
+                    placeholderText: txt("sifrenizGirin")
                     placeholderTextColor: "#4b5563"
                     color: "#ffffff"
                     font.pixelSize: 13
@@ -469,7 +511,7 @@ Rectangle {
 
                 Text {
                     id: hataMetni
-                    text: "Şifre hatalı, tekrar deneyin."
+                    text: txt("sifreHatali")
                     color: "#ef4444"
                     font.family: "Segoe UI"
                     font.pixelSize: 11
@@ -486,7 +528,7 @@ Rectangle {
                     id: silOnaylaButonu
                     width: (parent.width - 10) / 2
                     height: 40
-                    text: "Sil"
+                    text: txt("sil")
                     font.pixelSize: 13
                     font.bold: true
 
@@ -520,7 +562,7 @@ Rectangle {
                 Button {
                     width: (parent.width - 10) / 2
                     height: 40
-                    text: "İptal"
+                    text: txt("iptal")
                     font.pixelSize: 13
 
                     onClicked: silOnayPopup.close()
@@ -573,7 +615,7 @@ Rectangle {
             spacing: 16
 
             Text {
-                text: "Gelişmiş Ayarlar"
+                text: txt("gelismisAyarlarBaslik")
                 color: "#ffffff"
                 font.family: "Segoe UI"
                 font.pixelSize: 17
@@ -586,7 +628,7 @@ Rectangle {
                 visible: !gelismisAyarlarPopup.pinDogrulandi
 
                 Text {
-                    text: "ŞİFRE"
+                    text: txt("sifreEtiket")
                     color: "#6b7280"
                     font.family: "Segoe UI"
                     font.pixelSize: 10
@@ -598,7 +640,7 @@ Rectangle {
                     width: parent.width
                     height: 40
                     echoMode: TextInput.Password
-                    placeholderText: "Şifrenizi girin"
+                    placeholderText: txt("sifrenizGirin")
                     placeholderTextColor: "#4b5563"
                     color: "#ffffff"
                     font.pixelSize: 13
@@ -615,7 +657,7 @@ Rectangle {
 
                 Text {
                     id: pinHataMetni
-                    text: "Şifre hatalı, tekrar deneyin."
+                    text: txt("sifreHatali")
                     color: "#ef4444"
                     font.family: "Segoe UI"
                     font.pixelSize: 11
@@ -626,7 +668,7 @@ Rectangle {
                     id: pinDogrulaButonu
                     width: parent.width
                     height: 40
-                    text: "Onayla"
+                    text: txt("onayla")
                     font.pixelSize: 13
                     font.bold: true
 
@@ -665,14 +707,14 @@ Rectangle {
                 Button {
                     width: parent.width
                     height: 40
-                    text: "Veritabanını Dışa Aktar"
+                    text: txt("veriTabaniDisaAktar")
                     font.pixelSize: 13
 
                     onClicked: {
                         var yol = database.veriTabaniDisaAktar()
                         gelismisAyarlarBildirim.text = yol.length > 0
-                            ? "✓ Dışa aktarıldı: " + yol
-                            : "✕ Dışa aktarılamadı"
+                            ? txt("disaAktarildi") + yol
+                            : txt("disaAktarilamadi")
                     }
 
                     background: Rectangle {
@@ -697,7 +739,7 @@ Rectangle {
                     spacing: 6
 
                     Text {
-                        text: "İÇE AKTARILACAK .DB DOSYA YOLU"
+                        text: txt("icaAktarYoluEtiket")
                         color: "#6b7280"
                         font.family: "Segoe UI"
                         font.pixelSize: 10
@@ -708,7 +750,7 @@ Rectangle {
                         id: icaAktarYoluKutusu
                         width: parent.width
                         height: 40
-                        placeholderText: "ör. C:/Users/.../SliperRaporlari/sliper_yedek_....db"
+                        placeholderText: txt("icaAktarPlaceholder")
                         placeholderTextColor: "#4b5563"
                         color: "#ffffff"
                         font.pixelSize: 12
@@ -726,14 +768,14 @@ Rectangle {
                 Button {
                     width: parent.width
                     height: 40
-                    text: "Veritabanını İçe Aktar"
+                    text: txt("veriTabaniIcaAktar")
                     font.pixelSize: 13
 
                     onClicked: {
                         var basarili = database.veriTabaniIcaAktar(icaAktarYoluKutusu.text)
                         gelismisAyarlarBildirim.text = basarili
-                            ? "✓ İçe aktarıldı, uygulamayı yeniden başlatmanız önerilir."
-                            : "✕ İçe aktarılamadı, dosya yolunu kontrol edin."
+                            ? txt("icaAktarildi")
+                            : txt("icaAktarilamadi")
                         if (basarili) {
                             gecmisSayfasi.listeyiYenile()
                         }
@@ -759,7 +801,7 @@ Rectangle {
                 Button {
                     width: parent.width
                     height: 40
-                    text: "Tüm Verileri Sil"
+                    text: txt("tumVeriyiSil")
                     font.pixelSize: 13
                     font.bold: true
 
@@ -793,7 +835,7 @@ Rectangle {
                 Button {
                     width: parent.width
                     height: 36
-                    text: "Kapat"
+                    text: txt("kapat")
                     font.pixelSize: 12
 
                     onClicked: gelismisAyarlarPopup.close()
@@ -841,7 +883,7 @@ Rectangle {
             spacing: 16
 
             Text {
-                text: "Tüm Verileri Sil"
+                text: txt("tumVeriyiSil")
                 color: "#ffffff"
                 font.family: "Segoe UI"
                 font.pixelSize: 17
@@ -851,7 +893,7 @@ Rectangle {
             Text {
                 width: parent.width
                 wrapMode: Text.WordWrap
-                text: "Tüm ölçüm ve stroke verileri kalıcı olarak silinecek. Sensör kalibrasyonları etkilenmez. Bu işlem GERİ ALINAMAZ, emin misiniz?"
+                text: txt("tumVeriyiSilMesaj")
                 color: "#9ca3af"
                 font.family: "Segoe UI"
                 font.pixelSize: 13
@@ -865,7 +907,7 @@ Rectangle {
                 Button {
                     width: (parent.width - 10) / 2
                     height: 40
-                    text: "Evet, Hepsini Sil"
+                    text: txt("evetHepsiniSil")
                     font.pixelSize: 13
                     font.bold: true
 
@@ -873,7 +915,7 @@ Rectangle {
                         database.tumVeriyiSil()
                         gecmisSayfasi.listeyiYenile()
                         tumVeriyiSilOnayPopup.close()
-                        gelismisAyarlarBildirim.text = "✓ Tüm veriler silindi."
+                        gelismisAyarlarBildirim.text = txt("tumVerilerSilindi")
                     }
 
                     background: Rectangle {
@@ -894,7 +936,7 @@ Rectangle {
                 Button {
                     width: (parent.width - 10) / 2
                     height: 40
-                    text: "İptal"
+                    text: txt("iptal")
                     font.pixelSize: 13
 
                     onClicked: tumVeriyiSilOnayPopup.close()

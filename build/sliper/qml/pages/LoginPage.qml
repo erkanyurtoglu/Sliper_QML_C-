@@ -1,5 +1,6 @@
-import QtQuick 6.7
+﻿import QtQuick 6.7
 import QtQuick.Controls 6.7
+import sliper
 
 Rectangle {
     id: sayfa
@@ -8,6 +9,20 @@ Rectangle {
     property bool beniHatirla: false
 
     signal girisBasarili()
+
+    readonly property var metinler: ({
+        girisBasligi: { tr: "Sisteme Giriş", en: "System Login" },
+        girisAltBaslik: { tr: "Yetkili hesabınızla devam edin", en: "Continue with your authorized account" },
+        kullaniciAdiEtiket: { tr: "KULLANICI ADI", en: "USERNAME" },
+        kullaniciAdiPlaceholder: { tr: "kullanici_adi", en: "username" },
+        sifreEtiket: { tr: "ŞİFRE", en: "PASSWORD" },
+        girisYapButon: { tr: "Giriş Yap", en: "Log In" },
+        telifHakki: { tr: "© 2026 Liya Test A.Ş. SLIPER Analiz Yazılımı", en: "© 2026 Liya Test A.Ş. SLIPER Analysis Software" }
+    })
+
+    function txt(anahtar) {
+        return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
+    }
 
     gradient: Gradient {
         GradientStop { position: 0.0; color: "#101c33" }
@@ -25,15 +40,21 @@ Rectangle {
             height: 30
             radius: 6
             color: "#0f1420"
-            border.color: "#3b82f6"
+            border.color: Translations.turkish ? "#3b82f6" : "#1e2a3f"
             border.width: 1
 
             Text {
                 anchors.centerIn: parent
                 text: "TR"
-                color: "#ffffff"
+                color: Translations.turkish ? "#ffffff" : "#6b7280"
                 font.pixelSize: 12
-                font.bold: true
+                font.bold: Translations.turkish
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Translations.turkish = true
             }
         }
 
@@ -42,14 +63,21 @@ Rectangle {
             height: 30
             radius: 6
             color: "#0f1420"
-            border.color: "#1e2a3f"
+            border.color: !Translations.turkish ? "#3b82f6" : "#1e2a3f"
             border.width: 1
 
             Text {
                 anchors.centerIn: parent
                 text: "EN"
-                color: "#6b7280"
+                color: !Translations.turkish ? "#ffffff" : "#6b7280"
                 font.pixelSize: 12
+                font.bold: !Translations.turkish
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Translations.turkish = false
             }
         }
     }
@@ -124,7 +152,7 @@ Rectangle {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Sisteme Giriş"
+                    text: txt("girisBasligi")
                     color: "#ffffff"
                     font.family: "Segoe UI"
                     font.pixelSize: 22
@@ -133,7 +161,7 @@ Rectangle {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Yetkili hesabınızla devam edin"
+                    text: txt("girisAltBaslik")
                     color: "#6b7280"
                     font.family: "Segoe UI"
                     font.pixelSize: 12
@@ -145,7 +173,7 @@ Rectangle {
                 spacing: 6
 
                 Text {
-                    text: "KULLANICI ADI"
+                    text: txt("kullaniciAdiEtiket")
                     color: "#6b7280"
                     font.family: "Segoe UI"
                     font.pixelSize: 10
@@ -156,7 +184,7 @@ Rectangle {
                     id: kullaniciAdiKutusu
                     width: parent.width
                     height: 42
-                    placeholderText: "kullanici_adi"
+                    placeholderText: txt("kullaniciAdiPlaceholder")
                     placeholderTextColor: "#4b5563"
                     color: "#ffffff"
                     font.pixelSize: 13
@@ -176,7 +204,7 @@ Rectangle {
                 spacing: 6
 
                 Text {
-                    text: "ŞİFRE"
+                    text: txt("sifreEtiket")
                     color: "#6b7280"
                     font.family: "Segoe UI"
                     font.pixelSize: 10
@@ -296,7 +324,7 @@ Rectangle {
             Button {
                 width: parent.width
                 height: 44
-                text: "Giriş Yap"
+                text: txt("girisYapButon")
                 font.family: "Segoe UI"
                 font.pixelSize: 14
                 font.bold: true
@@ -334,7 +362,7 @@ Rectangle {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "\u00A9 2026 Liya Test A.Ş. SLIPER Analiz Yazılımı"
+                text: txt("telifHakki")
                 color: "#4b5563"
                 font.family: "Segoe UI"
                 font.pixelSize: 10

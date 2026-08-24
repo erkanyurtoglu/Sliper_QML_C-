@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "sliper/qml/Main.qml"
+  "sliper/qml/Translations.qml"
   "sliper/qml/assets/egim_sensor.png"
   "sliper/qml/assets/loadcell.png"
   "sliper/qml/assets/logo.png"

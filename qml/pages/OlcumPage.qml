@@ -1,9 +1,53 @@
-import QtQuick 6.7
+﻿import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtCharts 6.7
+import sliper
 
 Rectangle {
     color: "#0a0e17"
+
+    readonly property var metinler: ({
+        testBilgileri: { tr: "TEST BİLGİLERİ", en: "TEST INFORMATION" },
+        musteri: { tr: "Müşteri", en: "Customer" },
+        musteriPlaceholder: { tr: "Musteri adi girin...", en: "Enter customer name..." },
+        betonRecetesi: { tr: "Beton Reçetesi", en: "Concrete Mix Design" },
+        receteSeciniz: { tr: "Reçete Seçin...", en: "Select Mix Design..." },
+        cimentoEtiket: { tr: "Çimento ", en: "Cement " },
+        suCimentoEtiket: { tr: "  •  Su/Çimento ", en: "  •  Water/Cement " },
+        eklenenAgirlik: { tr: "Eklenen Ağırlık (kg)", en: "Added Weight (kg)" },
+        geriButon: { tr: "− Geri", en: "− Undo" },
+        sifirlaButon: { tr: "↺ Sıfırla", en: "↺ Reset" },
+        olcumuBaslatButon: { tr: "▶  Ölçümü Başlat", en: "▶  Start Measurement" },
+        devamEtButon: { tr: "▶  Devam Et", en: "▶  Resume" },
+        duraklatButon: { tr: "⏸  Duraklat", en: "⏸  Pause" },
+        bitirButon: { tr: "⏹  Bitir", en: "⏹  Finish" },
+        veriYok: { tr: "VERI YOK", en: "NO DATA" },
+        duraklatildiDurum: { tr: "DURAKLATILDI", en: "PAUSED" },
+        anlikDegerler: { tr: "ANLIK DEĞERLER", en: "CURRENT VALUES" },
+        basincEtiket: { tr: "BASINÇ", en: "PRESSURE" },
+        konumEtiket: { tr: "KONUM", en: "POSITION" },
+        hizEtiket: { tr: "HIZ", en: "SPEED" },
+        debiEtiket: { tr: "DEBİ", en: "FLOW RATE" },
+        basincZaman: { tr: "Basınç - Zaman", en: "Pressure - Time" },
+        konumZaman: { tr: "Konum - Zaman", en: "Position - Time" },
+        hizZaman: { tr: "Hız - Zaman", en: "Speed - Time" },
+        debiZaman: { tr: "Debi - Zaman", en: "Flow Rate - Time" },
+        sesliDinleniyor: { tr: "🎙 Dinleniyor — \"Başlat / Durdur / Devam Et / Bitir / Ekle\"", en: "🎙 Listening — \"Start / Stop / Resume / Finish / Add\"" },
+        sesliHazirlaniyor: { tr: "🎙 Sesli komut hazırlanıyor...", en: "🎙 Preparing voice commands..." },
+        duyulanEtiket: { tr: "Duyulan: ", en: "Heard: " },
+        bitirOnaySorusu: { tr: "Ölçümü bitirmek istediğinize emin misiniz?", en: "Are you sure you want to finish the measurement?" },
+        kaydetVeBitir: { tr: "💾  Kaydet ve Bitir", en: "💾  Save and Finish" },
+        testiSilVeBitir: { tr: "🗑  Testi Sil ve Bitir", en: "🗑  Delete Test and Finish" },
+        vazgecTesteDevam: { tr: "Vazgeç, Teste Devam Et", en: "Cancel, Continue Testing" },
+        uyariMusteriAdi: { tr: "Lütfen müşteri adını girin.", en: "Please enter the customer name." },
+        uyariReceteSec: { tr: "Lütfen bir beton reçetesi seçin.", en: "Please select a concrete mix design." },
+        uyariCihazBagliDegil: { tr: "Cihaz bağlı değil. Lütfen önce sol alttan SLIPER-ESP32'ye bağlanın.", en: "Device not connected. Please connect to SLIPER-ESP32 from the bottom left first." },
+        uyariAktifOlcumYok: { tr: "Aktif bir ölçüm yok. Önce ölçümü başlatın.", en: "No active measurement. Please start a measurement first." }
+    })
+
+    function txt(anahtar) {
+        return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
+    }
     property real zamanSayaci: 0
     property int aktifOlcumId: -1
     property string uyariMesaji: ""
@@ -21,16 +65,16 @@ Rectangle {
     // TS EN 206 / TS 13515 normal beton dayanım sınıfları (C sınıfı) — çimento dozajı
     // ve azami su/çimento oranı, ilgili sınıfın minimum bağlayıcı gereksinimine göre.
     readonly property var receteListesi: [
-        { sinif: "Reçete Seçin...", cimento: "", suCimento: "", aciklama: "" },
-        { sinif: "C16/20", cimento: "min. 260 kg/m³", suCimento: "maks. 0.65", aciklama: "Hafif yükte yalın/donatılı beton" },
-        { sinif: "C20/25", cimento: "min. 280 kg/m³", suCimento: "maks. 0.60", aciklama: "Standart betonarme" },
-        { sinif: "C25/30", cimento: "min. 300 kg/m³", suCimento: "maks. 0.55", aciklama: "Standart betonarme (TS EN 206)" },
-        { sinif: "C30/37", cimento: "min. 320 kg/m³", suCimento: "maks. 0.50", aciklama: "Standart betonarme" },
-        { sinif: "C30/37 SCC", cimento: "min. 380 kg/m³", suCimento: "maks. 0.45", aciklama: "Kendiliğinden yerleşen beton (SF2)" },
-        { sinif: "C35/45", cimento: "min. 340 kg/m³", suCimento: "maks. 0.45", aciklama: "Orta-yüksek dayanım" },
-        { sinif: "C40/50", cimento: "min. 360 kg/m³", suCimento: "maks. 0.40", aciklama: "Yüksek dayanım" },
-        { sinif: "C45/55", cimento: "min. 380 kg/m³", suCimento: "maks. 0.38", aciklama: "Yüksek dayanım" },
-        { sinif: "C50/60", cimento: "min. 400 kg/m³", suCimento: "maks. 0.35", aciklama: "Yüksek dayanım (TS EN 206 normal beton sınırı)" }
+        { sinifTr: "Reçete Seçin...", sinifEn: "Select Mix Design...", cimentoTr: "", cimentoEn: "", suCimentoTr: "", suCimentoEn: "", aciklamaTr: "", aciklamaEn: "" },
+        { sinifTr: "C16/20", sinifEn: "C16/20", cimentoTr: "min. 260 kg/m³", cimentoEn: "min. 260 kg/m³", suCimentoTr: "maks. 0.65", suCimentoEn: "max. 0.65", aciklamaTr: "Hafif yükte yalın/donatılı beton", aciklamaEn: "Plain/reinforced concrete for light loads" },
+        { sinifTr: "C20/25", sinifEn: "C20/25", cimentoTr: "min. 280 kg/m³", cimentoEn: "min. 280 kg/m³", suCimentoTr: "maks. 0.60", suCimentoEn: "max. 0.60", aciklamaTr: "Standart betonarme", aciklamaEn: "Standard reinforced concrete" },
+        { sinifTr: "C25/30", sinifEn: "C25/30", cimentoTr: "min. 300 kg/m³", cimentoEn: "min. 300 kg/m³", suCimentoTr: "maks. 0.55", suCimentoEn: "max. 0.55", aciklamaTr: "Standart betonarme (TS EN 206)", aciklamaEn: "Standard reinforced concrete (TS EN 206)" },
+        { sinifTr: "C30/37", sinifEn: "C30/37", cimentoTr: "min. 320 kg/m³", cimentoEn: "min. 320 kg/m³", suCimentoTr: "maks. 0.50", suCimentoEn: "max. 0.50", aciklamaTr: "Standart betonarme", aciklamaEn: "Standard reinforced concrete" },
+        { sinifTr: "C30/37 SCC", sinifEn: "C30/37 SCC", cimentoTr: "min. 380 kg/m³", cimentoEn: "min. 380 kg/m³", suCimentoTr: "maks. 0.45", suCimentoEn: "max. 0.45", aciklamaTr: "Kendiliğinden yerleşen beton (SF2)", aciklamaEn: "Self-compacting concrete (SF2)" },
+        { sinifTr: "C35/45", sinifEn: "C35/45", cimentoTr: "min. 340 kg/m³", cimentoEn: "min. 340 kg/m³", suCimentoTr: "maks. 0.45", suCimentoEn: "max. 0.45", aciklamaTr: "Orta-yüksek dayanım", aciklamaEn: "Medium-high strength" },
+        { sinifTr: "C40/50", sinifEn: "C40/50", cimentoTr: "min. 360 kg/m³", cimentoEn: "min. 360 kg/m³", suCimentoTr: "maks. 0.40", suCimentoEn: "max. 0.40", aciklamaTr: "Yüksek dayanım", aciklamaEn: "High strength" },
+        { sinifTr: "C45/55", sinifEn: "C45/55", cimentoTr: "min. 380 kg/m³", cimentoEn: "min. 380 kg/m³", suCimentoTr: "maks. 0.38", suCimentoEn: "max. 0.38", aciklamaTr: "Yüksek dayanım", aciklamaEn: "High strength" },
+        { sinifTr: "C50/60", sinifEn: "C50/60", cimentoTr: "min. 400 kg/m³", cimentoEn: "min. 400 kg/m³", suCimentoTr: "maks. 0.35", suCimentoEn: "max. 0.35", aciklamaTr: "Yüksek dayanım (TS EN 206 normal beton sınırı)", aciklamaEn: "High strength (TS EN 206 normal concrete limit)" }
     ]
 
     signal olcumTamamlandi(int id)
@@ -51,18 +95,18 @@ Rectangle {
         if (aktifOlcumId > 0) return
 
         if (musteriKutusu.text.trim().length === 0) {
-            uyariMesaji = "Lütfen müşteri adını girin."
+            uyariMesaji = txt("uyariMusteriAdi")
             return
         }
 
         if (receteKutusu.currentIndex <= 0) {
-            uyariMesaji = "Lütfen bir beton reçetesi seçin."
+            uyariMesaji = txt("uyariReceteSec")
             return
         }
 
         if (!sensorManager.veriGecerli) {
             console.warn("Gercek sensor verisi yok, olcum baslatilmadi.")
-            uyariMesaji = "Cihaz bağlı değil. Lütfen önce sol alttan SLIPER-ESP32'ye bağlanın."
+            uyariMesaji = txt("uyariCihazBagliDegil")
             return
         }
 
@@ -86,7 +130,7 @@ Rectangle {
             }
             bitirOnayPopup.open()
         } else {
-            uyariMesaji = "Aktif bir ölçüm yok. Önce ölçümü başlatın."
+            uyariMesaji = txt("uyariAktifOlcumYok")
         }
     }
 
@@ -230,7 +274,7 @@ Rectangle {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.margins: 20
-                text: "TEST BİLGİLERİ"
+                text: txt("testBilgileri")
                 color: "#6b7280"
                 font.family: "Segoe UI"
                 font.pixelSize: 12
@@ -248,7 +292,7 @@ Rectangle {
                 spacing: 6
 
                 Text {
-                    text: "Müşteri"
+                    text: txt("musteri")
                     color: "#9ca3af"
                     font.family: "Segoe UI"
                     font.pixelSize: 12
@@ -258,7 +302,7 @@ Rectangle {
                     id: musteriKutusu
                     width: parent.width
                     height: 38
-                    placeholderText: "Musteri adi girin..."
+                    placeholderText: txt("musteriPlaceholder")
                     placeholderTextColor: "#4b5563"
                     color: "#ffffff"
                     font.pixelSize: 13
@@ -273,7 +317,7 @@ Rectangle {
                 }
 
                 Text {
-                    text: "Beton Reçetesi"
+                    text: txt("betonRecetesi")
                     color: "#9ca3af"
                     font.family: "Segoe UI"
                     font.pixelSize: 12
@@ -284,7 +328,7 @@ Rectangle {
                     width: parent.width
                     height: 38
                     model: receteListesi
-                    textRole: "sinif"
+                    textRole: Translations.turkish ? "sinifTr" : "sinifEn"
 
                     background: Rectangle {
                         color: "#0a0e17"
@@ -304,7 +348,7 @@ Rectangle {
                     delegate: ItemDelegate {
                         id: receteDelege
                         width: receteKutusu.width
-                        height: modelData.cimento.length > 0 ? 52 : 36
+                        height: modelData.cimentoTr.length > 0 ? 52 : 36
                         highlighted: receteKutusu.highlightedIndex === index
 
                         background: Rectangle {
@@ -320,7 +364,7 @@ Rectangle {
                             spacing: 2
 
                             Text {
-                                text: modelData.sinif
+                                text: Translations.turkish ? modelData.sinifTr : modelData.sinifEn
                                 color: "#dce8f5"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 13
@@ -328,8 +372,10 @@ Rectangle {
                             }
 
                             Text {
-                                visible: modelData.cimento.length > 0
-                                text: "Çimento " + modelData.cimento + "  •  Su/Çimento " + modelData.suCimento
+                                visible: modelData.cimentoTr.length > 0
+                                text: Translations.turkish
+                                    ? (txt("cimentoEtiket") + modelData.cimentoTr + txt("suCimentoEtiket") + modelData.suCimentoTr)
+                                    : (txt("cimentoEtiket") + modelData.cimentoEn + txt("suCimentoEtiket") + modelData.suCimentoEn)
                                 color: "#6b7280"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 10
@@ -339,7 +385,7 @@ Rectangle {
                 }
 
                 Text {
-                    text: "Eklenen Ağırlık (kg)"
+                    text: txt("eklenenAgirlik")
                     color: "#9ca3af"
                     font.family: "Segoe UI"
                     font.pixelSize: 12
@@ -386,7 +432,7 @@ Rectangle {
                             id: agirlikAzaltButonu
                             width: (parent.width - 2 * parent.spacing) / 3
                             height: 38
-                            text: "− Geri"
+                            text: txt("geriButon")
                             font.family: "Segoe UI"
                             font.pixelSize: 12
                             enabled: agirlikAdedi > 0
@@ -415,7 +461,7 @@ Rectangle {
                             id: sifirlaButonu
                             width: (parent.width - 2 * parent.spacing) / 3
                             height: 38
-                            text: "↺ Sıfırla"
+                            text: txt("sifirlaButon")
                             font.family: "Segoe UI"
                             font.pixelSize: 12
                             enabled: agirlikAdedi > 0
@@ -466,7 +512,7 @@ Rectangle {
                     id: baslatButonu
                     width: parent.width
                     height: 44
-                    text: "▶  Ölçümü Başlat"
+                    text: txt("olcumuBaslatButon")
                     font.family: "Segoe UI"
                     font.pixelSize: 14
                     font.bold: true
@@ -509,7 +555,7 @@ Rectangle {
                         id: duraklatButonu
                         width: (parent.width - parent.spacing) / 2
                         height: 40
-                        text: calculator.duraklatildi ? "▶  Devam Et" : "⏸  Duraklat"
+                        text: calculator.duraklatildi ? txt("devamEtButon") : txt("duraklatButon")
                         font.family: "Segoe UI"
                         font.pixelSize: 13
 
@@ -541,7 +587,7 @@ Rectangle {
                         id: bitirButonu
                         width: (parent.width - parent.spacing) / 2
                         height: 40
-                        text: "⏹  Bitir"
+                        text: txt("bitirButon")
                         font.family: "Segoe UI"
                         font.pixelSize: 13
 
@@ -614,8 +660,8 @@ Rectangle {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         text: {
-                            if (!sensorManager.veriGecerli) return "VERI YOK"
-                            if (calculator.duraklatildi) return "DURAKLATILDI"
+                            if (!sensorManager.veriGecerli) return txt("veriYok")
+                            if (calculator.duraklatildi) return txt("duraklatildiDurum")
                             return calculator.durum
                         }
                         color: "#dce8f5"
@@ -657,7 +703,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.topMargin: 24
                 anchors.leftMargin: 20
-                text: "ANLIK DEĞERLER"
+                text: txt("anlikDegerler")
                 color: "#6b7280"
                 font.family: "Segoe UI"
                 font.pixelSize: 12
@@ -697,7 +743,7 @@ Rectangle {
                         spacing: 6
 
                         Text {
-                            text: "BASINÇ"
+                            text: txt("basincEtiket")
                             color: "#6b7280"
                             font.family: "Segoe UI"
                             font.pixelSize: 10
@@ -744,7 +790,7 @@ Rectangle {
                         spacing: 6
 
                         Text {
-                            text: "KONUM"
+                            text: txt("konumEtiket")
                             color: "#6b7280"
                             font.family: "Segoe UI"
                             font.pixelSize: 10
@@ -791,7 +837,7 @@ Rectangle {
                         spacing: 6
 
                         Text {
-                            text: "HIZ"
+                            text: txt("hizEtiket")
                             color: "#6b7280"
                             font.family: "Segoe UI"
                             font.pixelSize: 10
@@ -838,7 +884,7 @@ Rectangle {
                         spacing: 6
 
                         Text {
-                            text: "DEBİ"
+                            text: txt("debiEtiket")
                             color: "#6b7280"
                             font.family: "Segoe UI"
                             font.pixelSize: 10
@@ -919,7 +965,7 @@ Rectangle {
                             anchors.left: basincNoktasi.right
                             anchors.leftMargin: 8
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "Basınç - Zaman"
+                            text: txt("basincZaman")
                             color: "#9ca3af"
                             font.family: "Segoe UI"
                             font.pixelSize: 13
@@ -1010,7 +1056,7 @@ Rectangle {
                             anchors.left: konumNoktasi.right
                             anchors.leftMargin: 8
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "Konum - Zaman"
+                            text: txt("konumZaman")
                             color: "#9ca3af"
                             font.family: "Segoe UI"
                             font.pixelSize: 13
@@ -1112,7 +1158,7 @@ Rectangle {
                             anchors.left: hizNoktasi.right
                             anchors.leftMargin: 8
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "Hız - Zaman"
+                            text: txt("hizZaman")
                             color: "#9ca3af"
                             font.family: "Segoe UI"
                             font.pixelSize: 13
@@ -1203,7 +1249,7 @@ Rectangle {
                             anchors.left: debiNoktasi.right
                             anchors.leftMargin: 8
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "Debi - Zaman"
+                            text: txt("debiZaman")
                             color: "#9ca3af"
                             font.family: "Segoe UI"
                             font.pixelSize: 13
@@ -1299,7 +1345,7 @@ Rectangle {
                     color: voiceCommandManager.dinliyor ? "#16a34a" : "#6b7280"
                 }
                 Text {
-                    text: voiceCommandManager.dinliyor ? "🎙 Dinleniyor — \"Başlat / Durdur / Devam Et / Bitir / Ekle\"" : "🎙 Sesli komut hazırlanıyor..."
+                    text: voiceCommandManager.dinliyor ? txt("sesliDinleniyor") : txt("sesliHazirlaniyor")
                     color: "#9ca3af"
                     font.family: "Segoe UI"
                     font.pixelSize: 11
@@ -1308,7 +1354,7 @@ Rectangle {
 
             Text {
                 visible: voiceCommandManager.anlikMetin.length > 0
-                text: "Duyulan: " + voiceCommandManager.anlikMetin
+                text: txt("duyulanEtiket") + voiceCommandManager.anlikMetin
                 color: "#4b5563"
                 font.family: "Segoe UI"
                 font.pixelSize: 10
@@ -1342,7 +1388,7 @@ Rectangle {
 
             Text {
                 width: 292
-                text: "Ölçümü bitirmek istediğinize emin misiniz?"
+                text: txt("bitirOnaySorusu")
                 color: "#dce8f5"
                 font.family: "Segoe UI"
                 font.pixelSize: 14
@@ -1358,7 +1404,7 @@ Rectangle {
                     id: kaydetBitirButonu
                     width: parent.width
                     height: 40
-                    text: "💾  Kaydet ve Bitir"
+                    text: txt("kaydetVeBitir")
                     font.family: "Segoe UI"
                     font.pixelSize: 13
 
@@ -1390,7 +1436,7 @@ Rectangle {
                     id: silBitirButonu
                     width: parent.width
                     height: 40
-                    text: "🗑  Testi Sil ve Bitir"
+                    text: txt("testiSilVeBitir")
                     font.family: "Segoe UI"
                     font.pixelSize: 13
 
@@ -1422,7 +1468,7 @@ Rectangle {
                     id: vazgecButonu
                     width: parent.width
                     height: 40
-                    text: "Vazgeç, Teste Devam Et"
+                    text: txt("vazgecTesteDevam")
                     font.family: "Segoe UI"
                     font.pixelSize: 13
 

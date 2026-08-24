@@ -1,16 +1,26 @@
-import QtQuick 6.7
+﻿import QtQuick 6.7
 import QtQuick.Controls 6.7
+import sliper
 
 Item {
     id: root
     width: 130
     height: 36
 
+    readonly property var metinler: ({
+        placeholderMetni: { tr: "gg.aa.yyyy", en: "dd.mm.yyyy" },
+        temizleButon: { tr: "Temizle", en: "Clear" }
+    })
+
+    function txt(anahtar) {
+        return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
+    }
+
     // Kontrollü bileşen: seçili tarih dışarıdan (ör. gecmisSayfasi.baslangicTarihi)
     // bağlanır, kullanıcı bir gün seçtiğinde sadece tarihSecildi sinyali yayılır —
     // root.secilenTarih burada asla doğrudan atanmaz ki dışarıdaki binding kopmasın.
     property string secilenTarih: ""
-    property string placeholderText: "gg.aa.yyyy"
+    property string placeholderText: txt("placeholderMetni")
     property date gorunenAy: new Date()
 
     readonly property int hucreBoyutu: 28
@@ -50,9 +60,16 @@ Item {
 
     property var gunHucreleri: ayGunleriniHesapla(gorunenAy)
 
-    readonly property var ayAdlari: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-                                       "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
-    readonly property var haftaGunleri: ["Pt", "Sa", "Ça", "Pe", "Cu", "Ct", "Pz"]
+    readonly property var ayAdlari: [
+        { tr: "Ocak", en: "January" }, { tr: "Şubat", en: "February" }, { tr: "Mart", en: "March" },
+        { tr: "Nisan", en: "April" }, { tr: "Mayıs", en: "May" }, { tr: "Haziran", en: "June" },
+        { tr: "Temmuz", en: "July" }, { tr: "Ağustos", en: "August" }, { tr: "Eylül", en: "September" },
+        { tr: "Ekim", en: "October" }, { tr: "Kasım", en: "November" }, { tr: "Aralık", en: "December" }
+    ]
+    readonly property var haftaGunleri: [
+        { tr: "Pt", en: "Mo" }, { tr: "Sa", en: "Tu" }, { tr: "Ça", en: "We" },
+        { tr: "Pe", en: "Th" }, { tr: "Cu", en: "Fr" }, { tr: "Ct", en: "Sa" }, { tr: "Pz", en: "Su" }
+    ]
 
     Rectangle {
         id: kutu
@@ -157,7 +174,7 @@ Item {
                     width: parent.width - 56
                     anchors.verticalCenter: parent.verticalCenter
                     horizontalAlignment: Text.AlignHCenter
-                    text: root.ayAdlari[root.gorunenAy.getMonth()] + " " + root.gorunenAy.getFullYear()
+                    text: (Translations.turkish ? root.ayAdlari[root.gorunenAy.getMonth()].tr : root.ayAdlari[root.gorunenAy.getMonth()].en) + " " + root.gorunenAy.getFullYear()
                     color: "#dce8f5"
                     font.family: "Segoe UI"
                     font.pixelSize: 13
@@ -199,7 +216,7 @@ Item {
                     delegate: Text {
                         width: root.hucreBoyutu
                         horizontalAlignment: Text.AlignHCenter
-                        text: modelData
+                        text: Translations.turkish ? modelData.tr : modelData.en
                         color: "#6b7280"
                         font.family: "Segoe UI"
                         font.pixelSize: 10
@@ -267,7 +284,7 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    text: "Temizle"
+                    text: root.txt("temizleButon")
                     color: "#9ca3af"
                     font.family: "Segoe UI"
                     font.pixelSize: 12

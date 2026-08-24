@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="/qt/qml/sliper/">
     <file alias="qml/Main.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/Main.qml</file>
+    <file alias="qml/Translations.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/Translations.qml</file>
     <file alias="qml/pages/LoginPage.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/LoginPage.qml</file>
     <file alias="qml/pages/DashboardPage.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/DashboardPage.qml</file>
     <file alias="qml/pages/OlcumPage.qml">C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/OlcumPage.qml</file>

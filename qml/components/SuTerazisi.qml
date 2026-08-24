@@ -1,10 +1,20 @@
-import QtQuick 6.7
+﻿import QtQuick 6.7
+import sliper
 
 Item {
     id: root
     property real egimX: 0
     property real egimY: 0
     property real maxAci: 15
+
+    readonly property var metinler: ({
+        duzMetni: { tr: "Düz", en: "Level" },
+        ayarlaniyorMetni: { tr: "Ayarlanıyor...", en: "Adjusting..." }
+    })
+
+    function txt(anahtar) {
+        return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
+    }
 
     width: 200
     height: 200
@@ -69,7 +79,7 @@ Item {
         anchors.top: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.topMargin: 8
-        text: root.duz ? "Düz" : "Ayarlanıyor..."
+        text: root.duz ? root.txt("duzMetni") : root.txt("ayarlaniyorMetni")
         color: root.duz ? "#4ade80" : "#6b7280"
         font.family: "Segoe UI"
         font.pixelSize: 12

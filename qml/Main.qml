@@ -23,6 +23,7 @@ ApplicationWindow {
         }
 
         DashboardPage {
+            onCikisYapildi: anaStack.currentIndex = 0
         }
     }
 }

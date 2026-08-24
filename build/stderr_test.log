@@ -1,0 +1,4 @@
+Veritabani basariyla acildi.
+Tablolar hazir.
+qrc:/qt/qml/sliper/qml/pages/LoginPage.qml:51:17: Unable to assign [undefined] to bool
+qrc:/qt/qml/sliper/qml/pages/DashboardPage.qml:75:25: Unable to assign [undefined] to bool
