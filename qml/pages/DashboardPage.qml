@@ -117,12 +117,61 @@ Rectangle {
             }
 
             Rectangle {
+                id: sesKontrolu
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.leftMargin: 24
                 anchors.rightMargin: 24
-                anchors.topMargin: 224
+                anchors.topMargin: 218
+                height: 30
+                radius: 6
+                color: sesKontroluAlani.hoverli ? "#101a2c" : "transparent"
+                Behavior on color { ColorAnimation { duration: 120 } }
+
+                Row {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 8
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 8
+
+                    Rectangle {
+                        width: 8
+                        height: 8
+                        radius: 4
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: !voiceCommandManager.modelHazir ? "#6b7280" : (voiceCommandManager.etkin ? "#16a34a" : "#dc2626")
+                    }
+
+                    Text {
+                        text: "🎙 Sesli Komut: " + (!voiceCommandManager.modelHazir ? "Yükleniyor..." : (voiceCommandManager.etkin ? "Açık" : "Kapalı"))
+                        color: "#9ca3af"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                MouseArea {
+                    id: sesKontroluAlani
+                    property bool hoverli: false
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: voiceCommandManager.modelHazir
+                    onEntered: hoverli = true
+                    onExited: hoverli = false
+                    onClicked: voiceCommandManager.etkin = !voiceCommandManager.etkin
+                }
+            }
+
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 24
+                anchors.rightMargin: 24
+                anchors.topMargin: 256
                 height: 1
                 color: "#1f2c46"
             }
@@ -130,7 +179,7 @@ Rectangle {
             Column {
                 id: navColumn
                 anchors.top: parent.top
-                anchors.topMargin: 242
+                anchors.topMargin: 274
                 width: parent.width
                 spacing: 2
 

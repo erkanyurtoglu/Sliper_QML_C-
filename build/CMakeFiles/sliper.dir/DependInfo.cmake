@@ -29,6 +29,8 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Database.cpp" "CMakeFiles/sliper.dir/src/Database.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/Database.cpp.obj.d"
   "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.cpp" "CMakeFiles/sliper.dir/src/ReportManager.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/ReportManager.cpp.obj.d"
   "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.cpp" "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj.d"
+  "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceCommandManager.cpp" "CMakeFiles/sliper.dir/src/VoiceCommandManager.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/VoiceCommandManager.cpp.obj.d"
+  "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceRecognitionWorker.cpp" "CMakeFiles/sliper.dir/src/VoiceRecognitionWorker.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/VoiceRecognitionWorker.cpp.obj.d"
   "C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.cpp" "CMakeFiles/sliper.dir/src/WifiManager.cpp.obj" "gcc" "CMakeFiles/sliper.dir/src/WifiManager.cpp.obj.d"
   )
 

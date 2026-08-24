@@ -4,4 +4,6 @@
 #include "UVLADIE3JM/moc_Database.cpp"
 #include "UVLADIE3JM/moc_ReportManager.cpp"
 #include "UVLADIE3JM/moc_SensorManager.cpp"
+#include "UVLADIE3JM/moc_VoiceCommandManager.cpp"
+#include "UVLADIE3JM/moc_VoiceRecognitionWorker.cpp"
 #include "UVLADIE3JM/moc_WifiManager.cpp"

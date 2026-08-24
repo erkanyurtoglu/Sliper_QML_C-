@@ -764,6 +764,54 @@ src/SensorManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/SensorManager.cpp.s
 .PHONY : src/SensorManager.cpp.s
 
+src/VoiceCommandManager.obj: src/VoiceCommandManager.cpp.obj
+.PHONY : src/VoiceCommandManager.obj
+
+# target to build an object file
+src/VoiceCommandManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/VoiceCommandManager.cpp.obj
+.PHONY : src/VoiceCommandManager.cpp.obj
+
+src/VoiceCommandManager.i: src/VoiceCommandManager.cpp.i
+.PHONY : src/VoiceCommandManager.i
+
+# target to preprocess a source file
+src/VoiceCommandManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/VoiceCommandManager.cpp.i
+.PHONY : src/VoiceCommandManager.cpp.i
+
+src/VoiceCommandManager.s: src/VoiceCommandManager.cpp.s
+.PHONY : src/VoiceCommandManager.s
+
+# target to generate assembly for a file
+src/VoiceCommandManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/VoiceCommandManager.cpp.s
+.PHONY : src/VoiceCommandManager.cpp.s
+
+src/VoiceRecognitionWorker.obj: src/VoiceRecognitionWorker.cpp.obj
+.PHONY : src/VoiceRecognitionWorker.obj
+
+# target to build an object file
+src/VoiceRecognitionWorker.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/VoiceRecognitionWorker.cpp.obj
+.PHONY : src/VoiceRecognitionWorker.cpp.obj
+
+src/VoiceRecognitionWorker.i: src/VoiceRecognitionWorker.cpp.i
+.PHONY : src/VoiceRecognitionWorker.i
+
+# target to preprocess a source file
+src/VoiceRecognitionWorker.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/VoiceRecognitionWorker.cpp.i
+.PHONY : src/VoiceRecognitionWorker.cpp.i
+
+src/VoiceRecognitionWorker.s: src/VoiceRecognitionWorker.cpp.s
+.PHONY : src/VoiceRecognitionWorker.s
+
+# target to generate assembly for a file
+src/VoiceRecognitionWorker.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/VoiceRecognitionWorker.cpp.s
+.PHONY : src/VoiceRecognitionWorker.cpp.s
+
 src/WifiManager.obj: src/WifiManager.cpp.obj
 .PHONY : src/WifiManager.obj
 
@@ -869,6 +917,12 @@ help:
 	@echo ... src/SensorManager.obj
 	@echo ... src/SensorManager.i
 	@echo ... src/SensorManager.s
+	@echo ... src/VoiceCommandManager.obj
+	@echo ... src/VoiceCommandManager.i
+	@echo ... src/VoiceCommandManager.s
+	@echo ... src/VoiceRecognitionWorker.obj
+	@echo ... src/VoiceRecognitionWorker.i
+	@echo ... src/VoiceRecognitionWorker.s
 	@echo ... src/WifiManager.obj
 	@echo ... src/WifiManager.i
 	@echo ... src/WifiManager.s

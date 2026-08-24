@@ -9,6 +9,7 @@
 #include "src/Database.h"
 #include "src/ReportManager.h"
 #include "src/WifiManager.h"
+#include "src/VoiceCommandManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
     Database database;
     ReportManager reportManager;
     WifiManager wifiManager(&sensorManager, &database);
+    VoiceCommandManager voiceCommandManager;
 
     QQmlApplicationEngine engine;
 
@@ -32,6 +34,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("database", &database);
     engine.rootContext()->setContextProperty("reportManager", &reportManager);
     engine.rootContext()->setContextProperty("wifiManager", &wifiManager);
+    engine.rootContext()->setContextProperty("voiceCommandManager", &voiceCommandManager);
 
     QObject::connect(
         &engine,

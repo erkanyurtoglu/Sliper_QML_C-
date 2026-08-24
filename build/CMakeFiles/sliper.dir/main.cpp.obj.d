@@ -427,4 +427,15 @@ CMakeFiles/sliper.dir/main.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qtimer.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qbasictimer.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QVector \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src/VoiceCommandManager.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QThread \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qthread.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/future \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/mutex \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/bits/std_mutex.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/bits/unique_lock.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/condition_variable \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/bits/atomic_futex.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/bits/std_thread.h

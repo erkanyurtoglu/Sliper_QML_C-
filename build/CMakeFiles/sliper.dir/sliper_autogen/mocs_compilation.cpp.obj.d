@@ -344,6 +344,24 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_SensorManager.cpp \
  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_VoiceCommandManager.cpp \
+ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceCommandManager.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QThread \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qthread.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qdeadlinetimer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/future \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/mutex \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/bits/std_mutex.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/bits/unique_lock.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/condition_variable \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/bits/atomic_futex.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/bits/std_thread.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_VoiceRecognitionWorker.cpp \
+ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceRecognitionWorker.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QElapsedTimer \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_WifiManager.cpp \
  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h \
  C:/Qt/6.7.3/mingw_64/include/QtNetwork/QTcpSocket \
@@ -355,8 +373,6 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qiodevice.h \
  C:/Qt/6.7.3/mingw_64/include/QtNetwork/qhostaddress.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QElapsedTimer \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qelapsedtimer.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QTimer \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qtimer.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qbasictimer.h \

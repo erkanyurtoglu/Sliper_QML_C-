@@ -23,6 +23,10 @@ qt_add_executable(sliper
     src/ReportManager.cpp
     src/WifiManager.h
     src/WifiManager.cpp
+    src/VoiceCommandManager.h
+    src/VoiceCommandManager.cpp
+    src/VoiceRecognitionWorker.h
+    src/VoiceRecognitionWorker.cpp
 )
 
 qt_add_qml_module(sliper
@@ -57,4 +61,34 @@ target_link_libraries(sliper PRIVATE
     Qt6::PrintSupport
     Qt6::Network
     Qt6::Multimedia
+)
+
+# --- Sesli komut (Vosk, offline Turkce konusma tanima) ---
+set(VOSK_DIR "${CMAKE_SOURCE_DIR}/third_party/vosk")
+set(VOSK_MODEL_DIR "${CMAKE_SOURCE_DIR}/resources/vosk-model-small-tr-0.3")
+
+target_include_directories(sliper PRIVATE ${VOSK_DIR})
+target_link_libraries(sliper PRIVATE "${VOSK_DIR}/libvosk.lib")
+
+# libvosk.dll kendi MinGW calisma zamanini (libstdc++/libwinpthread/libgcc_s)
+# gerektirir. Vosk paketiyle gelen bu DLL'leri DEGIL, projenin kullandigi
+# Qt MinGW derleyicisiyle ayni surumden gelenleri kopyaliyoruz; aksi halde
+# surum uyusmazligi uygulamanin ENTRYPOINT_NOT_FOUND ile cokmesine yol acar.
+get_filename_component(MINGW_BIN_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
+
+add_custom_command(TARGET sliper POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${VOSK_DIR}/libvosk.dll"
+        "${MINGW_BIN_DIR}/libstdc++-6.dll"
+        "${MINGW_BIN_DIR}/libwinpthread-1.dll"
+        "${MINGW_BIN_DIR}/libgcc_s_seh-1.dll"
+        "$<TARGET_FILE_DIR:sliper>"
+    COMMENT "Vosk kutuphaneleri kopyalaniyor"
+)
+
+add_custom_command(TARGET sliper POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${VOSK_MODEL_DIR}"
+        "$<TARGET_FILE_DIR:sliper>/vosk-model-small-tr-0.3"
+    COMMENT "Vosk Turkce ses tanima modeli kopyalaniyor"
 )

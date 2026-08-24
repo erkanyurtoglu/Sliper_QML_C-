@@ -45,6 +45,45 @@ Rectangle {
         grafikleriSifirla()
     }
 
+    function baslatOlcumu() {
+        if (aktifOlcumId > 0) return
+
+        if (musteriKutusu.text.trim().length === 0) {
+            uyariMesaji = "Lütfen müşteri adını girin."
+            return
+        }
+
+        if (receteKutusu.currentIndex <= 0) {
+            uyariMesaji = "Lütfen bir beton reçetesi seçin."
+            return
+        }
+
+        if (!sensorManager.veriGecerli) {
+            console.warn("Gercek sensor verisi yok, olcum baslatilmadi.")
+            uyariMesaji = "Cihaz bağlı değil. Lütfen önce sol alttan SLIPER-ESP32'ye bağlanın."
+            return
+        }
+
+        uyariMesaji = ""
+        grafikleriSifirla()
+
+        calculator.sifirla()
+        aktifOlcumId = database.olcumBaslat(
+            musteriKutusu.text,
+            receteKutusu.currentText,
+            agirlikToplam
+        )
+        console.log("Aktif olcum id:", aktifOlcumId)
+    }
+
+    function bitirTalebiGoster() {
+        if (aktifOlcumId > 0) {
+            bitirOnayPopup.open()
+        } else {
+            uyariMesaji = "Aktif bir ölçüm yok. Önce ölçümü başlatın."
+        }
+    }
+
     function grafikleriSifirla() {
         zamanSayaci = 0
         basincSerisi.clear()
@@ -135,6 +174,33 @@ Rectangle {
             debiYEkseni.max = eksenTavaniHesapla(debiGecmis, 180, 10)
 
             calculator.konumGuncelle(sensorManager.konum, sensorManager.hiz)
+        }
+    }
+
+    // Sesli komutlar: "Başlat / Durdur / Bitir". Bu sayfa arka planda
+    // (StackLayout icinde) da yasadigi icin, komutlar sadece Ölçüm sayfasi
+    // ekranda goruntulenirken (visible) uygulanir.
+    Connections {
+        target: voiceCommandManager
+
+        function onBaslatKomutu() {
+            if (!visible) return
+            baslatOlcumu()
+        }
+
+        function onDurdurKomutu() {
+            if (!visible || aktifOlcumId <= 0) return
+            if (!calculator.duraklatildi) calculator.duraklat()
+        }
+
+        function onDevamKomutu() {
+            if (!visible || aktifOlcumId <= 0) return
+            if (calculator.duraklatildi) calculator.devamEt()
+        }
+
+        function onBitirKomutu() {
+            if (!visible) return
+            bitirTalebiGoster()
         }
     }
 
@@ -394,34 +460,7 @@ Rectangle {
                     font.bold: true
                     enabled: aktifOlcumId <= 0
 
-                    onClicked: {
-                        if (musteriKutusu.text.trim().length === 0) {
-                            uyariMesaji = "Lütfen müşteri adını girin."
-                            return
-                        }
-
-                        if (receteKutusu.currentIndex <= 0) {
-                            uyariMesaji = "Lütfen bir beton reçetesi seçin."
-                            return
-                        }
-
-                        if (!sensorManager.veriGecerli) {
-                            console.warn("Gercek sensor verisi yok, olcum baslatilmadi.")
-                            uyariMesaji = "Cihaz bağlı değil. Lütfen önce sol alttan SLIPER-ESP32'ye bağlanın."
-                            return
-                        }
-
-                        uyariMesaji = ""
-                        grafikleriSifirla()
-
-                        calculator.sifirla()
-                        aktifOlcumId = database.olcumBaslat(
-                            musteriKutusu.text,
-                            receteKutusu.currentText,
-                            agirlikToplam
-                        )
-                        console.log("Aktif olcum id:", aktifOlcumId)
-                    }
+                    onClicked: baslatOlcumu()
 
                     background: Rectangle {
                         radius: 8
@@ -494,13 +533,7 @@ Rectangle {
                         font.family: "Segoe UI"
                         font.pixelSize: 13
 
-                        onClicked: {
-                            if (aktifOlcumId > 0) {
-                                bitirOnayPopup.open()
-                            } else {
-                                uyariMesaji = "Aktif bir ölçüm yok. Önce ölçümü başlatın."
-                            }
-                        }
+                        onClicked: bitirTalebiGoster()
 
                         background: Rectangle {
                             radius: 8
@@ -1218,6 +1251,56 @@ Rectangle {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // Sesli komut geri bildirimi: eller kirliyken dokunmadan "Başlat /
+    // Durdur / Bitir" denildiginde ne duyuldugunu gostererek kullaniciya
+    // guven verir.
+    Rectangle {
+        id: sesliKomutRozeti
+        visible: voiceCommandManager.etkin
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.margins: 16
+        width: sesliKomutIcerik.implicitWidth + 24
+        height: sesliKomutIcerik.implicitHeight + 16
+        radius: 10
+        color: "#0a0e17"
+        border.color: voiceCommandManager.dinliyor ? "#16a34a" : "#1e2a3f"
+        border.width: 1
+        z: 10
+
+        Column {
+            id: sesliKomutIcerik
+            anchors.centerIn: parent
+            spacing: 4
+
+            Row {
+                spacing: 6
+                Rectangle {
+                    width: 8
+                    height: 8
+                    radius: 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: voiceCommandManager.dinliyor ? "#16a34a" : "#6b7280"
+                }
+                Text {
+                    text: voiceCommandManager.dinliyor ? "🎙 Dinleniyor — \"Başlat / Durdur / Devam Et / Bitir\"" : "🎙 Sesli komut hazırlanıyor..."
+                    color: "#9ca3af"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 11
+                }
+            }
+
+            Text {
+                visible: voiceCommandManager.anlikMetin.length > 0
+                text: "Duyulan: " + voiceCommandManager.anlikMetin
+                color: "#4b5563"
+                font.family: "Segoe UI"
+                font.pixelSize: 10
+                font.italic: true
             }
         }
     }

@@ -1,0 +1,113 @@
+{
+    "classes": [
+        {
+            "className": "VoiceRecognitionWorker",
+            "enums": [
+                {
+                    "isClass": false,
+                    "isFlag": false,
+                    "name": "KomutTuru",
+                    "values": [
+                        "KomutBaslat",
+                        "KomutDurdur",
+                        "KomutBitir",
+                        "KomutDevam"
+                    ]
+                }
+            ],
+            "object": true,
+            "qualifiedClassName": "VoiceRecognitionWorker",
+            "signals": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "basarili",
+                            "type": "bool"
+                        }
+                    ],
+                    "name": "modelHazir",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "dinliyor",
+                            "type": "bool"
+                        }
+                    ],
+                    "name": "dinliyorDegisti",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "mesaj",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "hataOlustu",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "komutTuru",
+                            "type": "int"
+                        },
+                        {
+                            "name": "metin",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "komutAlgilandi",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "metin",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "anlikMetinDegisti",
+                    "returnType": "void"
+                }
+            ],
+            "slots": [
+                {
+                    "access": "public",
+                    "name": "modeliYukle",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "dinlemeyeBasla",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "dinlemeyiDurdur",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "sesVerisiHazir",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "VoiceRecognitionWorker.h",
+    "outputRevision": 68
+}

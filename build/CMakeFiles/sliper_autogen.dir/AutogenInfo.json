@@ -872,6 +872,18 @@
 			null
 		],
 		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceCommandManager.h",
+			"MU",
+			"UVLADIE3JM/moc_VoiceCommandManager.cpp",
+			null
+		],
+		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceRecognitionWorker.h",
+			"MU",
+			"UVLADIE3JM/moc_VoiceRecognitionWorker.cpp",
+			null
+		],
+		[
 			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.h",
 			"MU",
 			"UVLADIE3JM/moc_WifiManager.cpp",
@@ -916,6 +928,7 @@
 	"MOC_INCLUDES" : 
 	[
 		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++",
+		"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/third_party/vosk",
 		"C:/Qt/6.7.3/mingw_64/include/QtQml/6.7.3",
 		"C:/Qt/6.7.3/mingw_64/include/QtQml/6.7.3/QtQml",
 		"C:/Qt/6.7.3/mingw_64/include/QtCore/6.7.3",
@@ -1018,6 +1031,16 @@
 		],
 		[
 			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceCommandManager.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceRecognitionWorker.cpp",
 			"MU",
 			null
 		],

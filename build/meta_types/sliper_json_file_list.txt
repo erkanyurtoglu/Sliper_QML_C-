@@ -3,4 +3,6 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../U
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_Database.cpp.json
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_ReportManager.cpp.json
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_SensorManager.cpp.json
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_VoiceCommandManager.cpp.json
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_VoiceRecognitionWorker.cpp.json
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/include/../UVLADIE3JM/moc_WifiManager.cpp.json
