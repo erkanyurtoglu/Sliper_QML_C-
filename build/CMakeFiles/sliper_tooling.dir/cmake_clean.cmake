@@ -13,6 +13,7 @@ file(REMOVE_RECURSE
   "sliper/qml/pages/KalibrasyonPage.qml"
   "sliper/qml/pages/LoginPage.qml"
   "sliper/qml/pages/OlcumPage.qml"
+  "sliper/qml/pages/RehberPage.qml"
   "sliper/qml/pages/SonuclarPage.qml"
 )
 

@@ -13,7 +13,8 @@ Rectangle {
         { etiketTr: "Ölçüm", etiketEn: "Measurement", ikon: "📊" },
         { etiketTr: "Sonuçlar", etiketEn: "Results", ikon: "📈" },
         { etiketTr: "Geçmiş", etiketEn: "History", ikon: "🕒" },
-        { etiketTr: "Kalibrasyon", etiketEn: "Calibration", ikon: "⚙️" }
+        { etiketTr: "Kalibrasyon", etiketEn: "Calibration", ikon: "⚙️" },
+        { etiketTr: "Rehber", etiketEn: "Guide", ikon: "📘" }
     ]
 
     readonly property var metinler: ({
@@ -417,6 +418,8 @@ Rectangle {
             }
 
             KalibrasyonPage {}
+
+            RehberPage {}
         }
     }
 }

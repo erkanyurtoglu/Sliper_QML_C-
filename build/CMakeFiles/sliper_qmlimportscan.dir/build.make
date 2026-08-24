@@ -78,6 +78,7 @@ CMakeFiles/sliper_qmlimportscan: .qt/qml_imports/sliper_build.cmake
 .qt/qml_imports/sliper_build.cmake: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/SonuclarPage.qml
 .qt/qml_imports/sliper_build.cmake: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/GecmisPage.qml
 .qt/qml_imports/sliper_build.cmake: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/KalibrasyonPage.qml
+.qt/qml_imports/sliper_build.cmake: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/RehberPage.qml
 .qt/qml_imports/sliper_build.cmake: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/SuTerazisi.qml
 .qt/qml_imports/sliper_build.cmake: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/TarihSecici.qml
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running qmlimportscanner for sliper"

@@ -74,6 +74,7 @@ CMakeFiles/sliper_qmllint_json: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/q
 CMakeFiles/sliper_qmllint_json: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/SonuclarPage.qml
 CMakeFiles/sliper_qmllint_json: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/GecmisPage.qml
 CMakeFiles/sliper_qmllint_json: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/KalibrasyonPage.qml
+CMakeFiles/sliper_qmllint_json: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/RehberPage.qml
 CMakeFiles/sliper_qmllint_json: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/SuTerazisi.qml
 CMakeFiles/sliper_qmllint_json: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/TarihSecici.qml
 CMakeFiles/sliper_qmllint_json: .rcc/qmllint/sliper_json.rsp

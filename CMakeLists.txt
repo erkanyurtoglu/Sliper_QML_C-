@@ -46,6 +46,7 @@ qt_add_qml_module(sliper
         qml/pages/SonuclarPage.qml
         qml/pages/GecmisPage.qml
         qml/pages/KalibrasyonPage.qml
+        qml/pages/RehberPage.qml
         qml/components/SuTerazisi.qml
         qml/components/TarihSecici.qml
 

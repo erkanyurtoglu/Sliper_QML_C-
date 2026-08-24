@@ -97,32 +97,36 @@ sliper/qml/pages/KalibrasyonPage.qml: C:/Users/yurto/Documents/GitHub/Sliper_QML
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Copying qml/pages/KalibrasyonPage.qml to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/pages/KalibrasyonPage.qml"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/KalibrasyonPage.qml C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/pages/KalibrasyonPage.qml
 
+sliper/qml/pages/RehberPage.qml: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/RehberPage.qml
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Copying qml/pages/RehberPage.qml to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/pages/RehberPage.qml"
+	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/RehberPage.qml C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/pages/RehberPage.qml
+
 sliper/qml/components/SuTerazisi.qml: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/SuTerazisi.qml
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Copying qml/components/SuTerazisi.qml to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/components/SuTerazisi.qml"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Copying qml/components/SuTerazisi.qml to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/components/SuTerazisi.qml"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/SuTerazisi.qml C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/components/SuTerazisi.qml
 
 sliper/qml/components/TarihSecici.qml: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/TarihSecici.qml
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Copying qml/components/TarihSecici.qml to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/components/TarihSecici.qml"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Copying qml/components/TarihSecici.qml to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/components/TarihSecici.qml"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/TarihSecici.qml C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/components/TarihSecici.qml
 
 sliper/qml/assets/logo.png: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/logo.png
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Copying qml/assets/logo.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/logo.png"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Copying qml/assets/logo.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/logo.png"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/logo.png C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/logo.png
 
 sliper/qml/assets/egim_sensor.png: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/egim_sensor.png
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Copying qml/assets/egim_sensor.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/egim_sensor.png"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Copying qml/assets/egim_sensor.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/egim_sensor.png"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/egim_sensor.png C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/egim_sensor.png
 
 sliper/qml/assets/loadcell.png: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/loadcell.png
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Copying qml/assets/loadcell.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/loadcell.png"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Copying qml/assets/loadcell.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/loadcell.png"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/loadcell.png C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/loadcell.png
 
 sliper/qml/assets/mesafe_sensor.png: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/mesafe_sensor.png
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Copying qml/assets/mesafe_sensor.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/mesafe_sensor.png"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Copying qml/assets/mesafe_sensor.png to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/mesafe_sensor.png"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/mesafe_sensor.png C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/mesafe_sensor.png
 
 sliper/qml/assets/slipergif.mp4: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/slipergif.mp4
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Copying qml/assets/slipergif.mp4 to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/slipergif.mp4"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Copying qml/assets/slipergif.mp4 to C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/slipergif.mp4"
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/assets/slipergif.mp4 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper/qml/assets/slipergif.mp4
 
 sliper_tooling: sliper/qml/Main.qml
@@ -139,6 +143,7 @@ sliper_tooling: sliper/qml/pages/GecmisPage.qml
 sliper_tooling: sliper/qml/pages/KalibrasyonPage.qml
 sliper_tooling: sliper/qml/pages/LoginPage.qml
 sliper_tooling: sliper/qml/pages/OlcumPage.qml
+sliper_tooling: sliper/qml/pages/RehberPage.qml
 sliper_tooling: sliper/qml/pages/SonuclarPage.qml
 sliper_tooling: CMakeFiles/sliper_tooling.dir/build.make
 .PHONY : sliper_tooling
