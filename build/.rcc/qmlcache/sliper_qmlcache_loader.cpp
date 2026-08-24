@@ -68,6 +68,13 @@ namespace _qt_qml_sliper_qml_pages_RehberPage_qml {
         reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
     };
 }
+namespace _qt_qml_sliper_qml_pages_RehberMockup_qml { 
+    extern const unsigned char qmlData[];
+    extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
+    const QQmlPrivate::CachedQmlUnit unit = {
+        reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
+    };
+}
 namespace _qt_qml_sliper_qml_components_SuTerazisi_qml { 
     extern const unsigned char qmlData[];
     extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
@@ -76,6 +83,13 @@ namespace _qt_qml_sliper_qml_components_SuTerazisi_qml {
     };
 }
 namespace _qt_qml_sliper_qml_components_TarihSecici_qml { 
+    extern const unsigned char qmlData[];
+    extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
+    const QQmlPrivate::CachedQmlUnit unit = {
+        reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
+    };
+}
+namespace _qt_qml_sliper_qml_components_NavIkon_qml { 
     extern const unsigned char qmlData[];
     extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
     const QQmlPrivate::CachedQmlUnit unit = {
@@ -105,8 +119,10 @@ Registry::Registry() {
     resourcePathToCachedUnit.insert(QStringLiteral("/qt/qml/sliper/qml/pages/GecmisPage.qml"), &QmlCacheGeneratedCode::_qt_qml_sliper_qml_pages_GecmisPage_qml::unit);
     resourcePathToCachedUnit.insert(QStringLiteral("/qt/qml/sliper/qml/pages/KalibrasyonPage.qml"), &QmlCacheGeneratedCode::_qt_qml_sliper_qml_pages_KalibrasyonPage_qml::unit);
     resourcePathToCachedUnit.insert(QStringLiteral("/qt/qml/sliper/qml/pages/RehberPage.qml"), &QmlCacheGeneratedCode::_qt_qml_sliper_qml_pages_RehberPage_qml::unit);
+    resourcePathToCachedUnit.insert(QStringLiteral("/qt/qml/sliper/qml/pages/RehberMockup.qml"), &QmlCacheGeneratedCode::_qt_qml_sliper_qml_pages_RehberMockup_qml::unit);
     resourcePathToCachedUnit.insert(QStringLiteral("/qt/qml/sliper/qml/components/SuTerazisi.qml"), &QmlCacheGeneratedCode::_qt_qml_sliper_qml_components_SuTerazisi_qml::unit);
     resourcePathToCachedUnit.insert(QStringLiteral("/qt/qml/sliper/qml/components/TarihSecici.qml"), &QmlCacheGeneratedCode::_qt_qml_sliper_qml_components_TarihSecici_qml::unit);
+    resourcePathToCachedUnit.insert(QStringLiteral("/qt/qml/sliper/qml/components/NavIkon.qml"), &QmlCacheGeneratedCode::_qt_qml_sliper_qml_components_NavIkon_qml::unit);
     QQmlPrivate::RegisterQmlUnitCacheHook registration;
     registration.structVersion = 0;
     registration.lookupCachedQmlUnit = &lookupCachedUnit;

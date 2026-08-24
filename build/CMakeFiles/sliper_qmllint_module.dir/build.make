@@ -75,8 +75,10 @@ CMakeFiles/sliper_qmllint_module: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++
 CMakeFiles/sliper_qmllint_module: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/GecmisPage.qml
 CMakeFiles/sliper_qmllint_module: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/KalibrasyonPage.qml
 CMakeFiles/sliper_qmllint_module: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/RehberPage.qml
+CMakeFiles/sliper_qmllint_module: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/pages/RehberMockup.qml
 CMakeFiles/sliper_qmllint_module: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/SuTerazisi.qml
 CMakeFiles/sliper_qmllint_module: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/TarihSecici.qml
+CMakeFiles/sliper_qmllint_module: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/qml/components/NavIkon.qml
 CMakeFiles/sliper_qmllint_module: .rcc/qmllint/sliper_module.rsp
 	cd /d C:\Users\yurto\Documents\GitHub\Sliper_QML_C++ && call C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\.qt\bin\qt_setup_tool_path.bat C:/Qt/6.7.3/mingw_64/bin/qmllint.exe @C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/.rcc/qmllint/sliper_module.rsp
 

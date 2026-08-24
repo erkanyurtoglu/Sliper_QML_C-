@@ -10,11 +10,11 @@ Rectangle {
     signal cikisYapildi()
 
     readonly property var navOgeleri: [
-        { etiketTr: "Ölçüm", etiketEn: "Measurement", ikon: "📊" },
-        { etiketTr: "Sonuçlar", etiketEn: "Results", ikon: "📈" },
-        { etiketTr: "Geçmiş", etiketEn: "History", ikon: "🕒" },
-        { etiketTr: "Kalibrasyon", etiketEn: "Calibration", ikon: "⚙️" },
-        { etiketTr: "Rehber", etiketEn: "Guide", ikon: "📘" }
+        { etiketTr: "Ölçüm", etiketEn: "Measurement", ikon: "olcum" },
+        { etiketTr: "Sonuçlar", etiketEn: "Results", ikon: "sonuclar" },
+        { etiketTr: "Geçmiş", etiketEn: "History", ikon: "gecmis" },
+        { etiketTr: "Kalibrasyon", etiketEn: "Calibration", ikon: "kalibrasyon" },
+        { etiketTr: "Rehber", etiketEn: "Guide", ikon: "rehber" }
     ]
 
     readonly property var metinler: ({
@@ -321,10 +321,13 @@ Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 12
 
-                            Text {
-                                text: modelData.ikon
-                                font.pixelSize: 15
+                            NavIkon {
+                                tur: modelData.ikon
+                                width: 17
+                                height: 17
+                                renk: navOgesi.aktif ? "#6ea8ff" : (navOgesi.hoverli ? "#dce8f5" : "#9ca3af")
                                 anchors.verticalCenter: parent.verticalCenter
+                                Behavior on renk { ColorAnimation { duration: 120 } }
                             }
 
                             Text {

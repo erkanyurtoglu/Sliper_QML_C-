@@ -1,0 +1,8 @@
+Veritabani basariyla acildi.
+Tablolar hazir.
+QQmlApplicationEngine failed to load component
+qrc:/qt/qml/sliper/qml/Main.qml:25:9: Type DashboardPage unavailable
+qrc:/qt/qml/sliper/qml/pages/DashboardPage.qml:425:13: Type RehberPage unavailable
+qrc:/qt/qml/sliper/qml/pages/RehberPage.qml:610:29: Type RehberMockup unavailable
+qrc:/qt/qml/sliper/qml/pages/RehberMockup.qml:421:102: Invalid property assignment: int expected
+QML nesnesi olusturulamadi!

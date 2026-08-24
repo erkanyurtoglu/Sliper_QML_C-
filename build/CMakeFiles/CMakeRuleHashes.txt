@@ -4,6 +4,7 @@ ae6fcaaa038189ae5f14e4f120261116 .qt/rcc/qrc_qmake_sliper.cpp
 82f6fddada608781e216111cb153073f .qt/rcc/qrc_sliper_raw_qml_0.cpp
 dc88050dab06e6b15722edca2c1ba8e1 .rcc/qmlcache/sliper_qml/Main_qml.cpp
 7aa6f15e28b5455ce1f59b3ff1040bd5 .rcc/qmlcache/sliper_qml/Translations_qml.cpp
+da32e6c797fb10c40a652fadbffa93c3 .rcc/qmlcache/sliper_qml/components/NavIkon_qml.cpp
 5d5ba1d8122304a6849e36e4320cd41c .rcc/qmlcache/sliper_qml/components/SuTerazisi_qml.cpp
 62a3adb2e2c217a275e334befaa0c0f2 .rcc/qmlcache/sliper_qml/components/TarihSecici_qml.cpp
 94c68d1a7dcbda56f54ebaf0e675d2b6 .rcc/qmlcache/sliper_qml/pages/DashboardPage_qml.cpp
@@ -11,6 +12,7 @@ a7296b82e6edeb4f1bc6de21f3ecbde8 .rcc/qmlcache/sliper_qml/pages/GecmisPage_qml.c
 8a4fb97b7087eaec882f6589b7a72e9d .rcc/qmlcache/sliper_qml/pages/KalibrasyonPage_qml.cpp
 fb6255a4adcb8eb70b0636f185c4b9bb .rcc/qmlcache/sliper_qml/pages/LoginPage_qml.cpp
 839efc952791a4b59201a7f9f3e1c180 .rcc/qmlcache/sliper_qml/pages/OlcumPage_qml.cpp
+7fdaec336559bb45b3e1504304fba7b3 .rcc/qmlcache/sliper_qml/pages/RehberMockup_qml.cpp
 d7a26144069e0bb0220e980a351413f2 .rcc/qmlcache/sliper_qml/pages/RehberPage_qml.cpp
 4ba7769b87902c740f8f8cb8ddbfc85e .rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp
 2824adb9988638d1387b61729aa348d5 .rcc/qmlcache/sliper_qmlcache_loader.cpp
@@ -30,6 +32,7 @@ ee60b7f84ed8aba34d72c9aaace4780a sliper/qml/assets/loadcell.png
 3e04d82f1972d209e06097f5e2b2ab89 sliper/qml/assets/logo.png
 9d1db5430456b248341a2e62b52a1f13 sliper/qml/assets/mesafe_sensor.png
 631f91a2bb1453881896d8340a76de17 sliper/qml/assets/slipergif.mp4
+a9507a827e06542e075f910cf7de1059 sliper/qml/components/NavIkon.qml
 8ce6f030e83e48f0f0349567222763e9 sliper/qml/components/SuTerazisi.qml
 db8c5705d700f9a0bc817901bf06a21f sliper/qml/components/TarihSecici.qml
 8362889b1fd9f379f1d896619bd8adbc sliper/qml/pages/DashboardPage.qml
@@ -37,6 +40,7 @@ f36d70333632cecaf09467d1e3bc897c sliper/qml/pages/GecmisPage.qml
 178a312326dd8732caa3916198f6f317 sliper/qml/pages/KalibrasyonPage.qml
 38b3b901906c1f25b61cb1439872cc86 sliper/qml/pages/LoginPage.qml
 095a1c72367f1988acdda6033ae766cf sliper/qml/pages/OlcumPage.qml
+2ea36665d267e17ea4280cbda01a4635 sliper/qml/pages/RehberMockup.qml
 1c359b5713db24f6a5b5d032c2ba3b5b sliper/qml/pages/RehberPage.qml
 5d6e7e1c6ea544870f1f3b332a016f7f sliper/qml/pages/SonuclarPage.qml
 cdf37b42ac044471ba246b44d268989b sliper_autogen/timestamp

@@ -6,6 +6,7 @@ file(REMOVE_RECURSE
   "sliper/qml/assets/logo.png"
   "sliper/qml/assets/mesafe_sensor.png"
   "sliper/qml/assets/slipergif.mp4"
+  "sliper/qml/components/NavIkon.qml"
   "sliper/qml/components/SuTerazisi.qml"
   "sliper/qml/components/TarihSecici.qml"
   "sliper/qml/pages/DashboardPage.qml"
@@ -13,6 +14,7 @@ file(REMOVE_RECURSE
   "sliper/qml/pages/KalibrasyonPage.qml"
   "sliper/qml/pages/LoginPage.qml"
   "sliper/qml/pages/OlcumPage.qml"
+  "sliper/qml/pages/RehberMockup.qml"
   "sliper/qml/pages/RehberPage.qml"
   "sliper/qml/pages/SonuclarPage.qml"
 )
