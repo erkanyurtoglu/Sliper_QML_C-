@@ -49,6 +49,7 @@ signals:
     void durdurKomutu();
     void bitirKomutu();
     void devamKomutu();
+    void ekleKomutu();
 
 private slots:
     void workerModelHazir(bool hazir);

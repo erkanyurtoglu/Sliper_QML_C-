@@ -29,7 +29,8 @@ const QStringList &grammarKelimeleri()
         "başlat", "başla",
         "durdur",
         "bitir", "bitti", "bitirdi", "bitiriyor", "bitirelim", "tamamla",
-        "devam"
+        "devam",
+        "ekle"
     };
     return kelimeler;
 }
@@ -224,6 +225,7 @@ void VoiceRecognitionWorker::metniDegerlendir(const QString &metin)
     static const QStringList durdurAdaylari = { "durdur" };
     static const QStringList bitirAdaylari = { "bitir", "bitti", "bitirdi", "bitiriyor", "bitirelim", "tamamla" };
     static const QStringList devamAdaylari = { "devam" };
+    static const QStringList ekleAdaylari = { "ekle" };
 
     const QString sade = sadelestir(metin);
     const QStringList tokenlar = sade.split(' ', Qt::SkipEmptyParts);
@@ -236,6 +238,7 @@ void VoiceRecognitionWorker::metniDegerlendir(const QString &metin)
         if (kelimeUyuyorMu(token, bitirAdaylari, 1)) komutTuru = VoiceRecognitionWorker::KomutBitir;
         else if (kelimeUyuyorMu(token, durdurAdaylari, 1)) komutTuru = VoiceRecognitionWorker::KomutDurdur;
         else if (kelimeUyuyorMu(token, devamAdaylari, 1)) komutTuru = VoiceRecognitionWorker::KomutDevam;
+        else if (kelimeUyuyorMu(token, ekleAdaylari, 1)) komutTuru = VoiceRecognitionWorker::KomutEkle;
         else if (kelimeUyuyorMu(token, baslatAdaylari, 1)) komutTuru = VoiceRecognitionWorker::KomutBaslat;
 
         if (komutTuru >= 0) {

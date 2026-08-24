@@ -47,6 +47,7 @@ constexpr auto qt_meta_stringdata_CLASSVoiceCommandManagerENDCLASS = QtMocHelper
     "durdurKomutu",
     "bitirKomutu",
     "devamKomutu",
+    "ekleKomutu",
     "workerModelHazir",
     "hazir",
     "workerDinliyorDegisti",
@@ -74,31 +75,32 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSVoiceCommandManagerENDCLASS[] = 
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      15,   14, // methods
-       6,  131, // properties
+      16,   14, // methods
+       6,  138, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-      10,       // signalCount
+      11,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,  104,    2, 0x06,    7 /* Public */,
-       3,    0,  105,    2, 0x06,    8 /* Public */,
-       4,    0,  106,    2, 0x06,    9 /* Public */,
-       5,    0,  107,    2, 0x06,   10 /* Public */,
-       6,    0,  108,    2, 0x06,   11 /* Public */,
-       7,    0,  109,    2, 0x06,   12 /* Public */,
-       8,    0,  110,    2, 0x06,   13 /* Public */,
-       9,    0,  111,    2, 0x06,   14 /* Public */,
-      10,    0,  112,    2, 0x06,   15 /* Public */,
-      11,    0,  113,    2, 0x06,   16 /* Public */,
+       1,    0,  110,    2, 0x06,    7 /* Public */,
+       3,    0,  111,    2, 0x06,    8 /* Public */,
+       4,    0,  112,    2, 0x06,    9 /* Public */,
+       5,    0,  113,    2, 0x06,   10 /* Public */,
+       6,    0,  114,    2, 0x06,   11 /* Public */,
+       7,    0,  115,    2, 0x06,   12 /* Public */,
+       8,    0,  116,    2, 0x06,   13 /* Public */,
+       9,    0,  117,    2, 0x06,   14 /* Public */,
+      10,    0,  118,    2, 0x06,   15 /* Public */,
+      11,    0,  119,    2, 0x06,   16 /* Public */,
+      12,    0,  120,    2, 0x06,   17 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-      12,    1,  114,    2, 0x08,   17 /* Private */,
-      14,    1,  117,    2, 0x08,   19 /* Private */,
-      16,    1,  120,    2, 0x08,   21 /* Private */,
-      18,    2,  123,    2, 0x08,   23 /* Private */,
-      21,    1,  128,    2, 0x08,   26 /* Private */,
+      13,    1,  121,    2, 0x08,   18 /* Private */,
+      15,    1,  124,    2, 0x08,   20 /* Private */,
+      17,    1,  127,    2, 0x08,   22 /* Private */,
+      19,    2,  130,    2, 0x08,   24 /* Private */,
+      22,    1,  135,    2, 0x08,   27 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
@@ -111,21 +113,22 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSVoiceCommandManagerENDCLASS[] = 
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
 
  // slots: parameters
-    QMetaType::Void, QMetaType::Bool,   13,
-    QMetaType::Void, QMetaType::Bool,   15,
-    QMetaType::Void, QMetaType::QString,   17,
-    QMetaType::Void, QMetaType::Int, QMetaType::QString,   19,   20,
-    QMetaType::Void, QMetaType::QString,   20,
+    QMetaType::Void, QMetaType::Bool,   14,
+    QMetaType::Void, QMetaType::Bool,   16,
+    QMetaType::Void, QMetaType::QString,   18,
+    QMetaType::Void, QMetaType::Int, QMetaType::QString,   20,   21,
+    QMetaType::Void, QMetaType::QString,   21,
 
  // properties: name, type, flags
-      22, QMetaType::Bool, 0x00015103, uint(0), 0,
-      15, QMetaType::Bool, 0x00015001, uint(1), 0,
-      23, QMetaType::Bool, 0x00015001, uint(2), 0,
-      24, QMetaType::QString, 0x00015001, uint(3), 0,
-      25, QMetaType::QString, 0x00015001, uint(4), 0,
-      26, QMetaType::QString, 0x00015001, uint(5), 0,
+      23, QMetaType::Bool, 0x00015103, uint(0), 0,
+      16, QMetaType::Bool, 0x00015001, uint(1), 0,
+      24, QMetaType::Bool, 0x00015001, uint(2), 0,
+      25, QMetaType::QString, 0x00015001, uint(3), 0,
+      26, QMetaType::QString, 0x00015001, uint(4), 0,
+      27, QMetaType::QString, 0x00015001, uint(5), 0,
 
        0        // eod
 };
@@ -171,6 +174,8 @@ Q_CONSTINIT const QMetaObject VoiceCommandManager::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'devamKomutu'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'ekleKomutu'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'workerModelHazir'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
@@ -207,11 +212,12 @@ void VoiceCommandManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, 
         case 7: _t->durdurKomutu(); break;
         case 8: _t->bitirKomutu(); break;
         case 9: _t->devamKomutu(); break;
-        case 10: _t->workerModelHazir((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
-        case 11: _t->workerDinliyorDegisti((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
-        case 12: _t->workerHataOlustu((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
-        case 13: _t->workerKomutAlgilandi((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
-        case 14: _t->workerAnlikMetinDegisti((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 10: _t->ekleKomutu(); break;
+        case 11: _t->workerModelHazir((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
+        case 12: _t->workerDinliyorDegisti((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
+        case 13: _t->workerHataOlustu((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 14: _t->workerKomutAlgilandi((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
+        case 15: _t->workerAnlikMetinDegisti((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -286,6 +292,13 @@ void VoiceCommandManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, 
                 return;
             }
         }
+        {
+            using _t = void (VoiceCommandManager::*)();
+            if (_t _q_method = &VoiceCommandManager::ekleKomutu; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 10;
+                return;
+            }
+        }
     } else if (_c == QMetaObject::ReadProperty) {
         auto *_t = static_cast<VoiceCommandManager *>(_o);
         (void)_t;
@@ -331,13 +344,13 @@ int VoiceCommandManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 15)
+        if (_id < 16)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 15;
+        _id -= 16;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 15)
+        if (_id < 16)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 15;
+        _id -= 16;
     }else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::BindableProperty
             || _c == QMetaObject::RegisterPropertyMetaType) {
@@ -405,5 +418,11 @@ void VoiceCommandManager::bitirKomutu()
 void VoiceCommandManager::devamKomutu()
 {
     QMetaObject::activate(this, &staticMetaObject, 9, nullptr);
+}
+
+// SIGNAL 10
+void VoiceCommandManager::ekleKomutu()
+{
+    QMetaObject::activate(this, &staticMetaObject, 10, nullptr);
 }
 QT_WARNING_POP

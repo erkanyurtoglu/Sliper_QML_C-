@@ -55,7 +55,8 @@ constexpr auto qt_meta_stringdata_CLASSVoiceRecognitionWorkerENDCLASS = QtMocHel
     "KomutBaslat",
     "KomutDurdur",
     "KomutBitir",
-    "KomutDevam"
+    "KomutDevam",
+    "KomutEkle"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -102,13 +103,14 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSVoiceRecognitionWorkerENDCLASS[]
     QMetaType::Void,
 
  // enums: name, alias, flags, count, data
-      16,   16, 0x0,    4,   94,
+      16,   16, 0x0,    5,   94,
 
  // enum data: key, value
       17, uint(VoiceRecognitionWorker::KomutBaslat),
       18, uint(VoiceRecognitionWorker::KomutDurdur),
       19, uint(VoiceRecognitionWorker::KomutBitir),
       20, uint(VoiceRecognitionWorker::KomutDevam),
+      21, uint(VoiceRecognitionWorker::KomutEkle),
 
        0        // eod
 };

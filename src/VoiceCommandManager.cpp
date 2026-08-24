@@ -83,6 +83,7 @@ void VoiceCommandManager::workerKomutAlgilandi(int komutTuru, const QString &met
     case VoiceRecognitionWorker::KomutDurdur: emit durdurKomutu(); break;
     case VoiceRecognitionWorker::KomutBitir:  emit bitirKomutu();  break;
     case VoiceRecognitionWorker::KomutDevam:  emit devamKomutu();  break;
+    case VoiceRecognitionWorker::KomutEkle:   emit ekleKomutu();   break;
     }
 }
 

@@ -1073,6 +1073,11 @@
                         "access": "public",
                         "name": "devamKomutu",
                         "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "ekleKomutu",
+                        "returnType": "void"
                     }
                 ],
                 "slots": [
@@ -1160,7 +1165,8 @@
                             "KomutBaslat",
                             "KomutDurdur",
                             "KomutBitir",
-                            "KomutDevam"
+                            "KomutDevam",
+                            "KomutEkle"
                         ]
                     }
                 ],

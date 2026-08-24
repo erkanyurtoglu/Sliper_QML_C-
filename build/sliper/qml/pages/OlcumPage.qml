@@ -7,6 +7,7 @@ Rectangle {
     property real zamanSayaci: 0
     property int aktifOlcumId: -1
     property string uyariMesaji: ""
+    property bool bitirIcinDuraklatildi: false
 
     property var basincGecmis: []
     property var konumGecmis: []
@@ -38,6 +39,7 @@ Rectangle {
     function resetMeasurementScreen() {
         aktifOlcumId = -1
         uyariMesaji = ""
+        bitirIcinDuraklatildi = false
         musteriKutusu.text = ""
         receteKutusu.currentIndex = 0
         agirlikAdedi = 0
@@ -78,6 +80,10 @@ Rectangle {
 
     function bitirTalebiGoster() {
         if (aktifOlcumId > 0) {
+            if (!calculator.duraklatildi) {
+                calculator.duraklat()
+                bitirIcinDuraklatildi = true
+            }
             bitirOnayPopup.open()
         } else {
             uyariMesaji = "Aktif bir ölçüm yok. Önce ölçümü başlatın."
@@ -201,6 +207,12 @@ Rectangle {
         function onBitirKomutu() {
             if (!visible) return
             bitirTalebiGoster()
+        }
+
+        function onEkleKomutu() {
+            if (!visible) return
+            agirlikAdedi += 1
+            agirlikEklendi()
         }
     }
 
@@ -1287,7 +1299,7 @@ Rectangle {
                     color: voiceCommandManager.dinliyor ? "#16a34a" : "#6b7280"
                 }
                 Text {
-                    text: voiceCommandManager.dinliyor ? "🎙 Dinleniyor — \"Başlat / Durdur / Devam Et / Bitir\"" : "🎙 Sesli komut hazırlanıyor..."
+                    text: voiceCommandManager.dinliyor ? "🎙 Dinleniyor — \"Başlat / Durdur / Devam Et / Bitir / Ekle\"" : "🎙 Sesli komut hazırlanıyor..."
                     color: "#9ca3af"
                     font.family: "Segoe UI"
                     font.pixelSize: 11
@@ -1414,7 +1426,13 @@ Rectangle {
                     font.family: "Segoe UI"
                     font.pixelSize: 13
 
-                    onClicked: bitirOnayPopup.close()
+                    onClicked: {
+                        bitirOnayPopup.close()
+                        if (bitirIcinDuraklatildi) {
+                            calculator.devamEt()
+                            bitirIcinDuraklatildi = false
+                        }
+                    }
 
                     background: Rectangle {
                         radius: 8

@@ -20,7 +20,8 @@ public:
         KomutBaslat = 0,
         KomutDurdur = 1,
         KomutBitir = 2,
-        KomutDevam = 3
+        KomutDevam = 3,
+        KomutEkle = 4
     };
     Q_ENUM(KomutTuru)
 
