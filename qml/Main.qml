@@ -10,7 +10,7 @@ ApplicationWindow {
     title: "SLIPER Analiz"
 
     background: Rectangle {
-        color: "#060d17"
+        color: "#07070a"
     }
 
     StackLayout {

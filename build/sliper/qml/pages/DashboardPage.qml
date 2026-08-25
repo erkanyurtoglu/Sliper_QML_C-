@@ -5,7 +5,7 @@ import QtMultimedia
 import sliper
 
 Rectangle {
-    color: "#0a0e17"
+    color: "#0a0a0d"
 
     signal cikisYapildi()
 
@@ -43,8 +43,8 @@ Rectangle {
             height: parent.height
 
             gradient: Gradient {
-                GradientStop { position: 0.0; color: "#121b30" }
-                GradientStop { position: 1.0; color: "#080b12" }
+                GradientStop { position: 0.0; color: "#14141c" }
+                GradientStop { position: 1.0; color: "#08080a" }
             }
 
             Image {
@@ -65,7 +65,7 @@ Rectangle {
                 anchors.rightMargin: 24
                 anchors.topMargin: 172
                 height: 1
-                color: "#1f2c46"
+                color: "#1e2a3f"
             }
 
             Row {
@@ -78,14 +78,14 @@ Rectangle {
                     width: 32
                     height: 22
                     radius: 5
-                    color: "#0f1420"
+                    color: "#12121a"
                     border.color: Translations.turkish ? "#3b82f6" : "#1e2a3f"
                     border.width: 1
 
                     Text {
                         anchors.centerIn: parent
                         text: "TR"
-                        color: Translations.turkish ? "#ffffff" : "#6b7280"
+                        color: Translations.turkish ? "#dce8f5" : "#6b7280"
                         font.pixelSize: 10
                         font.bold: Translations.turkish
                     }
@@ -101,14 +101,14 @@ Rectangle {
                     width: 32
                     height: 22
                     radius: 5
-                    color: "#0f1420"
+                    color: "#12121a"
                     border.color: !Translations.turkish ? "#3b82f6" : "#1e2a3f"
                     border.width: 1
 
                     Text {
                         anchors.centerIn: parent
                         text: "EN"
-                        color: !Translations.turkish ? "#ffffff" : "#6b7280"
+                        color: !Translations.turkish ? "#dce8f5" : "#6b7280"
                         font.pixelSize: 10
                         font.bold: !Translations.turkish
                     }
@@ -160,7 +160,7 @@ Rectangle {
                 anchors.topMargin: 224
                 height: 36
                 radius: 6
-                color: baglantiAlani.hoverli ? "#101a2c" : "transparent"
+                color: baglantiAlani.hoverli ? "#141419" : "transparent"
                 Behavior on color { ColorAnimation { duration: 120 } }
 
                 Row {
@@ -239,7 +239,7 @@ Rectangle {
                 anchors.topMargin: 264
                 height: 30
                 radius: 6
-                color: sesKontroluAlani.hoverli ? "#101a2c" : "transparent"
+                color: sesKontroluAlani.hoverli ? "#141419" : "transparent"
                 Behavior on color { ColorAnimation { duration: 120 } }
 
                 Row {
@@ -286,7 +286,7 @@ Rectangle {
                 anchors.rightMargin: 24
                 anchors.topMargin: 302
                 height: 1
-                color: "#1f2c46"
+                color: "#1e2a3f"
             }
 
             Column {
@@ -305,14 +305,17 @@ Rectangle {
                         height: 46
                         property bool aktif: icerikStack.currentIndex === index
                         property bool hoverli: false
-                        color: aktif ? "#182644" : (hoverli ? "#101a2c" : "transparent")
+                        color: aktif ? "#17263d" : (hoverli ? "#141419" : "transparent")
                         Behavior on color { ColorAnimation { duration: 120 } }
 
                         Rectangle {
                             width: 3
-                            height: parent.height
+                            height: parent.height * 0.56
+                            radius: 2
+                            anchors.verticalCenter: parent.verticalCenter
                             color: "#3b82f6"
                             visible: navOgesi.aktif
+                            Behavior on height { NumberAnimation { duration: 140 } }
                         }
 
                         Row {
@@ -325,16 +328,17 @@ Rectangle {
                                 tur: modelData.ikon
                                 width: 17
                                 height: 17
-                                renk: navOgesi.aktif ? "#6ea8ff" : (navOgesi.hoverli ? "#dce8f5" : "#9ca3af")
+                                renk: navOgesi.aktif ? "#dce8f5" : (navOgesi.hoverli ? "#dce8f5" : "#9ca3af")
                                 anchors.verticalCenter: parent.verticalCenter
                                 Behavior on renk { ColorAnimation { duration: 120 } }
                             }
 
                             Text {
                                 text: Translations.turkish ? modelData.etiketTr : modelData.etiketEn
-                                color: navOgesi.aktif ? "#6ea8ff" : (navOgesi.hoverli ? "#dce8f5" : "#9ca3af")
+                                color: navOgesi.aktif ? "#dce8f5" : (navOgesi.hoverli ? "#dce8f5" : "#9ca3af")
                                 font.family: "Segoe UI"
                                 font.pixelSize: 14
+                                font.letterSpacing: 0.3
                                 font.bold: navOgesi.aktif
                                 anchors.verticalCenter: parent.verticalCenter
                                 Behavior on color { ColorAnimation { duration: 120 } }
@@ -360,19 +364,24 @@ Rectangle {
                 loops: 1
             }
 
-            Item {
-                id: simulasyonAlani
+            Rectangle {
+                id: simulasyonCercevesi
                 anchors.top: navColumn.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.margins: 16
                 anchors.topMargin: 20
+                radius: 8
+                color: "#08080a"
+                border.color: "#1e2a3f"
+                border.width: 1
                 clip: true
 
                 VideoOutput {
                     id: simulasyonVideo
                     anchors.fill: parent
+                    anchors.margins: 1
                 }
             }
         }
@@ -381,7 +390,7 @@ Rectangle {
             id: sidebarAyraci
             width: 3
             height: parent.height
-            color: "#05070b"
+            color: "#060607"
 
             Rectangle {
                 anchors.right: parent.right

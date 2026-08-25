@@ -75,7 +75,7 @@ Item {
         id: kutu
         anchors.fill: parent
         radius: 8
-        color: "#0f1420"
+        color: "#12121a"
         border.color: (alan.containsMouse || takvimPopup.visible) ? "#3b82f6" : "#1e2a3f"
         border.width: 1
         Behavior on border.color { ColorAnimation { duration: 120 } }
@@ -129,7 +129,7 @@ Item {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
-            color: "#0f1420"
+            color: "#12121a"
             radius: 12
             border.color: "#1e2a3f"
             border.width: 1
@@ -249,7 +249,7 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: modelData.getDate()
-                            color: gunHucresi.buAyMi ? (gunHucresi.seciliMi ? "#ffffff" : "#dce8f5") : "#374151"
+                            color: gunHucresi.buAyMi ? (gunHucresi.seciliMi ? "#dce8f5" : "#dce8f5") : "#374151"
                             font.family: "Segoe UI"
                             font.pixelSize: 12
                             font.bold: gunHucresi.seciliMi

@@ -90,9 +90,9 @@ clean: CMakeFiles/sliper_autogen.dir/clean
 # Target rules for target CMakeFiles/sliper.dir
 
 # All Build rule for target.
+CMakeFiles/sliper.dir/all: CMakeFiles/sliper_qmlimportscan.dir/all
 CMakeFiles/sliper.dir/all: CMakeFiles/sliper_autogen.dir/all
 CMakeFiles/sliper.dir/all: CMakeFiles/sliper_autogen_timestamp_deps.dir/all
-CMakeFiles/sliper.dir/all: CMakeFiles/sliper_qmlimportscan.dir/all
 CMakeFiles/sliper.dir/all: CMakeFiles/sliper_tooling.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/build

@@ -5,7 +5,7 @@ import "../components"
 import sliper
 
 Rectangle {
-    color: "#0a0e17"
+    color: "#0a0a0d"
 
     readonly property var metinler: ({
         baslikSensorSec: { tr: "KALİBRASYON — Sensör Seçin", en: "CALIBRATION — Select Sensor" },
@@ -285,7 +285,7 @@ Rectangle {
                     width: 350
                     height: 450
                     radius: 12
-                    color: "#0f1420"
+                    color: "#12121a"
                     border.color: egimKarti.hovered ? "#14b8a6" : "#1e2a3f"
                     border.width: 1
                     property bool hovered: false
@@ -348,7 +348,7 @@ Rectangle {
                     width: 350
                     height: 450
                     radius: 12
-                    color: "#0f1420"
+                    color: "#12121a"
                     border.color: loadCellKarti.hovered ? "#3b82f6" : "#1e2a3f"
                     border.width: 1
                     property bool hovered: false
@@ -411,7 +411,7 @@ Rectangle {
                     width: 350
                     height: 450
                     radius: 12
-                    color: "#0f1420"
+                    color: "#12121a"
                     border.color: mesafeKarti.hovered ? "#9333ea" : "#1e2a3f"
                     border.width: 1
                     property bool hovered: false
@@ -484,7 +484,7 @@ Rectangle {
 
                     background: Rectangle {
                         radius: 6
-                        color: parent.hovered ? "#1e2a3f" : "#0f1420"
+                        color: parent.hovered ? "#1e2a3f" : "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
                         Behavior on color { ColorAnimation { duration: 120 } }
@@ -550,7 +550,7 @@ Rectangle {
                         width: egimSonKaliMetni.implicitWidth + 20
                         height: 26
                         radius: 13
-                        color: "#0f1420"
+                        color: "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -627,7 +627,7 @@ Rectangle {
 
                         contentItem: Text {
                             text: parent.text
-                            color: "#ffffff"
+                            color: "#dce8f5"
                             font: parent.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -680,7 +680,7 @@ Rectangle {
                         width: araEkranBadge.implicitWidth + 20
                         height: 26
                         radius: 13
-                        color: "#0f1420"
+                        color: "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -713,7 +713,7 @@ Rectangle {
                             width: 190
                             height: 180
                             radius: 14
-                            color: "#0f1420"
+                            color: "#12121a"
                             border.color: goruntuleKarti.hovered ? "#3b82f6" : "#1e2a3f"
                             border.width: 1
                             property bool hovered: false
@@ -792,7 +792,7 @@ Rectangle {
                             width: 190
                             height: 180
                             radius: 14
-                            color: "#0f1420"
+                            color: "#12121a"
                             border.color: yenidenKarti.hovered ? "#9ca3af" : "#1e2a3f"
                             border.width: 1
                             property bool hovered: false
@@ -901,7 +901,7 @@ Rectangle {
                         width: parent.width
                         height: 320
                         radius: 14
-                        color: "#0f1420"
+                        color: "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -917,7 +917,7 @@ Rectangle {
                                 width: ListView.view.width
                                 height: 48
                                 radius: 8
-                                color: "#0a0e17"
+                                color: "#0a0a0d"
                                 border.color: "#1e2a3f"
                                 border.width: 1
 
@@ -932,7 +932,7 @@ Rectangle {
                                         height: 22
                                         radius: 11
                                         anchors.verticalCenter: parent.verticalCenter
-                                        color: "#182644"
+                                        color: "#17263d"
                                         border.color: "#3b82f6"
                                         border.width: 1
 
@@ -992,7 +992,7 @@ Rectangle {
 
                         contentItem: Text {
                             text: parent.text
-                            color: "#ffffff"
+                            color: "#dce8f5"
                             font: parent.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -1013,7 +1013,7 @@ Rectangle {
                         width: 360
                         height: 200
                         radius: 14
-                        color: "#0f1420"
+                        color: "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -1085,7 +1085,7 @@ Rectangle {
 
                                     contentItem: Text {
                                         text: parent.text
-                                        color: "#ffffff"
+                                        color: "#dce8f5"
                                         font: parent.font
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
@@ -1109,7 +1109,7 @@ Rectangle {
                         width: 380
                         height: 220
                         radius: 14
-                        color: "#0f1420"
+                        color: "#12121a"
                         border.color: "#16a34a"
                         border.width: 1
 
@@ -1190,7 +1190,7 @@ Rectangle {
 
                                     contentItem: Text {
                                         text: parent.text
-                                        color: "#ffffff"
+                                        color: "#dce8f5"
                                         font: parent.font
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
@@ -1266,7 +1266,7 @@ Rectangle {
                                 width: 72
                                 height: 72
                                 radius: 12
-                                color: secKarti.hovered ? "#182644" : "#0f1420"
+                                color: secKarti.hovered ? "#17263d" : "#12121a"
                                 border.color: "#3b82f6"
                                 border.width: 1
                                 property bool hovered: false
@@ -1308,7 +1308,7 @@ Rectangle {
                         width: 340
                         height: 500
                         radius: 14
-                        color: "#0f1420"
+                        color: "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -1323,7 +1323,7 @@ Rectangle {
                                 width: sonKaliMetni2.implicitWidth + 20
                                 height: 24
                                 radius: 12
-                                color: "#0a0e17"
+                                color: "#0a0a0d"
                                 border.color: "#1e2a3f"
                                 border.width: 1
 
@@ -1385,12 +1385,12 @@ Rectangle {
                                 height: 44
                                 placeholderText: "kg"
                                 placeholderTextColor: "#4b5563"
-                                color: "#ffffff"
+                                color: "#dce8f5"
                                 font.pixelSize: 16
                                 horizontalAlignment: TextInput.AlignHCenter
                                 validator: DoubleValidator { bottom: 0; top: 500; decimals: 2 }
                                 background: Rectangle {
-                                    color: "#0a0e17"
+                                    color: "#0a0a0d"
                                     radius: 10
                                     border.color: hedefKgKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                                     border.width: 1
@@ -1402,7 +1402,7 @@ Rectangle {
                                 width: parent.width
                                 height: 64
                                 radius: 12
-                                color: "#132335"
+                                color: "#16161e"
                                 border.color: wifiManager.baglandi ? "#3b82f6" : "#dc2626"
                                 border.width: 1
                                 Behavior on border.color { ColorAnimation { duration: 120 } }
@@ -1478,7 +1478,7 @@ Rectangle {
 
                                 contentItem: Text {
                                     text: parent.text
-                                    color: "#ffffff"
+                                    color: "#dce8f5"
                                     font: parent.font
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
@@ -1503,7 +1503,7 @@ Rectangle {
 
                                 contentItem: Text {
                                     text: parent.text
-                                    color: "#ffffff"
+                                    color: "#dce8f5"
                                     font: parent.font
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
@@ -1545,7 +1545,7 @@ Rectangle {
                         width: 300
                         height: 500
                         radius: 14
-                        color: "#0f1420"
+                        color: "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -1589,7 +1589,7 @@ Rectangle {
                                 width: ListView.view.width
                                 height: 48
                                 radius: 8
-                                color: satirAlani.containsMouse ? "#182644" : "#0a0e17"
+                                color: satirAlani.containsMouse ? "#17263d" : "#0a0a0d"
                                 border.color: index === loadCellDuzenlemeIndex ? "#3b82f6" : "#1e2a3f"
                                 border.width: index === loadCellDuzenlemeIndex ? 2 : 1
                                 Behavior on color { ColorAnimation { duration: 120 } }
@@ -1605,7 +1605,7 @@ Rectangle {
                                         height: 22
                                         radius: 11
                                         anchors.verticalCenter: parent.verticalCenter
-                                        color: "#182644"
+                                        color: "#17263d"
                                         border.color: "#3b82f6"
                                         border.width: 1
 
@@ -1690,7 +1690,7 @@ Rectangle {
                             width: mesafeAraEkranBadge.implicitWidth + 20
                             height: 26
                             radius: 13
-                            color: "#0f1420"
+                            color: "#12121a"
                             border.color: "#1e2a3f"
                             border.width: 1
 
@@ -1723,7 +1723,7 @@ Rectangle {
                                 width: 190
                                 height: 180
                                 radius: 14
-                                color: "#0f1420"
+                                color: "#12121a"
                                 border.color: mesafeGoruntuleKarti.hovered ? "#9333ea" : "#1e2a3f"
                                 border.width: 1
                                 property bool hovered: false
@@ -1802,7 +1802,7 @@ Rectangle {
                                 width: 190
                                 height: 180
                                 radius: 14
-                                color: "#0f1420"
+                                color: "#12121a"
                                 border.color: mesafeYenidenKarti.hovered ? "#9ca3af" : "#1e2a3f"
                                 border.width: 1
                                 property bool hovered: false
@@ -1911,7 +1911,7 @@ Rectangle {
                             width: parent.width
                             height: 320
                             radius: 14
-                            color: "#0f1420"
+                            color: "#12121a"
                             border.color: "#1e2a3f"
                             border.width: 1
 
@@ -1927,7 +1927,7 @@ Rectangle {
                                     width: ListView.view.width
                                     height: 48
                                     radius: 8
-                                    color: "#0a0e17"
+                                    color: "#0a0a0d"
                                     border.color: "#1e2a3f"
                                     border.width: 1
 
@@ -2002,7 +2002,7 @@ Rectangle {
 
                             contentItem: Text {
                                 text: parent.text
-                                color: "#ffffff"
+                                color: "#dce8f5"
                                 font: parent.font
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
@@ -2023,7 +2023,7 @@ Rectangle {
                             width: 360
                             height: 200
                             radius: 14
-                            color: "#0f1420"
+                            color: "#12121a"
                             border.color: "#1e2a3f"
                             border.width: 1
 
@@ -2095,7 +2095,7 @@ Rectangle {
 
                                         contentItem: Text {
                                             text: parent.text
-                                            color: "#ffffff"
+                                            color: "#dce8f5"
                                             font: parent.font
                                             horizontalAlignment: Text.AlignHCenter
                                             verticalAlignment: Text.AlignVCenter
@@ -2119,7 +2119,7 @@ Rectangle {
                             width: 380
                             height: 220
                             radius: 14
-                            color: "#0f1420"
+                            color: "#12121a"
                             border.color: "#16a34a"
                             border.width: 1
 
@@ -2200,7 +2200,7 @@ Rectangle {
 
                                         contentItem: Text {
                                             text: parent.text
-                                            color: "#ffffff"
+                                            color: "#dce8f5"
                                             font: parent.font
                                             horizontalAlignment: Text.AlignHCenter
                                             verticalAlignment: Text.AlignVCenter
@@ -2251,7 +2251,7 @@ Rectangle {
                                     width: 72
                                     height: 72
                                     radius: 12
-                                    color: mesafeSecKarti.hovered ? "#241a38" : "#0f1420"
+                                    color: mesafeSecKarti.hovered ? "#241a38" : "#12121a"
                                     border.color: "#9333ea"
                                     border.width: 1
                                     property bool hovered: false
@@ -2293,7 +2293,7 @@ Rectangle {
                             width: 340
                             height: 500
                             radius: 14
-                            color: "#0f1420"
+                            color: "#12121a"
                             border.color: "#1e2a3f"
                             border.width: 1
 
@@ -2308,7 +2308,7 @@ Rectangle {
                                     width: mesafeSonKaliMetni.implicitWidth + 20
                                     height: 24
                                     radius: 12
-                                    color: "#0a0e17"
+                                    color: "#0a0a0d"
                                     border.color: "#1e2a3f"
                                     border.width: 1
 
@@ -2370,12 +2370,12 @@ Rectangle {
                                     height: 44
                                     placeholderText: "cm"
                                     placeholderTextColor: "#4b5563"
-                                    color: "#ffffff"
+                                    color: "#dce8f5"
                                     font.pixelSize: 16
                                     horizontalAlignment: TextInput.AlignHCenter
                                     validator: DoubleValidator { bottom: 0; top: 300; decimals: 1 }
                                     background: Rectangle {
-                                        color: "#0a0e17"
+                                        color: "#0a0a0d"
                                         radius: 10
                                         border.color: hedefCmKutusu.activeFocus ? "#9333ea" : "#1e2a3f"
                                         border.width: 1
@@ -2387,7 +2387,7 @@ Rectangle {
                                     width: parent.width
                                     height: 64
                                     radius: 12
-                                    color: "#132335"
+                                    color: "#16161e"
                                     border.color: wifiManager.baglandi ? "#9333ea" : "#dc2626"
                                     border.width: 1
                                     Behavior on border.color { ColorAnimation { duration: 120 } }
@@ -2463,7 +2463,7 @@ Rectangle {
 
                                     contentItem: Text {
                                         text: parent.text
-                                        color: "#ffffff"
+                                        color: "#dce8f5"
                                         font: parent.font
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
@@ -2488,7 +2488,7 @@ Rectangle {
 
                                     contentItem: Text {
                                         text: parent.text
-                                        color: "#ffffff"
+                                        color: "#dce8f5"
                                         font: parent.font
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
@@ -2530,7 +2530,7 @@ Rectangle {
                             width: 300
                             height: 500
                             radius: 14
-                            color: "#0f1420"
+                            color: "#12121a"
                             border.color: "#1e2a3f"
                             border.width: 1
 
@@ -2574,7 +2574,7 @@ Rectangle {
                                     width: ListView.view.width
                                     height: 48
                                     radius: 8
-                                    color: mesafeSatirAlani.containsMouse ? "#241a38" : "#0a0e17"
+                                    color: mesafeSatirAlani.containsMouse ? "#241a38" : "#0a0a0d"
                                     border.color: index === mesafeDuzenlemeIndex ? "#9333ea" : "#1e2a3f"
                                     border.width: index === mesafeDuzenlemeIndex ? 2 : 1
                                     Behavior on color { ColorAnimation { duration: 120 } }

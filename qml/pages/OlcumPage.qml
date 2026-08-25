@@ -4,7 +4,7 @@ import QtCharts 6.7
 import sliper
 
 Rectangle {
-    color: "#0a0e17"
+    color: "#0a0a0d"
 
     readonly property var metinler: ({
         testBilgileri: { tr: "TEST BİLGİLERİ", en: "TEST INFORMATION" },
@@ -268,7 +268,7 @@ Rectangle {
             id: testBilgileriPaneli
             width: 280
             height: parent.height
-            color: "#0f1420"
+            color: "#12121a"
 
             Text {
                 anchors.top: parent.top
@@ -304,12 +304,12 @@ Rectangle {
                     height: 38
                     placeholderText: txt("musteriPlaceholder")
                     placeholderTextColor: "#4b5563"
-                    color: "#ffffff"
+                    color: "#dce8f5"
                     font.pixelSize: 13
                     leftPadding: 10
                     verticalAlignment: TextInput.AlignVCenter
                     background: Rectangle {
-                        color: "#0a0e17"
+                        color: "#0a0a0d"
                         radius: 6
                         border.color: musteriKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                         border.width: 1
@@ -331,7 +331,7 @@ Rectangle {
                     textRole: Translations.turkish ? "sinifTr" : "sinifEn"
 
                     background: Rectangle {
-                        color: "#0a0e17"
+                        color: "#0a0a0d"
                         radius: 6
                         border.color: receteKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                         border.width: 1
@@ -352,7 +352,7 @@ Rectangle {
                         highlighted: receteKutusu.highlightedIndex === index
 
                         background: Rectangle {
-                            color: receteDelege.highlighted ? "#182644" : "#0a0e17"
+                            color: receteDelege.highlighted ? "#17263d" : "#0a0a0d"
                         }
 
                         contentItem: Column {
@@ -414,14 +414,14 @@ Rectangle {
 
                             background: Rectangle {
                                 radius: 6
-                                color: agirlikEkleButonu.pressed ? "#1e3a8a" : (agirlikEkleButonu.hovered ? "#2563eb" : "#1d4ed8")
+                                color: agirlikEkleButonu.pressed ? "#1e3a8a" : (agirlikEkleButonu.hovered ? "#1e3a8a" : "#1d4ed8")
                                 border.color: "#3b82f6"
                                 border.width: 1
                             }
 
                             contentItem: Text {
                                 text: agirlikEkleButonu.text
-                                color: "#ffffff"
+                                color: "#dce8f5"
                                 font: agirlikEkleButonu.font
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
@@ -449,7 +449,7 @@ Rectangle {
 
                             contentItem: Text {
                                 text: agirlikAzaltButonu.text
-                                color: "#ffffff"
+                                color: "#dce8f5"
                                 opacity: agirlikAzaltButonu.enabled ? 1.0 : 0.6
                                 font: agirlikAzaltButonu.font
                                 horizontalAlignment: Text.AlignHCenter
@@ -478,7 +478,7 @@ Rectangle {
 
                             contentItem: Text {
                                 text: sifirlaButonu.text
-                                color: "#ffffff"
+                                color: "#dce8f5"
                                 opacity: sifirlaButonu.enabled ? 1.0 : 0.6
                                 font: sifirlaButonu.font
                                 horizontalAlignment: Text.AlignHCenter
@@ -491,7 +491,7 @@ Rectangle {
                         width: parent.width
                         height: 34
                         radius: 6
-                        color: "#0a0e17"
+                        color: "#0a0a0d"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -529,7 +529,7 @@ Rectangle {
 
                     contentItem: Text {
                         text: baslatButonu.text
-                        color: "#ffffff"
+                        color: "#dce8f5"
                         opacity: baslatButonu.enabled ? 1.0 : 0.6
                         font: baslatButonu.font
                         horizontalAlignment: Text.AlignHCenter
@@ -576,7 +576,7 @@ Rectangle {
 
                         contentItem: Text {
                             text: duraklatButonu.text
-                            color: "#ffffff"
+                            color: "#dce8f5"
                             font: duraklatButonu.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -602,7 +602,7 @@ Rectangle {
 
                         contentItem: Text {
                             text: bitirButonu.text
-                            color: "#ffffff"
+                            color: "#dce8f5"
                             font: bitirButonu.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -621,7 +621,7 @@ Rectangle {
                 anchors.rightMargin: 20
                 height: 52
                 radius: 10
-                color: "#0a0e17"
+                color: "#0a0a0d"
                 border.color: "#1e2a3f"
                 border.width: 1
 
@@ -689,7 +689,7 @@ Rectangle {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         text: calculator.strokeSayisi
-                        color: "#e8a020"
+                        color: "#4f8cf7"
                         font.family: "Segoe UI"
                         font.pixelSize: 16
                         font.bold: true
@@ -724,7 +724,7 @@ Rectangle {
                     width: 115
                     height: 90
                     radius: 10
-                    color: "#0a0e17"
+                    color: "#0a0a0d"
                     border.color: "#1e2a3f"
                     border.width: 1
                     clip: true
@@ -771,7 +771,7 @@ Rectangle {
                     width: 115
                     height: 90
                     radius: 10
-                    color: "#0a0e17"
+                    color: "#0a0a0d"
                     border.color: "#1e2a3f"
                     border.width: 1
                     clip: true
@@ -818,7 +818,7 @@ Rectangle {
                     width: 115
                     height: 90
                     radius: 10
-                    color: "#0a0e17"
+                    color: "#0a0a0d"
                     border.color: "#1e2a3f"
                     border.width: 1
                     clip: true
@@ -865,7 +865,7 @@ Rectangle {
                     width: 115
                     height: 90
                     radius: 10
-                    color: "#0a0e17"
+                    color: "#0a0a0d"
                     border.color: "#1e2a3f"
                     border.width: 1
                     clip: true
@@ -914,7 +914,7 @@ Rectangle {
             id: panelAyraci
             width: 3
             height: parent.height
-            color: "#05070b"
+            color: "#060607"
 
             Rectangle {
                 anchors.right: parent.right
@@ -939,8 +939,8 @@ Rectangle {
                     width: (parent.width - parent.spacing) / 2
                     height: (parent.height - parent.spacing) / 2
                     radius: 10
-                    color: "#0f1420"
-                    border.color: "#17263d"
+                    color: "#12121a"
+                    border.color: "#1b1b23"
                     border.width: 1
 
                     Item {
@@ -998,7 +998,7 @@ Rectangle {
                             id: xEkseni
                             min: 0
                             max: 60
-                            gridLineColor: "#182131"
+                            gridLineColor: "#1a1a20"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
                             lineVisible: false
@@ -1009,7 +1009,7 @@ Rectangle {
                             id: yEkseni
                             min: 0
                             max: 1100
-                            gridLineColor: "#182131"
+                            gridLineColor: "#1a1a20"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
                             lineVisible: false
@@ -1030,7 +1030,7 @@ Rectangle {
                     width: (parent.width - parent.spacing) / 2
                     height: (parent.height - parent.spacing) / 2
                     radius: 10
-                    color: "#0f1420"
+                    color: "#12121a"
                     border.color: "#241a38"
                     border.width: 1
 
@@ -1089,7 +1089,7 @@ Rectangle {
                             id: konumXEkseni
                             min: 0
                             max: 60
-                            gridLineColor: "#182131"
+                            gridLineColor: "#1a1a20"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
                             lineVisible: false
@@ -1100,7 +1100,7 @@ Rectangle {
                             id: konumYEkseni
                             min: 0
                             max: 500
-                            gridLineColor: "#182131"
+                            gridLineColor: "#1a1a20"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
                             lineVisible: false
@@ -1132,8 +1132,8 @@ Rectangle {
                     width: (parent.width - parent.spacing) / 2
                     height: (parent.height - parent.spacing) / 2
                     radius: 10
-                    color: "#0f1420"
-                    border.color: "#3a2a14"
+                    color: "#12121a"
+                    border.color: "#1e2a3f"
                     border.width: 1
 
                     Item {
@@ -1191,7 +1191,7 @@ Rectangle {
                             id: hizXEkseni
                             min: 0
                             max: 60
-                            gridLineColor: "#182131"
+                            gridLineColor: "#1a1a20"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
                             lineVisible: false
@@ -1202,7 +1202,7 @@ Rectangle {
                             id: hizYEkseni
                             min: 0
                             max: 4
-                            gridLineColor: "#182131"
+                            gridLineColor: "#1a1a20"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
                             lineVisible: false
@@ -1223,7 +1223,7 @@ Rectangle {
                     width: (parent.width - parent.spacing) / 2
                     height: (parent.height - parent.spacing) / 2
                     radius: 10
-                    color: "#0f1420"
+                    color: "#12121a"
                     border.color: "#163321"
                     border.width: 1
 
@@ -1282,7 +1282,7 @@ Rectangle {
                             id: debiXEkseni
                             min: 0
                             max: 60
-                            gridLineColor: "#182131"
+                            gridLineColor: "#1a1a20"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
                             lineVisible: false
@@ -1293,7 +1293,7 @@ Rectangle {
                             id: debiYEkseni
                             min: 0
                             max: 180
-                            gridLineColor: "#182131"
+                            gridLineColor: "#1a1a20"
                             labelsColor: "#4b5563"
                             labelsFont.pixelSize: 9
                             lineVisible: false
@@ -1325,7 +1325,7 @@ Rectangle {
         width: sesliKomutIcerik.implicitWidth + 24
         height: sesliKomutIcerik.implicitHeight + 16
         radius: 10
-        color: "#0a0e17"
+        color: "#0a0a0d"
         border.color: voiceCommandManager.dinliyor ? "#16a34a" : "#1e2a3f"
         border.width: 1
         z: 10
@@ -1373,7 +1373,7 @@ Rectangle {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
-            color: "#0f1420"
+            color: "#12121a"
             radius: 12
             border.color: "#1e2a3f"
             border.width: 1
@@ -1425,7 +1425,7 @@ Rectangle {
 
                     contentItem: Text {
                         text: kaydetBitirButonu.text
-                        color: "#ffffff"
+                        color: "#dce8f5"
                         font: kaydetBitirButonu.font
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -1457,7 +1457,7 @@ Rectangle {
 
                     contentItem: Text {
                         text: silBitirButonu.text
-                        color: "#ffffff"
+                        color: "#dce8f5"
                         font: silBitirButonu.font
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -1482,7 +1482,7 @@ Rectangle {
 
                     background: Rectangle {
                         radius: 8
-                        color: vazgecButonu.pressed ? "#1e2a3f" : (vazgecButonu.hovered ? "#243349" : "#182131")
+                        color: vazgecButonu.pressed ? "#1e2a3f" : (vazgecButonu.hovered ? "#243349" : "#1a1a20")
                         border.color: "#2c3b52"
                         border.width: 1
                     }

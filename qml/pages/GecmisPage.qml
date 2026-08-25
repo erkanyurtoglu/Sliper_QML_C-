@@ -5,7 +5,7 @@ import sliper
 
 Rectangle {
     id: gecmisSayfasi
-    color: "#0a0e17"
+    color: "#0a0a0d"
 
     signal testSecildi(int id)
 
@@ -123,10 +123,91 @@ Rectangle {
 
     property var filtrelenmisListe: filtrelenmisListeyiHesapla()
 
-    Column {
+    readonly property var metinlerBaslik: ({
+        gecmisBaslik: { tr: "Geçmiş Kayıtlar", en: "History Records" },
+        gecmisAltBaslik: { tr: "Tamamlanan reoloji testlerinin arşivi", en: "Archive of completed rheology tests" },
+        toplamKayit: { tr: "Toplam Kayıt", en: "Total Records" },
+        sonucBulunamadi: { tr: "Eşleşen kayıt bulunamadı", en: "No matching records found" },
+        sonucBulunamadiAlt: { tr: "Arama veya filtre koşullarını değiştirmeyi deneyin", en: "Try adjusting your search or filter criteria" }
+    })
+
+    function txt2(anahtar) {
+        return Translations.turkish ? metinlerBaslik[anahtar].tr : metinlerBaslik[anahtar].en
+    }
+
+    Item {
         anchors.fill: parent
-        anchors.margins: 20
-        spacing: 16
+        anchors.margins: 28
+
+        Column {
+            id: ustBolum
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            spacing: 20
+
+        Row {
+            width: parent.width
+
+            Column {
+                width: parent.width - 150
+                spacing: 3
+
+                Text {
+                    text: txt2("gecmisBaslik")
+                    color: "#dce8f5"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 22
+                    font.bold: true
+                    font.letterSpacing: 0.3
+                }
+
+                Text {
+                    text: txt2("gecmisAltBaslik")
+                    color: "#6b7280"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 12
+                }
+            }
+
+            Rectangle {
+                width: 150
+                height: 48
+                radius: 8
+                color: "#12121a"
+                border.color: "#1e2a3f"
+                border.width: 1
+
+                Column {
+                    anchors.centerIn: parent
+                    spacing: 2
+
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: gecmisSayfasi.olcumListesi.length
+                        color: "#3b82f6"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 20
+                        font.bold: true
+                    }
+
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: txt2("toplamKayit")
+                        color: "#6b7280"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 9
+                        font.letterSpacing: 0.5
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: "#1e2a3f"
+        }
 
         Row {
             width: parent.width
@@ -138,12 +219,12 @@ Rectangle {
                 height: 40
                 placeholderText: txt("aramaPlaceholder")
                 placeholderTextColor: "#4b5563"
-                color: "#ffffff"
+                color: "#dce8f5"
                 font.pixelSize: 13
                 leftPadding: 34
                 verticalAlignment: TextInput.AlignVCenter
                 background: Rectangle {
-                    color: "#0f1420"
+                    color: "#12121a"
                     radius: 8
                     border.color: aramaKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                     border.width: 1
@@ -166,7 +247,7 @@ Rectangle {
                 model: filtreAnahtarlari.map(function(anahtar) { return txt(anahtar) })
 
                 background: Rectangle {
-                    color: "#0f1420"
+                    color: "#12121a"
                     radius: 8
                     border.color: filtreKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                     border.width: 1
@@ -197,7 +278,7 @@ Rectangle {
 
                 background: Rectangle {
                     radius: 8
-                    color: parent.hovered ? "#162033" : "#0f1420"
+                    color: parent.hovered ? "#191921" : "#12121a"
                     border.color: "#1e2a3f"
                     border.width: 1
                     Behavior on color { ColorAnimation { duration: 120 } }
@@ -250,7 +331,7 @@ Rectangle {
                 width: temizleMetni.implicitWidth + 20
                 height: 36
                 radius: 8
-                color: temizleMouse.containsMouse ? "#162033" : "#0f1420"
+                color: temizleMouse.containsMouse ? "#191921" : "#12121a"
                 border.color: "#1e2a3f"
                 border.width: 1
                 visible: gecmisSayfasi.baslangicTarihi.length > 0 || gecmisSayfasi.bitisTarihi.length > 0
@@ -278,155 +359,254 @@ Rectangle {
             }
         }
 
-        ListView {
-            width: parent.width
-            height: parent.height - 96
+        } // ustBolum
+
+        Rectangle {
+            id: sonucPaneli
+            anchors.top: ustBolum.bottom
+            anchors.topMargin: 20
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            radius: 12
+            color: "#12121a"
+            border.color: "#1e2a3f"
+            border.width: 1
+            visible: gecmisSayfasi.filtrelenmisListe.length > 0
             clip: true
-            spacing: 10
 
-            model: gecmisSayfasi.filtrelenmisListe
+            Row {
+                id: tabloBasligi
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: 18
+                height: 20
 
-            delegate: Rectangle {
-                id: gecmisKarti
-                width: parent.width
-                height: 76
-                radius: 10
-                color: "#0f1420"
-                border.color: kartAlani.containsMouse ? "#3b82f6" : "#1e2a3f"
-                border.width: 1
-                Behavior on border.color { ColorAnimation { duration: 120 } }
+                Text { width: 56; text: "#"; color: "#4b5563"; font.family: "Segoe UI"; font.pixelSize: 10; font.letterSpacing: 1; font.bold: true }
+                Text { width: parent.width - 56 - 150 - 68 - 152; text: Translations.turkish ? "MÜŞTERİ / REÇETE" : "CUSTOMER / RECIPE"; color: "#4b5563"; font.family: "Segoe UI"; font.pixelSize: 10; font.letterSpacing: 1; font.bold: true }
+                Text { width: 150; text: Translations.turkish ? "TARİH" : "DATE"; color: "#4b5563"; font.family: "Segoe UI"; font.pixelSize: 10; font.letterSpacing: 1; font.bold: true }
+                Text { width: 68; text: Translations.turkish ? "STROKE" : "STROKE"; color: "#4b5563"; font.family: "Segoe UI"; font.pixelSize: 10; font.letterSpacing: 1; font.bold: true }
+                Text { width: 152; horizontalAlignment: Text.AlignRight; text: ""; color: "#4b5563"; font.pixelSize: 10 }
+            }
 
-                MouseArea {
-                    id: kartAlani
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    acceptedButtons: Qt.NoButton
-                }
+            Rectangle {
+                anchors.top: tabloBasligi.bottom
+                anchors.topMargin: 12
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 18
+                anchors.rightMargin: 18
+                height: 1
+                color: "#1e2a3f"
+            }
 
-                Rectangle {
-                    id: rozet
-                    width: 44
-                    height: 44
-                    radius: 10
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: 16
-                    color: "#132335"
+            ListView {
+                anchors.top: tabloBasligi.bottom
+                anchors.topMargin: 13
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 4
+                clip: true
+                spacing: 0
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: modelData.musteri.charAt(0).toUpperCase()
-                        color: "#3b82f6"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 18
-                        font.bold: true
+                model: gecmisSayfasi.filtrelenmisListe
+
+                delegate: Rectangle {
+                    id: gecmisKarti
+                    width: parent ? parent.width : 0
+                    height: 58
+                    color: kartAlani.containsMouse ? "#16161e" : "transparent"
+                    Behavior on color { ColorAnimation { duration: 120 } }
+
+                    MouseArea {
+                        id: kartAlani
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        acceptedButtons: Qt.NoButton
                     }
-                }
 
-                Column {
-                    anchors.left: rozet.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: 14
-                    spacing: 4
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.leftMargin: 14
+                        anchors.rightMargin: 14
+                        height: 1
+                        color: "#1e1e18"
+                        visible: index !== gecmisSayfasi.filtrelenmisListe.length - 1
+                    }
 
                     Row {
-                        spacing: 8
+                        anchors.fill: parent
+                        anchors.leftMargin: 14
+                        anchors.rightMargin: 14
 
                         Text {
-                            text: modelData.tarih
-                            color: "#6b7280"
+                            width: 56
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: (index + 1).toString().padStart(2, "0")
+                            color: "#4b5563"
                             font.family: "Segoe UI"
-                            font.pixelSize: 11
+                            font.pixelSize: 12
+                        }
+
+                        Column {
+                            width: parent.width - 56 - 150 - 68 - 152
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 3
+
+                            Text {
+                                text: modelData.musteri
+                                color: "#dce8f5"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 13
+                                font.bold: true
+                                elide: Text.ElideRight
+                                width: parent.width
+                            }
+
+                            Text {
+                                text: modelData.recete
+                                color: "#6b7280"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 11
+                                elide: Text.ElideRight
+                                width: parent.width
+                            }
+                        }
+
+                        Text {
+                            width: 150
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: modelData.tarih
+                            color: "#9ca3af"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 12
                         }
 
                         Rectangle {
-                            width: strokeMetni.implicitWidth + 12
-                            height: 16
-                            radius: 8
-                            color: "#2a2010"
+                            width: 68
+                            height: 22
+                            radius: 5
                             anchors.verticalCenter: parent.verticalCenter
+                            color: "#12121a"
+                            border.color: "#1e2a3f"
+                            border.width: 1
 
                             Text {
-                                id: strokeMetni
                                 anchors.centerIn: parent
-                                text: modelData.strokeSayisi + " stroke"
-                                color: "#e8a020"
+                                text: modelData.strokeSayisi
+                                color: "#4f8cf7"
                                 font.family: "Segoe UI"
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                                 font.bold: true
                             }
                         }
-                    }
 
-                    Text {
-                        text: txt("musteriEtiket") + modelData.musteri + txt("receteEtiket") + modelData.recete
-                        color: "#dce8f5"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 13
-                        font.bold: true
-                    }
-                }
+                        Row {
+                            width: 152
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 8
+                            layoutDirection: Qt.RightToLeft
 
-                Row {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.rightMargin: 16
-                    spacing: 8
+                            Rectangle {
+                                id: silButonu
+                                width: 30
+                                height: 30
+                                radius: 6
+                                color: silMouse.containsMouse ? "#3f1d24" : "transparent"
+                                border.color: silMouse.containsMouse ? "#ef4444" : "#1e2a3f"
+                                border.width: 1
+                                Behavior on color { ColorAnimation { duration: 120 } }
 
-                    Rectangle {
-                        id: silButonu
-                        width: 34
-                        height: 34
-                        radius: 6
-                        color: silMouse.containsMouse ? "#3f1d24" : "#1a1420"
-                        border.color: silMouse.containsMouse ? "#ef4444" : "#2a2030"
-                        border.width: 1
-                        Behavior on color { ColorAnimation { duration: 120 } }
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "🗑"
+                                    font.pixelSize: 13
+                                }
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: "🗑"
-                            font.pixelSize: 14
-                        }
+                                MouseArea {
+                                    id: silMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        silOnayPopup.hedefId = modelData.id
+                                        silOnayPopup.hedefMusteri = modelData.musteri
+                                        silOnayPopup.open()
+                                    }
+                                }
+                            }
 
-                        MouseArea {
-                            id: silMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                silOnayPopup.hedefId = modelData.id
-                                silOnayPopup.hedefMusteri = modelData.musteri
-                                silOnayPopup.open()
+                            Rectangle {
+                                id: goruntuleButonu
+                                width: 84
+                                height: 30
+                                radius: 6
+                                color: goruntuleMouse.containsMouse ? "#191921" : "transparent"
+                                border.color: goruntuleMouse.containsMouse ? "#3b82f6" : "#1e2a3f"
+                                border.width: 1
+                                Behavior on color { ColorAnimation { duration: 120 } }
+                                Behavior on border.color { ColorAnimation { duration: 120 } }
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: txt("goruntule")
+                                    color: goruntuleMouse.containsMouse ? "#dce8f5" : "#9ca3af"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                }
+
+                                MouseArea {
+                                    id: goruntuleMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: testSecildi(modelData.id)
+                                }
                             }
                         }
                     }
-
-                    Button {
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: 34
-                        text: txt("goruntule")
-                        font.pixelSize: 12
-
-                        onClicked: testSecildi(modelData.id)
-
-                        background: Rectangle {
-                            radius: 6
-                            color: parent.hovered ? "#4f8cf7" : "#3b82f6"
-                            Behavior on color { ColorAnimation { duration: 120 } }
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "#ffffff"
-                            font: parent.font
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            leftPadding: 8
-                            rightPadding: 8
-                        }
-                    }
                 }
+            }
+        }
+
+        Column {
+            anchors.top: ustBolum.bottom
+            anchors.topMargin: 20
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            visible: gecmisSayfasi.filtrelenmisListe.length === 0
+            spacing: 8
+
+            Item { width: 1; height: parent.height / 2 - 40 }
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "🔍"
+                font.pixelSize: 28
+                opacity: 0.4
+            }
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: txt2("sonucBulunamadi")
+                color: "#9ca3af"
+                font.family: "Segoe UI"
+                font.pixelSize: 14
+                font.bold: true
+            }
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: txt2("sonucBulunamadiAlt")
+                color: "#4b5563"
+                font.family: "Segoe UI"
+                font.pixelSize: 12
             }
         }
     }
@@ -450,7 +630,7 @@ Rectangle {
         }
 
         background: Rectangle {
-            color: "#0f1420"
+            color: "#12121a"
             radius: 14
             border.color: "#1e2a3f"
             border.width: 1
@@ -462,7 +642,7 @@ Rectangle {
 
             Text {
                 text: txt("kayitSilBaslik")
-                color: "#ffffff"
+                color: "#dce8f5"
                 font.family: "Segoe UI"
                 font.pixelSize: 17
                 font.bold: true
@@ -496,12 +676,12 @@ Rectangle {
                     echoMode: TextInput.Password
                     placeholderText: txt("sifrenizGirin")
                     placeholderTextColor: "#4b5563"
-                    color: "#ffffff"
+                    color: "#dce8f5"
                     font.pixelSize: 13
                     leftPadding: 12
                     verticalAlignment: TextInput.AlignVCenter
                     background: Rectangle {
-                        color: "#0a0e17"
+                        color: "#0a0a0d"
                         radius: 6
                         border.color: sifreGirisAlani.activeFocus ? "#3b82f6" : "#1e2a3f"
                         border.width: 1
@@ -552,7 +732,7 @@ Rectangle {
 
                     contentItem: Text {
                         text: parent.text
-                        color: "#ffffff"
+                        color: "#dce8f5"
                         font: parent.font
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -569,7 +749,7 @@ Rectangle {
 
                     background: Rectangle {
                         radius: 8
-                        color: parent.hovered ? "#162033" : "#0f1420"
+                        color: parent.hovered ? "#191921" : "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
                         Behavior on color { ColorAnimation { duration: 120 } }
@@ -604,7 +784,7 @@ Rectangle {
         property bool pinDogrulandi: false
 
         background: Rectangle {
-            color: "#0f1420"
+            color: "#12121a"
             radius: 14
             border.color: "#1e2a3f"
             border.width: 1
@@ -616,7 +796,7 @@ Rectangle {
 
             Text {
                 text: txt("gelismisAyarlarBaslik")
-                color: "#ffffff"
+                color: "#dce8f5"
                 font.family: "Segoe UI"
                 font.pixelSize: 17
                 font.bold: true
@@ -642,12 +822,12 @@ Rectangle {
                     echoMode: TextInput.Password
                     placeholderText: txt("sifrenizGirin")
                     placeholderTextColor: "#4b5563"
-                    color: "#ffffff"
+                    color: "#dce8f5"
                     font.pixelSize: 13
                     leftPadding: 12
                     verticalAlignment: TextInput.AlignVCenter
                     background: Rectangle {
-                        color: "#0a0e17"
+                        color: "#0a0a0d"
                         radius: 6
                         border.color: pinKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                         border.width: 1
@@ -691,7 +871,7 @@ Rectangle {
 
                     contentItem: Text {
                         text: parent.text
-                        color: "#ffffff"
+                        color: "#dce8f5"
                         font: parent.font
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -719,7 +899,7 @@ Rectangle {
 
                     background: Rectangle {
                         radius: 8
-                        color: parent.hovered ? "#162033" : "#0f1420"
+                        color: parent.hovered ? "#191921" : "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
                         Behavior on color { ColorAnimation { duration: 120 } }
@@ -752,12 +932,12 @@ Rectangle {
                         height: 40
                         placeholderText: txt("icaAktarPlaceholder")
                         placeholderTextColor: "#4b5563"
-                        color: "#ffffff"
+                        color: "#dce8f5"
                         font.pixelSize: 12
                         leftPadding: 12
                         verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle {
-                            color: "#0a0e17"
+                            color: "#0a0a0d"
                             radius: 6
                             border.color: icaAktarYoluKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                             border.width: 1
@@ -783,7 +963,7 @@ Rectangle {
 
                     background: Rectangle {
                         radius: 8
-                        color: parent.hovered ? "#162033" : "#0f1420"
+                        color: parent.hovered ? "#191921" : "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
                         Behavior on color { ColorAnimation { duration: 120 } }
@@ -815,7 +995,7 @@ Rectangle {
 
                     contentItem: Text {
                         text: parent.text
-                        color: "#ffffff"
+                        color: "#dce8f5"
                         font: parent.font
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -842,7 +1022,7 @@ Rectangle {
 
                     background: Rectangle {
                         radius: 8
-                        color: parent.hovered ? "#162033" : "transparent"
+                        color: parent.hovered ? "#191921" : "transparent"
                         border.color: "#1e2a3f"
                         border.width: 1
                         Behavior on color { ColorAnimation { duration: 120 } }
@@ -872,7 +1052,7 @@ Rectangle {
         closePolicy: Popup.CloseOnEscape
 
         background: Rectangle {
-            color: "#0f1420"
+            color: "#12121a"
             radius: 14
             border.color: "#dc2626"
             border.width: 1
@@ -884,7 +1064,7 @@ Rectangle {
 
             Text {
                 text: txt("tumVeriyiSil")
-                color: "#ffffff"
+                color: "#dce8f5"
                 font.family: "Segoe UI"
                 font.pixelSize: 17
                 font.bold: true
@@ -926,7 +1106,7 @@ Rectangle {
 
                     contentItem: Text {
                         text: parent.text
-                        color: "#ffffff"
+                        color: "#dce8f5"
                         font: parent.font
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -943,7 +1123,7 @@ Rectangle {
 
                     background: Rectangle {
                         radius: 8
-                        color: parent.hovered ? "#162033" : "#0f1420"
+                        color: parent.hovered ? "#191921" : "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
                         Behavior on color { ColorAnimation { duration: 120 } }

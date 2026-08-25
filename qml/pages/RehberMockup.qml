@@ -7,7 +7,7 @@ Rectangle {
     property string vurguAnahtari: ""
     property color vurguRengi: "#3b82f6"
 
-    color: "#0a0e17"
+    color: "#0a0a0d"
     radius: 10
     border.color: "#1e2a3f"
     border.width: 1
@@ -18,8 +18,8 @@ Rectangle {
             w: 150, h: 260,
             ogeler: [
                 { x: 35, y: 6, w: 80, h: 16, tip: "merkezMetin", metin: "LIYA", renk: "#c0392b", boyut: 11, kalin: true },
-                { x: 8, y: 30, w: 28, h: 14, tip: "buton", metin: "TR", renk: "#0f1420", kenar: "#3b82f6" },
-                { x: 40, y: 30, w: 28, h: 14, tip: "buton", metin: "EN", renk: "#0f1420", kenar: "#1e2a3f" },
+                { x: 8, y: 30, w: 28, h: 14, tip: "buton", metin: "TR", renk: "#12121a", kenar: "#3b82f6" },
+                { x: 40, y: 30, w: 28, h: 14, tip: "buton", metin: "EN", renk: "#12121a", kenar: "#1e2a3f" },
                 { x: 8, y: 53, w: 8, h: 8, tip: "nokta", renk: "#dc2626" },
                 { x: 20, y: 51, w: 110, h: 12, tip: "etiket", metin: "Bağlı Değil" },
                 { x: 8, y: 69, w: 8, h: 8, tip: "nokta", renk: "#dc2626" },
@@ -71,7 +71,7 @@ Rectangle {
                 { x: 16, y: 14, w: 248, h: 20, tip: "merkezMetin", metin: "Ölçümü bitirmek istediğinize emin misiniz?", renk: "#9ca3af", boyut: 8 },
                 { x: 16, y: 46, w: 248, h: 20, tip: "buton", metin: "💾 Kaydet ve Bitir", renk: "#15803d", kenar: "#22c55e" },
                 { x: 16, y: 72, w: 248, h: 20, tip: "buton", metin: "🗑 Testi Sil ve Bitir", renk: "#991b1b", kenar: "#b91c1c" },
-                { x: 16, y: 98, w: 248, h: 20, tip: "buton", metin: "Vazgeç, Teste Devam Et", renk: "#182131", kenar: "#1e2a3f" }
+                { x: 16, y: 98, w: 248, h: 20, tip: "buton", metin: "Vazgeç, Teste Devam Et", renk: "#1a1a20", kenar: "#1e2a3f" }
             ],
             bolgeler: { secenekler: { x: 12, y: 42, w: 256, h: 80 } }
         },
@@ -105,8 +105,8 @@ Rectangle {
             w: 420, h: 260,
             ogeler: [
                 { x: 8, y: 6, w: 280, h: 18, tip: "alan", metin: "🔍 Müşteri veya reçete ara..." },
-                { x: 296, y: 6, w: 80, h: 18, tip: "buton", metin: "Tüm Testler ▾", renk: "#0f1420", kenar: "#1e2a3f" },
-                { x: 384, y: 6, w: 28, h: 18, tip: "buton", metin: "⚙", renk: "#0f1420", kenar: "#3b82f6" },
+                { x: 296, y: 6, w: 80, h: 18, tip: "buton", metin: "Tüm Testler ▾", renk: "#12121a", kenar: "#1e2a3f" },
+                { x: 384, y: 6, w: 28, h: 18, tip: "buton", metin: "⚙", renk: "#12121a", kenar: "#3b82f6" },
                 { x: 8, y: 30, w: 200, h: 12, tip: "etiket", metin: "Özel Tarih:" },
                 { x: 8, y: 50, w: 404, h: 32, tip: "kayitSatiri" },
                 { x: 8, y: 86, w: 404, h: 32, tip: "kayitSatiri" },
@@ -133,7 +133,7 @@ Rectangle {
         kalibrasyonEgim: {
             w: 300, h: 306,
             ogeler: [
-                { x: 0, y: 6, w: 60, h: 14, tip: "buton", metin: "← Geri", renk: "#0f1420", kenar: "#1e2a3f" },
+                { x: 0, y: 6, w: 60, h: 14, tip: "buton", metin: "← Geri", renk: "#12121a", kenar: "#1e2a3f" },
                 { x: 68, y: 8, w: 8, h: 8, tip: "nokta", renk: "#14b8a6" },
                 { x: 80, y: 6, w: 200, h: 14, tip: "etiket", metin: "Eğim Sensörü Kalibrasyonu" },
                 { x: 40, y: 32, w: 220, h: 12, tip: "merkezMetin", metin: "Son kalibrasyon: 21.08.2026", renk: "#6b7280", boyut: 7 },
@@ -141,14 +141,14 @@ Rectangle {
                 { x: 75, y: 74, w: 150, h: 150, tip: "seviye" },
                 { x: 75, y: 232, w: 150, h: 28, tip: "kutu", renk: "#14b8a6", dolgu: "#0f2e2a", metin: "X: 0.0°   Y: 0.0°", metinRenk: "#2dd4bf" },
                 { x: 20, y: 266, w: 260, h: 10, tip: "merkezMetin", metin: "Cihaz bağlı değil — kalibrasyon kaydedilemez", renk: "#f87171", boyut: 6 },
-                { x: 30, y: 280, w: 240, h: 20, tip: "buton", metin: "Sıfırla (Zero)", renk: "#0f1420", kenar: "#1e2a3f" }
+                { x: 30, y: 280, w: 240, h: 20, tip: "buton", metin: "Sıfırla (Zero)", renk: "#12121a", kenar: "#1e2a3f" }
             ],
             bolgeler: { sifirla: { x: 27, y: 277, w: 246, h: 26 } }
         },
         kalibrasyonNoktaSayisi: {
             w: 320, h: 170,
             ogeler: [
-                { x: 0, y: 6, w: 60, h: 14, tip: "buton", metin: "← Geri", renk: "#0f1420", kenar: "#1e2a3f" },
+                { x: 0, y: 6, w: 60, h: 14, tip: "buton", metin: "← Geri", renk: "#12121a", kenar: "#1e2a3f" },
                 { x: 20, y: 40, w: 280, h: 14, tip: "merkezMetin", metin: "Kaç noktalı kalibrasyon yapmak istersiniz?", renk: "#dce8f5", boyut: 8, kalin: true },
                 { x: 20, y: 58, w: 280, h: 20, tip: "merkezMetin", metin: "Daha fazla nokta, daha hassas kalibrasyon sağlar", renk: "#6b7280", boyut: 6 },
                 { x: 40, y: 90, w: 240, h: 40, tip: "noktaSecici" }
@@ -158,13 +158,13 @@ Rectangle {
         kalibrasyonNoktaGir: {
             w: 420, h: 170,
             ogeler: [
-                { x: 0, y: 4, w: 60, h: 14, tip: "buton", metin: "← Geri", renk: "#0f1420", kenar: "#1e2a3f" },
+                { x: 0, y: 4, w: 60, h: 14, tip: "buton", metin: "← Geri", renk: "#12121a", kenar: "#1e2a3f" },
                 { x: 10, y: 26, w: 170, h: 10, tip: "merkezMetin", metin: "Nokta 1 / 8", renk: "#3b82f6", boyut: 8, kalin: true },
-                { x: 10, y: 40, w: 170, h: 4, tip: "kutu", renk: "#1e2a3f", dolgu: "#132335" },
+                { x: 10, y: 40, w: 170, h: 4, tip: "kutu", renk: "#1e2a3f", dolgu: "#16161e" },
                 { x: 10, y: 50, w: 170, h: 22, tip: "merkezMetin", metin: "Hedef ağırlığı gir, sonra o ağırlığı load cell'e koy", renk: "#9ca3af", boyut: 6 },
                 { x: 10, y: 76, w: 170, h: 18, tip: "alan", metin: "kg" },
                 { x: 10, y: 98, w: 170, h: 26, tip: "kutu", renk: "#dc2626", dolgu: "#2a1414", metin: "Ham değer: 0", metinRenk: "#f87171" },
-                { x: 10, y: 130, w: 170, h: 20, tip: "buton", metin: "Bu Noktayı Kaydet", renk: "#0f1420", kenar: "#1e2a3f" },
+                { x: 10, y: 130, w: 170, h: 20, tip: "buton", metin: "Bu Noktayı Kaydet", renk: "#12121a", kenar: "#1e2a3f" },
                 { x: 200, y: 26, w: 210, h: 10, tip: "etiket", metin: "KAYDEDİLEN NOKTALAR" },
                 { x: 200, y: 42, w: 210, h: 22, tip: "kart", baslik: "① 0.00 kg", altMetin: "ADC: 81541", renk: "#3b82f6" },
                 { x: 200, y: 68, w: 210, h: 22, tip: "kart", baslik: "② 1.00 kg", altMetin: "ADC: 127417", renk: "#3b82f6" },
@@ -178,7 +178,7 @@ Rectangle {
         kalibrasyonMevcut: {
             w: 360, h: 170,
             ogeler: [
-                { x: 0, y: 4, w: 60, h: 14, tip: "buton", metin: "← Geri", renk: "#0f1420", kenar: "#1e2a3f" },
+                { x: 0, y: 4, w: 60, h: 14, tip: "buton", metin: "← Geri", renk: "#12121a", kenar: "#1e2a3f" },
                 { x: 40, y: 24, w: 280, h: 12, tip: "merkezMetin", metin: "Bu sensör için kayıtlı bir kalibrasyon bulundu", renk: "#dce8f5", boyut: 8, kalin: true },
                 { x: 30, y: 44, w: 145, h: 110, tip: "kart", baslik: "👁 Mevcut Kalibrasyonu Görüntüle", altMetin: "Kayıtlı noktaları incele", renk: "#3b82f6" },
                 { x: 185, y: 44, w: 145, h: 110, tip: "kart", baslik: "↻ Yeniden Kalibre Et", altMetin: "Sıfırdan yeni ölçüm al", renk: "#6b7280" }
@@ -220,9 +220,9 @@ Rectangle {
                         anchors.fill: parent
                         visible: oge.ov.tip === "alan" || oge.ov.tip === "buton" || oge.ov.tip === "kart"
                         radius: oge.ov.tip === "buton" ? 5 : 4
-                        color: oge.ov.tip === "buton" ? (oge.ov.renk || "#182131")
+                        color: oge.ov.tip === "buton" ? (oge.ov.renk || "#1a1a20")
                              : oge.ov.tip === "kart" ? Qt.darker(oge.ov.renk || "#3b82f6", 4.5)
-                             : "#0a0e17"
+                             : "#0a0a0d"
                         border.color: oge.ov.tip === "buton" ? (oge.ov.kenar || "#1e2a3f")
                                     : oge.ov.tip === "kart" ? (oge.ov.renk || "#3b82f6")
                                     : "#1e2a3f"
@@ -248,7 +248,7 @@ Rectangle {
                             anchors.rightMargin: 6
                             horizontalAlignment: oge.ov.tip === "buton" ? Text.AlignHCenter : Text.AlignLeft
                             text: oge.ov.metin || ""
-                            color: oge.ov.tip === "buton" ? "#e8eef7" : "#6b7280"
+                            color: oge.ov.tip === "buton" ? "#f0e9d8" : "#6b7280"
                             font.pixelSize: 8
                             font.bold: oge.ov.tip === "buton"
                             font.family: "Segoe UI"
@@ -346,7 +346,7 @@ Rectangle {
                         visible: oge.ov.tip === "kutu"
                         anchors.fill: parent
                         radius: 5
-                        color: oge.ov.dolgu || "#0f1420"
+                        color: oge.ov.dolgu || "#12121a"
                         border.color: oge.ov.renk || "#1e2a3f"
                         border.width: 1
 
@@ -365,7 +365,7 @@ Rectangle {
                         visible: oge.ov.tip === "durumKart"
                         anchors.fill: parent
                         radius: 5
-                        color: "#0a0e17"
+                        color: "#0a0a0d"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -383,7 +383,7 @@ Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.rightMargin: 8
                             text: oge.ov.sagMetin || ""
-                            color: "#e8a020"
+                            color: "#4f8cf7"
                             font.pixelSize: 7
                             font.bold: true
                             font.family: "Segoe UI"
@@ -402,7 +402,7 @@ Rectangle {
                                 width: (oge.width - 6) / 2
                                 height: (oge.height - 6) / 2
                                 radius: 3
-                                color: "#0a0e17"
+                                color: "#0a0a0d"
                                 border.color: "#1e2a3f"
                                 border.width: 1
 
@@ -429,7 +429,7 @@ Rectangle {
                         visible: oge.ov.tip === "grafikKart"
                         anchors.fill: parent
                         radius: 6
-                        color: "#0f1420"
+                        color: "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -457,7 +457,7 @@ Rectangle {
                             }
                             Row {
                                 spacing: 3
-                                Rectangle { width: 8; height: 2; anchors.verticalCenter: parent.verticalCenter; color: "#e8a020" }
+                                Rectangle { width: 8; height: 2; anchors.verticalCenter: parent.verticalCenter; color: "#4f8cf7" }
                                 Text { text: "Regresyon"; color: "#6b7280"; font.pixelSize: 6; font.family: "Segoe UI" }
                             }
                         }
@@ -493,7 +493,7 @@ Rectangle {
                                 height: 1
                                 rotation: -12
                                 transformOrigin: Item.Left
-                                color: "#e8a020"
+                                color: "#4f8cf7"
                                 opacity: 0.7
                             }
 
@@ -516,7 +516,7 @@ Rectangle {
                         visible: oge.ov.tip === "tablo"
                         anchors.fill: parent
                         radius: 6
-                        color: "#0f1420"
+                        color: "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -559,7 +559,7 @@ Rectangle {
                         visible: oge.ov.tip === "kayitSatiri"
                         anchors.fill: parent
                         radius: 6
-                        color: "#0f1420"
+                        color: "#12121a"
                         border.color: "#1e2a3f"
                         border.width: 1
 
@@ -571,7 +571,7 @@ Rectangle {
 
                             Rectangle {
                                 width: 18; height: 18; radius: 9
-                                color: "#132335"
+                                color: "#16161e"
                                 border.color: "#3b82f6"
                                 border.width: 1
                                 anchors.verticalCenter: parent.verticalCenter
@@ -599,7 +599,7 @@ Rectangle {
                             }
                             Rectangle {
                                 width: 34; height: 18; radius: 4
-                                color: "#132335"
+                                color: "#16161e"
                                 border.color: "#3b82f6"
                                 border.width: 1
                             }
@@ -654,7 +654,7 @@ Rectangle {
                                 width: (oge.width - 18) / 4
                                 height: oge.height
                                 radius: 5
-                                color: index === 1 ? "#132335" : "#0a0e17"
+                                color: index === 1 ? "#16161e" : "#0a0a0d"
                                 border.color: index === 1 ? "#3b82f6" : "#1e2a3f"
                                 border.width: 1
                                 Text {

@@ -4,7 +4,7 @@ import QtQuick.Layouts 6.7
 import sliper
 
 Rectangle {
-    color: "#0a0e17"
+    color: "#0a0a0d"
 
     readonly property var metinler: ({
         baslik: { tr: "REHBER — SLIPER Nasıl Kullanılır", en: "GUIDE — How to Use SLIPER" },
@@ -273,7 +273,7 @@ Rectangle {
             width: 280
             height: 300
             radius: 12
-            color: "#0f1420"
+            color: "#12121a"
             border.color: konuKarti.hovered ? modelData.renk : "#1e2a3f"
             border.width: 1
             property bool hovered: false
@@ -412,83 +412,91 @@ Rectangle {
         }
 
         // SAYFA 1: konu detayı
-        ScrollView {
-            id: detayScroll
-            clip: true
-            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ColumnLayout {
+            spacing: 14
 
-            Column {
-                width: detayScroll.availableWidth - 40
-                x: 20
-                spacing: 18
-                topPadding: 20
-                bottomPadding: 24
+            Row {
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+                Layout.topMargin: 20
+                spacing: 12
 
-                Row {
-                    spacing: 12
-
-                    Button {
-                        text: txt("geriButon")
-                        font.pixelSize: 13
-
-                        background: Rectangle {
-                            radius: 6
-                            color: parent.hovered ? "#1e2a3f" : "#0f1420"
-                            border.color: "#1e2a3f"
-                            border.width: 1
-                            Behavior on color { ColorAnimation { duration: 120 } }
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "#dce8f5"
-                            font: parent.font
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            leftPadding: 10
-                            rightPadding: 10
-                        }
-
-                        onClicked: seciliKonu = -1
-                    }
-
-                    Rectangle {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 8
-                        height: 8
-                        radius: 4
-                        color: seciliKonu >= 0 ? bolumler[seciliKonu].renk : "#6b7280"
-                    }
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: seciliKonu >= 0 ? (Translations.turkish ? bolumler[seciliKonu].baslikTr : bolumler[seciliKonu].baslikEn) : ""
-                        color: "#dce8f5"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 16
-                        font.bold: true
-                    }
-                }
-
-                Text {
-                    visible: seciliKonu >= 0
-                    width: parent.width
-                    text: seciliKonu >= 0 ? (Translations.turkish ? bolumler[seciliKonu].ozetTr : bolumler[seciliKonu].ozetEn) : ""
-                    color: "#9ca3af"
-                    font.family: "Segoe UI"
+                Button {
+                    text: txt("geriButon")
                     font.pixelSize: 13
-                    wrapMode: Text.WordWrap
+
+                    background: Rectangle {
+                        radius: 6
+                        color: parent.hovered ? "#1e2a3f" : "#12121a"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+                        Behavior on color { ColorAnimation { duration: 120 } }
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#dce8f5"
+                        font: parent.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        leftPadding: 10
+                        rightPadding: 10
+                    }
+
+                    onClicked: seciliKonu = -1
                 }
 
                 Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: "#1e2a3f"
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 8
+                    height: 8
+                    radius: 4
+                    color: seciliKonu >= 0 ? bolumler[seciliKonu].renk : "#6b7280"
                 }
 
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: seciliKonu >= 0 ? (Translations.turkish ? bolumler[seciliKonu].baslikTr : bolumler[seciliKonu].baslikEn) : ""
+                    color: "#dce8f5"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 16
+                    font.bold: true
+                }
+            }
+
+            Text {
+                visible: seciliKonu >= 0
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+                Layout.fillWidth: true
+                text: seciliKonu >= 0 ? (Translations.turkish ? bolumler[seciliKonu].ozetTr : bolumler[seciliKonu].ozetEn) : ""
+                color: "#9ca3af"
+                font.family: "Segoe UI"
+                font.pixelSize: 13
+                wrapMode: Text.WordWrap
+            }
+
+            Rectangle {
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+                Layout.fillWidth: true
+                height: 1
+                color: "#1e2a3f"
+            }
+
+            ScrollView {
+                id: detayScroll
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
                 Column {
-                    width: parent.width
+                    width: detayScroll.availableWidth - 40
+                    x: 20
                     spacing: 26
+                    topPadding: 4
+                    bottomPadding: 24
 
                     Repeater {
                         model: seciliKonu >= 0 ? bolumler[seciliKonu].adimlar : []
@@ -563,7 +571,7 @@ Rectangle {
                                     anchors.fill: parent
                                     visible: mockupYukleyici.status !== Loader.Ready
                                     radius: 10
-                                    color: "#0a0e17"
+                                    color: "#0a0a0d"
                                     border.color: "#1e2a3f"
                                     border.width: 1
                                 }

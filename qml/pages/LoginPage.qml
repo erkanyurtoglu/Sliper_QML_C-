@@ -25,8 +25,21 @@ Rectangle {
     }
 
     gradient: Gradient {
-        GradientStop { position: 0.0; color: "#101c33" }
-        GradientStop { position: 1.0; color: "#0a1220" }
+        GradientStop { position: 0.0; color: "#15121a" }
+        GradientStop { position: 0.55; color: "#0c0b0e" }
+        GradientStop { position: 1.0; color: "#07070a" }
+    }
+
+    Rectangle {
+        anchors.centerIn: kart
+        width: 640
+        height: 640
+        radius: width / 2
+        opacity: 0.10
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "#3b82f6" }
+            GradientStop { position: 1.0; color: "#00000000" }
+        }
     }
 
     Row {
@@ -39,14 +52,14 @@ Rectangle {
             width: 44
             height: 30
             radius: 6
-            color: "#0f1420"
+            color: "#12121a"
             border.color: Translations.turkish ? "#3b82f6" : "#1e2a3f"
             border.width: 1
 
             Text {
                 anchors.centerIn: parent
                 text: "TR"
-                color: Translations.turkish ? "#ffffff" : "#6b7280"
+                color: Translations.turkish ? "#dce8f5" : "#6b7280"
                 font.pixelSize: 12
                 font.bold: Translations.turkish
             }
@@ -62,14 +75,14 @@ Rectangle {
             width: 44
             height: 30
             radius: 6
-            color: "#0f1420"
+            color: "#12121a"
             border.color: !Translations.turkish ? "#3b82f6" : "#1e2a3f"
             border.width: 1
 
             Text {
                 anchors.centerIn: parent
                 text: "EN"
-                color: !Translations.turkish ? "#ffffff" : "#6b7280"
+                color: !Translations.turkish ? "#dce8f5" : "#6b7280"
                 font.pixelSize: 12
                 font.bold: !Translations.turkish
             }
@@ -118,11 +131,26 @@ Rectangle {
         id: kart
         anchors.centerIn: parent
         width: 400
-        color: "#0f1420"
+        color: "#12121a"
         radius: 16
-        border.color: "#4b5563"
+        border.color: "#1e2a3f"
         border.width: 1
         height: govde.implicitHeight + 48
+
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.topMargin: -1
+            height: 3
+            radius: 2
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: "#00000000" }
+                GradientStop { position: 0.5; color: "#3b82f6" }
+                GradientStop { position: 1.0; color: "#00000000" }
+            }
+        }
 
         Column {
             id: govde
@@ -140,10 +168,13 @@ Rectangle {
                 fillMode: Image.PreserveAspectFit
             }
 
-            Rectangle {
-                width: parent.width
-                height: 1
-                color: "#1e2a3f"
+            Row {
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 10
+
+                Rectangle { width: 50; height: 1; color: "#1e2a3f"; anchors.verticalCenter: parent.verticalCenter }
+                Rectangle { width: 5; height: 5; rotation: 45; color: "#3b82f6"; anchors.verticalCenter: parent.verticalCenter }
+                Rectangle { width: 50; height: 1; color: "#1e2a3f"; anchors.verticalCenter: parent.verticalCenter }
             }
 
             Column {
@@ -153,9 +184,10 @@ Rectangle {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: txt("girisBasligi")
-                    color: "#ffffff"
+                    color: "#dce8f5"
                     font.family: "Segoe UI"
                     font.pixelSize: 22
+                    font.letterSpacing: 0.5
                     font.bold: true
                 }
 
@@ -186,12 +218,12 @@ Rectangle {
                     height: 42
                     placeholderText: txt("kullaniciAdiPlaceholder")
                     placeholderTextColor: "#4b5563"
-                    color: "#ffffff"
+                    color: "#dce8f5"
                     font.pixelSize: 13
                     leftPadding: 12
                     verticalAlignment: TextInput.AlignVCenter
                     background: Rectangle {
-                        color: "#0a0e17"
+                        color: "#0a0a0d"
                         radius: 6
                         border.color: kullaniciAdiKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                         border.width: 1
@@ -218,13 +250,13 @@ Rectangle {
                     placeholderText: "********"
                     placeholderTextColor: "#4b5563"
                     echoMode: sayfa.sifreGorunur ? TextInput.Normal : TextInput.Password
-                    color: "#ffffff"
+                    color: "#dce8f5"
                     font.pixelSize: 13
                     leftPadding: 12
                     rightPadding: 48
                     verticalAlignment: TextInput.AlignVCenter
                     background: Rectangle {
-                        color: "#0a0e17"
+                        color: "#0a0a0d"
                         radius: 6
                         border.color: sifreKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                         border.width: 1
@@ -238,11 +270,11 @@ Rectangle {
                         width: 28
                         height: 28
                         radius: 6
-                        color: sifreGosterMouse.pressed ? "#162033" : (sifreGosterMouse.containsMouse ? "#111827" : "transparent")
+                        color: sifreGosterMouse.pressed ? "#191921" : (sifreGosterMouse.containsMouse ? "#14141a" : "transparent")
                         border.color: sayfa.sifreGorunur ? "#334155" : "transparent"
                         border.width: 1
 
-                        property color ikonRengi: sifreGosterMouse.containsMouse || sayfa.sifreGorunur ? "#cbd5e1" : "#6b7280"
+                        property color ikonRengi: sifreGosterMouse.containsMouse || sayfa.sifreGorunur ? "#dce8f5" : "#6b7280"
 
                         Canvas {
                             id: sifreIkonu
@@ -327,6 +359,7 @@ Rectangle {
                 text: txt("girisYapButon")
                 font.family: "Segoe UI"
                 font.pixelSize: 14
+                font.letterSpacing: 0.5
                 font.bold: true
 
                 onClicked: {
@@ -341,13 +374,16 @@ Rectangle {
 
                 background: Rectangle {
                     radius: 8
-                    color: parent.pressed ? "#2563eb" : (parent.hovered ? "#4f8cf7" : "#3b82f6")
-                    Behavior on color { ColorAnimation { duration: 120 } }
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.0; color: parent.pressed ? "#1d4ed8" : (parent.hovered ? "#dce8f5" : "#3b82f6") }
+                        GradientStop { position: 1.0; color: parent.pressed ? "#1e3a8a" : (parent.hovered ? "#4f8cf7" : "#1d4ed8") }
+                    }
                 }
 
                 contentItem: Text {
                     text: parent.text
-                    color: "#ffffff"
+                    color: "#1e2a3f"
                     font: parent.font
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -357,7 +393,7 @@ Rectangle {
             Rectangle {
                 width: parent.width
                 height: 1
-                color: "#1e2a3f"
+                color: "#17263d"
             }
 
             Text {

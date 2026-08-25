@@ -4,7 +4,7 @@ import QtCharts 6.7
 import sliper
 
 Rectangle {
-    color: "#0a0e17"
+    color: "#0a0a0d"
 
     property int olcumId: -1
     property real hesaplananTau0: 0
@@ -165,27 +165,96 @@ Rectangle {
             id: ozetPaneli
             width: 280
             height: parent.height
-            color: "#0f1420"
+            color: "#12121a"
 
-            Text {
+            Rectangle {
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: 1
+                color: "#1e2a3f"
+            }
+
+            Column {
+                id: raporBasligi
                 anchors.top: parent.top
                 anchors.left: parent.left
+                anchors.right: parent.right
                 anchors.margins: 20
-                text: txt("sonucOzeti")
-                color: "#6b7280"
-                font.family: "Segoe UI"
-                font.pixelSize: 12
-                font.bold: true
-                font.letterSpacing: 1
+                spacing: 14
+
+                Text {
+                    text: txt("sonucOzeti")
+                    color: "#6b7280"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 10
+                    font.bold: true
+                    font.letterSpacing: 2
+                }
+
+                Row {
+                    width: parent.width
+                    spacing: 12
+
+                    Rectangle {
+                        width: 40
+                        height: 40
+                        radius: 8
+                        color: "#0a0a0d"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: musteriAdi.length > 0 ? musteriAdi.charAt(0).toUpperCase() : "—"
+                            color: "#3b82f6"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 16
+                            font.bold: true
+                        }
+                    }
+
+                    Column {
+                        width: parent.width - 52
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2
+
+                        Text {
+                            width: parent.width
+                            text: musteriAdi.length > 0 ? musteriAdi : "—"
+                            color: "#dce8f5"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 15
+                            font.bold: true
+                            elide: Text.ElideRight
+                        }
+
+                        Text {
+                            width: parent.width
+                            text: (receteAdi.length > 0 ? receteAdi : "—") + (olcumTarihi.length > 0 ? "  ·  " + olcumTarihi : "")
+                            color: "#6b7280"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 11
+                            elide: Text.ElideRight
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: "#1e2a3f"
+                }
             }
 
             Flickable {
-                anchors.top: parent.top
+                anchors.top: raporBasligi.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.margins: 20
-                anchors.topMargin: 60
+                anchors.topMargin: 16
                 contentWidth: width
                 contentHeight: sonucKartlari.height
                 clip: true
@@ -197,116 +266,116 @@ Rectangle {
 
                     Rectangle {
                         width: parent.width
-                        height: 70
                         radius: 10
-                        color: "#0a0e17"
-                        border.color: "#17263d"
+                        color: "#0a0a0d"
+                        border.color: "#1e2a3f"
                         border.width: 1
-                        clip: true
-
-                        Rectangle { width: 4; height: parent.height; color: "#3b82f6" }
+                        height: metrikSatirlari.height + 8
 
                         Column {
+                            id: metrikSatirlari
+                            anchors.top: parent.top
                             anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 20
-                            spacing: 2
+                            anchors.right: parent.right
+                            anchors.topMargin: 4
 
-                            Text {
-                                text: txt("akmaGerilmesi")
-                                color: "#6b7280"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 10
-                                font.letterSpacing: 1
+                            Item {
+                                width: parent.width
+                                height: 52
+                                Rectangle { width: 4; height: parent.height; anchors.verticalCenter: parent.verticalCenter; color: "#3b82f6" }
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 16
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 76
+                                    text: txt("akmaGerilmesi")
+                                    color: "#9ca3af"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 11
+                                    elide: Text.ElideRight
+                                }
+                                Text {
+                                    id: tau0Metni
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 16
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "—"
+                                    color: "#dce8f5"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 17
+                                    font.bold: true
+                                }
                             }
 
-                            Text {
-                                id: tau0Metni
-                                text: "—"
-                                color: "#3b82f6"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 20
-                                font.bold: true
+                            Rectangle { width: parent.width; height: 1; color: "#1e1e18" }
+
+                            Item {
+                                width: parent.width
+                                height: 52
+                                Rectangle { width: 4; height: parent.height; anchors.verticalCenter: parent.verticalCenter; color: "#9333ea" }
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 16
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 76
+                                    text: txt("plastikViskozite")
+                                    color: "#9ca3af"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 11
+                                    elide: Text.ElideRight
+                                }
+                                Text {
+                                    id: muMetni
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 16
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "—"
+                                    color: "#dce8f5"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 17
+                                    font.bold: true
+                                }
+                            }
+
+                            Rectangle { width: parent.width; height: 1; color: "#1e1e18" }
+
+                            Item {
+                                width: parent.width
+                                height: 52
+                                Rectangle { width: 4; height: parent.height; anchors.verticalCenter: parent.verticalCenter; color: "#16a34a" }
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 16
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 76
+                                    text: txt("uyumKalitesi")
+                                    color: "#9ca3af"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 11
+                                    elide: Text.ElideRight
+                                }
+                                Text {
+                                    id: r2Metni
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 16
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "—"
+                                    color: "#dce8f5"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 17
+                                    font.bold: true
+                                }
                             }
                         }
                     }
 
                     Rectangle {
                         width: parent.width
-                        height: 70
                         radius: 10
-                        color: "#0a0e17"
-                        border.color: "#241a38"
-                        border.width: 1
-                        clip: true
-
-                        Rectangle { width: 4; height: parent.height; color: "#9333ea" }
-
-                        Column {
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 20
-                            spacing: 2
-
-                            Text {
-                                text: txt("plastikViskozite")
-                                color: "#6b7280"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 10
-                                font.letterSpacing: 1
-                            }
-
-                            Text {
-                                id: muMetni
-                                text: "—"
-                                color: "#9333ea"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 20
-                                font.bold: true
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: 70
-                        radius: 10
-                        color: "#0a0e17"
-                        border.color: "#163321"
-                        border.width: 1
-                        clip: true
-
-                        Rectangle { width: 4; height: parent.height; color: "#16a34a" }
-
-                        Column {
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 20
-                            spacing: 2
-
-                            Text {
-                                text: txt("uyumKalitesi")
-                                color: "#6b7280"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 10
-                                font.letterSpacing: 1
-                            }
-
-                            Text {
-                                id: r2Metni
-                                text: "—"
-                                color: "#16a34a"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 20
-                                font.bold: true
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        radius: 10
-                        color: "#0a0e17"
+                        color: "#0a0a0d"
                         border.color: "#1e2a3f"
                         border.width: 1
                         height: tahminIcerik.implicitHeight + 24
@@ -333,14 +402,14 @@ Rectangle {
                                 height: 34
                                 placeholderText: txt("hedefBoruCapi")
                                 placeholderTextColor: "#4b5563"
-                                color: "#ffffff"
+                                color: "#dce8f5"
                                 font.pixelSize: 12
                                 leftPadding: 10
                                 text: "125"
                                 verticalAlignment: TextInput.AlignVCenter
                                 validator: DoubleValidator { bottom: 10; top: 500; decimals: 0 }
                                 background: Rectangle {
-                                    color: "#060d17"
+                                    color: "#07070a"
                                     radius: 6
                                     border.color: capKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                                     border.width: 1
@@ -353,13 +422,13 @@ Rectangle {
                                 height: 34
                                 placeholderText: txt("boruUzunlugu")
                                 placeholderTextColor: "#4b5563"
-                                color: "#ffffff"
+                                color: "#dce8f5"
                                 font.pixelSize: 12
                                 leftPadding: 10
                                 verticalAlignment: TextInput.AlignVCenter
                                 validator: DoubleValidator { bottom: 0; top: 2000; decimals: 0 }
                                 background: Rectangle {
-                                    color: "#060d17"
+                                    color: "#07070a"
                                     radius: 6
                                     border.color: uzunlukKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                                     border.width: 1
@@ -372,13 +441,13 @@ Rectangle {
                                 height: 34
                                 placeholderText: txt("hedefDebi")
                                 placeholderTextColor: "#4b5563"
-                                color: "#ffffff"
+                                color: "#dce8f5"
                                 font.pixelSize: 12
                                 leftPadding: 10
                                 verticalAlignment: TextInput.AlignVCenter
                                 validator: DoubleValidator { bottom: 0; top: 200; decimals: 1 }
                                 background: Rectangle {
-                                    color: "#060d17"
+                                    color: "#07070a"
                                     radius: 6
                                     border.color: debiKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
                                     border.width: 1
@@ -405,7 +474,7 @@ Rectangle {
                                     currentIndex: 1
 
                                     background: Rectangle {
-                                        color: "#060d17"
+                                        color: "#07070a"
                                         radius: 6
                                         border.color: hataPayiSecici.activeFocus ? "#3b82f6" : "#1e2a3f"
                                         border.width: 1
@@ -435,7 +504,7 @@ Rectangle {
                                         padding: 1
 
                                         background: Rectangle {
-                                            color: "#0a0e17"
+                                            color: "#0a0a0d"
                                             radius: 6
                                             border.color: "#1e2a3f"
                                             border.width: 1
@@ -456,7 +525,7 @@ Rectangle {
                                         highlighted: hataPayiSecici.highlightedIndex === index
 
                                         background: Rectangle {
-                                            color: hataPayiDelege.highlighted ? "#182644" : "#0a0e17"
+                                            color: hataPayiDelege.highlighted ? "#17263d" : "#0a0a0d"
                                         }
 
                                         contentItem: Text {
@@ -494,7 +563,7 @@ Rectangle {
 
                                 contentItem: Text {
                                     text: parent.text
-                                    color: "#ffffff"
+                                    color: "#dce8f5"
                                     font: parent.font
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
@@ -544,7 +613,7 @@ Rectangle {
                                 id: tahminSonucu
                                 width: parent.width
                                 text: "—"
-                                color: "#e8a020"
+                                color: "#4f8cf7"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 18
                                 font.bold: true
@@ -568,72 +637,91 @@ Rectangle {
                     Rectangle {
                         id: durumKutusu
                         width: parent.width
-                        height: durumIcerik.implicitHeight + 24
+                        height: durumIcerik.implicitHeight + 28
                         radius: 10
-                        color: durumIyiMi ? "#0f2417" : "#2a1414"
-                        border.color: durumIyiMi ? "#16a34a" : "#dc2626"
+                        color: "#0a0a0d"
+                        border.color: "#1e2a3f"
                         border.width: 1
+                        clip: true
 
                         property bool durumIyiMi: true
                         property bool tau0Yuksek: false
                         property bool muYuksek: false
+                        property color vurguRengi: durumIyiMi ? "#16a34a" : "#dc2626"
 
-                        Column {
+                        Rectangle { width: 4; height: parent.height; color: durumKutusu.vurguRengi }
+
+                        Item {
                             id: durumIcerik
-                            anchors.top: parent.top
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.topMargin: 12
-                            spacing: 8
-                            width: parent.width - 24
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.leftMargin: 18
+                            width: parent.width - 36
+                            implicitHeight: durumMetinSutunu.implicitHeight
 
-                            Row {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                spacing: 10
+                            Rectangle {
+                                id: durumRozeti
+                                width: 34
+                                height: 34
+                                radius: 17
+                                anchors.verticalCenter: parent.verticalCenter
+                                color: "transparent"
+                                border.color: durumKutusu.vurguRengi
+                                border.width: 1.5
 
                                 Rectangle {
+                                    anchors.centerIn: parent
                                     width: 24
                                     height: 24
                                     radius: 12
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    color: durumKutusu.durumIyiMi ? "#16a34a" : "#dc2626"
-
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: durumKutusu.durumIyiMi ? "✓" : "✗"
-                                        color: "#ffffff"
-                                        font.pixelSize: 13
-                                        font.bold: true
-                                    }
+                                    color: durumKutusu.vurguRengi
+                                    opacity: 0.16
                                 }
 
                                 Text {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    text: durumKutusu.durumIyiMi ? txt("pompalanabilir") : txt("pompalamaSorunu")
-                                    color: durumKutusu.durumIyiMi ? "#4ade80" : "#f87171"
-                                    font.family: "Segoe UI"
+                                    anchors.centerIn: parent
+                                    text: durumKutusu.durumIyiMi ? "✓" : "!"
+                                    color: durumKutusu.vurguRengi
                                     font.pixelSize: 15
                                     font.bold: true
                                 }
                             }
 
-                            Text {
-                                width: parent.width
-                                horizontalAlignment: Text.AlignHCenter
-                                visible: !durumKutusu.durumIyiMi
-                                text: {
-                                    if (durumKutusu.tau0Yuksek && durumKutusu.muYuksek) {
-                                        return txt("durumHerIkisiYuksek")
-                                    } else if (durumKutusu.tau0Yuksek) {
-                                        return txt("durumTau0Yuksek")
-                                    } else if (durumKutusu.muYuksek) {
-                                        return txt("durumMuYuksek")
-                                    }
-                                    return txt("durumYetersizVeri")
+                            Column {
+                                id: durumMetinSutunu
+                                anchors.left: durumRozeti.right
+                                anchors.leftMargin: 14
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 4
+
+                                Text {
+                                    text: durumKutusu.durumIyiMi ? txt("pompalanabilir") : txt("pompalamaSorunu")
+                                    color: durumKutusu.vurguRengi
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    font.letterSpacing: 1
                                 }
-                                color: "#9ca3af"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 11
-                                wrapMode: Text.WordWrap
+
+                                Text {
+                                    width: parent.width
+                                    visible: !durumKutusu.durumIyiMi
+                                    text: {
+                                        if (durumKutusu.tau0Yuksek && durumKutusu.muYuksek) {
+                                            return txt("durumHerIkisiYuksek")
+                                        } else if (durumKutusu.tau0Yuksek) {
+                                            return txt("durumTau0Yuksek")
+                                        } else if (durumKutusu.muYuksek) {
+                                            return txt("durumMuYuksek")
+                                        }
+                                        return txt("durumYetersizVeri")
+                                    }
+                                    color: "#6b7280"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 11
+                                    wrapMode: Text.WordWrap
+                                }
                             }
                         }
                     }
@@ -666,7 +754,7 @@ Rectangle {
 
                         contentItem: Text {
                             text: parent.text
-                            color: "#ffffff"
+                            color: "#dce8f5"
                             font: parent.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -694,7 +782,7 @@ Rectangle {
 
                         contentItem: Text {
                             text: parent.text
-                            color: "#ffffff"
+                            color: "#dce8f5"
                             font: parent.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -726,7 +814,7 @@ Rectangle {
 
                         contentItem: Text {
                             text: parent.text
-                            color: "#ffffff"
+                            color: "#dce8f5"
                             font: parent.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -754,7 +842,7 @@ Rectangle {
                     Rectangle {
                         width: parent.width
                         radius: 10
-                        color: "#0a0e17"
+                        color: "#0a0a0d"
                         border.color: "#1e2a3f"
                         border.width: 1
                         height: playbackIcerik.implicitHeight + 24
@@ -817,7 +905,7 @@ Rectangle {
 
                                     contentItem: Text {
                                         text: parent.text
-                                        color: "#ffffff"
+                                        color: "#dce8f5"
                                         font: parent.font
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
@@ -837,14 +925,14 @@ Rectangle {
 
                                         background: Rectangle {
                                             radius: 6
-                                            color: playbackHizi === modelData ? "#3b82f6" : "#0f1420"
+                                            color: playbackHizi === modelData ? "#3b82f6" : "#12121a"
                                             border.color: "#1e2a3f"
                                             border.width: 1
                                         }
 
                                         contentItem: Text {
                                             text: parent.text
-                                            color: playbackHizi === modelData ? "#ffffff" : "#9ca3af"
+                                            color: playbackHizi === modelData ? "#dce8f5" : "#9ca3af"
                                             font: parent.font
                                             horizontalAlignment: Text.AlignHCenter
                                             verticalAlignment: Text.AlignVCenter
@@ -862,7 +950,7 @@ Rectangle {
             id: panelAyraci
             width: 3
             height: parent.height
-            color: "#05070b"
+            color: "#060607"
 
             Rectangle {
                 anchors.right: parent.right
@@ -885,7 +973,7 @@ Rectangle {
                 anchors.margins: 16
                 height: parent.height * 0.55
                 radius: 10
-                color: "#0f1420"
+                color: "#12121a"
                 border.color: "#1e2a3f"
                 border.width: 1
 
@@ -940,7 +1028,7 @@ Rectangle {
                             Rectangle {
                                 width: 12
                                 height: 2
-                                color: "#e8a020"
+                                color: "#4f8cf7"
                                 anchors.verticalCenter: parent.verticalCenter
                             }
 
@@ -961,7 +1049,7 @@ Rectangle {
                                 width: 8
                                 height: 8
                                 radius: 4
-                                color: "#e8a020"
+                                color: "#4f8cf7"
                                 anchors.verticalCenter: parent.verticalCenter
                             }
 
@@ -992,7 +1080,7 @@ Rectangle {
                         min: 0
                         max: 20
                         titleText: Translations.turkish ? "Debi (Q) m³/h" : "Flow Rate (Q) m³/h"
-                        gridLineColor: "#182131"
+                        gridLineColor: "#1a1a20"
                         labelsColor: "#4b5563"
                         labelsFont.pixelSize: 9
                         lineVisible: false
@@ -1004,7 +1092,7 @@ Rectangle {
                         min: 0
                         max: 100
                         titleText: Translations.turkish ? "Basınç (P) mbar" : "Pressure (P) mbar"
-                        gridLineColor: "#182131"
+                        gridLineColor: "#1a1a20"
                         labelsColor: "#4b5563"
                         labelsFont.pixelSize: 9
                         lineVisible: false
@@ -1023,7 +1111,7 @@ Rectangle {
                         id: regresyonCizgisi
                         axisX: qEkseni
                         axisY: pEkseni
-                        color: "#e8a020"
+                        color: "#4f8cf7"
                         width: 2
                     }
 
@@ -1031,7 +1119,7 @@ Rectangle {
                         id: oynatmaSerisi
                         axisX: qEkseni
                         axisY: pEkseni
-                        color: "#e8a020"
+                        color: "#4f8cf7"
                         markerSize: 16
                     }
                 }
@@ -1045,7 +1133,7 @@ Rectangle {
                 anchors.margins: 16
                 anchors.topMargin: 8
                 radius: 10
-                color: "#0f1420"
+                color: "#12121a"
                 border.color: "#1e2a3f"
                 border.width: 1
 
@@ -1103,7 +1191,7 @@ Rectangle {
                         width: parent.width
                         height: 32
                         radius: 6
-                        color: index === playbackAdimi ? "#1e2a3f" : (index % 2 === 0 ? "transparent" : "#0a0e17")
+                        color: index === playbackAdimi ? "#1e2a3f" : (index % 2 === 0 ? "transparent" : "#0a0a0d")
 
                         Row {
                             anchors.fill: parent
@@ -1171,7 +1259,7 @@ Rectangle {
             id: bildirimMetni
             anchors.centerIn: parent
             text: ""
-            color: "#ffffff"
+            color: "#dce8f5"
             font.family: "Segoe UI"
             font.pixelSize: 13
             font.bold: true
@@ -1197,7 +1285,7 @@ Rectangle {
         property string onizlemeHtml: ""
 
         background: Rectangle {
-            color: "#0f1420"
+            color: "#12121a"
             radius: 12
             border.color: "#1e2a3f"
             border.width: 1
@@ -1214,7 +1302,7 @@ Rectangle {
             Rectangle {
                 width: parent.width
                 height: 52
-                color: "#0a0e17"
+                color: "#0a0a0d"
 
                 Text {
                     anchors.left: parent.left
@@ -1231,7 +1319,7 @@ Rectangle {
             Rectangle {
                 width: parent.width
                 height: pdfOnizlemePopup.height - 52 - 64
-                color: "#f3f4f6"
+                color: "#efe9da"
 
                 Flickable {
                     anchors.fill: parent
@@ -1249,7 +1337,7 @@ Rectangle {
                         textFormat: TextEdit.RichText
                         wrapMode: Text.WordWrap
                         text: pdfOnizlemePopup.onizlemeHtml
-                        color: "#111827"
+                        color: "#14141a"
                         font.pixelSize: 13
                     }
                 }
@@ -1258,7 +1346,7 @@ Rectangle {
             Rectangle {
                 width: parent.width
                 height: 64
-                color: "#0a0e17"
+                color: "#0a0a0d"
 
                 Row {
                     anchors.centerIn: parent
@@ -1296,7 +1384,7 @@ Rectangle {
 
                         contentItem: Text {
                             text: parent.text
-                            color: "#ffffff"
+                            color: "#dce8f5"
                             font: parent.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -1345,7 +1433,7 @@ Rectangle {
         property var satirlar: []
 
         background: Rectangle {
-            color: "#0f1420"
+            color: "#12121a"
             radius: 12
             border.color: "#1e2a3f"
             border.width: 1
@@ -1362,7 +1450,7 @@ Rectangle {
             Rectangle {
                 width: parent.width
                 height: 52
-                color: "#0a0e17"
+                color: "#0a0a0d"
 
                 Text {
                     anchors.left: parent.left
@@ -1399,7 +1487,7 @@ Rectangle {
             Rectangle {
                 width: parent.width
                 height: csvOnizlemePopup.height - 52 - 130 - 64
-                color: "#0a0e17"
+                color: "#0a0a0d"
                 border.color: "#1e2a3f"
                 border.width: 1
 
@@ -1431,7 +1519,7 @@ Rectangle {
                     delegate: Rectangle {
                         width: ListView.view.width
                         height: 26
-                        color: index % 2 === 0 ? "transparent" : "#0f1420"
+                        color: index % 2 === 0 ? "transparent" : "#12121a"
 
                         Row {
                             anchors.fill: parent
@@ -1449,7 +1537,7 @@ Rectangle {
             Rectangle {
                 width: parent.width
                 height: 64
-                color: "#0a0e17"
+                color: "#0a0a0d"
 
                 Row {
                     anchors.centerIn: parent
@@ -1480,7 +1568,7 @@ Rectangle {
 
                         contentItem: Text {
                             text: parent.text
-                            color: "#ffffff"
+                            color: "#dce8f5"
                             font: parent.font
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
