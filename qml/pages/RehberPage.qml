@@ -4,7 +4,7 @@ import QtQuick.Layouts 6.7
 import sliper
 
 Rectangle {
-    color: "#0a0a0d"
+    color: "#0a0e17"
 
     readonly property var metinler: ({
         baslik: { tr: "REHBER — SLIPER Nasıl Kullanılır", en: "GUIDE — How to Use SLIPER" },
@@ -273,7 +273,7 @@ Rectangle {
             width: 280
             height: 300
             radius: 12
-            color: "#12121a"
+            color: "#0f1420"
             border.color: konuKarti.hovered ? modelData.renk : "#1e2a3f"
             border.width: 1
             property bool hovered: false
@@ -412,91 +412,83 @@ Rectangle {
         }
 
         // SAYFA 1: konu detayı
-        ColumnLayout {
-            spacing: 14
+        ScrollView {
+            id: detayScroll
+            clip: true
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-            Row {
-                Layout.leftMargin: 20
-                Layout.rightMargin: 20
-                Layout.topMargin: 20
-                spacing: 12
+            Column {
+                width: detayScroll.availableWidth - 40
+                x: 20
+                spacing: 18
+                topPadding: 20
+                bottomPadding: 24
 
-                Button {
-                    text: txt("geriButon")
-                    font.pixelSize: 13
+                Row {
+                    spacing: 12
 
-                    background: Rectangle {
-                        radius: 6
-                        color: parent.hovered ? "#1e2a3f" : "#12121a"
-                        border.color: "#1e2a3f"
-                        border.width: 1
-                        Behavior on color { ColorAnimation { duration: 120 } }
+                    Button {
+                        text: txt("geriButon")
+                        font.pixelSize: 13
+
+                        background: Rectangle {
+                            radius: 6
+                            color: parent.hovered ? "#1e2a3f" : "#0f1420"
+                            border.color: "#1e2a3f"
+                            border.width: 1
+                            Behavior on color { ColorAnimation { duration: 120 } }
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#dce8f5"
+                            font: parent.font
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            leftPadding: 10
+                            rightPadding: 10
+                        }
+
+                        onClicked: seciliKonu = -1
                     }
 
-                    contentItem: Text {
-                        text: parent.text
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 8
+                        height: 8
+                        radius: 4
+                        color: seciliKonu >= 0 ? bolumler[seciliKonu].renk : "#6b7280"
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: seciliKonu >= 0 ? (Translations.turkish ? bolumler[seciliKonu].baslikTr : bolumler[seciliKonu].baslikEn) : ""
                         color: "#dce8f5"
-                        font: parent.font
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        leftPadding: 10
-                        rightPadding: 10
+                        font.family: "Segoe UI"
+                        font.pixelSize: 16
+                        font.bold: true
                     }
-
-                    onClicked: seciliKonu = -1
-                }
-
-                Rectangle {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 8
-                    height: 8
-                    radius: 4
-                    color: seciliKonu >= 0 ? bolumler[seciliKonu].renk : "#6b7280"
                 }
 
                 Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: seciliKonu >= 0 ? (Translations.turkish ? bolumler[seciliKonu].baslikTr : bolumler[seciliKonu].baslikEn) : ""
-                    color: "#dce8f5"
+                    visible: seciliKonu >= 0
+                    width: parent.width
+                    text: seciliKonu >= 0 ? (Translations.turkish ? bolumler[seciliKonu].ozetTr : bolumler[seciliKonu].ozetEn) : ""
+                    color: "#9ca3af"
                     font.family: "Segoe UI"
-                    font.pixelSize: 16
-                    font.bold: true
+                    font.pixelSize: 13
+                    wrapMode: Text.WordWrap
                 }
-            }
 
-            Text {
-                visible: seciliKonu >= 0
-                Layout.leftMargin: 20
-                Layout.rightMargin: 20
-                Layout.fillWidth: true
-                text: seciliKonu >= 0 ? (Translations.turkish ? bolumler[seciliKonu].ozetTr : bolumler[seciliKonu].ozetEn) : ""
-                color: "#9ca3af"
-                font.family: "Segoe UI"
-                font.pixelSize: 13
-                wrapMode: Text.WordWrap
-            }
-
-            Rectangle {
-                Layout.leftMargin: 20
-                Layout.rightMargin: 20
-                Layout.fillWidth: true
-                height: 1
-                color: "#1e2a3f"
-            }
-
-            ScrollView {
-                id: detayScroll
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                clip: true
-                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: "#1e2a3f"
+                }
 
                 Column {
-                    width: detayScroll.availableWidth - 40
-                    x: 20
+                    width: parent.width
                     spacing: 26
-                    topPadding: 4
-                    bottomPadding: 24
 
                     Repeater {
                         model: seciliKonu >= 0 ? bolumler[seciliKonu].adimlar : []
@@ -571,7 +563,7 @@ Rectangle {
                                     anchors.fill: parent
                                     visible: mockupYukleyici.status !== Loader.Ready
                                     radius: 10
-                                    color: "#0a0a0d"
+                                    color: "#0a0e17"
                                     border.color: "#1e2a3f"
                                     border.width: 1
                                 }
