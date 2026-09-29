@@ -118,6 +118,11 @@
                     "access": "private",
                     "name": "hareketsizlikKontrolEt",
                     "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "veriAkisiniKontrolEt",
+                    "returnType": "void"
                 }
             ],
             "superClasses": [

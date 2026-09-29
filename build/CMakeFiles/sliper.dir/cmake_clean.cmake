@@ -66,6 +66,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/sliper.dir/src/ReportManager.cpp.obj.d"
   "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj"
   "CMakeFiles/sliper.dir/src/SensorManager.cpp.obj.d"
+  "CMakeFiles/sliper.dir/src/SliperModel.cpp.obj"
+  "CMakeFiles/sliper.dir/src/SliperModel.cpp.obj.d"
   "CMakeFiles/sliper.dir/src/VoiceCommandManager.cpp.obj"
   "CMakeFiles/sliper.dir/src/VoiceCommandManager.cpp.obj.d"
   "CMakeFiles/sliper.dir/src/VoiceRecognitionWorker.cpp.obj"

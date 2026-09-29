@@ -79,8 +79,8 @@ Rectangle {
             w: 460, h: 300,
             ogeler: [
                 { x: 8, y: 6, w: 150, h: 9, tip: "etiket", metin: "SONUÇ ÖZETİ" },
-                { x: 8, y: 18, w: 154, h: 34, tip: "kart", baslik: "AKMA GERİLMESİ (τ0)", altMetin: "—", renk: "#3b82f6" },
-                { x: 8, y: 56, w: 154, h: 34, tip: "kart", baslik: "PLASTİK VİSKOZİTE (μ)", altMetin: "—", renk: "#9333ea" },
+                { x: 8, y: 18, w: 154, h: 34, tip: "kart", baslik: "P–Q KESİŞİMİ (A)", altMetin: "—", renk: "#3b82f6" },
+                { x: 8, y: 56, w: 154, h: 34, tip: "kart", baslik: "P–Q EĞİMİ (B)", altMetin: "—", renk: "#9333ea" },
                 { x: 8, y: 94, w: 154, h: 34, tip: "kart", baslik: "UYUM KALİTESİ (R²)", altMetin: "—", renk: "#16a34a" },
                 { x: 8, y: 136, w: 150, h: 9, tip: "etiket", metin: "BORU HATTI TAHMİNİ" },
                 { x: 8, y: 148, w: 154, h: 16, tip: "alan", metin: "125" },

@@ -1,10 +1,12 @@
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/moc_Calculator.cpp: C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.h \
   C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/moc_predefs.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QDateTime \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QObject \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant \
   C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/QVector \
   C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/q20type_traits.h \
@@ -23,6 +25,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/qbytearrayalgorithms.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qbytearraylist.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qbytearrayview.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/qcalendar.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qchar.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qcompare.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qcompare_impl.h \
@@ -36,6 +39,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/qcontiguouscache.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qdarwinhelpers.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qdatastream.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/qdatetime.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qexceptionhandling.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qflags.h \
@@ -53,6 +57,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/qiterator.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qlatin1stringview.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qlist.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/qlocale.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qlogging.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qmalloc.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
@@ -114,6 +119,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/build/sliper_autogen/UVLADIE3JM/m
   C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h \
+  C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qversiontagging.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qxptype_traits.h \
   C:/Qt/6.7.3/mingw_64/include/QtCore/qyieldcpu.h \

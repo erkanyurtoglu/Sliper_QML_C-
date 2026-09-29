@@ -1,1227 +1,1178 @@
-﻿import QtQuick 6.7
+import QtQuick 6.7
 import QtQuick.Controls 6.7
+import QtQuick.Layouts 6.7
 import QtCharts 6.7
 import sliper
 
+// Orijinal SLIPER "View Results / Calculate Forecast" ekranlarının karşılığı:
+// Table of Strokes, p-Q Chart of Strokes, Calculation of the Forecast,
+// Forecast Chart ve her stroke'un basınç / mesafe-hız eğrileri.
 Rectangle {
+    id: kok
     color: "#0a0a0d"
 
     property int olcumId: -1
-    property real hesaplananTau0: 0
-    property real hesaplananMu: 0
+    property var bilgi: ({})
+    property var sonuc: ({ yeterliVeri: false, tau0: 0, mu: 0, r2: 0, n: 0, toplamStroke: 0, uyarilar: [] })
+    property var strokeListesi: []
+    property var tahminAyarlari: ({})
+    property var tahminSatirlari: []
+    property int seciliStrokeIndex: -1
+    property int aktifSekme: 0
     property int playbackAdimi: -1
-    property bool oynatiliyor: false
-    property int playbackHizi: 1
-    property string musteriAdi: ""
-    property string receteAdi: ""
-    property real agirlikDegeri: 0
-    property string olcumTarihi: ""
+
+    readonly property real hesaplananTau0: sonuc.tau0 || 0
+    readonly property real hesaplananMu: sonuc.mu || 0
 
     readonly property var metinler: ({
         sonucOzeti: { tr: "SONUÇ ÖZETİ", en: "RESULT SUMMARY" },
-        akmaGerilmesi: { tr: "AKMA GERİLMESİ (τ₀)", en: "YIELD STRESS (τ₀)" },
-        plastikViskozite: { tr: "PLASTİK VİSKOZİTE (μ)", en: "PLASTIC VISCOSITY (μ)" },
-        uyumKalitesi: { tr: "UYUM KALİTESİ (R²)", en: "FIT QUALITY (R²)" },
-        boruHattiTahmini: { tr: "BORU HATTI TAHMİNİ", en: "PIPELINE ESTIMATE" },
-        hedefBoruCapi: { tr: "Hedef Boru Çapı (mm)", en: "Target Pipe Diameter (mm)" },
-        boruUzunlugu: { tr: "Boru Uzunluğu (m) - karşılaştırma referansı", en: "Pipe Length (m) - comparison reference" },
-        hedefDebi: { tr: "Hedef Debi (m³/h)", en: "Target Flow Rate (m³/h)" },
-        hataPayi: { tr: "Hata Payı:", en: "Margin of Error:" },
-        tahminiHesapla: { tr: "Tahmini Hesapla", en: "Calculate Estimate" },
-        gecerliDegerGirin: { tr: "Geçerli değer girin", en: "Enter a valid value" },
-        hesaplanamadi: { tr: "Hesaplanamadı", en: "Could not calculate" },
+        duzenle: { tr: "✎ Düzenle", en: "✎ Edit" },
+        yer: { tr: "Yer", en: "Place" },
+        musteri: { tr: "Müşteri", en: "Customer" },
+        recete: { tr: "Reçete", en: "Formula" },
+        yorum: { tr: "Yorum", en: "Comment" },
+        kesisimA: { tr: "P–Q KESİŞİMİ (A)", en: "P–Q INTERCEPT (A)" },
+        egimB: { tr: "P–Q EĞİMİ (B)", en: "P–Q SLOPE (B)" },
+        yieldA: { tr: "a (Yield Pressure)", en: "a (Yield Pressure)" },
+        gradyanB: { tr: "b (Pressure Gradient ×1000)", en: "b (Pressure Gradient ×1000)" },
+        uyumKalitesi: { tr: "UYUM (R²)", en: "FIT (R²)" },
+        kullanilanStroke: { tr: "KULLANILAN STROKE", en: "STROKES USED" },
+        uyarilarBaslik: { tr: "ÖLÇÜM KALİTESİ UYARILARI", en: "MEASUREMENT QUALITY WARNINGS" },
+        uyari_azStroke: { tr: "Yeterli geçerli stroke yok (en az 3; her yük için 3 stroke önerilir).", en: "Not enough valid strokes (at least 3; 3 per load recommended)." },
+        uyari_egimNegatif: { tr: "Eğim (B) negatif: debi arttıkça basınç düşüyor. Ayrışma/blokaj veya ölçüm hatası olabilir.", en: "Slope (B) is negative: pressure drops as flow rises. Possible segregation/blockage or measurement error." },
+        uyari_kesisimNegatif: { tr: "Kesişim (A) negatif: durağan basınç (P0) hatalı ölçülmüş olabilir.", en: "Intercept (A) is negative: static pressure (P0) may be wrong." },
+        uyari_dusukR2: { tr: "Uyum kalitesi düşük (R² < 0.90): noktalar doğrudan çok sapıyor.", en: "Low fit quality (R² < 0.90): points scatter strongly around the line." },
+        uyari_darDebiAraligi: { tr: "Debi aralığı dar: farklı ağırlıklarla stroke atın, aksi halde eğim güvenilir değil.", en: "Flow range too narrow: use different weights, otherwise the slope is unreliable." },
+        uyari_yukBasinaAzStroke: { tr: "Bazı yüklerde 3'ten az geçerli stroke var; kılavuz her yük için en az 3 stroke önerir.", en: "Some loads have fewer than 3 valid strokes; the manual recommends at least 3 strokes per load." },
+        uyari_tekYuk: { tr: "Tüm stroke'lar aynı ağırlıkla atılmış: en az iki farklı yük kullanın.", en: "All strokes used the same weight: use at least two different loads." },
+        uyari_cokGecersiz: { tr: "Stroke'ların %30'undan fazlası hatalı: boru sıkışması veya ayrışma belirtisi olabilir.", en: "More than 30% of strokes are invalid: possible pipe jamming or segregation." },
+        tahminAyarlari: { tr: "TAHMİN AYARLARI", en: "FORECAST PREFERENCES" },
+        q1: { tr: "Q1 (m³/h)", en: "Q1 (m³/h)" },
+        q2: { tr: "Q2 (m³/h)", en: "Q2 (m³/h)" },
+        cap: { tr: "Boru çapı D (mm)", en: "Pipe diameter D (mm)" },
+        l2: { tr: "L2 (m)", en: "L2 (m)" },
+        l3: { tr: "L3 (m)", en: "L3 (m)" },
+        l4: { tr: "L4 (m)", en: "L4 (m)" },
+        yukseklik: { tr: "Pompalama yüks. h (m)", en: "Pumping head h (m)" },
+        yogunluk: { tr: "Yoğunluk ρ (kg/m³)", en: "Density ρ (kg/m³)" },
+        hataPayi: { tr: "Hata payı (%)", en: "Error bar tol. (%)" },
+        pompaMaks: { tr: "Pompa maks. (bar)", en: "Pump max. (bar)" },
+        pompaIpucu: { tr: "tipik 85–130, yüksek basınç 200–250. h negatif = aşağı pompalama.", en: "typical 85–130, high pressure 200–250. Negative h = pumping downward." },
+        hesaplaKaydet: { tr: "Tahmini Hesapla ve Kaydet", en: "Calculate and Save Forecast" },
+        gecersizGirdi: { tr: "Geçersiz değer: tüm alanlar sayı olmalı, D > 0.", en: "Invalid value: all fields must be numbers, D > 0." },
+        kaydedildi: { tr: "✓ Tahmin ayarları kaydedildi", en: "✓ Forecast preferences saved" },
         pompalanabilir: { tr: "POMPALANABİLİR", en: "PUMPABLE" },
         pompalamaSorunu: { tr: "POMPALAMA SORUNU", en: "PUMPING ISSUE" },
-        durumHerIkisiYuksek: { tr: "Hem akma gerilmesi hem plastik viskozite yüksek. Su/çimento oranını artırın ve agrega gradasyonunu gözden geçirin.", en: "Both yield stress and plastic viscosity are high. Increase the water/cement ratio and review the aggregate gradation." },
-        durumTau0Yuksek: { tr: "Akma gerilmesi yüksek. Su/çimento oranını artırmayı veya süperakışkanlaştırıcı dozajını yükseltmeyi değerlendirin.", en: "Yield stress is high. Consider increasing the water/cement ratio or raising the superplasticizer dosage." },
-        durumMuYuksek: { tr: "Plastik viskozite yüksek. İnce agrega oranını azaltmayı veya su azaltıcı katkı eklemeyi değerlendirin.", en: "Plastic viscosity is high. Consider reducing the fine aggregate ratio or adding a water-reducing admixture." },
-        durumYetersizVeri: { tr: "Yeterli stroke verisi bulunamadı.", en: "Not enough stroke data found." },
+        degerlendirilmedi: { tr: "DEĞERLENDİRİLMEDİ", en: "NOT EVALUATED" },
+        durumYetersizVeri: { tr: "Yeterli stroke verisi yok.", en: "Not enough stroke data." },
+        durumPompaYok: { tr: "Pompalanabilirlik kararı için pompa maks. basıncını girip tahmini hesaplayın.", en: "Enter the pump max. pressure and calculate the forecast to evaluate pumpability." },
+        durumUygun: { tr: "Tüm durumlarda uygun. En yüksek tahmin %1 bar (Q = %2 m³/h, L = %3 m), pompa kapasitesi kullanımı %%4.", en: "Suitable in all cases. Highest estimate %1 bar (Q = %2 m³/h, L = %3 m), %4% of pump capacity." },
+        durumAkma: { tr: "%1 durumda kapasite aşılıyor (en yüksek %2 bar). Basıncın çoğu akma (A) teriminden geliyor: süperakışkanlaştırıcı veya ince malzeme/pasta miktarını artırmayı, daha kısa/geniş hattı değerlendirin.", en: "Capacity exceeded in %1 case(s) (highest %2 bar). Mostly from the yield (A) term: consider more superplasticizer or fines/paste, or a shorter/wider line." },
+        durumViskoz: { tr: "%1 durumda kapasite aşılıyor (en yüksek %2 bar). Basıncın çoğu viskoz (B) terimden geliyor: debiyi düşürmeyi, daha geniş boruyu veya daha düşük viskoziteli karışımı değerlendirin.", en: "Capacity exceeded in %1 case(s) (highest %2 bar). Mostly from the viscous (B) term: consider a lower flow rate, a wider pipe or a less viscous mix." },
+        durumYukseklik: { tr: "%1 durumda kapasite aşılıyor (en yüksek %2 bar). Basıncın çoğu pompalama yüksekliğinden (ρ·g·h) geliyor: daha yüksek basınçlı pompa gerekir.", en: "Capacity exceeded in %1 case(s) (highest %2 bar). Mostly from the pumping head (ρ·g·h): a higher-pressure pump is required." },
         pdfRaporOnizle: { tr: "📄  PDF Rapor Önizle", en: "📄  Preview PDF Report" },
         excelCsvOnizle: { tr: "📊  Excel (CSV) Önizle", en: "📊  Preview Excel (CSV)" },
         excelXmlDisaAktar: { tr: "📑  Excel (XML) Dışa Aktar", en: "📑  Export Excel (XML)" },
         disaAktarildi: { tr: "✓ Dışa aktarıldı: ", en: "✓ Exported: " },
         disaAktarilamadi: { tr: "✕ Dışa aktarılamadı", en: "✕ Export failed" },
-        oynatmaPlayback: { tr: "OYNATMA (PLAYBACK)", en: "PLAYBACK" },
-        strokeEtiket: { tr: "Stroke", en: "Stroke" },
-        oynatilacakStrokeYok: { tr: "Oynatilacak stroke yok", en: "No stroke to play back" },
-        pqDagilimGrafigi: { tr: "P-Q Dağılım Grafiği", en: "P-Q Distribution Chart" },
-        olcumNoktalari: { tr: "Ölçüm Noktaları", en: "Measurement Points" },
-        regresyonDogrusu: { tr: "Regresyon Doğrusu", en: "Regression Line" },
-        oynatmaEtiket: { tr: "Oynatma", en: "Playback" },
-        strokeTablosu: { tr: "Stroke Tablosu", en: "Stroke Table" },
-        strokeBaslik: { tr: "STROKE", en: "STROKE" },
-        durumBaslik: { tr: "DURUM", en: "STATUS" },
-        gecerliEtiket: { tr: "Geçerli", en: "Valid" },
-        hataliEtiket: { tr: "Hatalı", en: "Invalid" },
+        sekmePq: { tr: "P–Q Grafiği", en: "p–Q Chart" },
+        sekmeTablo: { tr: "Stroke Tablosu", en: "Table of Strokes" },
+        sekmeEgri: { tr: "Stroke Eğrileri", en: "Stroke Curves" },
+        sekmeTahminTablo: { tr: "Tahmin Tablosu", en: "Forecast Table" },
+        sekmeTahminGrafik: { tr: "Tahmin Grafiği", en: "Forecast Chart" },
+        dahilNokta: { tr: "Tahmine dahil", en: "In forecast" },
+        haricNokta: { tr: "Hariç / hatalı", en: "Excluded / wrong" },
+        regresyon: { tr: "Regresyon", en: "Regression" },
+        oynat: { tr: "▶ Oynat", en: "▶ Play" },
+        durdur: { tr: "⏸ Durdur", en: "⏸ Pause" },
+        tabloIpucu: { tr: "Kutucuk: stroke'u tahmine dahil et / çıkar. Satıra tıkla: seç, çift tıkla: eğrisini aç. Hatalı stroke'lar otomatik hariç tutulur.", en: "Checkbox: include / exclude the stroke from the forecast. Click a row to select, double-click to open its curve. Wrong strokes are excluded automatically." },
+        no: { tr: "No", en: "No" },
+        saat: { tr: "Saat", en: "Time" },
+        sure: { tr: "Süre s", en: "Dur. s" },
+        agirlik: { tr: "Ağırlık kg", en: "Weight kg" },
+        durum: { tr: "Durum", en: "Status" },
+        dahil: { tr: "Dahil", en: "Included" },
+        haric: { tr: "Hariç", en: "Excluded" },
+        hatali: { tr: "Wrong Stroke", en: "Wrong Stroke" },
+        strokeYok: { tr: "Bu ölçümde stroke yok", en: "No strokes in this measurement" },
+        strokeSilSoru: { tr: "Stroke %1 kalıcı olarak silinsin mi? Bu işlem geri alınamaz.", en: "Delete stroke %1 permanently? This cannot be undone." },
+        sil: { tr: "Sil", en: "Delete" },
+        vazgec: { tr: "Vazgeç", en: "Cancel" },
+        kaydet: { tr: "Kaydet", en: "Save" },
+        basincEgrisi: { tr: "Basınç Eğrisi", en: "Pressure Curve" },
+        konumHizEgrisi: { tr: "Mesafe ve Hız Eğrisi", en: "Distance and Speed Curve" },
+        hamVeriYok: { tr: "Bu stroke için ham eğri verisi yok (eski sürümle kaydedilmiş).", en: "No raw curve data for this stroke (saved with an older version)." },
+        zaman: { tr: "Zaman (s)", en: "Time (s)" },
+        basinc: { tr: "Basınç (mbar)", en: "Pressure (mbar)" },
+        mesafe: { tr: "Mesafe (mm)", en: "Distance (mm)" },
+        hiz: { tr: "Hız (m/s)", en: "Speed (m/s)" },
+        debi: { tr: "Debi Q (m³/h)", en: "Flow Q (m³/h)" },
+        uzunluk: { tr: "Uzunluk L (m)", en: "Length L (m)" },
+        basincBar: { tr: "P (bar)", en: "P (bar)" },
+        aralik: { tr: "Alt – Üst (bar)", en: "Lower – Upper (bar)" },
+        pompa: { tr: "Pompa", en: "Pump" },
+        uygun: { tr: "uygun", en: "ok" },
+        asildi: { tr: "aşıldı", en: "exceeded" },
+        tahminYok: { tr: "Tahmin için en az 2 geçerli stroke gerekir.", en: "At least 2 valid strokes are required for a forecast." },
+        modelNotu: { tr: "Model: P = 4L/D·a + 16·L·Q/(π·D³)·b + ρ·g·h   (a = d·A/4l, b = B·π·d³/16l;  d = %1 mm, l = %2 mm). Hata payı sürtünme kısmına uygulanır.", en: "Model: P = 4L/D·a + 16·L·Q/(π·D³)·b + ρ·g·h   (a = d·A/4l, b = B·π·d³/16l;  d = %1 mm, l = %2 mm). The error tolerance applies to the friction part." },
+        tahmin: { tr: "Tahmin", en: "Forecast" },
+        pompaCizgi: { tr: "Pompa maks.", en: "Pump max." },
+        olcumBilgisi: { tr: "Ölçüm Bilgileri", en: "Measurement Information" },
         pdfRaporOnizlemeBaslik: { tr: "PDF Rapor Önizleme", en: "PDF Report Preview" },
         indirPdf: { tr: "💾  İndir (PDF)", en: "💾  Download (PDF)" },
         pdfKaydedildi: { tr: "PDF kaydedildi: ", en: "PDF saved: " },
         pdfOlusturulamadi: { tr: "PDF oluşturulamadı.", en: "Could not generate PDF." },
         kapat: { tr: "Kapat", en: "Close" },
         excelCsvOnizlemeBaslik: { tr: "Excel (CSV) Önizleme", en: "Excel (CSV) Preview" },
-        olcumIdEtiket: { tr: "Ölçüm ID: ", en: "Measurement ID: " },
-        tarihEtiket: { tr: "Tarih: ", en: "Date: " },
-        musteriEtiket: { tr: "Müşteri: ", en: "Customer: " },
-        receteEtiket: { tr: "Reçete: ", en: "Recipe: " },
-        agirlikEtiket: { tr: "Ağırlık (kg): ", en: "Weight (kg): " },
-        basincBaslik: { tr: "BASINÇ (mbar)", en: "PRESSURE (mbar)" },
-        konumBaslik: { tr: "KONUM (mm)", en: "POSITION (mm)" },
-        debiBuyukBaslik: { tr: "DEBİ (m³/h)", en: "FLOW (m³/h)" },
-        gecerliBuyukBaslik: { tr: "GEÇERLİ", en: "VALID" },
-        evet: { tr: "Evet", en: "Yes" },
-        hayir: { tr: "Hayır", en: "No" },
         indirCsv: { tr: "💾  İndir (CSV)", en: "💾  Download (CSV)" },
         csvKaydedildi: { tr: "CSV kaydedildi: ", en: "CSV saved: " },
         csvOlusturulamadi: { tr: "CSV oluşturulamadı.", en: "Could not generate CSV." },
-        bilinmiyor: { tr: "Bilinmiyor", en: "Unknown" }
+        olcumSecilmedi: { tr: "Geçmiş sayfasından bir ölçüm seçin veya yeni bir ölçüm tamamlayın.", en: "Select a measurement from History or complete a new measurement." }
     })
 
     function txt(anahtar) {
         return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
     }
 
+    // Sayıyı virgülden sonra "basamak" haneyle yazar; değer yoksa "—"
+    function sayi(deger, basamak) {
+        return (deger === undefined || deger === null || isNaN(deger)) ? "—" : Number(deger).toFixed(basamak)
+    }
+
+    // Schleibinger dönüşümü: formül ve geometri C++ tarafındaki SliperModel.h'den gelir
+    function schleibingerA(kesisimA) { return calculator.schleibingerA(kesisimA) }
+    function schleibingerB(egimB) { return calculator.schleibingerB(egimB) }
+
     onOlcumIdChanged: verileriYukle()
+    Component.onCompleted: verileriYukle()
+    onVisibleChanged: if (visible) verileriYukle()
 
     function verileriYukle() {
+        playbackTimer.stop()
+        playbackAdimi = -1
         if (olcumId <= 0) {
+            bilgi = ({})
+            strokeListesi = []
+            tahminSatirlari = []
             return
         }
+        bilgi = database.olcumBilgisiGetir(olcumId)
+        sonuc = database.binghamHesapla(olcumId)
+        strokeListesi = database.strokeVerileriGetir(olcumId)
+        tahminAyarlari = database.tahminAyarlariGetir(olcumId)
+        ayarAlanlariniDoldur()
+        if (seciliStrokeIndex >= strokeListesi.length || seciliStrokeIndex < 0)
+            seciliStrokeIndex = strokeListesi.length > 0 ? 0 : -1
+        pqGrafiginiCiz()
+        tahminiGuncelle()
+        strokeEgrisiniCiz()
+    }
 
-        playbackAdimi = -1
-        oynatiliyor = false
-        playbackTimer.stop()
-
-        var bilgi = database.olcumBilgisiGetir(olcumId)
-        musteriAdi = bilgi.bulundu ? bilgi.musteri : txt("bilinmiyor")
-        receteAdi = bilgi.bulundu ? bilgi.recete : txt("bilinmiyor")
-        agirlikDegeri = bilgi.bulundu ? bilgi.agirlik : 0
-        olcumTarihi = bilgi.bulundu ? bilgi.tarih : ""
-
-        var sonuc = database.binghamHesapla(olcumId)
-
-        hesaplananTau0 = sonuc.tau0
-        hesaplananMu = sonuc.mu
-
-        tau0Metni.text = sonuc.tau0.toFixed(2) + " mbar"
-        muMetni.text = sonuc.mu.toFixed(2) + " mbar·h/m³"
-        r2Metni.text = sonuc.r2.toFixed(2)
-
-        durumKutusu.durumIyiMi = sonuc.yeterliVeri && sonuc.tau0 < 5 && sonuc.mu < 10
-        durumKutusu.tau0Yuksek = sonuc.tau0 >= 5
-        durumKutusu.muYuksek = sonuc.mu >= 10
-
-        pqSerisi.clear()
-        regresyonCizgisi.clear()
-        oynatmaSerisi.clear()
-        strokeModeli.clear()
-
-        var strokeListesi = database.strokeVerileriGetir(olcumId)
-        var pMaks = 0
-        var qMaks = 0
+    // --------------------------------------------------------------- P-Q grafiği
+    function pqGrafiginiCiz() {
+        pqDahil.clear()
+        pqHaric.clear()
+        pqDogru.clear()
+        oynatmaIsaretci.clear()
+        var enBuyukDebi = 5, enBuyukBasinc = 10, enKucukBasinc = 0
         for (var i = 0; i < strokeListesi.length; i++) {
-            var s = strokeListesi[i]
-            pqSerisi.append(s.debi, s.basinc)
-            strokeModeli.append({ stroke: s.stroke, p: s.basinc, q: s.debi, gecerli: s.gecerli })
-            if (s.basinc > pMaks) pMaks = s.basinc
-            if (s.debi > qMaks) qMaks = s.debi
+            var stroke = strokeListesi[i]
+            if (stroke.gecerli && stroke.secili) pqDahil.append(stroke.debi, stroke.basinc)
+            else pqHaric.append(stroke.debi, stroke.basinc)
+            enBuyukDebi = Math.max(enBuyukDebi, stroke.debi)
+            enBuyukBasinc = Math.max(enBuyukBasinc, stroke.basinc)
+            enKucukBasinc = Math.min(enKucukBasinc, stroke.basinc)
         }
+        if (sonuc.yeterliVeri) {
+            // p = A + B*Q çizgisi ("tau0" = A kesişim, "mu" = B eğim)
+            var kesisimA = sonuc.tau0, egimB = sonuc.mu
+            var cizgiSonuDebi = enBuyukDebi * 1.1
+            var cizgiSonuBasinc = kesisimA + egimB * cizgiSonuDebi
+            pqDogru.append(0, kesisimA)
+            pqDogru.append(cizgiSonuDebi, cizgiSonuBasinc)
+            enBuyukBasinc = Math.max(enBuyukBasinc, cizgiSonuBasinc)
+            enKucukBasinc = Math.min(enKucukBasinc, kesisimA)
+        }
+        pqQEkseni.max = Math.ceil(enBuyukDebi * 1.15)
+        pqPEkseni.min = Math.floor(enKucukBasinc * 1.1)
+        pqPEkseni.max = Math.ceil(enBuyukBasinc * 1.15)
+    }
 
-        // Eksenler gerçek ölçüm verisine göre ayarlanır; sabit aralık kullanılırsa
-        // basınç/debi bu aralığı aştığında noktalar (ve oynatma imleci) grafik
-        // dışına taşıp görünmez olur.
-        qMaks = Math.max(qMaks, 5)
-        regresyonCizgisi.append(0, sonuc.tau0)
-        regresyonCizgisi.append(qMaks, sonuc.tau0 + sonuc.mu * qMaks)
+    // --------------------------------------------------------------- Tahmin
+    function ayarAlanlariniDoldur() {
+        var ayar = tahminAyarlari
+        q1Alani.metin = ayar.q1; q2Alani.metin = ayar.q2; capAlani.metin = ayar.cap
+        l2Alani.metin = ayar.l2; l3Alani.metin = ayar.l3; l4Alani.metin = ayar.l4
+        yukseklikAlani.metin = ayar.yukseklik; yogunlukAlani.metin = ayar.yogunluk
+        hataAlani.metin = ayar.hataPayi
+        pompaAlani.metin = ayar.pompaMaks > 0 ? ayar.pompaMaks : ""
+        ayarBildirimi.text = ""
+    }
 
-        pMaks = Math.max(pMaks, sonuc.tau0 + sonuc.mu * qMaks, 10)
-        pEkseni.max = pMaks * 1.15
-        qEkseni.max = qMaks * 1.15
+    function ayarlariKaydet() {
+        var alanlar = { q1: q1Alani, q2: q2Alani, cap: capAlani, l2: l2Alani, l3: l3Alani, l4: l4Alani,
+                        yukseklik: yukseklikAlani, yogunluk: yogunlukAlani, hataPayi: hataAlani }
+        var yeni = {}
+        for (var anahtar in alanlar) {
+            var deger = parseFloat(String(alanlar[anahtar].metin).replace(",", "."))
+            if (isNaN(deger)) { ayarBildirimi.hata = true; ayarBildirimi.text = txt("gecersizGirdi"); return }
+            yeni[anahtar] = deger
+        }
+        var pompa = parseFloat(String(pompaAlani.metin).replace(",", "."))
+        yeni.pompaMaks = (isNaN(pompa) || pompa < 0) ? 0 : pompa
+        if (yeni.cap <= 0 || yeni.q1 < 0 || yeni.q2 < 0 || yeni.l2 < 0 || yeni.l3 < 0 || yeni.l4 < 0 || yeni.yogunluk < 0) {
+            ayarBildirimi.hata = true; ayarBildirimi.text = txt("gecersizGirdi"); return
+        }
+        yeni.hataPayi = Math.max(0, Math.min(100, yeni.hataPayi))
+        if (database.tahminAyarlariKaydet(olcumId, yeni)) {
+            tahminAyarlari = database.tahminAyarlariGetir(olcumId)
+            ayarBildirimi.hata = false
+            ayarBildirimi.text = txt("kaydedildi")
+            tahminiGuncelle()
+        }
+    }
+
+    function tahminiGuncelle() {
+        tahminSatirlari = sonuc.yeterliVeri
+            ? calculator.tahminTablosuHesapla(sonuc.tau0, sonuc.mu, tahminAyarlari) : []
+        tahminGrafiginiCiz()
+    }
+
+    function tahminGrafiginiCiz() {
+        var cizgiler = [tahminL2, tahminL3, tahminL4]
+        var cubuklar = [hc0, hc1, hc2, hc3, hc4, hc5]
+        for (var i = 0; i < cizgiler.length; i++) cizgiler[i].clear()
+        for (i = 0; i < cubuklar.length; i++) cubuklar[i].clear()
+        pompaCizgisi.clear()
+        if (!sonuc.yeterliVeri) return
+        var ayar = tahminAyarlari
+        var kesisimA = sonuc.tau0, egimB = sonuc.mu
+        function tahminEt(debi, hatUzunlugu) {
+            return calculator.boruHattiTahminHesapla(kesisimA, egimB, debi, ayar.cap, hatUzunlugu,
+                                                     ayar.yukseklik, ayar.yogunluk, ayar.hataPayi)
+        }
+        var grafikSonuDebi = Math.max(ayar.q1, ayar.q2, 1) * 1.1
+        var hatUzunluklari = [ayar.l2, ayar.l3, ayar.l4]
+        var debiler = [ayar.q1, ayar.q2]
+        var enBuyukBasinc = 1, enKucukBasinc = 0
+        for (i = 0; i < 3; i++) {
+            // Tahmin Q'ya göre düz çizgidir: iki uç nokta yeter
+            var sifirDebide = tahminEt(0, hatUzunluklari[i])
+            var grafikSonunda = tahminEt(grafikSonuDebi, hatUzunluklari[i])
+            cizgiler[i].append(0, sifirDebide.basincBar)
+            cizgiler[i].append(grafikSonuDebi, grafikSonunda.basincBar)
+            enBuyukBasinc = Math.max(enBuyukBasinc, grafikSonunda.ustSinirBar, sifirDebide.ustSinirBar)
+            enKucukBasinc = Math.min(enKucukBasinc, sifirDebide.altSinirBar, grafikSonunda.altSinirBar)
+            // Q1 ve Q2'de hata payı çubukları
+            for (var j = 0; j < 2; j++) {
+                var tahmin = tahminEt(debiler[j], hatUzunluklari[i])
+                if (ayar.hataPayi > 0) {
+                    cubuklar[i * 2 + j].append(debiler[j], tahmin.altSinirBar)
+                    cubuklar[i * 2 + j].append(debiler[j], tahmin.ustSinirBar)
+                }
+            }
+        }
+        if (ayar.pompaMaks > 0) {
+            pompaCizgisi.append(0, ayar.pompaMaks)
+            pompaCizgisi.append(grafikSonuDebi, ayar.pompaMaks)
+            enBuyukBasinc = Math.max(enBuyukBasinc, ayar.pompaMaks)
+        }
+        tgQEkseni.max = Math.ceil(grafikSonuDebi)
+        tgPEkseni.min = Math.floor(enKucukBasinc * 1.1)
+        tgPEkseni.max = Math.ceil(enBuyukBasinc * 1.1)
+    }
+
+    // Pompalanabilirlik: tablodaki en kötü durum (hata payı üst sınırı) pompa kapasitesiyle karşılaştırılır
+    readonly property var durumBilgisi: {
+        if (!sonuc.yeterliVeri) return { kod: "yetersiz" }
+        var pompa = tahminAyarlari.pompaMaks || 0
+        if (pompa <= 0 || tahminSatirlari.length === 0) return { kod: "yok" }
+        var enKotu = tahminSatirlari[0], asilan = 0
+        for (var i = 0; i < tahminSatirlari.length; i++) {
+            var satir = tahminSatirlari[i]
+            if (satir.ustSinirBar > enKotu.ustSinirBar) enKotu = satir
+            if (satir.pompaAsildi) asilan++
+        }
+        var baskin = "akma"
+        if (enKotu.viskozMbar > enKotu.akmaMbar && enKotu.viskozMbar >= enKotu.yukseklikMbar) baskin = "viskoz"
+        else if (enKotu.yukseklikMbar > enKotu.akmaMbar && enKotu.yukseklikMbar > enKotu.viskozMbar) baskin = "yukseklik"
+        return { kod: asilan === 0 ? "uygun" : "sorun", enKotu: enKotu, asilan: asilan, pompa: pompa, baskin: baskin }
+    }
+
+    // --------------------------------------------------------------- Stroke eğrisi
+    function strokeEgrisiniCiz() {
+        var seriler = [egriBasinc, egriP0l, egriP0r, egriPmaks, egriBaslangic, egriBitis, egriKonum, egriHiz, egriBaslangic2, egriBitis2]
+        for (var i = 0; i < seriler.length; i++) seriler[i].clear()
+        egriVeriYok.visible = false
+        if (seciliStrokeIndex < 0 || seciliStrokeIndex >= strokeListesi.length) return
+        var stroke = strokeListesi[seciliStrokeIndex]
+        var hamVeri = database.strokeHamVeriGetir(stroke.id)
+        if (!hamVeri.t || hamVeri.t.length < 2) { egriVeriYok.visible = true; return }
+        var zamanlar = hamVeri.t, konumlar = hamVeri.x, basinclar = hamVeri.p
+        var ornekSayisi = zamanlar.length
+        var sonZaman = zamanlar[ornekSayisi - 1]
+        var enKucukBasinc = 1e9, enBuyukBasinc = -1e9, enBuyukKonum = 10, enBuyukHiz = 0.1
+        for (i = 0; i < ornekSayisi; i++) {
+            egriBasinc.append(zamanlar[i], basinclar[i])
+            egriKonum.append(zamanlar[i], konumlar[i])
+            enKucukBasinc = Math.min(enKucukBasinc, basinclar[i])
+            enBuyukBasinc = Math.max(enBuyukBasinc, basinclar[i])
+            enBuyukKonum = Math.max(enBuyukKonum, konumlar[i])
+        }
+        // Hız eğrisi (orijinal "Speed"): hesap SliperModel bölüm 10'da.
+        // Yalnızca grafik içindir; stroke hızı ayrıca (bölüm 5) hesaplanır.
+        var konumYonu = hamVeri.yon || 1   // -1: konum "sensörden uzaklık"
+        var hizlar = calculator.hizEgrisiHesapla(zamanlar, konumlar, konumYonu)
+        for (i = 0; i < hizlar.length; i++) {
+            egriHiz.append(zamanlar[i], hizlar[i])
+            enBuyukHiz = Math.max(enBuyukHiz, hizlar[i])
+        }
+        egriP0l.append(0, stroke.p0l); egriP0l.append(hamVeri.tBaslangic, stroke.p0l)
+        egriP0r.append(hamVeri.tBitis, stroke.p0r); egriP0r.append(sonZaman, stroke.p0r)
+        egriPmaks.append(hamVeri.tBaslangic, stroke.pMaks); egriPmaks.append(hamVeri.tBitis, stroke.pMaks)
+        var basincAralik = enBuyukBasinc - enKucukBasinc
+        var basincEkseniAlt = Math.floor(enKucukBasinc - basincAralik * 0.1 - 1)
+        var basincEkseniUst = Math.ceil(enBuyukBasinc + basincAralik * 0.15 + 1)
+        egriBaslangic.append(hamVeri.tBaslangic, basincEkseniAlt); egriBaslangic.append(hamVeri.tBaslangic, basincEkseniUst)
+        egriBitis.append(hamVeri.tBitis, basincEkseniAlt); egriBitis.append(hamVeri.tBitis, basincEkseniUst)
+        egriBaslangic2.append(hamVeri.tBaslangic, 0); egriBaslangic2.append(hamVeri.tBaslangic, enBuyukKonum * 1.1)
+        egriBitis2.append(hamVeri.tBitis, 0); egriBitis2.append(hamVeri.tBitis, enBuyukKonum * 1.1)
+        egTEkseni.max = Math.ceil(sonZaman); egPEkseni.min = basincEkseniAlt; egPEkseni.max = basincEkseniUst
+        egT2Ekseni.max = Math.ceil(sonZaman); egXEkseni.max = Math.ceil(enBuyukKonum * 1.1 / 10) * 10
+        egVEkseni.max = Math.ceil(enBuyukHiz * 1.2 * 10) / 10
+    }
+
+    onSeciliStrokeIndexChanged: strokeEgrisiniCiz()
+
+    function strokeDahilDegistir(id, secili) {
+        database.strokeSeciliAyarla(id, secili)
+        verileriYukle()
     }
 
     Timer {
         id: playbackTimer
-        interval: 1000 / playbackHizi
+        interval: 1000
         repeat: true
-        running: false
-
         onTriggered: {
-            if (playbackAdimi < strokeModeli.count - 1) {
+            if (playbackAdimi < strokeListesi.length - 1) {
                 playbackAdimi++
-                var satir = strokeModeli.get(playbackAdimi)
-                oynatmaSerisi.clear()
-                oynatmaSerisi.append(satir.q, satir.p)
+                var s = strokeListesi[playbackAdimi]
+                oynatmaIsaretci.clear()
+                oynatmaIsaretci.append(s.debi, s.basinc)
             } else {
-                oynatiliyor = false
-                playbackTimer.stop()
+                stop()
             }
         }
     }
 
+    // --------------------------------------------------------------- Bileşenler
+    component Kart: Rectangle {
+        radius: 10
+        color: "#0a0a0d"
+        border.color: "#1e2a3f"
+        border.width: 1
+    }
+
+    component KartBaslik: Text {
+        color: "#6b7280"
+        font.family: "Segoe UI"
+        font.pixelSize: 10
+        font.bold: true
+        font.letterSpacing: 1
+    }
+
+    component Girdi: Column {
+        id: girdiKoku
+        property string etiket: ""
+        property alias metin: alan.text
+        property string ipucu: ""
+        spacing: 2
+        Text { text: girdiKoku.etiket; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 10 }
+        TextField {
+            id: alan
+            width: girdiKoku.width
+            height: 28
+            color: "#dce8f5"
+            font.pixelSize: 12
+            leftPadding: 8
+            placeholderText: girdiKoku.ipucu
+            placeholderTextColor: "#4b5563"
+            verticalAlignment: TextInput.AlignVCenter
+            selectByMouse: true
+            background: Rectangle {
+                color: "#07070a"
+                radius: 5
+                border.color: alan.activeFocus ? "#3b82f6" : "#1e2a3f"
+                border.width: 1
+            }
+        }
+    }
+
+    component Dugme: Button {
+        id: dugmeKoku
+        property color renk: "#3b82f6"
+        height: 36
+        font.pixelSize: 12
+        font.bold: true
+        background: Rectangle {
+            radius: 8
+            color: dugmeKoku.enabled ? (dugmeKoku.hovered ? Qt.lighter(dugmeKoku.renk, 1.15) : dugmeKoku.renk) : "#1e2a3f"
+            Behavior on color { ColorAnimation { duration: 120 } }
+        }
+        contentItem: Text {
+            text: dugmeKoku.text
+            color: dugmeKoku.enabled ? "#dce8f5" : "#6b7280"
+            font: dugmeKoku.font
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
+    }
+
+    component DegerSatiri: Item {
+        id: satirKoku
+        property string etiket: ""
+        property string deger: "—"
+        property color cizgi: "#3b82f6"
+        height: 34
+        Rectangle { width: 3; height: satirKoku.height - 8; anchors.verticalCenter: parent.verticalCenter; color: satirKoku.cizgi; radius: 2 }
+        Text { anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter; text: satirKoku.etiket; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 10 }
+        Text { anchors.right: parent.right; anchors.rightMargin: 4; anchors.verticalCenter: parent.verticalCenter; text: satirKoku.deger; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 14; font.bold: true }
+    }
+
+    component Hucre: Text {
+        color: "#dce8f5"
+        font.family: "Segoe UI"
+        font.pixelSize: 12
+        elide: Text.ElideRight
+        verticalAlignment: Text.AlignVCenter
+    }
+
+    component BaslikHucre: Text {
+        color: "#6b7280"
+        font.family: "Segoe UI"
+        font.pixelSize: 10
+        font.bold: true
+        font.letterSpacing: 0.5
+        elide: Text.ElideRight
+    }
+
+    component Eksen: ValueAxis {
+        gridLineColor: "#1a1a20"
+        labelsColor: "#6b7280"
+        labelsFont.pixelSize: 9
+        titleFont.pixelSize: 10
+        lineVisible: false
+        minorGridVisible: false
+    }
+
+    component PopupArka: Rectangle {
+        color: "#12121a"
+        radius: 12
+        border.color: "#1e2a3f"
+        border.width: 1
+    }
+
+    // --------------------------------------------------------------- Yerleşim
     Row {
         anchors.fill: parent
         spacing: 0
 
+        // ======================= SOL PANEL =======================
         Rectangle {
-            id: ozetPaneli
-            width: 280
+            id: solPanel
+            width: 300
             height: parent.height
             color: "#12121a"
 
-            Rectangle {
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                width: 1
-                color: "#1e2a3f"
-            }
+            Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: "#1e2a3f" }
 
-            Column {
-                id: raporBasligi
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.margins: 20
-                spacing: 14
+            Flickable {
+                anchors.fill: parent
+                anchors.margins: 16
+                contentWidth: width
+                contentHeight: solIcerik.height
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
+                ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
-                Text {
-                    text: txt("sonucOzeti")
-                    color: "#6b7280"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 10
-                    font.bold: true
-                    font.letterSpacing: 2
-                }
-
-                Row {
+                Column {
+                    id: solIcerik
                     width: parent.width
-                    spacing: 12
+                    spacing: 10
 
-                    Rectangle {
-                        width: 40
-                        height: 40
-                        radius: 8
-                        color: "#0a0a0d"
-                        border.color: "#1e2a3f"
-                        border.width: 1
-                        anchors.verticalCenter: parent.verticalCenter
-
+                    // --- Başlık / ölçüm bilgisi ---
+                    Item {
+                        width: parent.width
+                        height: 16
+                        KartBaslik { anchors.left: parent.left; text: txt("sonucOzeti") }
                         Text {
-                            anchors.centerIn: parent
-                            text: musteriAdi.length > 0 ? musteriAdi.charAt(0).toUpperCase() : "—"
-                            color: "#3b82f6"
+                            anchors.right: parent.right
+                            text: txt("duzenle")
+                            color: olcumId > 0 ? "#4f8cf7" : "#374151"
                             font.family: "Segoe UI"
-                            font.pixelSize: 16
-                            font.bold: true
+                            font.pixelSize: 11
+                            MouseArea {
+                                anchors.fill: parent
+                                enabled: olcumId > 0
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: bilgiPopup.ac()
+                            }
                         }
                     }
 
                     Column {
-                        width: parent.width - 52
-                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width
                         spacing: 2
-
                         Text {
                             width: parent.width
-                            text: musteriAdi.length > 0 ? musteriAdi : "—"
-                            color: "#dce8f5"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 15
-                            font.bold: true
+                            text: bilgi.musteri ? bilgi.musteri : "—"
+                            color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 16; font.bold: true
                             elide: Text.ElideRight
                         }
-
                         Text {
                             width: parent.width
-                            text: (receteAdi.length > 0 ? receteAdi : "—") + (olcumTarihi.length > 0 ? "  ·  " + olcumTarihi : "")
-                            color: "#6b7280"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 11
-                            elide: Text.ElideRight
+                            text: (bilgi.recete ? bilgi.recete : "—") + (bilgi.tarih ? "  ·  " + bilgi.tarih : "")
+                            color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11; elide: Text.ElideRight
+                        }
+                        Text {
+                            width: parent.width
+                            visible: !!bilgi.yer
+                            text: "📍 " + (bilgi.yer || "")
+                            color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11; elide: Text.ElideRight
+                        }
+                        Text {
+                            width: parent.width
+                            visible: !!bilgi.yorum
+                            text: "💬 " + (bilgi.yorum || "")
+                            color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11; wrapMode: Text.WordWrap
                         }
                     }
-                }
 
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: "#1e2a3f"
+                    Text {
+                        width: parent.width
+                        visible: olcumId <= 0
+                        text: txt("olcumSecilmedi")
+                        color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 12; wrapMode: Text.WordWrap
+                    }
+
+                    // --- P-Q sonuçları ---
+                    Kart {
+                        width: parent.width
+                        height: sonucSutunu.implicitHeight + 16
+                        visible: olcumId > 0
+                        Column {
+                            id: sonucSutunu
+                            anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
+                            anchors.margins: 8
+                            DegerSatiri { width: sonucSutunu.width; etiket: txt("kesisimA"); deger: sonuc.yeterliVeri ? sayi(sonuc.tau0, 2) + " mbar" : "—"; cizgi: "#3b82f6" }
+                            DegerSatiri { width: sonucSutunu.width; etiket: txt("egimB"); deger: sonuc.yeterliVeri ? sayi(sonuc.mu, 3) + " mbar·h/m³" : "—"; cizgi: "#9333ea" }
+                            DegerSatiri { width: sonucSutunu.width; etiket: txt("yieldA"); deger: sonuc.yeterliVeri ? sayi(schleibingerA(sonuc.tau0), 3) + " mbar" : "—"; cizgi: "#2563eb" }
+                            DegerSatiri { width: sonucSutunu.width; etiket: txt("gradyanB"); deger: sonuc.yeterliVeri ? sayi(schleibingerB(sonuc.mu) * 1000, 3) : "—"; cizgi: "#7c3aed" }
+                            DegerSatiri { width: sonucSutunu.width; etiket: txt("uyumKalitesi"); deger: sonuc.yeterliVeri ? sayi(sonuc.r2, 3) : "—"; cizgi: "#16a34a" }
+                            DegerSatiri { width: sonucSutunu.width; etiket: txt("kullanilanStroke"); deger: (sonuc.n || 0) + " / " + (sonuc.toplamStroke || 0); cizgi: "#6b7280" }
+                        }
+                    }
+
+                    // --- Kalite uyarıları ---
+                    Kart {
+                        width: parent.width
+                        height: uyariSutunu.implicitHeight + 20
+                        visible: olcumId > 0 && sonuc.uyarilar !== undefined && sonuc.uyarilar.length > 0
+                        border.color: "#78350f"
+                        Column {
+                            id: uyariSutunu
+                            anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
+                            anchors.margins: 10
+                            spacing: 6
+                            KartBaslik { text: "⚠ " + txt("uyarilarBaslik"); color: "#f59e0b" }
+                            Repeater {
+                                model: sonuc.uyarilar || []
+                                Text {
+                                    width: uyariSutunu.width
+                                    text: "• " + (metinler["uyari_" + modelData] ? txt("uyari_" + modelData) : modelData)
+                                    color: "#fbbf24"; font.family: "Segoe UI"; font.pixelSize: 11; wrapMode: Text.WordWrap
+                                }
+                            }
+                        }
+                    }
+
+                    // --- Tahmin ayarları (orijinal "Forecast Preferences") ---
+                    Kart {
+                        width: parent.width
+                        height: ayarSutunu.implicitHeight + 20
+                        visible: olcumId > 0
+                        Column {
+                            id: ayarSutunu
+                            anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
+                            anchors.margins: 10
+                            spacing: 8
+                            KartBaslik { text: txt("tahminAyarlari") }
+                            Grid {
+                                id: ayarIzgarasi
+                                width: parent.width
+                                columns: 2
+                                columnSpacing: 8
+                                rowSpacing: 6
+                                readonly property real hucre: (width - columnSpacing) / 2
+                                Girdi { id: q1Alani; width: ayarIzgarasi.hucre; etiket: txt("q1") }
+                                Girdi { id: q2Alani; width: ayarIzgarasi.hucre; etiket: txt("q2") }
+                                Girdi { id: capAlani; width: ayarIzgarasi.hucre; etiket: txt("cap") }
+                                Girdi { id: hataAlani; width: ayarIzgarasi.hucre; etiket: txt("hataPayi") }
+                                Girdi { id: l2Alani; width: ayarIzgarasi.hucre; etiket: txt("l2") }
+                                Girdi { id: l3Alani; width: ayarIzgarasi.hucre; etiket: txt("l3") }
+                                Girdi { id: l4Alani; width: ayarIzgarasi.hucre; etiket: txt("l4") }
+                                Girdi { id: yukseklikAlani; width: ayarIzgarasi.hucre; etiket: txt("yukseklik") }
+                                Girdi { id: yogunlukAlani; width: ayarIzgarasi.hucre; etiket: txt("yogunluk") }
+                                Girdi { id: pompaAlani; width: ayarIzgarasi.hucre; etiket: txt("pompaMaks"); ipucu: "85–130" }
+                            }
+                            Text { width: parent.width; text: txt("pompaIpucu"); color: "#4b5563"; font.family: "Segoe UI"; font.pixelSize: 9; wrapMode: Text.WordWrap }
+                            Dugme {
+                                width: parent.width
+                                text: txt("hesaplaKaydet")
+                                onClicked: ayarlariKaydet()
+                            }
+                            Text {
+                                id: ayarBildirimi
+                                property bool hata: false
+                                width: parent.width
+                                visible: text.length > 0
+                                color: hata ? "#f87171" : "#4ade80"
+                                font.family: "Segoe UI"; font.pixelSize: 11; wrapMode: Text.WordWrap
+                            }
+                        }
+                    }
+
+                    // --- Pompalanabilirlik durumu ---
+                    Kart {
+                        id: durumKutusu
+                        width: parent.width
+                        height: durumSutunu.implicitHeight + 20
+                        visible: olcumId > 0
+                        property color vurgu: durumBilgisi.kod === "uygun" ? "#16a34a" : (durumBilgisi.kod === "sorun" ? "#dc2626" : "#6b7280")
+                        border.color: Qt.darker(vurgu, 1.6)
+                        Rectangle { width: 4; height: parent.height; radius: 2; color: durumKutusu.vurgu }
+                        Column {
+                            id: durumSutunu
+                            anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
+                            anchors.margins: 10; anchors.leftMargin: 16
+                            spacing: 4
+                            Text {
+                                text: durumBilgisi.kod === "uygun" ? "✓ " + txt("pompalanabilir")
+                                      : (durumBilgisi.kod === "sorun" ? "! " + txt("pompalamaSorunu") : "? " + txt("degerlendirilmedi"))
+                                color: durumKutusu.vurgu; font.family: "Segoe UI"; font.pixelSize: 14; font.bold: true; font.letterSpacing: 1
+                            }
+                            Text {
+                                width: parent.width
+                                wrapMode: Text.WordWrap
+                                color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 11
+                                text: {
+                                    var d = durumBilgisi
+                                    if (d.kod === "yetersiz") return txt("durumYetersizVeri")
+                                    if (d.kod === "yok") return txt("durumPompaYok")
+                                    var bar = sayi(d.enKotu.ustSinirBar, 1)
+                                    if (d.kod === "uygun")
+                                        return txt("durumUygun").arg(bar).arg(sayi(d.enKotu.debi, 1)).arg(sayi(d.enKotu.uzunluk, 0))
+                                                                .arg(sayi(d.enKotu.ustSinirBar / d.pompa * 100, 0))
+                                    var anahtar = d.baskin === "viskoz" ? "durumViskoz" : (d.baskin === "yukseklik" ? "durumYukseklik" : "durumAkma")
+                                    return txt(anahtar).arg(d.asilan).arg(bar)
+                                }
+                            }
+                        }
+                    }
+
+                    // --- Dışa aktarım ---
+                    Dugme {
+                        width: parent.width
+                        text: txt("pdfRaporOnizle")
+                        enabled: olcumId > 0
+                        onClicked: {
+                            pdfOnizlemePopup.onizlemeHtml = reportManager.pdfOnizlemeHtml(olcumId)
+                            pdfOnizlemePopup.open()
+                        }
+                    }
+                    Dugme {
+                        width: parent.width
+                        text: txt("excelCsvOnizle")
+                        renk: "#16a34a"
+                        enabled: olcumId > 0
+                        onClicked: csvOnizlemePopup.open()
+                    }
+                    Dugme {
+                        width: parent.width
+                        text: txt("excelXmlDisaAktar")
+                        renk: "#0d9488"
+                        enabled: olcumId > 0
+                        onClicked: {
+                            var yol = database.xmlDisaAktar(olcumId)
+                            bildirimKutusu.goster(yol.length > 0 ? txt("disaAktarildi") + yol : txt("disaAktarilamadi"), yol.length === 0)
+                        }
+                    }
+                    Item { width: 1; height: 8 }
+                }
+            }
+        }
+
+        // ======================= SAĞ ALAN =======================
+        Item {
+            width: parent.width - solPanel.width
+            height: parent.height
+
+            Row {
+                id: sekmeler
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.margins: 16
+                spacing: 6
+                Repeater {
+                    model: ["sekmePq", "sekmeTablo", "sekmeEgri", "sekmeTahminTablo", "sekmeTahminGrafik"]
+                    Rectangle {
+                        width: sekmeMetni.implicitWidth + 28
+                        height: 34
+                        radius: 8
+                        color: aktifSekme === index ? "#17263d" : (sekmeFare.containsMouse ? "#141419" : "#12121a")
+                        border.color: aktifSekme === index ? "#3b82f6" : "#1e2a3f"
+                        border.width: 1
+                        Text {
+                            id: sekmeMetni
+                            anchors.centerIn: parent
+                            text: txt(modelData)
+                            color: aktifSekme === index ? "#dce8f5" : "#9ca3af"
+                            font.family: "Segoe UI"; font.pixelSize: 12; font.bold: aktifSekme === index
+                        }
+                        MouseArea {
+                            id: sekmeFare
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: aktifSekme = index
+                        }
+                    }
                 }
             }
 
-            Flickable {
-                anchors.top: raporBasligi.bottom
+            Rectangle {
+                anchors.top: sekmeler.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                anchors.margins: 20
-                anchors.topMargin: 16
-                contentWidth: width
-                contentHeight: sonucKartlari.height
-                clip: true
+                anchors.margins: 16
+                anchors.topMargin: 10
+                radius: 10
+                color: "#12121a"
+                border.color: "#1e2a3f"
+                border.width: 1
 
-                Column {
-                    id: sonucKartlari
-                    width: parent.width
-                    spacing: 10
+                StackLayout {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    currentIndex: aktifSekme
 
-                    Rectangle {
-                        width: parent.width
-                        radius: 10
-                        color: "#0a0a0d"
-                        border.color: "#1e2a3f"
-                        border.width: 1
-                        height: metrikSatirlari.height + 8
-
-                        Column {
-                            id: metrikSatirlari
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.topMargin: 4
-
-                            Item {
-                                width: parent.width
-                                height: 52
-                                Rectangle { width: 4; height: parent.height; anchors.verticalCenter: parent.verticalCenter; color: "#3b82f6" }
-                                Text {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 16
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: 76
-                                    text: txt("akmaGerilmesi")
-                                    color: "#9ca3af"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 11
-                                    elide: Text.ElideRight
-                                }
-                                Text {
-                                    id: tau0Metni
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: 16
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    text: "—"
-                                    color: "#dce8f5"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 17
-                                    font.bold: true
-                                }
-                            }
-
-                            Rectangle { width: parent.width; height: 1; color: "#1e1e18" }
-
-                            Item {
-                                width: parent.width
-                                height: 52
-                                Rectangle { width: 4; height: parent.height; anchors.verticalCenter: parent.verticalCenter; color: "#9333ea" }
-                                Text {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 16
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: 76
-                                    text: txt("plastikViskozite")
-                                    color: "#9ca3af"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 11
-                                    elide: Text.ElideRight
-                                }
-                                Text {
-                                    id: muMetni
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: 16
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    text: "—"
-                                    color: "#dce8f5"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 17
-                                    font.bold: true
-                                }
-                            }
-
-                            Rectangle { width: parent.width; height: 1; color: "#1e1e18" }
-
-                            Item {
-                                width: parent.width
-                                height: 52
-                                Rectangle { width: 4; height: parent.height; anchors.verticalCenter: parent.verticalCenter; color: "#16a34a" }
-                                Text {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 16
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: 76
-                                    text: txt("uyumKalitesi")
-                                    color: "#9ca3af"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 11
-                                    elide: Text.ElideRight
-                                }
-                                Text {
-                                    id: r2Metni
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: 16
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    text: "—"
-                                    color: "#dce8f5"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 17
-                                    font.bold: true
-                                }
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        radius: 10
-                        color: "#0a0a0d"
-                        border.color: "#1e2a3f"
-                        border.width: 1
-                        height: tahminIcerik.implicitHeight + 24
-
-                        Column {
-                            id: tahminIcerik
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.margins: 12
-                            spacing: 8
-
-                            Text {
-                                text: txt("boruHattiTahmini")
-                                color: "#6b7280"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 10
-                                font.letterSpacing: 1
-                            }
-
-                            TextField {
-                                id: capKutusu
-                                width: parent.width
-                                height: 34
-                                placeholderText: txt("hedefBoruCapi")
-                                placeholderTextColor: "#4b5563"
-                                color: "#dce8f5"
-                                font.pixelSize: 12
-                                leftPadding: 10
-                                text: "125"
-                                verticalAlignment: TextInput.AlignVCenter
-                                validator: DoubleValidator { bottom: 10; top: 500; decimals: 0 }
-                                background: Rectangle {
-                                    color: "#07070a"
-                                    radius: 6
-                                    border.color: capKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
-                                    border.width: 1
-                                }
-                            }
-
-                            TextField {
-                                id: uzunlukKutusu
-                                width: parent.width
-                                height: 34
-                                placeholderText: txt("boruUzunlugu")
-                                placeholderTextColor: "#4b5563"
-                                color: "#dce8f5"
-                                font.pixelSize: 12
-                                leftPadding: 10
-                                verticalAlignment: TextInput.AlignVCenter
-                                validator: DoubleValidator { bottom: 0; top: 2000; decimals: 0 }
-                                background: Rectangle {
-                                    color: "#07070a"
-                                    radius: 6
-                                    border.color: uzunlukKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
-                                    border.width: 1
-                                }
-                            }
-
-                            TextField {
-                                id: debiKutusu
-                                width: parent.width
-                                height: 34
-                                placeholderText: txt("hedefDebi")
-                                placeholderTextColor: "#4b5563"
-                                color: "#dce8f5"
-                                font.pixelSize: 12
-                                leftPadding: 10
-                                verticalAlignment: TextInput.AlignVCenter
-                                validator: DoubleValidator { bottom: 0; top: 200; decimals: 1 }
-                                background: Rectangle {
-                                    color: "#07070a"
-                                    radius: 6
-                                    border.color: debiKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
-                                    border.width: 1
-                                }
-                            }
-
-                            Row {
-                                width: parent.width
-                                spacing: 8
-
-                                Text {
-                                    text: txt("hataPayi")
-                                    color: "#9ca3af"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 11
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-
-                                ComboBox {
-                                    id: hataPayiSecici
-                                    width: 90
-                                    height: 28
-                                    model: ["0", "10", "20"]
-                                    currentIndex: 1
-
-                                    background: Rectangle {
-                                        color: "#07070a"
-                                        radius: 6
-                                        border.color: hataPayiSecici.activeFocus ? "#3b82f6" : "#1e2a3f"
-                                        border.width: 1
-                                    }
-
-                                    contentItem: Text {
-                                        text: hataPayiSecici.displayText
-                                        color: "#dce8f5"
-                                        font.family: "Segoe UI"
-                                        font.pixelSize: 11
-                                        leftPadding: 10
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-
-                                    indicator: Text {
-                                        x: hataPayiSecici.width - width - 8
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: "▾"
-                                        color: "#6b7280"
-                                        font.pixelSize: 11
-                                    }
-
-                                    popup: Popup {
-                                        y: hataPayiSecici.height + 2
-                                        width: hataPayiSecici.width
-                                        implicitHeight: contentItem.implicitHeight
-                                        padding: 1
-
-                                        background: Rectangle {
-                                            color: "#0a0a0d"
-                                            radius: 6
-                                            border.color: "#1e2a3f"
-                                            border.width: 1
-                                        }
-
-                                        contentItem: ListView {
-                                            implicitHeight: contentHeight
-                                            model: hataPayiSecici.popup.visible ? hataPayiSecici.delegateModel : null
-                                            currentIndex: hataPayiSecici.highlightedIndex
-                                            clip: true
-                                        }
-                                    }
-
-                                    delegate: ItemDelegate {
-                                        id: hataPayiDelege
-                                        width: hataPayiSecici.width
-                                        height: 28
-                                        highlighted: hataPayiSecici.highlightedIndex === index
-
-                                        background: Rectangle {
-                                            color: hataPayiDelege.highlighted ? "#17263d" : "#0a0a0d"
-                                        }
-
-                                        contentItem: Text {
-                                            text: modelData
-                                            color: "#dce8f5"
-                                            font.family: "Segoe UI"
-                                            font.pixelSize: 11
-                                            leftPadding: 10
-                                            verticalAlignment: Text.AlignVCenter
-                                        }
-                                    }
-                                }
-
-                                Text {
-                                    text: "%"
-                                    color: "#9ca3af"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 11
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                            }
-
-                            Button {
-                                width: parent.width
-                                height: 36
-                                text: txt("tahminiHesapla")
-                                font.pixelSize: 12
-                                font.bold: true
-
-                                background: Rectangle {
-                                    radius: 6
-                                    color: parent.hovered ? "#4f8cf7" : "#3b82f6"
-                                    Behavior on color { ColorAnimation { duration: 120 } }
-                                }
-
-                                contentItem: Text {
-                                    text: parent.text
-                                    color: "#dce8f5"
-                                    font: parent.font
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-
-                                onClicked: {
-                                    var D = parseFloat(capKutusu.text)
-                                    var L = parseFloat(uzunlukKutusu.text)
-                                    var Q = parseFloat(debiKutusu.text)
-                                    var tolerans = parseFloat(hataPayiSecici.currentText)
-
-                                    if (isNaN(D) || isNaN(L) || isNaN(Q) || D <= 0 || L <= 0) {
-                                        tahminSonucu.text = txt("gecerliDegerGirin")
-                                        tahminKarsilastirma.text = ""
-                                        return
-                                    }
-
-                                    var sonuc = calculator.boruHattiTahminHesapla(
-                                        hesaplananTau0, hesaplananMu, Q, D, L, tolerans)
-
-                                    if (!sonuc.gecerliGiris) {
-                                        tahminSonucu.text = txt("hesaplanamadi")
-                                        tahminKarsilastirma.text = ""
-                                        return
-                                    }
-
-                                    tahminSonucu.text = sonuc.basincBar.toFixed(2) + " bar"
-                                    if (tolerans > 0) {
-                                        tahminSonucu.text += "  (±%1: %2 – %3 bar)".arg(tolerans.toFixed(0))
-                                            .arg(sonuc.altSinirBar.toFixed(2)).arg(sonuc.ustSinirBar.toFixed(2))
-                                    }
-
-                                    // Aynı D/Q icin farkli boru uzunluklarinda karsilastirma
-                                    // (orijinal SLIPER'daki "birden fazla boru uzunlugu" karsilastirmasi)
-                                    var uzunluklar = [L * 0.5, L, L * 2]
-                                    var satirlar = []
-                                    for (var i = 0; i < uzunluklar.length; i++) {
-                                        var s = calculator.boruHattiTahminHesapla(
-                                            hesaplananTau0, hesaplananMu, Q, D, uzunluklar[i], 0)
-                                        satirlar.push(uzunluklar[i].toFixed(0) + " m: " + s.basincBar.toFixed(2) + " bar")
-                                    }
-                                    tahminKarsilastirma.text = satirlar.join("   |   ")
-                                }
-                            }
-
-                            Text {
-                                id: tahminSonucu
-                                width: parent.width
-                                text: "—"
-                                color: "#4f8cf7"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 18
-                                font.bold: true
-                                wrapMode: Text.WordWrap
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                id: tahminKarsilastirma
-                                width: parent.width
-                                text: ""
-                                color: "#6b7280"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 10
-                                wrapMode: Text.WordWrap
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        id: durumKutusu
-                        width: parent.width
-                        height: durumIcerik.implicitHeight + 28
-                        radius: 10
-                        color: "#0a0a0d"
-                        border.color: "#1e2a3f"
-                        border.width: 1
-                        clip: true
-
-                        property bool durumIyiMi: true
-                        property bool tau0Yuksek: false
-                        property bool muYuksek: false
-                        property color vurguRengi: durumIyiMi ? "#16a34a" : "#dc2626"
-
-                        Rectangle { width: 4; height: parent.height; color: durumKutusu.vurguRengi }
-
+                    // ---------------- 0: P-Q grafiği ----------------
+                    Item {
                         Item {
-                            id: durumIcerik
+                            id: pqUstBilgi
+                            anchors.top: parent.top
                             anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 18
-                            width: parent.width - 36
-                            implicitHeight: durumMetinSutunu.implicitHeight
-
-                            Rectangle {
-                                id: durumRozeti
-                                width: 34
-                                height: 34
-                                radius: 17
+                            anchors.right: parent.right
+                            height: 30
+                            Text {
+                                anchors.left: parent.left
                                 anchors.verticalCenter: parent.verticalCenter
-                                color: "transparent"
-                                border.color: durumKutusu.vurguRengi
-                                border.width: 1.5
-
-                                Rectangle {
-                                    anchors.centerIn: parent
-                                    width: 24
-                                    height: 24
-                                    radius: 12
-                                    color: durumKutusu.vurguRengi
-                                    opacity: 0.16
-                                }
-
+                                text: sonuc.yeterliVeri
+                                      ? "A = " + sayi(sonuc.tau0, 2) + " mbar    B = " + sayi(sonuc.mu, 3) + " mbar·h/m³    a = "
+                                        + sayi(schleibingerA(sonuc.tau0), 3) + " mbar    b = " + sayi(schleibingerB(sonuc.mu) * 1000, 3)
+                                        + "    R² = " + sayi(sonuc.r2, 3)
+                                      : txt("tahminYok")
+                                color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12
+                            }
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 10
                                 Text {
-                                    anchors.centerIn: parent
-                                    text: durumKutusu.durumIyiMi ? "✓" : "!"
-                                    color: durumKutusu.vurguRengi
-                                    font.pixelSize: 15
-                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: playbackAdimi >= 0
+                                    text: "Stroke " + (playbackAdimi + 1) + " / " + strokeListesi.length
+                                    color: "#f59e0b"; font.family: "Segoe UI"; font.pixelSize: 12
                                 }
+                                Dugme {
+                                    width: 100; height: 28
+                                    text: playbackTimer.running ? txt("durdur") : txt("oynat")
+                                    enabled: strokeListesi.length > 0
+                                    onClicked: {
+                                        if (playbackTimer.running) { playbackTimer.stop(); return }
+                                        if (playbackAdimi >= strokeListesi.length - 1) playbackAdimi = -1
+                                        playbackTimer.start()
+                                    }
+                                }
+                            }
+                        }
+
+                        ChartView {
+
+                            theme: ChartView.ChartThemeDark
+                            anchors.top: pqUstBilgi.bottom
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            backgroundColor: "transparent"
+                            antialiasing: true
+                            legend.visible: true
+                            legend.labelColor: "#9ca3af"
+                            legend.alignment: Qt.AlignBottom
+
+                            Eksen { id: pqQEkseni; min: 0; max: 20; titleText: txt("debi") }
+                            Eksen { id: pqPEkseni; min: 0; max: 100; titleText: "p (mbar)" }
+
+                            ScatterSeries { id: pqDahil; name: txt("dahilNokta"); axisX: pqQEkseni; axisY: pqPEkseni; color: "#3b82f6"; borderColor: "#1d4ed8"; markerSize: 11 }
+                            ScatterSeries { id: pqHaric; name: txt("haricNokta"); axisX: pqQEkseni; axisY: pqPEkseni; color: "#4b5563"; borderColor: "#6b7280"; markerSize: 9 }
+                            LineSeries { id: pqDogru; name: txt("regresyon"); axisX: pqQEkseni; axisY: pqPEkseni; color: "#dce8f5"; width: 2 }
+                            ScatterSeries { id: oynatmaIsaretci; name: "▶"; axisX: pqQEkseni; axisY: pqPEkseni; color: "#f59e0b"; borderColor: "#f59e0b"; markerSize: 18 }
+                        }
+                    }
+
+                    // ---------------- 1: Stroke tablosu ----------------
+                    Item {
+                        id: tabloSekmesi
+                        readonly property var kolonlar: [0.05, 0.05, 0.1, 0.07, 0.08, 0.08, 0.08, 0.08, 0.09, 0.09, 0.19, 0.04]
+
+                        Text {
+                            id: tabloIpucu
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            text: txt("tabloIpucu")
+                            color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11; wrapMode: Text.WordWrap
+                        }
+
+                        Row {
+                            id: tabloBasligi
+                            anchors.top: tabloIpucu.bottom
+                            anchors.topMargin: 10
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 6
+                            readonly property var k: tabloSekmesi.kolonlar
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[0]; text: "✓" }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[1]; text: txt("no") }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[2]; text: txt("saat") }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[3]; text: txt("sure") }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[4]; text: txt("agirlik") }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[5]; text: "Pmax" }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[6]; text: "P0l" }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[7]; text: "P0r" }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[8]; text: "p mbar" }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[9]; text: "Q m³/h" }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[10]; text: txt("durum") }
+                            BaslikHucre { width: tabloBasligi.width * tabloBasligi.k[11]; text: "" }
+                        }
+
+                        Rectangle { id: tabloCizgi; anchors.top: tabloBasligi.bottom; anchors.topMargin: 6; width: parent.width; height: 1; color: "#1e2a3f" }
+
+                        Text {
+                            anchors.centerIn: parent
+                            visible: strokeListesi.length === 0
+                            text: txt("strokeYok")
+                            color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 13
+                        }
+
+                        ListView {
+                            id: strokeTablosu
+                            anchors.top: tabloCizgi.bottom
+                            anchors.topMargin: 4
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            clip: true
+                            model: strokeListesi
+                            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+
+                            delegate: Rectangle {
+                                id: strokeSatiri
+                                required property var modelData
+                                required property int index
+                                readonly property var s: modelData
+                                readonly property var k: tabloSekmesi.kolonlar
+                                width: strokeTablosu.width
+                                height: 30
+                                radius: 5
+                                color: index === seciliStrokeIndex ? "#17263d" : (index % 2 === 0 ? "transparent" : "#0e0e14")
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: seciliStrokeIndex = strokeSatiri.index
+                                    onDoubleClicked: { seciliStrokeIndex = strokeSatiri.index; aktifSekme = 2 }
+                                }
+
+                                Row {
+                                    id: satirDuzeni
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 6
+                                    readonly property real g: width
+
+                                    Item {
+                                        width: satirDuzeni.g * strokeSatiri.k[0]; height: strokeSatiri.height
+                                        Rectangle {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            width: 16; height: 16; radius: 3
+                                            color: strokeSatiri.s.secili && strokeSatiri.s.gecerli ? "#1d4ed8" : "transparent"
+                                            border.color: strokeSatiri.s.gecerli ? "#3b82f6" : "#374151"
+                                            opacity: strokeSatiri.s.gecerli ? 1 : 0.5
+                                            Text { anchors.centerIn: parent; text: strokeSatiri.s.secili && strokeSatiri.s.gecerli ? "✓" : ""; color: "#dce8f5"; font.pixelSize: 11; font.bold: true }
+                                            MouseArea {
+                                                anchors.fill: parent
+                                                anchors.margins: -4
+                                                enabled: strokeSatiri.s.gecerli
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: strokeDahilDegistir(strokeSatiri.s.id, !strokeSatiri.s.secili)
+                                            }
+                                        }
+                                    }
+                                    Hucre { width: satirDuzeni.g * strokeSatiri.k[1]; height: strokeSatiri.height; text: strokeSatiri.s.stroke }
+                                    Hucre { width: satirDuzeni.g * strokeSatiri.k[2]; height: strokeSatiri.height; text: strokeSatiri.s.saat || "—" }
+                                    Hucre { width: satirDuzeni.g * strokeSatiri.k[3]; height: strokeSatiri.height; text: sayi(strokeSatiri.s.sure, 2) }
+                                    Hucre { width: satirDuzeni.g * strokeSatiri.k[4]; height: strokeSatiri.height; text: sayi(strokeSatiri.s.agirlik, 1) }
+                                    Hucre { width: satirDuzeni.g * strokeSatiri.k[5]; height: strokeSatiri.height; text: sayi(strokeSatiri.s.pMaks, 1) }
+                                    Hucre { width: satirDuzeni.g * strokeSatiri.k[6]; height: strokeSatiri.height; text: sayi(strokeSatiri.s.p0l, 1) }
+                                    Hucre { width: satirDuzeni.g * strokeSatiri.k[7]; height: strokeSatiri.height; text: sayi(strokeSatiri.s.p0r, 1) }
+                                    Hucre { width: satirDuzeni.g * strokeSatiri.k[8]; height: strokeSatiri.height; text: sayi(strokeSatiri.s.basinc, 2); font.bold: true }
+                                    Hucre { width: satirDuzeni.g * strokeSatiri.k[9]; height: strokeSatiri.height; text: sayi(strokeSatiri.s.debi, 2); font.bold: true }
+                                    Item {
+                                        width: satirDuzeni.g * strokeSatiri.k[10]; height: strokeSatiri.height
+                                        Rectangle {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            width: durumYazisi.implicitWidth + 14; height: 20; radius: 10
+                                            color: !strokeSatiri.s.gecerli ? "#2a1414" : (strokeSatiri.s.secili ? "#123321" : "#1f2937")
+                                            Text {
+                                                id: durumYazisi
+                                                anchors.centerIn: parent
+                                                text: !strokeSatiri.s.gecerli ? txt("hatali") : (strokeSatiri.s.secili ? txt("dahil") : txt("haric"))
+                                                color: !strokeSatiri.s.gecerli ? "#f87171" : (strokeSatiri.s.secili ? "#4ade80" : "#9ca3af")
+                                                font.pixelSize: 10; font.bold: true
+                                            }
+                                        }
+                                    }
+                                    Item {
+                                        width: satirDuzeni.g * strokeSatiri.k[11]; height: strokeSatiri.height
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: "🗑"
+                                            font.pixelSize: 13
+                                            opacity: silFare.containsMouse ? 1 : 0.5
+                                            MouseArea {
+                                                id: silFare
+                                                anchors.fill: parent
+                                                anchors.margins: -4
+                                                hoverEnabled: true
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: {
+                                                    strokeSilPopup.strokeId = strokeSatiri.s.id
+                                                    strokeSilPopup.strokeNo = strokeSatiri.s.stroke
+                                                    strokeSilPopup.open()
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // ---------------- 2: Stroke eğrileri ----------------
+                    Item {
+                        Row {
+                            id: egriUst
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            height: 30
+                            spacing: 10
+                            Dugme { width: 34; height: 28; text: "◀"; enabled: seciliStrokeIndex > 0; onClicked: seciliStrokeIndex-- }
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: strokeListesi.length > 0 ? "Stroke " + (seciliStrokeIndex + 1) + " / " + strokeListesi.length : txt("strokeYok")
+                                color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 14; font.bold: true
+                            }
+                            Dugme { width: 34; height: 28; text: "▶"; enabled: seciliStrokeIndex < strokeListesi.length - 1; onClicked: seciliStrokeIndex++ }
+                            Text {
+                                id: egriOzet
+                                anchors.verticalCenter: parent.verticalCenter
+                                readonly property bool var_: seciliStrokeIndex >= 0 && seciliStrokeIndex < strokeListesi.length
+                                readonly property var s: var_ ? strokeListesi[seciliStrokeIndex] : ({})
+                                text: var_ ? "Pmax " + sayi(s.pMaks, 1) + "   P0l " + sayi(s.p0l, 1) + "   P0r " + sayi(s.p0r, 1)
+                                             + "   p " + sayi(s.basinc, 2) + " mbar   Q " + sayi(s.debi, 2) + " m³/h   " + sayi(s.sure, 2) + " s"
+                                             + (s.gecerli ? "" : "   ✕ " + txt("hatali")) : ""
+                                color: var_ && !s.gecerli ? "#f87171" : "#9ca3af"
+                                font.family: "Segoe UI"; font.pixelSize: 12
+                            }
+                        }
+
+                        Text {
+                            id: egriVeriYok
+                            anchors.centerIn: parent
+                            visible: false
+                            text: txt("hamVeriYok")
+                            color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 13
+                            z: 5
+                        }
+
+                        Column {
+                            anchors.top: egriUst.bottom
+                            anchors.topMargin: 6
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+
+                            ChartView {
+
+                                theme: ChartView.ChartThemeDark
+                                width: parent.width
+                                height: parent.height / 2
+                                title: txt("basincEgrisi")
+                                titleColor: "#9ca3af"
+                                backgroundColor: "transparent"
+                                antialiasing: true
+                                legend.visible: true
+                                legend.labelColor: "#9ca3af"
+                                legend.alignment: Qt.AlignRight
+
+                                Eksen { id: egTEkseni; min: 0; max: 10; titleText: txt("zaman") }
+                                Eksen { id: egPEkseni; min: 0; max: 200; titleText: txt("basinc") }
+
+                                LineSeries { id: egriBasinc; name: txt("basinc"); axisX: egTEkseni; axisY: egPEkseni; color: "#3b82f6"; width: 1.5 }
+                                LineSeries { id: egriP0l; name: "P0l"; axisX: egTEkseni; axisY: egPEkseni; color: "#4ade80"; width: 2; style: Qt.DashLine }
+                                LineSeries { id: egriP0r; name: "P0r"; axisX: egTEkseni; axisY: egPEkseni; color: "#14b8a6"; width: 2; style: Qt.DashLine }
+                                LineSeries { id: egriPmaks; name: "Pmax"; axisX: egTEkseni; axisY: egPEkseni; color: "#f87171"; width: 2; style: Qt.DashLine }
+                                LineSeries { id: egriBaslangic; name: ""; axisX: egTEkseni; axisY: egPEkseni; color: "#6b7280"; width: 1; style: Qt.DotLine }
+                                LineSeries { id: egriBitis; name: ""; axisX: egTEkseni; axisY: egPEkseni; color: "#6b7280"; width: 1; style: Qt.DotLine }
+                            }
+
+                            ChartView {
+
+                                theme: ChartView.ChartThemeDark
+                                width: parent.width
+                                height: parent.height / 2
+                                title: txt("konumHizEgrisi")
+                                titleColor: "#9ca3af"
+                                backgroundColor: "transparent"
+                                antialiasing: true
+                                legend.visible: true
+                                legend.labelColor: "#9ca3af"
+                                legend.alignment: Qt.AlignRight
+
+                                Eksen { id: egT2Ekseni; min: 0; max: 10; titleText: txt("zaman") }
+                                Eksen { id: egXEkseni; min: 0; max: 600; titleText: txt("mesafe") }
+                                Eksen { id: egVEkseni; min: 0; max: 1; titleText: txt("hiz") }
+
+                                LineSeries { id: egriKonum; name: txt("mesafe"); axisX: egT2Ekseni; axisY: egXEkseni; color: "#9333ea"; width: 2 }
+                                LineSeries { id: egriHiz; name: txt("hiz"); axisX: egT2Ekseni; axisYRight: egVEkseni; color: "#f59e0b"; width: 1.5 }
+                                LineSeries { id: egriBaslangic2; name: ""; axisX: egT2Ekseni; axisY: egXEkseni; color: "#6b7280"; width: 1; style: Qt.DotLine }
+                                LineSeries { id: egriBitis2; name: ""; axisX: egT2Ekseni; axisY: egXEkseni; color: "#6b7280"; width: 1; style: Qt.DotLine }
+                            }
+                        }
+                    }
+
+                    // ---------------- 3: Tahmin tablosu ----------------
+                    Item {
+                        Column {
+                            id: tahminTabloSutunu
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 10
+
+                            Text {
+                                width: parent.width
+                                wrapMode: Text.WordWrap
+                                text: txt("tahmin") + "  —  D = " + sayi(tahminAyarlari.cap, 0) + " mm,  h = " + sayi(tahminAyarlari.yukseklik, 1)
+                                      + " m,  ρ = " + sayi(tahminAyarlari.yogunluk, 0) + " kg/m³,  ±%" + sayi(tahminAyarlari.hataPayi, 0)
+                                      + (tahminAyarlari.pompaMaks > 0 ? ",  " + txt("pompaCizgi") + " " + sayi(tahminAyarlari.pompaMaks, 0) + " bar" : "")
+                                color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12
+                            }
+
+                            Text {
+                                visible: tahminSatirlari.length === 0
+                                text: txt("tahminYok")
+                                color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 13
                             }
 
                             Column {
-                                id: durumMetinSutunu
-                                anchors.left: durumRozeti.right
-                                anchors.leftMargin: 14
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 4
+                                id: tahminTablosu
+                                visible: tahminSatirlari.length > 0
+                                width: Math.min(tahminTabloSutunu.width, 760)
+                                spacing: 0
 
-                                Text {
-                                    text: durumKutusu.durumIyiMi ? txt("pompalanabilir") : txt("pompalamaSorunu")
-                                    color: durumKutusu.vurguRengi
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 14
-                                    font.bold: true
-                                    font.letterSpacing: 1
+                                Row {
+                                    width: tahminTablosu.width
+                                    height: 30
+                                    BaslikHucre { width: tahminTablosu.width * 0.18; text: txt("debi"); anchors.verticalCenter: parent.verticalCenter }
+                                    BaslikHucre { width: tahminTablosu.width * 0.18; text: txt("uzunluk"); anchors.verticalCenter: parent.verticalCenter }
+                                    BaslikHucre { width: tahminTablosu.width * 0.18; text: txt("basincBar"); anchors.verticalCenter: parent.verticalCenter }
+                                    BaslikHucre { width: tahminTablosu.width * 0.28; text: txt("aralik"); anchors.verticalCenter: parent.verticalCenter }
+                                    BaslikHucre { width: tahminTablosu.width * 0.18; text: txt("pompa"); anchors.verticalCenter: parent.verticalCenter }
                                 }
-
-                                Text {
-                                    width: parent.width
-                                    visible: !durumKutusu.durumIyiMi
-                                    text: {
-                                        if (durumKutusu.tau0Yuksek && durumKutusu.muYuksek) {
-                                            return txt("durumHerIkisiYuksek")
-                                        } else if (durumKutusu.tau0Yuksek) {
-                                            return txt("durumTau0Yuksek")
-                                        } else if (durumKutusu.muYuksek) {
-                                            return txt("durumMuYuksek")
-                                        }
-                                        return txt("durumYetersizVeri")
-                                    }
-                                    color: "#6b7280"
-                                    font.family: "Segoe UI"
-                                    font.pixelSize: 11
-                                    wrapMode: Text.WordWrap
-                                }
-                            }
-                        }
-                    }
-
-                    Button {
-                        width: parent.width
-                        height: 40
-                        text: txt("pdfRaporOnizle")
-                        font.pixelSize: 13
-                        font.bold: true
-                        enabled: olcumId > 0
-
-                        onClicked: {
-                            pdfOnizlemePopup.onizlemeHtml = reportManager.pdfOnizlemeHtml(
-                                olcumId,
-                                musteriAdi,
-                                receteAdi,
-                                hesaplananTau0,
-                                hesaplananMu,
-                                parseFloat(r2Metni.text)
-                            )
-                            pdfOnizlemePopup.open()
-                        }
-
-                        background: Rectangle {
-                            radius: 8
-                            color: parent.enabled ? (parent.hovered ? "#4f8cf7" : "#3b82f6") : "#1e2a3f"
-                            Behavior on color { ColorAnimation { duration: 120 } }
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "#dce8f5"
-                            font: parent.font
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                    }
-
-                    Button {
-                        width: parent.width
-                        height: 40
-                        text: txt("excelCsvOnizle")
-                        font.pixelSize: 13
-                        font.bold: true
-                        enabled: olcumId > 0
-
-                        onClicked: {
-                            csvOnizlemePopup.satirlar = database.strokeVerileriGetir(olcumId)
-                            csvOnizlemePopup.open()
-                        }
-
-                        background: Rectangle {
-                            radius: 8
-                            color: parent.enabled ? (parent.hovered ? "#22c55e" : "#16a34a") : "#1e2a3f"
-                            Behavior on color { ColorAnimation { duration: 120 } }
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "#dce8f5"
-                            font: parent.font
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                    }
-
-                    Button {
-                        width: parent.width
-                        height: 40
-                        text: txt("excelXmlDisaAktar")
-                        font.pixelSize: 13
-                        font.bold: true
-                        enabled: olcumId > 0
-
-                        onClicked: {
-                            var yol = database.xmlDisaAktar(olcumId)
-                            xmlDisaAktarBildirim.text = yol.length > 0
-                                ? txt("disaAktarildi") + yol
-                                : txt("disaAktarilamadi")
-                            xmlDisaAktarBildirim.visible = true
-                            xmlDisaAktarTimer.restart()
-                        }
-
-                        background: Rectangle {
-                            radius: 8
-                            color: parent.enabled ? (parent.hovered ? "#4f8cf7" : "#3b82f6") : "#1e2a3f"
-                            Behavior on color { ColorAnimation { duration: 120 } }
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "#dce8f5"
-                            font: parent.font
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                    }
-
-                    Text {
-                        id: xmlDisaAktarBildirim
-                        width: parent.width
-                        visible: false
-                        text: ""
-                        color: "#9ca3af"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 10
-                        wrapMode: Text.WrapAnywhere
-                        horizontalAlignment: Text.AlignHCenter
-
-                        Timer {
-                            id: xmlDisaAktarTimer
-                            interval: 4000
-                            onTriggered: xmlDisaAktarBildirim.visible = false
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        radius: 10
-                        color: "#0a0a0d"
-                        border.color: "#1e2a3f"
-                        border.width: 1
-                        height: playbackIcerik.implicitHeight + 24
-                        visible: olcumId > 0
-
-                        Column {
-                            id: playbackIcerik
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.margins: 12
-                            spacing: 8
-
-                            Text {
-                                text: txt("oynatmaPlayback")
-                                color: "#6b7280"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 10
-                                font.letterSpacing: 1
-                            }
-
-                            Text {
-                                text: strokeModeli.count > 0
-                                      ? txt("strokeEtiket") + " " + (playbackAdimi + 1) + " / " + strokeModeli.count
-                                      : txt("oynatilacakStrokeYok")
-                                color: "#dce8f5"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 12
-                            }
-
-                            Flow {
-                                width: parent.width
-                                spacing: 5
-
-                                Button {
-                                    width: 40
-                                    height: 34
-                                    text: oynatiliyor ? "⏸" : "▶"
-                                    font.pixelSize: 14
-                                    enabled: strokeModeli.count > 0
-
-                                    onClicked: {
-                                        if (oynatiliyor) {
-                                            oynatiliyor = false
-                                            playbackTimer.stop()
-                                        } else {
-                                            if (playbackAdimi >= strokeModeli.count - 1) {
-                                                playbackAdimi = -1
-                                            }
-                                            oynatiliyor = true
-                                            playbackTimer.start()
-                                        }
-                                    }
-
-                                    background: Rectangle {
-                                        radius: 6
-                                        color: parent.enabled ? (parent.hovered ? "#4f8cf7" : "#3b82f6") : "#1e2a3f"
-                                        Behavior on color { ColorAnimation { duration: 120 } }
-                                    }
-
-                                    contentItem: Text {
-                                        text: parent.text
-                                        color: "#dce8f5"
-                                        font: parent.font
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-                                }
+                                Rectangle { width: tahminTablosu.width; height: 1; color: "#1e2a3f" }
 
                                 Repeater {
-                                    model: [1, 2, 5, 10]
-
-                                    Button {
-                                        width: 38
+                                    model: tahminSatirlari
+                                    Rectangle {
+                                        id: tahminSatiri
+                                        required property var modelData
+                                        required property int index
+                                        width: tahminTablosu.width
                                         height: 34
-                                        text: modelData + "x"
-                                        font.pixelSize: 12
-
-                                        onClicked: playbackHizi = modelData
-
-                                        background: Rectangle {
-                                            radius: 6
-                                            color: playbackHizi === modelData ? "#3b82f6" : "#12121a"
-                                            border.color: "#1e2a3f"
-                                            border.width: 1
-                                        }
-
-                                        contentItem: Text {
-                                            text: parent.text
-                                            color: playbackHizi === modelData ? "#dce8f5" : "#9ca3af"
-                                            font: parent.font
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
+                                        color: index % 2 === 0 ? "transparent" : "#0e0e14"
+                                        readonly property bool pompaVar: tahminAyarlari.pompaMaks > 0
+                                        Row {
+                                            anchors.fill: parent
+                                            Hucre { width: tahminTablosu.width * 0.18; height: tahminSatiri.height; text: sayi(tahminSatiri.modelData.debi, 1) }
+                                            Hucre { width: tahminTablosu.width * 0.18; height: tahminSatiri.height; text: sayi(tahminSatiri.modelData.uzunluk, 0) }
+                                            Hucre { width: tahminTablosu.width * 0.18; height: tahminSatiri.height; text: sayi(tahminSatiri.modelData.basincBar, 2); font.bold: true; font.pixelSize: 14 }
+                                            Hucre { width: tahminTablosu.width * 0.28; height: tahminSatiri.height; text: sayi(tahminSatiri.modelData.altSinirBar, 2) + " – " + sayi(tahminSatiri.modelData.ustSinirBar, 2); color: "#9ca3af" }
+                                            Hucre {
+                                                width: tahminTablosu.width * 0.18; height: tahminSatiri.height
+                                                text: !tahminSatiri.pompaVar ? "—" : (tahminSatiri.modelData.pompaAsildi ? "✕ " + txt("asildi") : "✓ " + txt("uygun"))
+                                                color: !tahminSatiri.pompaVar ? "#6b7280" : (tahminSatiri.modelData.pompaAsildi ? "#f87171" : "#4ade80")
+                                                font.bold: true
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-            }
-        }
-
-        Rectangle {
-            id: panelAyraci
-            width: 3
-            height: parent.height
-            color: "#060607"
-
-            Rectangle {
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                width: 1
-                color: "#403b82f6"
-            }
-        }
-
-        Item {
-            width: parent.width - ozetPaneli.width - panelAyraci.width
-            height: parent.height
-
-            Rectangle {
-                id: grafikKutusu
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.margins: 16
-                height: parent.height * 0.55
-                radius: 10
-                color: "#12121a"
-                border.color: "#1e2a3f"
-                border.width: 1
-
-                Item {
-                    id: grafikBaslik
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.margins: 14
-                    height: 20
-
-                    Text {
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: txt("pqDagilimGrafigi")
-                        color: "#9ca3af"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 13
-                        font.bold: true
-                    }
-
-                    Row {
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 16
-
-                        Row {
-                            spacing: 6
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Rectangle {
-                                width: 8
-                                height: 8
-                                radius: 4
-                                color: "#3b82f6"
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
 
                             Text {
-                                text: txt("olcumNoktalari")
-                                color: "#6b7280"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 11
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-
-                        Row {
-                            spacing: 6
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Rectangle {
-                                width: 12
-                                height: 2
-                                color: "#4f8cf7"
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            Text {
-                                text: txt("regresyonDogrusu")
-                                color: "#6b7280"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 11
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-
-                        Row {
-                            spacing: 6
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Rectangle {
-                                width: 8
-                                height: 8
-                                radius: 4
-                                color: "#4f8cf7"
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            Text {
-                                text: txt("oynatmaEtiket")
-                                color: "#6b7280"
-                                font.family: "Segoe UI"
-                                font.pixelSize: 11
-                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width
+                                text: txt("modelNotu").arg(calculator.sliperBoruCapiMm()).arg(calculator.sliperBoruUzunluguMm())
+                                color: "#4b5563"; font.family: "Segoe UI"; font.pixelSize: 10; wrapMode: Text.WordWrap
                             }
                         }
                     }
-                }
 
-                ChartView {
-                    anchors.top: grafikBaslik.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.topMargin: 4
-                    anchors.margins: 8
-                    backgroundColor: "transparent"
-                    legend.visible: false
-                    antialiasing: true
-
-                    ValueAxis {
-                        id: qEkseni
-                        min: 0
-                        max: 20
-                        titleText: Translations.turkish ? "Debi (Q) m³/h" : "Flow Rate (Q) m³/h"
-                        gridLineColor: "#1a1a20"
-                        labelsColor: "#4b5563"
-                        labelsFont.pixelSize: 9
-                        lineVisible: false
-                        minorGridVisible: false
-                    }
-
-                    ValueAxis {
-                        id: pEkseni
-                        min: 0
-                        max: 100
-                        titleText: Translations.turkish ? "Basınç (P) mbar" : "Pressure (P) mbar"
-                        gridLineColor: "#1a1a20"
-                        labelsColor: "#4b5563"
-                        labelsFont.pixelSize: 9
-                        lineVisible: false
-                        minorGridVisible: false
-                    }
-
-                    ScatterSeries {
-                        id: pqSerisi
-                        axisX: qEkseni
-                        axisY: pEkseni
-                        color: "#3b82f6"
-                        markerSize: 10
-                    }
-
-                    LineSeries {
-                        id: regresyonCizgisi
-                        axisX: qEkseni
-                        axisY: pEkseni
-                        color: "#4f8cf7"
-                        width: 2
-                    }
-
-                    ScatterSeries {
-                        id: oynatmaSerisi
-                        axisX: qEkseni
-                        axisY: pEkseni
-                        color: "#4f8cf7"
-                        markerSize: 16
-                    }
-                }
-            }
-
-            Rectangle {
-                anchors.top: grafikKutusu.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.margins: 16
-                anchors.topMargin: 8
-                radius: 10
-                color: "#12121a"
-                border.color: "#1e2a3f"
-                border.width: 1
-
-                Text {
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.margins: 14
-                    text: txt("strokeTablosu")
-                    color: "#9ca3af"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 13
-                    font.bold: true
-                }
-
-                Row {
-                    id: tabloBasligi
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.topMargin: 36
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-
-                    Text { width: parent.width * 0.25; text: txt("strokeBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
-                    Text { width: parent.width * 0.25; text: "P (mbar)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
-                    Text { width: parent.width * 0.25; text: "Q (m³/h)"; color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
-                    Text { width: parent.width * 0.25; text: txt("durumBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
-                }
-
-                Rectangle {
-                    anchors.top: tabloBasligi.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.topMargin: 8
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    height: 1
-                    color: "#1e2a3f"
-                }
-
-                ListView {
-                    anchors.top: tabloBasligi.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.margins: 12
-                    anchors.topMargin: 14
-                    clip: true
-
-                    model: ListModel {
-                        id: strokeModeli
-                    }
-
-                    delegate: Rectangle {
-                        width: parent.width
-                        height: 32
-                        radius: 6
-                        color: index === playbackAdimi ? "#1e2a3f" : (index % 2 === 0 ? "transparent" : "#0a0a0d")
-
-                        Row {
+                    // ---------------- 4: Tahmin grafiği ----------------
+                    Item {
+                        ChartView {
+                            theme: ChartView.ChartThemeDark
                             anchors.fill: parent
-                            anchors.leftMargin: 6
+                            backgroundColor: "transparent"
+                            antialiasing: true
+                            legend.visible: true
+                            legend.labelColor: "#9ca3af"
+                            legend.alignment: Qt.AlignBottom
 
-                            Text { width: parent.width * 0.25; anchors.verticalCenter: parent.verticalCenter; text: stroke; color: "#dce8f5"; font.pixelSize: 12 }
-                            Text { width: parent.width * 0.25; anchors.verticalCenter: parent.verticalCenter; text: p.toFixed(1); color: "#dce8f5"; font.pixelSize: 12 }
-                            Text { width: parent.width * 0.25; anchors.verticalCenter: parent.verticalCenter; text: q.toFixed(2); color: "#dce8f5"; font.pixelSize: 12 }
+                            Eksen { id: tgQEkseni; min: 0; max: 100; titleText: txt("debi") }
+                            Eksen { id: tgPEkseni; min: 0; max: 100; titleText: "P (bar)" }
 
-                            Item {
-                                width: parent.width * 0.25
-                                height: parent.height
-
-                                Rectangle {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    width: durumMetni.implicitWidth + 16
-                                    height: 20
-                                    radius: 10
-                                    color: gecerli ? "#123321" : "#2a1414"
-
-                                    Text {
-                                        id: durumMetni
-                                        anchors.centerIn: parent
-                                        text: gecerli ? txt("gecerliEtiket") : txt("hataliEtiket")
-                                        color: gecerli ? "#4ade80" : "#f87171"
-                                        font.pixelSize: 11
-                                        font.bold: true
-                                    }
-                                }
-                            }
+                            LineSeries { id: tahminL2; name: txt("tahmin") + " " + sayi(tahminAyarlari.l2, 0) + " m"; axisX: tgQEkseni; axisY: tgPEkseni; color: "#3b82f6"; width: 2.5 }
+                            LineSeries { id: tahminL3; name: txt("tahmin") + " " + sayi(tahminAyarlari.l3, 0) + " m"; axisX: tgQEkseni; axisY: tgPEkseni; color: "#22c55e"; width: 2.5; style: Qt.DotLine }
+                            LineSeries { id: tahminL4; name: txt("tahmin") + " " + sayi(tahminAyarlari.l4, 0) + " m"; axisX: tgQEkseni; axisY: tgPEkseni; color: "#ef4444"; width: 2.5; style: Qt.DashLine }
+                            LineSeries { id: pompaCizgisi; name: txt("pompaCizgi"); axisX: tgQEkseni; axisY: tgPEkseni; color: "#f59e0b"; width: 2; style: Qt.DashDotLine }
+                            // Hata çubukları (Q1 ve Q2'de, her uzunluk için)
+                            LineSeries { id: hc0; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#3b82f6"; width: 2 }
+                            LineSeries { id: hc1; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#3b82f6"; width: 2 }
+                            LineSeries { id: hc2; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#22c55e"; width: 2 }
+                            LineSeries { id: hc3; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#22c55e"; width: 2 }
+                            LineSeries { id: hc4; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#ef4444"; width: 2 }
+                            LineSeries { id: hc5; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#ef4444"; width: 2 }
                         }
                     }
                 }
@@ -1229,6 +1180,7 @@ Rectangle {
         }
     }
 
+    // --------------------------------------------------------------- Bildirim
     Rectangle {
         id: bildirimKutusu
         property bool hataMi: false
@@ -1246,7 +1198,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: 24
-        width: bildirimMetni.implicitWidth + 40
+        width: Math.min(bildirimMetni.implicitWidth + 40, parent.width - 40)
         height: 44
         radius: 10
         color: hataMi ? "#7f1d1d" : "#14532d"
@@ -1258,7 +1210,9 @@ Rectangle {
         Text {
             id: bildirimMetni
             anchors.centerIn: parent
-            text: ""
+            width: parent.width - 20
+            horizontalAlignment: Text.AlignHCenter
+            elide: Text.ElideMiddle
             color: "#dce8f5"
             font.family: "Segoe UI"
             font.pixelSize: 13
@@ -1267,8 +1221,80 @@ Rectangle {
 
         Timer {
             id: bildirimTimer
-            interval: 3000
+            interval: 4000
             onTriggered: bildirimKutusu.opacity = 0
+        }
+    }
+
+    // --------------------------------------------------------------- Popup'lar
+    Popup {
+        id: strokeSilPopup
+        property int strokeId: -1
+        property int strokeNo: 0
+        modal: true
+        anchors.centerIn: parent
+        width: 380
+        padding: 22
+        background: PopupArka {}
+        Overlay.modal: Rectangle { color: "#a6000000" }
+        contentItem: Column {
+            spacing: 18
+            Text {
+                width: 336
+                text: txt("strokeSilSoru").arg(strokeSilPopup.strokeNo)
+                color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 14; wrapMode: Text.WordWrap
+            }
+            Row {
+                spacing: 10
+                Dugme {
+                    width: 163; text: txt("sil"); renk: "#b91c1c"
+                    onClicked: {
+                        database.strokeSil(strokeSilPopup.strokeId)
+                        strokeSilPopup.close()
+                        verileriYukle()
+                    }
+                }
+                Dugme { width: 163; text: txt("vazgec"); renk: "#1e2a3f"; onClicked: strokeSilPopup.close() }
+            }
+        }
+    }
+
+    Popup {
+        id: bilgiPopup
+        modal: true
+        anchors.centerIn: parent
+        width: 420
+        padding: 22
+        background: PopupArka {}
+        Overlay.modal: Rectangle { color: "#a6000000" }
+
+        function ac() {
+            yerDuzenle.metin = bilgi.yer || ""
+            musteriDuzenle.metin = bilgi.musteri || ""
+            receteDuzenle.metin = bilgi.recete || ""
+            yorumDuzenle.metin = bilgi.yorum || ""
+            open()
+        }
+
+        contentItem: Column {
+            spacing: 10
+            Text { text: txt("olcumBilgisi"); color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 15; font.bold: true }
+            Girdi { id: yerDuzenle; width: 376; etiket: txt("yer") }
+            Girdi { id: musteriDuzenle; width: 376; etiket: txt("musteri") }
+            Girdi { id: receteDuzenle; width: 376; etiket: txt("recete") }
+            Girdi { id: yorumDuzenle; width: 376; etiket: txt("yorum") }
+            Row {
+                spacing: 10
+                Dugme {
+                    width: 183; text: txt("kaydet")
+                    onClicked: {
+                        database.olcumBilgisiGuncelle(olcumId, yerDuzenle.metin, musteriDuzenle.metin, receteDuzenle.metin, yorumDuzenle.metin)
+                        bilgiPopup.close()
+                        verileriYukle()
+                    }
+                }
+                Dugme { width: 183; text: txt("vazgec"); renk: "#1e2a3f"; onClicked: bilgiPopup.close() }
+            }
         }
     }
 
@@ -1277,23 +1303,13 @@ Rectangle {
         modal: true
         focus: true
         anchors.centerIn: parent
-        width: 640
-        height: Math.min(720, parent.height - 40)
+        width: 720
+        height: Math.min(820, parent.height - 40)
         padding: 0
         closePolicy: Popup.CloseOnEscape
-
         property string onizlemeHtml: ""
-
-        background: Rectangle {
-            color: "#12121a"
-            radius: 12
-            border.color: "#1e2a3f"
-            border.width: 1
-        }
-
-        Overlay.modal: Rectangle {
-            color: "#a6000000"
-        }
+        background: PopupArka {}
+        Overlay.modal: Rectangle { color: "#a6000000" }
 
         contentItem: Column {
             width: pdfOnizlemePopup.width
@@ -1303,23 +1319,20 @@ Rectangle {
                 width: parent.width
                 height: 52
                 color: "#0a0a0d"
-
+                radius: 12
                 Text {
                     anchors.left: parent.left
                     anchors.leftMargin: 20
                     anchors.verticalCenter: parent.verticalCenter
                     text: txt("pdfRaporOnizlemeBaslik")
-                    color: "#dce8f5"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 14
-                    font.bold: true
+                    color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 14; font.bold: true
                 }
             }
 
             Rectangle {
                 width: parent.width
                 height: pdfOnizlemePopup.height - 52 - 64
-                color: "#efe9da"
+                color: "#ffffff"
 
                 Flickable {
                     anchors.fill: parent
@@ -1328,6 +1341,7 @@ Rectangle {
                     contentHeight: onizlemeMetni.implicitHeight
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
+                    ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
                     TextEdit {
                         id: onizlemeMetni
@@ -1338,7 +1352,7 @@ Rectangle {
                         wrapMode: Text.WordWrap
                         text: pdfOnizlemePopup.onizlemeHtml
                         color: "#14141a"
-                        font.pixelSize: 13
+                        font.pixelSize: 12
                     }
                 }
             }
@@ -1347,74 +1361,20 @@ Rectangle {
                 width: parent.width
                 height: 64
                 color: "#0a0a0d"
-
+                radius: 12
                 Row {
                     anchors.centerIn: parent
                     spacing: 12
-
-                    Button {
-                        width: 140
-                        height: 38
+                    Dugme {
+                        width: 150
                         text: txt("indirPdf")
-                        font.pixelSize: 13
-                        font.bold: true
-
                         onClicked: {
-                            var yol = reportManager.pdfOlustur(
-                                olcumId,
-                                musteriAdi,
-                                receteAdi,
-                                hesaplananTau0,
-                                hesaplananMu,
-                                parseFloat(r2Metni.text)
-                            )
+                            var yol = reportManager.pdfOlustur(olcumId)
                             pdfOnizlemePopup.close()
-                            if (yol.length > 0) {
-                                bildirimKutusu.goster(txt("pdfKaydedildi") + yol, false)
-                            } else {
-                                bildirimKutusu.goster(txt("pdfOlusturulamadi"), true)
-                            }
-                        }
-
-                        background: Rectangle {
-                            radius: 8
-                            color: parent.hovered ? "#4f8cf7" : "#3b82f6"
-                            Behavior on color { ColorAnimation { duration: 120 } }
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "#dce8f5"
-                            font: parent.font
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
+                            bildirimKutusu.goster(yol.length > 0 ? txt("pdfKaydedildi") + yol : txt("pdfOlusturulamadi"), yol.length === 0)
                         }
                     }
-
-                    Button {
-                        width: 100
-                        height: 38
-                        text: txt("kapat")
-                        font.pixelSize: 13
-
-                        onClicked: pdfOnizlemePopup.close()
-
-                        background: Rectangle {
-                            radius: 8
-                            color: parent.hovered ? "#1e2a3f" : "transparent"
-                            border.color: "#1e2a3f"
-                            border.width: 1
-                            Behavior on color { ColorAnimation { duration: 120 } }
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "#9ca3af"
-                            font: parent.font
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                    }
+                    Dugme { width: 100; text: txt("kapat"); renk: "#1e2a3f"; onClicked: pdfOnizlemePopup.close() }
                 }
             }
         }
@@ -1425,23 +1385,12 @@ Rectangle {
         modal: true
         focus: true
         anchors.centerIn: parent
-        width: 640
+        width: 860
         height: Math.min(680, parent.height - 40)
         padding: 0
         closePolicy: Popup.CloseOnEscape
-
-        property var satirlar: []
-
-        background: Rectangle {
-            color: "#12121a"
-            radius: 12
-            border.color: "#1e2a3f"
-            border.width: 1
-        }
-
-        Overlay.modal: Rectangle {
-            color: "#a6000000"
-        }
+        background: PopupArka {}
+        Overlay.modal: Rectangle { color: "#a6000000" }
 
         contentItem: Column {
             width: csvOnizlemePopup.width
@@ -1451,84 +1400,75 @@ Rectangle {
                 width: parent.width
                 height: 52
                 color: "#0a0a0d"
-
+                radius: 12
                 Text {
                     anchors.left: parent.left
                     anchors.leftMargin: 20
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: txt("excelCsvOnizlemeBaslik")
-                    color: "#dce8f5"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 14
-                    font.bold: true
-                }
-            }
-
-            Item {
-                width: parent.width
-                height: csvBilgiSutunu.implicitHeight + 32
-
-                Column {
-                    id: csvBilgiSutunu
-                    anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 20
-                    spacing: 4
-
-                    Text { text: txt("olcumIdEtiket") + olcumId; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
-                    Text { text: txt("tarihEtiket") + olcumTarihi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
-                    Text { text: txt("musteriEtiket") + musteriAdi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
-                    Text { text: txt("receteEtiket") + receteAdi; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
-                    Text { text: txt("agirlikEtiket") + agirlikDegeri.toFixed(1); color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                    anchors.rightMargin: 20
+                    anchors.verticalCenter: parent.verticalCenter
+                    elide: Text.ElideRight
+                    text: txt("excelCsvOnizlemeBaslik") + "  —  " + (bilgi.musteri || "") + "  ·  " + (bilgi.recete || "") + "  ·  " + (bilgi.tarih || "")
+                    color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 14; font.bold: true
                 }
             }
 
             Rectangle {
                 width: parent.width
-                height: csvOnizlemePopup.height - 52 - 130 - 64
+                height: csvOnizlemePopup.height - 52 - 64
                 color: "#0a0a0d"
-                border.color: "#1e2a3f"
-                border.width: 1
 
                 Row {
-                    id: csvTabloBasligi
+                    id: csvBaslik
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.margins: 12
-
-                    Text { width: parent.width * 0.2; text: txt("strokeBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.2; text: txt("basincBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.2; text: txt("konumBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.2; text: txt("debiBuyukBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true }
-                    Text { width: parent.width * 0.2; text: txt("gecerliBuyukBaslik"); color: "#6b7280"; font.pixelSize: 11; font.bold: true }
+                    anchors.margins: 14
+                    readonly property var k: [0.06, 0.12, 0.08, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.14]
+                    BaslikHucre { width: csvBaslik.width * csvBaslik.k[0]; text: txt("no") }
+                    BaslikHucre { width: csvBaslik.width * csvBaslik.k[1]; text: txt("saat") }
+                    BaslikHucre { width: csvBaslik.width * csvBaslik.k[2]; text: txt("sure") }
+                    BaslikHucre { width: csvBaslik.width * csvBaslik.k[3]; text: txt("agirlik") }
+                    BaslikHucre { width: csvBaslik.width * csvBaslik.k[4]; text: "Pmax" }
+                    BaslikHucre { width: csvBaslik.width * csvBaslik.k[5]; text: "P0l" }
+                    BaslikHucre { width: csvBaslik.width * csvBaslik.k[6]; text: "P0r" }
+                    BaslikHucre { width: csvBaslik.width * csvBaslik.k[7]; text: "p mbar" }
+                    BaslikHucre { width: csvBaslik.width * csvBaslik.k[8]; text: "Q m³/h" }
+                    BaslikHucre { width: csvBaslik.width * csvBaslik.k[9]; text: txt("durum") }
                 }
 
                 ListView {
-                    anchors.top: csvTabloBasligi.bottom
+                    id: csvListesi
+                    anchors.top: csvBaslik.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    anchors.margins: 12
+                    anchors.margins: 14
                     anchors.topMargin: 8
                     clip: true
+                    model: strokeListesi
+                    ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
-                    model: csvOnizlemePopup.satirlar
-
-                    delegate: Rectangle {
-                        width: ListView.view.width
+                    delegate: Row {
+                        id: csvSatiri
+                        required property var modelData
+                        readonly property var k: csvBaslik.k
+                        readonly property real g: csvListesi.width
+                        width: csvListesi.width
                         height: 26
-                        color: index % 2 === 0 ? "transparent" : "#12121a"
-
-                        Row {
-                            anchors.fill: parent
-
-                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.stroke; color: "#dce8f5"; font.pixelSize: 12 }
-                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.basinc.toFixed(1); color: "#dce8f5"; font.pixelSize: 12 }
-                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.konum.toFixed(1); color: "#dce8f5"; font.pixelSize: 12 }
-                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.debi.toFixed(2); color: "#dce8f5"; font.pixelSize: 12 }
-                            Text { width: parent.width * 0.2; anchors.verticalCenter: parent.verticalCenter; text: modelData.gecerli ? txt("evet") : txt("hayir"); color: modelData.gecerli ? "#4ade80" : "#f87171"; font.pixelSize: 12 }
+                        Hucre { width: csvSatiri.g * csvSatiri.k[0]; height: csvSatiri.height; text: csvSatiri.modelData.stroke }
+                        Hucre { width: csvSatiri.g * csvSatiri.k[1]; height: csvSatiri.height; text: csvSatiri.modelData.saat || "—" }
+                        Hucre { width: csvSatiri.g * csvSatiri.k[2]; height: csvSatiri.height; text: sayi(csvSatiri.modelData.sure, 2) }
+                        Hucre { width: csvSatiri.g * csvSatiri.k[3]; height: csvSatiri.height; text: sayi(csvSatiri.modelData.agirlik, 1) }
+                        Hucre { width: csvSatiri.g * csvSatiri.k[4]; height: csvSatiri.height; text: sayi(csvSatiri.modelData.pMaks, 1) }
+                        Hucre { width: csvSatiri.g * csvSatiri.k[5]; height: csvSatiri.height; text: sayi(csvSatiri.modelData.p0l, 1) }
+                        Hucre { width: csvSatiri.g * csvSatiri.k[6]; height: csvSatiri.height; text: sayi(csvSatiri.modelData.p0r, 1) }
+                        Hucre { width: csvSatiri.g * csvSatiri.k[7]; height: csvSatiri.height; text: sayi(csvSatiri.modelData.basinc, 2) }
+                        Hucre { width: csvSatiri.g * csvSatiri.k[8]; height: csvSatiri.height; text: sayi(csvSatiri.modelData.debi, 2) }
+                        Hucre {
+                            width: csvSatiri.g * csvSatiri.k[9]; height: csvSatiri.height
+                            text: !csvSatiri.modelData.gecerli ? txt("hatali") : (csvSatiri.modelData.secili ? txt("dahil") : txt("haric"))
+                            color: !csvSatiri.modelData.gecerli ? "#f87171" : (csvSatiri.modelData.secili ? "#4ade80" : "#9ca3af")
                         }
                     }
                 }
@@ -1538,67 +1478,21 @@ Rectangle {
                 width: parent.width
                 height: 64
                 color: "#0a0a0d"
-
+                radius: 12
                 Row {
                     anchors.centerIn: parent
                     spacing: 12
-
-                    Button {
-                        width: 140
-                        height: 38
+                    Dugme {
+                        width: 150
                         text: txt("indirCsv")
-                        font.pixelSize: 13
-                        font.bold: true
-
+                        renk: "#16a34a"
                         onClicked: {
                             var yol = database.csvDisaAktar(olcumId)
                             csvOnizlemePopup.close()
-                            if (yol.length > 0) {
-                                bildirimKutusu.goster(txt("csvKaydedildi") + yol, false)
-                            } else {
-                                bildirimKutusu.goster(txt("csvOlusturulamadi"), true)
-                            }
-                        }
-
-                        background: Rectangle {
-                            radius: 8
-                            color: parent.hovered ? "#22c55e" : "#16a34a"
-                            Behavior on color { ColorAnimation { duration: 120 } }
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "#dce8f5"
-                            font: parent.font
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
+                            bildirimKutusu.goster(yol.length > 0 ? txt("csvKaydedildi") + yol : txt("csvOlusturulamadi"), yol.length === 0)
                         }
                     }
-
-                    Button {
-                        width: 100
-                        height: 38
-                        text: txt("kapat")
-                        font.pixelSize: 13
-
-                        onClicked: csvOnizlemePopup.close()
-
-                        background: Rectangle {
-                            radius: 8
-                            color: parent.hovered ? "#1e2a3f" : "transparent"
-                            border.color: "#1e2a3f"
-                            border.width: 1
-                            Behavior on color { ColorAnimation { duration: 120 } }
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "#9ca3af"
-                            font: parent.font
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                    }
+                    Dugme { width: 100; text: txt("kapat"); renk: "#1e2a3f"; onClicked: csvOnizlemePopup.close() }
                 }
             }
         }

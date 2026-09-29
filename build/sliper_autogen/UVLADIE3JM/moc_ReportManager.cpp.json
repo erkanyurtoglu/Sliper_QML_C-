@@ -9,26 +9,6 @@
                         {
                             "name": "olcumId",
                             "type": "int"
-                        },
-                        {
-                            "name": "musteri",
-                            "type": "QString"
-                        },
-                        {
-                            "name": "recete",
-                            "type": "QString"
-                        },
-                        {
-                            "name": "tau0",
-                            "type": "double"
-                        },
-                        {
-                            "name": "mu",
-                            "type": "double"
-                        },
-                        {
-                            "name": "r2",
-                            "type": "double"
                         }
                     ],
                     "name": "pdfOnizlemeHtml",
@@ -40,26 +20,6 @@
                         {
                             "name": "olcumId",
                             "type": "int"
-                        },
-                        {
-                            "name": "musteri",
-                            "type": "QString"
-                        },
-                        {
-                            "name": "recete",
-                            "type": "QString"
-                        },
-                        {
-                            "name": "tau0",
-                            "type": "double"
-                        },
-                        {
-                            "name": "mu",
-                            "type": "double"
-                        },
-                        {
-                            "name": "r2",
-                            "type": "double"
                         }
                     ],
                     "name": "pdfOlustur",

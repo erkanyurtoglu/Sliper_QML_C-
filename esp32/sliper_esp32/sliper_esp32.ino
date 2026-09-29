@@ -34,8 +34,10 @@
 // icin kullaniliyor, bu yuzden batarya icin 0. kanal ayrildi.
 // TODO: Gercek voltaj bolucu direnc degerleri (R1/R2) donanima baglanip
 // bir multimetreyle dogrulandiktan sonra Qt tarafindaki
-// WifiManager::BATARYA_BOLUCU_ORANI degeri buna gore kalibre edilmelidir.
+// SliperModel::BATARYA_BOLUCU_ORANI degeri (src/SliperModel.h) buna gore kalibre edilmelidir.
 // Su an bu deger yer tutucu (placeholder) bir varsayimdir.
+// DIKKAT: ADS1115 girisi VDD+0.3 V'u (3.6 V) asmamalidir. 14.7 V pil icin
+// en az 1:5 oraninda bolucu gerekir (ornegin 100k / 22k -> ~2.65 V).
 #define BATARYA_ADS_KANALI 0
 
 // ---------------- Nesneler ----------------
@@ -88,6 +90,8 @@ void setup() {
         Serial.println("ADS1115 bulunamadi!");
     } else {
         ads.setGain(GAIN_ONE);
+        // Varsayilan 128 SPS'te tek okuma ~8 ms surer; 860 SPS ile ~1.2 ms.
+        ads.setDataRate(RATE_ADS1115_860SPS);
         Serial.println("ADS1115 hazir.");
     }
 
@@ -100,9 +104,31 @@ void setup() {
     Serial.println("TCP sunucu baslatildi, baglanti bekleniyor...");
 }
 
-long hamAgirlikOku() {
-    if (!loadCell.is_ready()) return 0;
-    return loadCell.read_average(3);
+// ---------------- Ornekleme ----------------
+// Stroke'lar 1.5-5 s surer; plato/Pmax ve hiz regresyonu icin stroke basina
+// en az ~50 ornek gerekir. Bu yuzden 20 ms (50 Hz) aralikla gonderilir.
+// NOT: Kullanilan HX711 modulunde RATE pini kart uzerinde GND'ye sabit,
+// yani 10 SPS calisir: basinc saniyede 10 kez yenilenir, arada son deger
+// tekrar gonderilir. Stroke basina 13-46 basinc okumasi dusar, bu yeterlidir;
+// 10 SPS ayrica 50 Hz sebeke gurultusunu bastirir. Konum 50 Hz'de okunur.
+const unsigned long ORNEK_ARALIGI_MS = 20;
+const unsigned long BATARYA_ARALIGI_MS = 1000;
+const unsigned long MPU_ARALIGI_MS = 100;
+
+#define SERI_DEBUG 0
+
+unsigned long sonOrnekMs = 0;
+unsigned long sonBataryaMs = 0;
+unsigned long sonMpuMs = 0;
+long sonHamAgirlik = 0;
+int16_t sonHamBatarya = 0;
+float sonAccelX = 0, sonAccelY = 0, sonAccelZ = 0;
+
+// Bloklamaz: HX711 yeni donusum hazirsa okur, degilse son degeri korur.
+void hamAgirlikGuncelle() {
+    if (loadCell.is_ready()) {
+        sonHamAgirlik = loadCell.read();
+    }
 }
 
 int16_t hamMesafeOku() {
@@ -120,6 +146,8 @@ void loop() {
             bagliIstemci.stop();
         }
         bagliIstemci = yeniIstemci;
+        // Kucuk paketlerin Nagle algoritmasiyla bekletilip toplu gitmesini engeller.
+        bagliIstemci.setNoDelay(true);
         Serial.println("PC baglandi.");
     }
 
@@ -136,25 +164,40 @@ void loop() {
         }
     }
 
-    long hamAgirlik = hamAgirlikOku();
-    int16_t hamMesafe = hamMesafeOku();
-    int16_t hamBatarya = hamBataryaOku();
+    hamAgirlikGuncelle();
 
-    sensors_event_t ivme, gyro, sicaklik;
-    ivme.acceleration.x = 0;
-    ivme.acceleration.y = 0;
-    ivme.acceleration.z = 0;
-    if (mpuHazir) {
+    const unsigned long simdi = millis();
+    if (simdi - sonOrnekMs < ORNEK_ARALIGI_MS) {
+        return;
+    }
+    sonOrnekMs = simdi;
+
+    const int16_t hamMesafe = hamMesafeOku();
+
+    if (simdi - sonBataryaMs >= BATARYA_ARALIGI_MS) {
+        sonBataryaMs = simdi;
+        sonHamBatarya = hamBataryaOku();
+    }
+
+    if (mpuHazir && simdi - sonMpuMs >= MPU_ARALIGI_MS) {
+        sonMpuMs = simdi;
+        sensors_event_t ivme, gyro, sicaklik;
         mpu.getEvent(&ivme, &gyro, &sicaklik);
+        sonAccelX = ivme.acceleration.x;
+        sonAccelY = ivme.acceleration.y;
+        sonAccelZ = ivme.acceleration.z;
     }
 
     StaticJsonDocument<256> doc;
-    doc["hamAgirlik"] = hamAgirlik;
+    // Zaman damgasi: Qt tarafi hiz/debiyi bu degerden hesaplar
+    // (paketin PC'ye varis zamani WiFi/TCP gecikmesi nedeniyle guvenilmez).
+    doc["t"] = simdi;
+    doc["hamAgirlik"] = sonHamAgirlik;
     doc["hamMesafe"] = hamMesafe;
-    doc["hamBatarya"] = hamBatarya;
-    doc["accelX"] = round(ivme.acceleration.x * 1000) / 1000.0;
-    doc["accelY"] = round(ivme.acceleration.y * 1000) / 1000.0;
-    doc["accelZ"] = round(ivme.acceleration.z * 1000) / 1000.0;
+    doc["hamBatarya"] = sonHamBatarya;
+    doc["accelX"] = round(sonAccelX * 1000) / 1000.0;
+    doc["accelY"] = round(sonAccelY * 1000) / 1000.0;
+    doc["accelZ"] = round(sonAccelZ * 1000) / 1000.0;
 
     String json;
     serializeJson(doc, json);
@@ -164,7 +207,7 @@ void loop() {
         bagliIstemci.print(json);
     }
 
-    Serial.println(json);
-
-    delay(200);
+#if SERI_DEBUG
+    Serial.print(json);
+#endif
 }

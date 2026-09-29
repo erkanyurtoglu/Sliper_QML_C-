@@ -29,8 +29,8 @@ Rectangle {
                 {
                     baslikTr: "Müşteri ve reçete bilgisini girin",
                     baslikEn: "Enter the customer and mix design",
-                    metinTr: "Sol menüden Ölçüm sayfasını açın. \"Müşteri\" alanına müşteri adını yazın ve \"Beton Reçetesi\" listesinden ilgili reçeteyi seçin.",
-                    metinEn: "Open the Measurement page from the left menu. Type the customer name into the \"Customer\" field and pick the relevant mix from the \"Concrete Mix Design\" list.",
+                    metinTr: "Sol menüden Ölçüm sayfasını açın. \"Ölçüm Yeri\" ve \"Müşteri\" alanlarını doldurup \"Beton Reçetesi\" listesinden ilgili reçeteyi seçin.",
+                    metinEn: "Open the Measurement page from the left menu. Fill in \"Place of Measure\" and \"Customer\", then select the recipe from the \"Concrete Mix Design\" list.",
                     mockup: { tur: "olcum", bolge: "musteriRecete" }
                 },
                 {
@@ -50,8 +50,8 @@ Rectangle {
                 {
                     baslikTr: "Ağırlık ekleyin, gerekirse duraklatın",
                     baslikEn: "Add weight, pause if needed",
-                    metinTr: "Ölçüm sırasında \"Eklenen Ağırlık (kg)\" alanından eklenen ağırlığı kaydedin. \"⏸ Duraklat\" ile teste ara verip \"▶ Devam Et\" ile kaldığınız yerden sürdürebilirsiniz.",
-                    metinEn: "During the measurement, log added weight using the \"Added Weight (kg)\" field. Use \"⏸ Pause\" to pause the test and \"▶ Resume\" to continue from where you left off.",
+                    metinTr: "Boruyu üst konuma kaldırıp kilitleyin ve serbest bırakın: stroke otomatik algılanır, üstteki \"SON STROKE\" çubuğunda Pmax, P0l, P0r, p ve Q gösterilir. Her yük için en az 3 stroke atın; yükü \"+1.6\" / \"+4.8\" butonlarıyla girin (her stroke o anki ağırlıkla kaydedilir). \"⏸ Duraklat\" stroke algılamayı durdurur, canlı veri akmaya devam eder.",
+                    metinEn: "Lift the pipe to the top position, lock it and release it: the stroke is detected automatically and the \"LAST STROKE\" bar shows Pmax, P0l, P0r, p and Q. Do at least 3 strokes per load; enter the load with \"+1.6\" / \"+4.8\" (each stroke is saved with the current weight). \"⏸ Pause\" stops stroke detection while live data keeps flowing.",
                     mockup: { tur: "olcum", bolge: "agirlikDuraklat" }
                 }
             ]
@@ -96,22 +96,22 @@ Rectangle {
                 {
                     baslikTr: "Sonuç özetini inceleyin",
                     baslikEn: "Review the result summary",
-                    metinTr: "\"SONUÇ ÖZETİ\" kartında akma gerilmesi (τ₀), plastik viskozite (μ) ve uyum kalitesi (R²) değerleri listelenir.",
-                    metinEn: "The \"RESULT SUMMARY\" card lists yield stress (τ₀), plastic viscosity (μ), and fit quality (R²).",
+                    metinTr: "\"SONUÇ ÖZETİ\" kartında P–Q doğrusunun kesişimi (A, mbar), eğimi (B, mbar·h/m³) ve uyum kalitesi (R²) listelenir. A yağlama tabakasının akma direncini, B viskoz direncini gösterir.",
+                    metinEn: "The \"RESULT SUMMARY\" card lists the P–Q line intercept (A, mbar), slope (B, mbar·h/m³), and fit quality (R²). A reflects the yield resistance of the lubricating layer, B its viscous resistance.",
                     mockup: { tur: "sonuclar", bolge: "ozet" }
                 },
                 {
                     baslikTr: "Boru hattı tahminini hesaplayın",
                     baslikEn: "Calculate the pipeline estimate",
-                    metinTr: "\"BORU HATTI TAHMİNİ\" bölümüne hedef boru çapı, boru uzunluğu ve hedef debiyi girip \"Tahmini Hesapla\" butonuna basın; sonuç \"POMPALANABİLİR\" veya \"POMPALAMA SORUNU\" olarak gösterilir.",
-                    metinEn: "In the \"PIPELINE ESTIMATE\" section, enter the target pipe diameter, pipe length and target flow rate, then press \"Calculate Estimate\"; the result shows as \"PUMPABLE\" or \"PUMPING ISSUE\".",
+                    metinTr: "\"TAHMİN AYARLARI\" bölümüne Q1/Q2 debilerini, boru çapını, L2/L3/L4 uzunluklarını, pompalama yüksekliğini (aşağı pompalamada negatif), beton yoğunluğunu, hata payını ve pompanın maksimum basıncını girip \"Tahmini Hesapla ve Kaydet\"e basın. Tahmin tablosundaki tüm durumlar pompa kapasitesi içindeyse sonuç \"POMPALANABİLİR\", değilse \"POMPALAMA SORUNU\" olarak gösterilir.",
+                    metinEn: "In \"FORECAST PREFERENCES\" enter the Q1/Q2 flow rates, pipe diameter, L2/L3/L4 lengths, pumping head (negative for downward pumping), concrete density, error tolerance and the pump max. pressure, then press \"Calculate and Save Forecast\". If all cases in the forecast table are within the pump capacity the result is \"PUMPABLE\", otherwise \"PUMPING ISSUE\".",
                     mockup: { tur: "sonuclar", bolge: "boru" }
                 },
                 {
                     baslikTr: "Grafik ve stroke tablosunu inceleyin",
                     baslikEn: "Review the chart and stroke table",
-                    metinTr: "\"P-Q Dağılım Grafiği\" ölçüm noktalarını ve regresyon doğrusunu gösterir. \"Stroke Tablosu\"ndan her strokun geçerli/hatalı durumunu görebilir, \"Oynatma\" ile bir strokun kaydını tekrar izleyebilirsiniz.",
-                    metinEn: "The \"P-Q Distribution Chart\" shows measurement points and the regression line. The \"Stroke Table\" shows each stroke's valid/invalid status, and \"Playback\" lets you replay a recorded stroke.",
+                    metinTr: "Sağdaki sekmeler: \"P–Q Grafiği\" (noktalar ve regresyon), \"Stroke Tablosu\" (kutucukla stroke'u tahmine dahil et/çıkar, 🗑 ile sil; hatalı stroke'lar \"Wrong Stroke\" olarak işaretlenir), \"Stroke Eğrileri\" (her strokun basınç ve mesafe/hız eğrisi), \"Tahmin Tablosu\" ve \"Tahmin Grafiği\".",
+                    metinEn: "Tabs on the right: \"p–Q Chart\" (points and regression), \"Table of Strokes\" (include/exclude a stroke with the checkbox, delete with 🗑; invalid strokes are marked \"Wrong Stroke\"), \"Stroke Curves\" (pressure and distance/speed curve of each stroke), \"Forecast Table\" and \"Forecast Chart\".",
                     mockup: { tur: "sonuclar", bolge: "grafikTablo" }
                 },
                 {
@@ -170,8 +170,8 @@ Rectangle {
                 {
                     baslikTr: "Kalibre edilecek sensörü seçin",
                     baslikEn: "Select the sensor to calibrate",
-                    metinTr: "Sol menüden Kalibrasyon sayfasını açın ve Eğim Sensörü, Load Cell veya Mesafe Sensörü kartlarından birine tıklayın.",
-                    metinEn: "Open the Calibration page from the left menu and click one of the Incline Sensor, Load Cell or Distance Sensor cards.",
+                    metinTr: "Sol menüden Kalibrasyon sayfasını açın ve Eğim Sensörü, Load Cell, Mesafe Sensörü veya Stroke Konumları kartlarından birine tıklayın. Stroke Konumları'nda borunun üst ve alt konumunu kaydedin; stroke'lar bu referanslarla algılanır.",
+                    metinEn: "Open the Calibration page from the left menu and click Incline Sensor, Load Cell, Distance Sensor or Stroke Positions. In Stroke Positions save the top and bottom positions of the pipe; strokes are detected using these references.",
                     mockup: { tur: "kalibrasyonSecim", bolge: "kartlar" }
                 },
                 {

@@ -307,6 +307,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.h
  mdp:C:/msys64/mingw64/include/time.h
  mdp:C:/msys64/mingw64/include/vadefs.h
  mdp:C:/msys64/mingw64/include/wchar.h
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SliperModel.h
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceCommandManager.h
  mmc:Q_OBJECT
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QObject
@@ -626,13 +627,16 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceCommandManager.h
  mdp:C:/msys64/mingw64/include/time.h
  mdp:C:/msys64/mingw64/include/vadefs.h
  mdp:C:/msys64/mingw64/include/wchar.h
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SliperSabitleri.h
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.h
  mmc:Q_OBJECT
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QDateTime
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QMap
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QObject
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QString
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QVector
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/q20type_traits.h
@@ -651,6 +655,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qbytearrayalgorithms.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qbytearraylist.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qbytearrayview.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qcalendar.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qchar.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qcompare.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qcompare_impl.h
@@ -664,6 +669,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qcontiguouscache.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qdarwinhelpers.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qdatastream.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qdatetime.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qexceptionhandling.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qflags.h
@@ -681,6 +687,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qiterator.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qlatin1stringview.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qlist.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qlocale.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qlogging.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qmalloc.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h
@@ -742,6 +749,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qversiontagging.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qxptype_traits.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qyieldcpu.h
@@ -1905,10 +1913,16 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h
  mdp:C:/msys64/mingw64/include/wchar.h
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h
  mmc:Q_OBJECT
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QMap
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QObject
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QPointF
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QString
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/q20functional.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/q20memory.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/q20type_traits.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/q23utility.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qalgorithms.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qanystringview.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qarraydata.h
@@ -1933,8 +1947,10 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qcontainerfwd.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qcontainerinfo.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qcontainertools_impl.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qcontiguouscache.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qdarwinhelpers.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qdatastream.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qexceptionhandling.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qflags.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qfloat16.h
@@ -1944,14 +1960,18 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qgenericatomic.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qglobal.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qglobalstatic.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qhash.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qhashfunctions.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qiodevicebase.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qiterable.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qiterator.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qlatin1stringview.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qline.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qlist.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qlogging.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qmalloc.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qmargins.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qmath.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qmetacontainer.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qmetatype.h
@@ -1964,10 +1984,18 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qobjectdefs_impl.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qoverload.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qpair.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qpoint.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qprocessordetection.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qrect.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qrefcount.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qscopedpointer.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qscopeguard.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qset.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata_impl.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer_impl.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qsize.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qstring.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qstringalgorithms.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qstringbuilder.h
@@ -1990,6 +2018,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qtcoreexports.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qtdeprecationmarkers.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qtenvironmentvariables.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qtextstream.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qtmetamacros.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qtnoop.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qtpreprocessorsupport.h
@@ -2001,9 +2030,28 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qtypeinfo.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qtypes.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qutf8stringview.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qversiontagging.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qxptype_traits.h
  mdp:C:/Qt/6.7.3/mingw_64/include/QtCore/qyieldcpu.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/QColor
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/QImage
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qcolor.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qimage.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qpaintdevice.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qpixelformat.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qpolygon.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qregion.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qrgb.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qrgba64.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qtgui-config.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qtguiexports.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qtguiglobal.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qtransform.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qwindowdefs.h
+ mdp:C:/Qt/6.7.3/mingw_64/include/QtGui/qwindowdefs_win.h
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/algorithm
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/array
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/atomic
@@ -2091,6 +2139,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/cctype
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/cerrno
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/chrono
+ mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/climits
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/clocale
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/cmath
  mdp:C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/cstddef
@@ -2566,6 +2615,7 @@ C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Backend.cpp
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Calculator.cpp
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Database.cpp
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.cpp
+C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SliperModel.cpp
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceCommandManager.cpp
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceRecognitionWorker.cpp
 C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/WifiManager.cpp

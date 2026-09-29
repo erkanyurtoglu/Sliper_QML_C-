@@ -39,11 +39,6 @@ constexpr auto qt_meta_stringdata_CLASSReportManagerENDCLASS = QtMocHelpers::str
     "pdfOnizlemeHtml",
     "",
     "olcumId",
-    "musteri",
-    "recete",
-    "tau0",
-    "mu",
-    "r2",
     "pdfOlustur"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
@@ -65,12 +60,12 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSReportManagerENDCLASS[] = {
        0,       // signalCount
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    6,   26,    2, 0x02,    1 /* Public */,
-       9,    6,   39,    2, 0x02,    8 /* Public */,
+       1,    1,   26,    2, 0x02,    1 /* Public */,
+       4,    1,   29,    2, 0x02,    3 /* Public */,
 
  // methods: parameters
-    QMetaType::QString, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::Double, QMetaType::Double, QMetaType::Double,    3,    4,    5,    6,    7,    8,
-    QMetaType::QString, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::Double, QMetaType::Double, QMetaType::Double,    3,    4,    5,    6,    7,    8,
+    QMetaType::QString, QMetaType::Int,    3,
+    QMetaType::QString, QMetaType::Int,    3,
 
        0        // eod
 };
@@ -87,19 +82,9 @@ Q_CONSTINIT const QMetaObject ReportManager::staticMetaObject = { {
         // method 'pdfOnizlemeHtml'
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        QtPrivate::TypeAndForceComplete<double, std::false_type>,
-        QtPrivate::TypeAndForceComplete<double, std::false_type>,
-        QtPrivate::TypeAndForceComplete<double, std::false_type>,
         // method 'pdfOlustur'
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
-        QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        QtPrivate::TypeAndForceComplete<double, std::false_type>,
-        QtPrivate::TypeAndForceComplete<double, std::false_type>,
-        QtPrivate::TypeAndForceComplete<double, std::false_type>
+        QtPrivate::TypeAndForceComplete<int, std::false_type>
     >,
     nullptr
 } };
@@ -110,9 +95,9 @@ void ReportManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         auto *_t = static_cast<ReportManager *>(_o);
         (void)_t;
         switch (_id) {
-        case 0: { QString _r = _t->pdfOnizlemeHtml((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[5])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[6])));
+        case 0: { QString _r = _t->pdfOnizlemeHtml((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
-        case 1: { QString _r = _t->pdfOlustur((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[5])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[6])));
+        case 1: { QString _r = _t->pdfOlustur((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }

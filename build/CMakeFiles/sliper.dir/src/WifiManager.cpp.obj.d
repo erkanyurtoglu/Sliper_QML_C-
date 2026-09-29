@@ -352,6 +352,12 @@ CMakeFiles/sliper.dir/src/WifiManager.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qstring.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\SliperModel.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QHash \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qhash.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QStringList \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qstringlist.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QJsonDocument \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qjsondocument.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qjsonvalue.h \

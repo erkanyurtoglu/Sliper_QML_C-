@@ -336,6 +336,15 @@ CMakeFiles/sliper.dir/build/.rcc/qmlcache/sliper_qml/pages/SonuclarPage_qml.cpp.
  C:/Qt/6.7.3/mingw_64/include/QtCore/qurl.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qversionnumber.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qtyperevision.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qrandom.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/random \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/bits/random.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32/bits/opt_random.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/pmmintrin.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/emmintrin.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/xmmintrin.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/mmintrin.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/bits/random.tcc \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qtimezone.h \
  C:/Qt/6.7.3/mingw_64/include/QtQml/qjsengine.h \
  C:/Qt/6.7.3/mingw_64/include/QtQml/qjsmanagedvalue.h \

@@ -303,44 +303,87 @@ CMakeFiles/sliper.dir/src/ReportManager.cpp.obj: \
  C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/chrono \
  C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/ratio \
  C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/ctime \
- C:/Qt/6.7.3/mingw_64/include/QtPrintSupport/QPrinter \
- C:/Qt/6.7.3/mingw_64/include/QtPrintSupport/qprinter.h \
- C:/Qt/6.7.3/mingw_64/include/QtPrintSupport/qtprintsupportglobal.h \
- C:/Qt/6.7.3/mingw_64/include/QtWidgets/qtwidgetsglobal.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantMap \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata_impl.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVariant \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qtextstream.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qcontiguouscache.h \
+ C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/climits \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer_impl.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qset.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qhash.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/q23utility.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qobject.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qstring.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/QImage \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qimage.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qtguiglobal.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qtgui-config.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qtguiexports.h \
- C:/Qt/6.7.3/mingw_64/include/QtWidgets/qtwidgets-config.h \
- C:/Qt/6.7.3/mingw_64/include/QtWidgets/qtwidgetsexports.h \
- C:/Qt/6.7.3/mingw_64/include/QtPrintSupport/qtprintsupport-config.h \
- C:/Qt/6.7.3/mingw_64/include/QtPrintSupport/qtprintsupportexports.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qpagedpaintdevice.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qcolor.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qrgb.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qrgba64.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qpaintdevice.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qwindowdefs.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qwindowdefs_win.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qrect.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qmargins.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/q23utility.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qsize.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qpoint.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qpagelayout.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qpagesize.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qsharedpointer_impl.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qpageranges.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/QPainter \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qpainter.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qpixmap.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qcolor.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qrgb.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qrgba64.h \
- C:/Qt/6.7.3/mingw_64/include/QtGui/qimage.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qpixelformat.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qtransform.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qpolygon.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qregion.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qline.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QPointF \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qpoint.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/QColor \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qcolor.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\Database.h \
+ C:/Qt/6.7.3/mingw_64/include/QtSql/QSqlDatabase \
+ C:/Qt/6.7.3/mingw_64/include/QtSql/qsqldatabase.h \
+ C:/Qt/6.7.3/mingw_64/include/QtSql/qtsqlglobal.h \
+ C:/Qt/6.7.3/mingw_64/include/QtSql/qtsql-config.h \
+ C:/Qt/6.7.3/mingw_64/include/QtSql/qtsqlexports.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVariantList \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariantlist.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QList \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qlist.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\SliperModel.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVector \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QHash \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qhash.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QStringList \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qstringlist.h \
+ C:/Qt/6.7.3/mingw_64/include/QtPrintSupport/QPrinter \
+ C:/Qt/6.7.3/mingw_64/include/QtPrintSupport/qprinter.h \
+ C:/Qt/6.7.3/mingw_64/include/QtPrintSupport/qtprintsupportglobal.h \
+ C:/Qt/6.7.3/mingw_64/include/QtWidgets/qtwidgetsglobal.h \
+ C:/Qt/6.7.3/mingw_64/include/QtWidgets/qtwidgets-config.h \
+ C:/Qt/6.7.3/mingw_64/include/QtWidgets/qtwidgetsexports.h \
+ C:/Qt/6.7.3/mingw_64/include/QtPrintSupport/qtprintsupport-config.h \
+ C:/Qt/6.7.3/mingw_64/include/QtPrintSupport/qtprintsupportexports.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpagedpaintdevice.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpagelayout.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpagesize.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpageranges.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/QPainter \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpainter.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpixmap.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qimage.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qtextoption.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qpen.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qbrush.h \
@@ -348,19 +391,11 @@ CMakeFiles/sliper.dir/src/ReportManager.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qfont.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qendian.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qfontmetrics.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/QPainterPath \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpainterpath.h \
  C:/Qt/6.7.3/mingw_64/include/QtGui/QTextDocument \
  C:/Qt/6.7.3/mingw_64/include/QtGui/qtextdocument.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qobject.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qtextstream.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qcontiguouscache.h \
- C:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/climits \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qmap.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qshareddata_impl.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qset.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qhash.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvarlengtharray.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qurl.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QStandardPaths \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qstandardpaths.h \
@@ -408,5 +443,7 @@ CMakeFiles/sliper.dir/src/ReportManager.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qdatetime.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QFile \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qfile.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QUrl \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qurl.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QDebug \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qdebug.h

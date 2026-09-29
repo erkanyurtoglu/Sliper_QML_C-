@@ -18,11 +18,13 @@ double SensorManager::hamAccelY() const { return m_hamAccelY; }
 double SensorManager::hamAccelZ() const { return m_hamAccelZ; }
 bool SensorManager::veriGecerli() const { return m_veriGecerli; }
 double SensorManager::bataryaVoltaj() const { return m_bataryaVoltaj; }
+double SensorManager::zamanS() const { return m_zamanS; }
 
-void SensorManager::veriGuncelle(double basinc, double konum, double hiz, double debi, double egimX, double egimY)
+void SensorManager::veriGuncelle(double zamanS, double basinc, double konum, double hiz, double debi, double egimX, double egimY)
 {
     const bool veriGecerliDegisti = !m_veriGecerli;
     m_veriGecerli = true;
+    m_zamanS = zamanS;
 
     if (m_basinc != basinc) { m_basinc = basinc; emit basincChanged(); }
     if (m_konum != konum) { m_konum = konum; emit konumChanged(); }

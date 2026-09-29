@@ -7,6 +7,10 @@
                     "access": "public",
                     "arguments": [
                         {
+                            "name": "zamanS",
+                            "type": "double"
+                        },
+                        {
                             "name": "basinc",
                             "type": "double"
                         },
@@ -270,6 +274,20 @@
                     "name": "bataryaVoltaj",
                     "notify": "bataryaVoltajChanged",
                     "read": "bataryaVoltaj",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 13,
+                    "name": "zamanS",
+                    "notify": "veriGuncellendi",
+                    "read": "zamanS",
                     "required": false,
                     "scriptable": true,
                     "stored": true,

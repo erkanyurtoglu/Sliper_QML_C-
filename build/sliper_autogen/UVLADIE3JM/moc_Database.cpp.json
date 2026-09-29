@@ -17,8 +17,60 @@
                         {
                             "name": "agirlik",
                             "type": "double"
+                        },
+                        {
+                            "name": "yer",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "yorum",
+                            "type": "QString"
                         }
                     ],
+                    "name": "olcumBaslat",
+                    "returnType": "int"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "musteri",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "recete",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "agirlik",
+                            "type": "double"
+                        },
+                        {
+                            "name": "yer",
+                            "type": "QString"
+                        }
+                    ],
+                    "isCloned": true,
+                    "name": "olcumBaslat",
+                    "returnType": "int"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "musteri",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "recete",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "agirlik",
+                            "type": "double"
+                        }
+                    ],
+                    "isCloned": true,
                     "name": "olcumBaslat",
                     "returnType": "int"
                 },
@@ -30,24 +82,24 @@
                             "type": "int"
                         },
                         {
-                            "name": "basinc",
-                            "type": "double"
+                            "name": "yer",
+                            "type": "QString"
                         },
                         {
-                            "name": "konum",
-                            "type": "double"
+                            "name": "musteri",
+                            "type": "QString"
                         },
                         {
-                            "name": "debi",
-                            "type": "double"
+                            "name": "recete",
+                            "type": "QString"
                         },
                         {
-                            "name": "gecerli",
-                            "type": "bool"
+                            "name": "yorum",
+                            "type": "QString"
                         }
                     ],
-                    "name": "strokeKaydet",
-                    "returnType": "void"
+                    "name": "olcumBilgisiGuncelle",
+                    "returnType": "bool"
                 },
                 {
                     "access": "public",
@@ -73,8 +125,75 @@
                             "type": "int"
                         }
                     ],
+                    "name": "olcumBilgisiGetir",
+                    "returnType": "QVariantMap"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "olcumId",
+                            "type": "int"
+                        },
+                        {
+                            "name": "stroke",
+                            "type": "QVariantMap"
+                        },
+                        {
+                            "name": "agirlik",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "strokeKaydet",
+                    "returnType": "int"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "olcumId",
+                            "type": "int"
+                        }
+                    ],
                     "name": "strokeVerileriGetir",
                     "returnType": "QVariantList"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "strokeId",
+                            "type": "int"
+                        }
+                    ],
+                    "name": "strokeHamVeriGetir",
+                    "returnType": "QVariantMap"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "strokeId",
+                            "type": "int"
+                        },
+                        {
+                            "name": "secili",
+                            "type": "bool"
+                        }
+                    ],
+                    "name": "strokeSeciliAyarla",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "strokeId",
+                            "type": "int"
+                        }
+                    ],
+                    "name": "strokeSil",
+                    "returnType": "bool"
                 },
                 {
                     "access": "public",
@@ -91,30 +210,31 @@
                     "access": "public",
                     "arguments": [
                         {
-                            "name": "sensor",
-                            "type": "QString"
-                        },
-                        {
-                            "name": "deger1",
-                            "type": "double"
-                        },
-                        {
-                            "name": "deger2",
-                            "type": "double"
+                            "name": "olcumId",
+                            "type": "int"
                         }
                     ],
-                    "name": "kalibrasyonKaydet",
-                    "returnType": "bool"
+                    "name": "tahminAyarlariGetir",
+                    "returnType": "QVariantMap"
                 },
                 {
                     "access": "public",
                     "arguments": [
                         {
-                            "name": "sensor",
-                            "type": "QString"
+                            "name": "olcumId",
+                            "type": "int"
+                        },
+                        {
+                            "name": "ayarlar",
+                            "type": "QVariantMap"
                         }
                     ],
-                    "name": "kalibrasyonGetir",
+                    "name": "tahminAyarlariKaydet",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "name": "varsayilanTahminAyarlariGetir",
                     "returnType": "QVariantMap"
                 },
                 {
@@ -125,8 +245,50 @@
                             "type": "int"
                         }
                     ],
-                    "name": "olcumBilgisiGetir",
-                    "returnType": "QVariantMap"
+                    "name": "tahminTablosuGetir",
+                    "returnType": "QVariantList"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "anahtar",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "varsayilan",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "ayarGetir",
+                    "returnType": "QString"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "anahtar",
+                            "type": "QString"
+                        }
+                    ],
+                    "isCloned": true,
+                    "name": "ayarGetir",
+                    "returnType": "QString"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "anahtar",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "deger",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "ayarKaydet",
+                    "returnType": "bool"
                 },
                 {
                     "access": "public",
@@ -170,6 +332,36 @@
                     "access": "public",
                     "name": "tumVeriyiSil",
                     "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "sensor",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "deger1",
+                            "type": "double"
+                        },
+                        {
+                            "name": "deger2",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "kalibrasyonKaydet",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "sensor",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "kalibrasyonGetir",
+                    "returnType": "QVariantMap"
                 },
                 {
                     "access": "public",

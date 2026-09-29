@@ -391,4 +391,23 @@ CMakeFiles/sliper.dir/src/Database.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qfile.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qfileinfo.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qdatetime.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qtimezone.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qtimezone.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QJsonDocument \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qjsondocument.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qjsonvalue.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qcborvalue.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qcborcommon.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qregularexpression.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qurl.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/quuid.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qendian.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QJsonObject \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qjsonobject.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QSet \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qset.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QHash \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qhash.h \
+ C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\src\SliperModel.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QStringList \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qstringlist.h

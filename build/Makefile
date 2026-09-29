@@ -860,6 +860,30 @@ src/SensorManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/SensorManager.cpp.s
 .PHONY : src/SensorManager.cpp.s
 
+src/SliperModel.obj: src/SliperModel.cpp.obj
+.PHONY : src/SliperModel.obj
+
+# target to build an object file
+src/SliperModel.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/SliperModel.cpp.obj
+.PHONY : src/SliperModel.cpp.obj
+
+src/SliperModel.i: src/SliperModel.cpp.i
+.PHONY : src/SliperModel.i
+
+# target to preprocess a source file
+src/SliperModel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/SliperModel.cpp.i
+.PHONY : src/SliperModel.cpp.i
+
+src/SliperModel.s: src/SliperModel.cpp.s
+.PHONY : src/SliperModel.s
+
+# target to generate assembly for a file
+src/SliperModel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\sliper.dir\build.make CMakeFiles/sliper.dir/src/SliperModel.cpp.s
+.PHONY : src/SliperModel.cpp.s
+
 src/VoiceCommandManager.obj: src/VoiceCommandManager.cpp.obj
 .PHONY : src/VoiceCommandManager.obj
 
@@ -1025,6 +1049,9 @@ help:
 	@echo ... src/SensorManager.obj
 	@echo ... src/SensorManager.i
 	@echo ... src/SensorManager.s
+	@echo ... src/SliperModel.obj
+	@echo ... src/SliperModel.i
+	@echo ... src/SliperModel.s
 	@echo ... src/VoiceCommandManager.obj
 	@echo ... src/VoiceCommandManager.i
 	@echo ... src/VoiceCommandManager.s

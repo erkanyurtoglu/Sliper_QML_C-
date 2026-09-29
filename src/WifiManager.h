@@ -41,14 +41,12 @@ private slots:
     void soketHata(QAbstractSocket::SocketError hata);
     void veriHazir();
     void hareketsizlikKontrolEt();
+    void veriAkisiniKontrolEt();
 
 private:
     void durumGuncelle(const QString &mesaj);
     void jsonSatiriIsle(const QByteArray &satir);
-    void egimHesapla(double accelX, double accelY, double accelZ, double &egimX, double &egimY) const;
     void kalibrasyonYukle();
-    double loadCellInterpolasyon(double hamDeger) const;
-    double mesafeInterpolasyon(double hamDeger) const;
 
     QTcpSocket *m_soket = nullptr;
     SensorManager *m_sensorManager = nullptr;
@@ -61,7 +59,11 @@ private:
 
     bool m_ilkPaket = true;
     double m_oncekiKonum = 0.0;
-    qint64 m_oncekiZamanMs = 0;
+    double m_oncekiZamanMs = 0.0;
+    double m_filtreliHiz = 0.0;
+    double m_zamanOfsetiMs = 0.0;
+    bool m_zamanBasladi = false;
+    double m_konumYonu = -1.0;  // +1: konum = yükseklik, -1: konum = sensörden uzaklık
     QElapsedTimer m_zamanlayici;
     QElapsedTimer m_hareketsizlikZamanlayici;
 
@@ -79,20 +81,17 @@ private:
     static constexpr const char *ESP32_IP = "192.168.4.1";
     static constexpr quint16 ESP32_PORT = 8888;
 
-    static constexpr double BORU_CAPI_M = 0.126;
-
     // --- Batarya izleme ---
-    // NOT: ESP32 firmware'inde henuz gercek bir voltaj bolucu devre
-    // kalibrasyonu yapilmadi (bkz. sliper_esp32.ino icindeki TODO notu).
-    // Asagidaki katsayi, ADS1115'in GAIN_ONE modunda ( +-4.096V, 16 bit )
-    // okudugu ham degeri, varsayimsal 1:2 oranli bir bolucu ile pil
-    // voltajina cevirir. Gercek donanim baglaninca BATARYA_BOLUCU_ORANI
-    // olcum yapilarak duzeltilmelidir.
-    static constexpr double ADS1115_LSB_VOLT = 0.000125; // 4.096V / 32768
-    static constexpr double BATARYA_BOLUCU_ORANI = 2.0;
-    static constexpr double BATARYA_UYARI_VOLTAJ = 14.0;
-    static constexpr double BATARYA_IYI_VOLTAJ = 14.5;
+    // Pil voltajı ve bölücü dirençleri doğrulanana kadar gösterge kapalı: bağlı
+    // olmayan/yanlış bölücülü ADS1115 girişi anlamsız değer verir. Doğrulandıktan
+    // sonra SliperModel::BATARYA_BOLUCU_ORANI ayarlanıp bu değer true yapılmalı.
+    static constexpr bool BATARYA_OLCUMU_AKTIF = false;
 
     QTimer m_hareketsizlikTimer;
+    // Orijinal SLIPER: "Data transfer interrupted - Move closer to the SLIPER".
+    // Soket açık kalsa bile VERI_KESINTI_MS boyunca paket gelmezse veri geçersiz sayılır.
+    QTimer m_veriBekciTimer;
+    QElapsedTimer m_sonVeriZamani;
+    static constexpr int VERI_KESINTI_MS = 1500;
     static constexpr int HAREKETSIZLIK_LIMIT_MS = 2 * 60 * 60 * 1000; // 2 saat
 };

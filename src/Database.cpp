@@ -8,6 +8,12 @@
 #include <QTextStream>
 #include <QStandardPaths>
 #include <QDir>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QSet>
+#include <QHash>
+#include <algorithm>
+#include "SliperModel.h"
 
 Database::Database(QObject *parent)
     : QObject(parent)
@@ -54,19 +60,42 @@ void Database::tablolariOlustur()
         ")"
     );
 
-    QSqlQuery kolonKontrol("PRAGMA table_info(Strokelar)");
-    bool debiKolonuVar = false;
-    while (kolonKontrol.next()) {
-        if (kolonKontrol.value("name").toString() == "debi") {
-            debiKolonuVar = true;
-            break;
+    // Eski veritabanlarını yeni şemaya taşı (eksik kolonlar eklenir, veri korunur)
+    auto kolonEkle = [](const QString &tablo, const QString &kolon, const QString &tanim) {
+        QSqlQuery kontrol(QString("PRAGMA table_info(%1)").arg(tablo));
+        while (kontrol.next()) {
+            if (kontrol.value("name").toString() == kolon) return;
         }
-    }
-
-    if (!debiKolonuVar) {
         QSqlQuery migrasyon;
-        migrasyon.exec("ALTER TABLE Strokelar ADD COLUMN debi REAL DEFAULT 0");
-    }
+        if (!migrasyon.exec(QString("ALTER TABLE %1 ADD COLUMN %2 %3").arg(tablo, kolon, tanim))) {
+            qWarning() << "Kolon eklenemedi:" << tablo << kolon << migrasyon.lastError().text();
+        }
+    };
+
+    kolonEkle("Olcumler", "yer", "TEXT DEFAULT ''");
+    kolonEkle("Olcumler", "yorum", "TEXT DEFAULT ''");
+    kolonEkle("Olcumler", "tahminAyarlari", "TEXT DEFAULT ''");
+
+    // Orijinal SLIPER stroke kaydı: Date, Time, Duration, pmax, P0l, P0r, p, Q
+    // + ham eğri (başlangıçtan 2 s önce - bitişten 2 s sonra) ve tahmine dahil/hariç bilgisi
+    kolonEkle("Strokelar", "debi", "REAL DEFAULT 0");
+    kolonEkle("Strokelar", "tarih", "TEXT DEFAULT ''");
+    kolonEkle("Strokelar", "sure", "REAL DEFAULT 0");
+    kolonEkle("Strokelar", "pMaks", "REAL DEFAULT 0");
+    kolonEkle("Strokelar", "p0l", "REAL DEFAULT 0");
+    kolonEkle("Strokelar", "p0r", "REAL DEFAULT 0");
+    kolonEkle("Strokelar", "hiz", "REAL DEFAULT 0");
+    kolonEkle("Strokelar", "agirlik", "REAL DEFAULT 0");
+    kolonEkle("Strokelar", "secili", "INTEGER DEFAULT 1");
+    kolonEkle("Strokelar", "gecersizNedeni", "TEXT DEFAULT ''");
+    kolonEkle("Strokelar", "hamVeri", "TEXT DEFAULT ''");
+
+    sorgu.exec(
+        "CREATE TABLE IF NOT EXISTS Ayarlar ("
+        "anahtar TEXT PRIMARY KEY, "
+        "deger TEXT"
+        ")"
+    );
 
     sorgu.exec(
         "CREATE TABLE IF NOT EXISTS Kalibrasyonlar ("
@@ -112,18 +141,23 @@ void Database::tablolariOlustur()
     qDebug() << "Tablolar hazir.";
 }
 
-int Database::olcumBaslat(const QString &musteri, const QString &recete, double agirlik)
+int Database::olcumBaslat(const QString &musteri, const QString &recete, double agirlik,
+                          const QString &yer, const QString &yorum)
 {
     QSqlQuery sorgu;
     sorgu.prepare(
-        "INSERT INTO Olcumler (tarih, musteri, recete, agirlik) "
-        "VALUES (:tarih, :musteri, :recete, :agirlik)"
+        "INSERT INTO Olcumler (tarih, musteri, recete, agirlik, yer, yorum, tahminAyarlari) "
+        "VALUES (:tarih, :musteri, :recete, :agirlik, :yer, :yorum, :tahminAyarlari)"
     );
 
     sorgu.bindValue(":tarih", QDateTime::currentDateTime().toString("dd.MM.yyyy HH:mm"));
     sorgu.bindValue(":musteri", musteri);
     sorgu.bindValue(":recete", recete);
     sorgu.bindValue(":agirlik", agirlik);
+    sorgu.bindValue(":yer", yer);
+    sorgu.bindValue(":yorum", yorum);
+    // Orijinal uygulamadaki gibi: yeni ölçüm, güncel "Forecast Preferences" ile başlar
+    sorgu.bindValue(":tahminAyarlari", jsonYaz(varsayilanTahminAyarlariGetir()));
 
     if (!sorgu.exec()) {
         qWarning() << "Olcum baslatilamadi:" << sorgu.lastError().text();
@@ -135,30 +169,88 @@ int Database::olcumBaslat(const QString &musteri, const QString &recete, double 
     return yeniId;
 }
 
-void Database::strokeKaydet(int olcumId, double basinc, double konum, double debi, bool gecerli)
+bool Database::olcumBilgisiGuncelle(int olcumId, const QString &yer, const QString &musteri,
+                                    const QString &recete, const QString &yorum)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare(
+        "UPDATE Olcumler SET yer = :yer, musteri = :musteri, recete = :recete, yorum = :yorum "
+        "WHERE id = :id"
+    );
+    sorgu.bindValue(":yer", yer);
+    sorgu.bindValue(":musteri", musteri);
+    sorgu.bindValue(":recete", recete);
+    sorgu.bindValue(":yorum", yorum);
+    sorgu.bindValue(":id", olcumId);
+
+    if (!sorgu.exec()) {
+        qWarning() << "Olcum bilgisi guncellenemedi:" << sorgu.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+int Database::strokeKaydet(int olcumId, const QVariantMap &stroke, double agirlik)
 {
     if (olcumId <= 0) {
         qWarning() << "Gecersiz olcumId, stroke kaydedilemedi.";
-        return;
+        return -1;
     }
 
     QSqlQuery sorgu;
     sorgu.prepare(
-        "INSERT INTO Strokelar (olcumId, basinc, konum, debi, gecerli) "
-        "VALUES (:olcumId, :basinc, :konum, :debi, :gecerli)"
+        "INSERT INTO Strokelar (olcumId, basinc, konum, debi, gecerli, tarih, sure, pMaks, "
+        "p0l, p0r, hiz, agirlik, secili, gecersizNedeni, hamVeri) "
+        "VALUES (:olcumId, :basinc, :konum, :debi, :gecerli, :tarih, :sure, :pMaks, "
+        ":p0l, :p0r, :hiz, :agirlik, 1, :gecersizNedeni, :hamVeri)"
     );
 
     sorgu.bindValue(":olcumId", olcumId);
-    sorgu.bindValue(":basinc", basinc);
-    sorgu.bindValue(":konum", konum);
-    sorgu.bindValue(":debi", debi);
-    sorgu.bindValue(":gecerli", gecerli ? 1 : 0);
+    sorgu.bindValue(":basinc", stroke.value("basinc").toDouble());
+    sorgu.bindValue(":konum", stroke.value("konum").toDouble());
+    sorgu.bindValue(":debi", stroke.value("debi").toDouble());
+    sorgu.bindValue(":gecerli", stroke.value("gecerli").toBool() ? 1 : 0);
+    sorgu.bindValue(":tarih", stroke.value("tarih").toString());
+    sorgu.bindValue(":sure", stroke.value("sure").toDouble());
+    sorgu.bindValue(":pMaks", stroke.value("pMaks").toDouble());
+    sorgu.bindValue(":p0l", stroke.value("p0l").toDouble());
+    sorgu.bindValue(":p0r", stroke.value("p0r").toDouble());
+    sorgu.bindValue(":hiz", stroke.value("hiz").toDouble());
+    sorgu.bindValue(":agirlik", agirlik);
+    sorgu.bindValue(":gecersizNedeni", stroke.value("gecersizNedeni").toString());
+    sorgu.bindValue(":hamVeri", jsonYaz(stroke.value("hamVeri").toMap()));
 
     if (!sorgu.exec()) {
         qWarning() << "Stroke kaydedilemedi:" << sorgu.lastError().text();
-    } else {
-        qDebug() << "Stroke kaydedildi, olcumId:" << olcumId;
+        return -1;
     }
+    qDebug() << "Stroke kaydedildi, olcumId:" << olcumId;
+    return sorgu.lastInsertId().toInt();
+}
+
+bool Database::strokeSeciliAyarla(int strokeId, bool secili)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare("UPDATE Strokelar SET secili = :secili WHERE id = :id");
+    sorgu.bindValue(":secili", secili ? 1 : 0);
+    sorgu.bindValue(":id", strokeId);
+    if (!sorgu.exec()) {
+        qWarning() << "Stroke secimi guncellenemedi:" << sorgu.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool Database::strokeSil(int strokeId)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare("DELETE FROM Strokelar WHERE id = :id");
+    sorgu.bindValue(":id", strokeId);
+    if (!sorgu.exec()) {
+        qWarning() << "Stroke silinemedi:" << sorgu.lastError().text();
+        return false;
+    }
+    return true;
 }
 
 bool Database::olcumSil(int olcumId)
@@ -205,7 +297,7 @@ QVariantList Database::tumOlcumleriGetir()
     QVariantList sonuclar;
 
     QSqlQuery sorgu(
-        "SELECT o.id, o.tarih, o.musteri, o.recete, o.agirlik, "
+        "SELECT o.id, o.tarih, o.musteri, o.recete, o.agirlik, o.yer, o.yorum, "
         "COUNT(s.id) AS strokeSayisi "
         "FROM Olcumler o "
         "LEFT JOIN Strokelar s ON s.olcumId = o.id "
@@ -220,6 +312,8 @@ QVariantList Database::tumOlcumleriGetir()
         satir["musteri"] = sorgu.value("musteri");
         satir["recete"] = sorgu.value("recete");
         satir["agirlik"] = sorgu.value("agirlik");
+        satir["yer"] = sorgu.value("yer").toString();
+        satir["yorum"] = sorgu.value("yorum").toString();
         satir["strokeSayisi"] = sorgu.value("strokeSayisi");
         sonuclar.append(satir);
     }
@@ -233,7 +327,8 @@ QVariantList Database::strokeVerileriGetir(int olcumId)
 
     QSqlQuery sorgu;
     sorgu.prepare(
-        "SELECT basinc, konum, debi, gecerli FROM Strokelar "
+        "SELECT id, basinc, konum, debi, gecerli, tarih, sure, pMaks, p0l, p0r, hiz, "
+        "agirlik, secili, gecersizNedeni FROM Strokelar "
         "WHERE olcumId = :olcumId ORDER BY id ASC"
     );
     sorgu.bindValue(":olcumId", olcumId);
@@ -246,77 +341,186 @@ QVariantList Database::strokeVerileriGetir(int olcumId)
     int sira = 1;
     while (sorgu.next()) {
         QVariantMap satir;
+        satir["id"] = sorgu.value("id").toInt();
         satir["stroke"] = sira++;
-        satir["basinc"] = sorgu.value("basinc");
-        satir["konum"] = sorgu.value("konum");
-        satir["debi"] = sorgu.value("debi");
+        satir["basinc"] = sorgu.value("basinc").toDouble();
+        satir["konum"] = sorgu.value("konum").toDouble();
+        satir["debi"] = sorgu.value("debi").toDouble();
         satir["gecerli"] = sorgu.value("gecerli").toBool();
+        const QDateTime zaman = QDateTime::fromString(sorgu.value("tarih").toString(), Qt::ISODate);
+        satir["tarih"] = zaman.isValid() ? zaman.toString("yyyy-MM-dd") : QString();
+        satir["saat"] = zaman.isValid() ? zaman.toString("HH:mm:ss") : QString();
+        satir["sure"] = sorgu.value("sure").toDouble();
+        satir["pMaks"] = sorgu.value("pMaks").toDouble();
+        satir["p0l"] = sorgu.value("p0l").toDouble();
+        satir["p0r"] = sorgu.value("p0r").toDouble();
+        satir["hiz"] = sorgu.value("hiz").toDouble();
+        satir["agirlik"] = sorgu.value("agirlik").toDouble();
+        satir["secili"] = sorgu.value("secili").isNull() ? true : sorgu.value("secili").toBool();
+        satir["gecersizNedeni"] = sorgu.value("gecersizNedeni").toString();
         sonuclar.append(satir);
     }
 
     return sonuclar;
 }
 
+QVariantMap Database::strokeHamVeriGetir(int strokeId)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare("SELECT hamVeri FROM Strokelar WHERE id = :id");
+    sorgu.bindValue(":id", strokeId);
+    if (sorgu.exec() && sorgu.next()) {
+        return jsonOku(sorgu.value("hamVeri").toString());
+    }
+    return QVariantMap();
+}
+
+// P-Q doğrusu: yalnızca geçerli ve tahmine dahil edilmiş (secili) stroke'lar.
+// Ayrıca ölçüm kalitesi uyarıları üretilir (eşik gerektirmeyen, fiziksel/istatistiksel kontroller).
 QVariantMap Database::binghamHesapla(int olcumId)
 {
     QVariantMap sonuc;
 
     QSqlQuery sorgu;
     sorgu.prepare(
-        "SELECT basinc, debi FROM Strokelar "
-        "WHERE olcumId = :olcumId AND gecerli = 1"
+        "SELECT basinc, debi, gecerli, secili, agirlik FROM Strokelar WHERE olcumId = :olcumId"
     );
     sorgu.bindValue(":olcumId", olcumId);
 
-    QVector<double> pDegerleri;
-    QVector<double> qDegerleri;
+    QVector<double> basinclarMbar;             // her kullanılan stroke'un p değeri
+    QVector<double> debilerM3h;                // her kullanılan stroke'un Q değeri
+    // Ek ağırlık 0.1 kg hassasiyetle anahtar yapılır (1.6 kg -> 16), kayan nokta
+    // karşılaştırma hatası olmasın diye.
+    QHash<qint64, int> agirlikBasinaStrokeSayisi;
+    int toplamStrokeSayisi = 0;
+    int gecersizStrokeSayisi = 0;
 
     if (sorgu.exec()) {
         while (sorgu.next()) {
-            pDegerleri.append(sorgu.value("basinc").toDouble());
-            qDegerleri.append(sorgu.value("debi").toDouble());
+            ++toplamStrokeSayisi;
+            const bool gecerli = sorgu.value("gecerli").toBool();
+            const bool tahmineDahil = sorgu.value("secili").isNull() || sorgu.value("secili").toBool();
+            if (!gecerli) ++gecersizStrokeSayisi;
+            if (!gecerli || !tahmineDahil) continue;
+            basinclarMbar.append(sorgu.value("basinc").toDouble());
+            debilerM3h.append(sorgu.value("debi").toDouble());
+            const qint64 agirlikAnahtari = qRound64(sorgu.value("agirlik").toDouble() * 10.0);
+            agirlikBasinaStrokeSayisi[agirlikAnahtari] += 1;
         }
     }
 
-    const int n = pDegerleri.size();
+    const int kullanilanStrokeSayisi = basinclarMbar.size();
+    QStringList uyarilar;
+    sonuc["n"] = kullanilanStrokeSayisi;
+    sonuc["toplamStroke"] = toplamStrokeSayisi;
+    sonuc["gecersizStroke"] = gecersizStrokeSayisi;
 
-    if (n < 2) {
+    if (kullanilanStrokeSayisi < 2) {
         sonuc["tau0"] = 0.0;
         sonuc["mu"] = 0.0;
         sonuc["r2"] = 0.0;
         sonuc["yeterliVeri"] = false;
+        uyarilar << "azStroke";
+        sonuc["uyarilar"] = uyarilar;
         return sonuc;
     }
 
-    double qToplam = 0, pToplam = 0, qpToplam = 0, qKareToplam = 0;
-    for (int i = 0; i < n; ++i) {
-        qToplam += qDegerleri[i];
-        pToplam += pDegerleri[i];
-        qpToplam += qDegerleri[i] * pDegerleri[i];
-        qKareToplam += qDegerleri[i] * qDegerleri[i];
-    }
+    // p = A + B*Q ve uyarılar: SliperModel bölüm 6 ve 7.
+    // Eski kayıtlarla uyum için sonuçta "tau0" = A (kesişim), "mu" = B (eğim) adıyla saklanır.
+    const SliperModel::DogruUyumu pqCizgisi = SliperModel::pqDogrusu(debilerM3h, basinclarMbar);
+    uyarilar = SliperModel::olcumUyarilari(pqCizgisi, agirlikBasinaStrokeSayisi,
+                                           toplamStrokeSayisi, gecersizStrokeSayisi);
 
-    const double qOrt = qToplam / n;
-    const double pOrt = pToplam / n;
-
-    const double payda = qKareToplam - n * qOrt * qOrt;
-    const double mu = (payda != 0.0) ? (qpToplam - n * qOrt * pOrt) / payda : 0.0;
-    const double tau0 = pOrt - mu * qOrt;
-
-    double ssTot = 0, ssRes = 0;
-    for (int i = 0; i < n; ++i) {
-        const double tahmin = tau0 + mu * qDegerleri[i];
-        ssRes += (pDegerleri[i] - tahmin) * (pDegerleri[i] - tahmin);
-        ssTot += (pDegerleri[i] - pOrt) * (pDegerleri[i] - pOrt);
-    }
-
-    const double r2 = (ssTot != 0.0) ? (1.0 - ssRes / ssTot) : 0.0;
-
-    sonuc["tau0"] = tau0;
-    sonuc["mu"] = mu;
-    sonuc["r2"] = r2;
+    sonuc["tau0"] = pqCizgisi.kesisimA;
+    sonuc["mu"] = pqCizgisi.egimB;
+    sonuc["r2"] = pqCizgisi.r2;
+    sonuc["qMin"] = pqCizgisi.qMin;
+    sonuc["qMaks"] = pqCizgisi.qMaks;
     sonuc["yeterliVeri"] = true;
+    sonuc["uyarilar"] = uyarilar;
     return sonuc;
+}
+
+QVariantMap Database::tahminAyarlariGetir(int olcumId)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare("SELECT tahminAyarlari FROM Olcumler WHERE id = :id");
+    sorgu.bindValue(":id", olcumId);
+    if (sorgu.exec() && sorgu.next()) {
+        const QString json = sorgu.value("tahminAyarlari").toString();
+        if (!json.isEmpty()) {
+            return SliperModel::tahminAyarlariniTamamla(jsonOku(json));
+        }
+    }
+    return varsayilanTahminAyarlariGetir();
+}
+
+bool Database::tahminAyarlariKaydet(int olcumId, const QVariantMap &ayarlar)
+{
+    const QVariantMap tam = SliperModel::tahminAyarlariniTamamla(ayarlar);
+    QSqlQuery sorgu;
+    sorgu.prepare("UPDATE Olcumler SET tahminAyarlari = :a WHERE id = :id");
+    sorgu.bindValue(":a", jsonYaz(tam));
+    sorgu.bindValue(":id", olcumId);
+    if (!sorgu.exec()) {
+        qWarning() << "Tahmin ayarlari kaydedilemedi:" << sorgu.lastError().text();
+        return false;
+    }
+    // Sonraki ölçümler de bu ayarlarla başlasın (orijinal "Forecast Preferences")
+    ayarKaydet("varsayilanTahminAyarlari", jsonYaz(tam));
+    return true;
+}
+
+QVariantMap Database::varsayilanTahminAyarlariGetir()
+{
+    const QString json = ayarGetir("varsayilanTahminAyarlari");
+    return SliperModel::tahminAyarlariniTamamla(json.isEmpty() ? QVariantMap() : jsonOku(json));
+}
+
+QVariantList Database::tahminTablosuGetir(int olcumId)
+{
+    const QVariantMap pqSonucu = binghamHesapla(olcumId);
+    if (!pqSonucu.value("yeterliVeri").toBool()) return QVariantList();
+    const double kesisimA = pqSonucu["tau0"].toDouble();
+    const double egimB = pqSonucu["mu"].toDouble();
+    return SliperModel::tahminTablosu(kesisimA, egimB, tahminAyarlariGetir(olcumId));
+}
+
+QString Database::ayarGetir(const QString &anahtar, const QString &varsayilan)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare("SELECT deger FROM Ayarlar WHERE anahtar = :a");
+    sorgu.bindValue(":a", anahtar);
+    if (sorgu.exec() && sorgu.next()) {
+        return sorgu.value("deger").toString();
+    }
+    return varsayilan;
+}
+
+bool Database::ayarKaydet(const QString &anahtar, const QString &deger)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare(
+        "INSERT INTO Ayarlar (anahtar, deger) VALUES (:a, :d) "
+        "ON CONFLICT(anahtar) DO UPDATE SET deger = :d"
+    );
+    sorgu.bindValue(":a", anahtar);
+    sorgu.bindValue(":d", deger);
+    if (!sorgu.exec()) {
+        qWarning() << "Ayar kaydedilemedi:" << anahtar << sorgu.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+QString Database::jsonYaz(const QVariantMap &veri)
+{
+    return QString::fromUtf8(QJsonDocument(QJsonObject::fromVariantMap(veri)).toJson(QJsonDocument::Compact));
+}
+
+QVariantMap Database::jsonOku(const QString &json)
+{
+    return QJsonDocument::fromJson(json.toUtf8()).object().toVariantMap();
 }
 
 bool Database::kalibrasyonKaydet(const QString &sensor, double deger1, double deger2)
@@ -397,7 +601,7 @@ QVariantMap Database::olcumBilgisiGetir(int olcumId)
     QVariantMap sonuc;
 
     QSqlQuery sorgu;
-    sorgu.prepare("SELECT tarih, musteri, recete, agirlik FROM Olcumler WHERE id = :id");
+    sorgu.prepare("SELECT tarih, musteri, recete, agirlik, yer, yorum FROM Olcumler WHERE id = :id");
     sorgu.bindValue(":id", olcumId);
 
     if (sorgu.exec() && sorgu.next()) {
@@ -405,6 +609,8 @@ QVariantMap Database::olcumBilgisiGetir(int olcumId)
         sonuc["musteri"] = sorgu.value("musteri");
         sonuc["recete"] = sorgu.value("recete");
         sonuc["agirlik"] = sorgu.value("agirlik");
+        sonuc["yer"] = sorgu.value("yer").toString();
+        sonuc["yorum"] = sorgu.value("yorum").toString();
         sonuc["bulundu"] = true;
     } else {
         sonuc["bulundu"] = false;
@@ -413,11 +619,11 @@ QVariantMap Database::olcumBilgisiGetir(int olcumId)
     return sonuc;
 }
 
-// Orijinal SLIPER'daki çok sayfalı Excel/XML dışa aktarıma (bkz. slipermanV13.pdf
-// bölüm 5.6) yakın format: Office 2003 "SpreadsheetML" XML'i. Ek kütüphane
-// gerektirmez, Excel bu formatı doğrudan açar. "Results" sayfasında temel
-// veri + Bingham sonuçları, "Stroke_1".."Stroke_N" sayfalarında ham stroke
-// verisi bulunur.
+// Orijinal SLIPER'daki Excel dışa aktarımıyla aynı düzen (kılavuz bölüm 5.6,
+// Şekil 25): "Results" sayfasında temel veri, stroke özeti (Date, Time,
+// Duration, pmax, P0l, P0r, p, Q), tahmin girdileri, a/b parametreleri,
+// tahmin tablosu ve cihaz parametreleri; "Stroke_1".."Stroke_N" sayfalarında
+// her stroke'un ham verisi. Format: Office 2003 SpreadsheetML (Excel doğrudan açar).
 QString Database::xmlDisaAktar(int olcumId)
 {
     QVariantMap bilgi = olcumBilgisiGetir(olcumId);
@@ -432,9 +638,16 @@ QString Database::xmlDisaAktar(int olcumId)
         return QString();
     }
 
-    QString dosyaAdi = klasor + QString("/SLIPER_Export_%1_%2.xml")
-        .arg(olcumId)
-        .arg(QDateTime::currentDateTime().toString("ddMMyyyy_HHmmss"));
+    const QVariantList strokelar = strokeVerileriGetir(olcumId);
+    // Orijinal dosya adı: önek + ilk stroke'un zaman damgası
+    QString zamanDamgasi = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH_mm_ss");
+    if (!strokelar.isEmpty()) {
+        const QVariantMap ilk = strokelar.first().toMap();
+        if (!ilk["tarih"].toString().isEmpty()) {
+            zamanDamgasi = ilk["tarih"].toString() + "_" + ilk["saat"].toString().replace(':', '_');
+        }
+    }
+    QString dosyaAdi = klasor + QString("/SLIPER_%1_%2.xml").arg(olcumId).arg(zamanDamgasi);
 
     QFile dosya(dosyaAdi);
     if (!dosya.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -442,19 +655,29 @@ QString Database::xmlDisaAktar(int olcumId)
         return QString();
     }
 
-    QVariantMap bingham = binghamHesapla(olcumId);
-    QVariantList strokelar = strokeVerileriGetir(olcumId);
-
-    auto kacisliMetin = [](const QString &s) {
-        QString sonuc = s;
-        sonuc.replace("&", "&amp;");
-        sonuc.replace("<", "&lt;");
-        sonuc.replace(">", "&gt;");
-        return sonuc;
-    };
+    const QVariantMap pqSonucu = binghamHesapla(olcumId);
+    const QVariantMap ayarlar = tahminAyarlariGetir(olcumId);
+    const QVariantList tahminSatirlari = tahminTablosuGetir(olcumId);
 
     QTextStream akis(&dosya);
     akis.setEncoding(QStringConverter::Utf8);
+
+    // XML'de özel anlamı olan karakterler metin içinde kaçışlanır
+    auto xmlKacis = [](QString yazi) {
+        yazi.replace("&", "&amp;");
+        yazi.replace("<", "&lt;");
+        yazi.replace(">", "&gt;");
+        return yazi;
+    };
+    auto metin = [&](const QString &yazi) {
+        return QString("<Cell><Data ss:Type=\"String\">%1</Data></Cell>").arg(xmlKacis(yazi));
+    };
+    auto sayi = [](double deger) {
+        return QString("<Cell><Data ss:Type=\"Number\">%1</Data></Cell>").arg(QString::number(deger, 'g', 10));
+    };
+    auto satir = [&](const QStringList &hucreler) {
+        akis << "<Row>" << hucreler.join("") << "</Row>\n";
+    };
 
     akis << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     akis << "<?mso-application progid=\"Excel.Sheet\"?>\n";
@@ -463,41 +686,96 @@ QString Database::xmlDisaAktar(int olcumId)
             "xmlns:x=\"urn:schemas-microsoft-com:office:excel\" "
             "xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">\n";
 
-    // --- Results sayfasi ---
+    // --- Results sayfası ---
     akis << "<Worksheet ss:Name=\"Results\">\n<Table>\n";
-    akis << "<Row><Cell><Data ss:Type=\"String\">Olcum ID</Data></Cell><Cell><Data ss:Type=\"Number\">"
-         << olcumId << "</Data></Cell></Row>\n";
-    akis << "<Row><Cell><Data ss:Type=\"String\">Tarih</Data></Cell><Cell><Data ss:Type=\"String\">"
-         << kacisliMetin(bilgi["tarih"].toString()) << "</Data></Cell></Row>\n";
-    akis << "<Row><Cell><Data ss:Type=\"String\">Musteri</Data></Cell><Cell><Data ss:Type=\"String\">"
-         << kacisliMetin(bilgi["musteri"].toString()) << "</Data></Cell></Row>\n";
-    akis << "<Row><Cell><Data ss:Type=\"String\">Recete</Data></Cell><Cell><Data ss:Type=\"String\">"
-         << kacisliMetin(bilgi["recete"].toString()) << "</Data></Cell></Row>\n";
-    akis << "<Row><Cell><Data ss:Type=\"String\">Agirlik (kg)</Data></Cell><Cell><Data ss:Type=\"Number\">"
-         << bilgi["agirlik"].toDouble() << "</Data></Cell></Row>\n";
-    akis << "<Row><Cell><Data ss:Type=\"String\">Stroke Sayisi</Data></Cell><Cell><Data ss:Type=\"Number\">"
-         << strokelar.size() << "</Data></Cell></Row>\n";
-    akis << "<Row></Row>\n";
-    akis << "<Row><Cell><Data ss:Type=\"String\">Akma Gerilmesi tau0 (mbar)</Data></Cell><Cell><Data ss:Type=\"Number\">"
-         << bingham["tau0"].toDouble() << "</Data></Cell></Row>\n";
-    akis << "<Row><Cell><Data ss:Type=\"String\">Plastik Viskozite mu (mbar.h/m3)</Data></Cell><Cell><Data ss:Type=\"Number\">"
-         << bingham["mu"].toDouble() << "</Data></Cell></Row>\n";
-    akis << "<Row><Cell><Data ss:Type=\"String\">Uyum Kalitesi R2</Data></Cell><Cell><Data ss:Type=\"Number\">"
-         << bingham["r2"].toDouble() << "</Data></Cell></Row>\n";
+    const QDateTime simdi = QDateTime::currentDateTime();
+    satir({ metin("Export Date"), metin(simdi.toString("yyyy-MM-dd")) });
+    satir({ metin("Export Time"), metin(simdi.toString("HH:mm:ss")) });
+    satir({ metin("Measurement ID"), sayi(olcumId) });
+    satir({ metin("Measurement Date"), metin(bilgi["tarih"].toString()) });
+    satir({ metin("Comment"), metin(bilgi["yorum"].toString()) });
+    satir({ metin("Place"), metin(bilgi["yer"].toString()) });
+    satir({ metin("Customer"), metin(bilgi["musteri"].toString()) });
+    satir({ metin("Formula"), metin(bilgi["recete"].toString()) });
+    satir({});
+
+    satir({ metin("Stroke"), metin("Date [yyyy-mm-dd]"), metin("Time [hh:mm:ss]"),
+            metin("Duration [sec]"), metin("pmax [mbar]"), metin("P0l [mbar]"),
+            metin("P0r [mbar]"), metin("p [mbar]"), metin("Q [m3/h]"),
+            metin("Weight [kg]"), metin("Valid"), metin("In forecast") });
+    for (const QVariant &kayit : strokelar) {
+        const QVariantMap stroke = kayit.toMap();
+        satir({ sayi(stroke["stroke"].toInt()), metin(stroke["tarih"].toString()), metin(stroke["saat"].toString()),
+                sayi(stroke["sure"].toDouble()), sayi(stroke["pMaks"].toDouble()), sayi(stroke["p0l"].toDouble()),
+                sayi(stroke["p0r"].toDouble()), sayi(stroke["basinc"].toDouble()), sayi(stroke["debi"].toDouble()),
+                sayi(stroke["agirlik"].toDouble()),
+                metin(stroke["gecerli"].toBool() ? "yes" : "Wrong Stroke"),
+                metin(stroke["secili"].toBool() ? "yes" : "no") });
+    }
+    satir({});
+
+    satir({ metin("Forecast at following input parameters") });
+    satir({ metin("Output Q1 [m3/h]"), sayi(ayarlar["q1"].toDouble()) });
+    satir({ metin("Output Q2 [m3/h]"), sayi(ayarlar["q2"].toDouble()) });
+    satir({ metin("Length of pipe L2 [m]"), sayi(ayarlar["l2"].toDouble()) });
+    satir({ metin("Length of pipe L3 [m]"), sayi(ayarlar["l3"].toDouble()) });
+    satir({ metin("Length of pipe L4 [m]"), sayi(ayarlar["l4"].toDouble()) });
+    satir({ metin("Diameter of pipe D2 [m]"), sayi(ayarlar["cap"].toDouble() / 1000.0) });
+    satir({ metin("bulk density [kg/m3]"), sayi(ayarlar["yogunluk"].toDouble()) });
+    satir({ metin("pumping head h [m]"), sayi(ayarlar["yukseklik"].toDouble()) });
+    satir({ metin("Error Bar Tolerance [%]"), sayi(ayarlar["hataPayi"].toDouble()) });
+    satir({ metin("Pump max. pressure [bar]"), sayi(ayarlar["pompaMaks"].toDouble()) });
+    satir({});
+
+    const double kesisimA = pqSonucu["tau0"].toDouble();
+    const double egimB = pqSonucu["mu"].toDouble();
+    satir({ metin("A - p-Q intercept [mbar]"), sayi(kesisimA) });
+    satir({ metin("B - p-Q slope [mbar*h/m3]"), sayi(egimB) });
+    satir({ metin("a - Yield Pressure [mbar]"), sayi(SliperModel::schleibingerA(kesisimA)) });
+    satir({ metin("b - Pressure Gradient [x1000]"), sayi(SliperModel::schleibingerB(egimB) * 1000.0) });
+    satir({ metin("R2"), sayi(pqSonucu["r2"].toDouble()) });
+    satir({ metin("Strokes used"), sayi(pqSonucu["n"].toInt()) });
+    satir({});
+
+    satir({ metin("Output Q [m3/h]"), metin("Length of pipe [m]"), metin("Pressure [bar]"),
+            metin("Lower [bar]"), metin("Upper [bar]"), metin("Pump capacity") });
+    const bool pompaGirildi = ayarlar["pompaMaks"].toDouble() > 0.0;
+    for (const QVariant &kayit : tahminSatirlari) {
+        const QVariantMap tahmin = kayit.toMap();
+        satir({ sayi(tahmin["debi"].toDouble()), sayi(tahmin["uzunluk"].toDouble()),
+                sayi(tahmin["basincBar"].toDouble()), sayi(tahmin["altSinirBar"].toDouble()),
+                sayi(tahmin["ustSinirBar"].toDouble()),
+                metin(!pompaGirildi ? "-" : (tahmin["pompaAsildi"].toBool() ? "exceeded" : "ok")) });
+    }
+    satir({});
+
+    const QVariantMap konumSinirlari = kalibrasyonGetir("konum_sinirlari");
+    const bool konumKalibreEdildi = konumSinirlari["mevcut"].toBool();
+    satir({ metin("Device parameters") });
+    satir({ metin("Diameter of rheometer [m]"), sayi(SliperModel::BORU_CAPI_M) });
+    satir({ metin("Length of rheometer [m]"), sayi(SliperModel::BORU_UZUNLUGU_M) });
+    satir({ metin("Top position [mm]"), konumKalibreEdildi ? sayi(konumSinirlari["deger1"].toDouble()) : metin("-") });
+    satir({ metin("Bottom position [mm]"), konumKalibreEdildi ? sayi(konumSinirlari["deger2"].toDouble()) : metin("-") });
+    satir({ metin("Load cell calibration"), metin(kalibrasyonTarihiGetir("loadcell")) });
+    satir({ metin("Distance sensor calibration"), metin(kalibrasyonTarihiGetir("mesafe_olcum")) });
     akis << "</Table>\n</Worksheet>\n";
 
-    // --- Her stroke icin ayri sayfa ---
-    for (int i = 0; i < strokelar.size(); ++i) {
-        QVariantMap s = strokelar[i].toMap();
-        akis << "<Worksheet ss:Name=\"Stroke_" << (i + 1) << "\">\n<Table>\n";
-        akis << "<Row><Cell><Data ss:Type=\"String\">Basinc (mbar)</Data></Cell>"
-                "<Cell><Data ss:Type=\"String\">Konum (mm)</Data></Cell>"
-                "<Cell><Data ss:Type=\"String\">Debi (m3/h)</Data></Cell>"
-                "<Cell><Data ss:Type=\"String\">Gecerli</Data></Cell></Row>\n";
-        akis << "<Row><Cell><Data ss:Type=\"Number\">" << s["basinc"].toDouble() << "</Data></Cell>"
-             << "<Cell><Data ss:Type=\"Number\">" << s["konum"].toDouble() << "</Data></Cell>"
-             << "<Cell><Data ss:Type=\"Number\">" << s["debi"].toDouble() << "</Data></Cell>"
-             << "<Cell><Data ss:Type=\"String\">" << (s["gecerli"].toBool() ? "Evet" : "Hayir") << "</Data></Cell></Row>\n";
+    // --- Her stroke için ham veri sayfası ---
+    for (const QVariant &kayit : strokelar) {
+        const QVariantMap stroke = kayit.toMap();
+        const QVariantMap hamVeri = strokeHamVeriGetir(stroke["id"].toInt());
+        const QVariantList zamanlar = hamVeri["t"].toList();
+        const QVariantList konumlar = hamVeri["x"].toList();
+        const QVariantList basinclar = hamVeri["p"].toList();
+
+        akis << "<Worksheet ss:Name=\"Stroke_" << stroke["stroke"].toInt() << "\">\n<Table>\n";
+        satir({ metin("Start [s]"), sayi(hamVeri["tBaslangic"].toDouble()),
+                metin("End [s]"), sayi(hamVeri["tBitis"].toDouble()) });
+        satir({ metin("Time [s]"), metin("Distance [mm]"), metin("Pressure [mbar]") });
+        const int ornekSayisi = std::min({ zamanlar.size(), konumlar.size(), basinclar.size() });
+        for (int i = 0; i < ornekSayisi; ++i) {
+            satir({ sayi(zamanlar[i].toDouble()), sayi(konumlar[i].toDouble()), sayi(basinclar[i].toDouble()) });
+        }
         akis << "</Table>\n</Worksheet>\n";
     }
 
@@ -638,24 +916,51 @@ QString Database::csvDisaAktar(int olcumId)
 
     QTextStream akis(&dosya);
     akis.setEncoding(QStringConverter::Utf8);
+    // Alan içindeki ';' ve '"' karakterleri tabloyu bozmasın
+    auto alan = [](QString yazi) {
+        if (yazi.contains(';') || yazi.contains('"') || yazi.contains('\n')) {
+            yazi.replace("\"", "\"\"");
+            yazi = "\"" + yazi + "\"";
+        }
+        return yazi;
+    };
 
     akis << "Olcum ID;" << olcumId << "\n";
-    akis << "Tarih;" << bilgi["tarih"].toString() << "\n";
-    akis << "Musteri;" << bilgi["musteri"].toString() << "\n";
-    akis << "Recete;" << bilgi["recete"].toString() << "\n";
-    akis << "Agirlik (kg);" << bilgi["agirlik"].toDouble() << "\n";
+    akis << "Tarih;" << alan(bilgi["tarih"].toString()) << "\n";
+    akis << "Yer;" << alan(bilgi["yer"].toString()) << "\n";
+    akis << "Musteri;" << alan(bilgi["musteri"].toString()) << "\n";
+    akis << "Recete;" << alan(bilgi["recete"].toString()) << "\n";
+    akis << "Yorum;" << alan(bilgi["yorum"].toString()) << "\n";
     akis << "\n";
-    akis << "Stroke;Basinc (mbar);Konum (mm);Debi (m3/h);Gecerli\n";
+    akis << "Stroke;Tarih;Saat;Sure (s);Pmax (mbar);P0l (mbar);P0r (mbar);p (mbar);Q (m3/h);"
+            "Agirlik (kg);Gecerli;Tahmine Dahil\n";
 
-    QVariantList strokelar = strokeVerileriGetir(olcumId);
-    for (const QVariant &v : strokelar) {
-        QVariantMap s = v.toMap();
-        akis << s["stroke"].toInt() << ";"
-             << s["basinc"].toDouble() << ";"
-             << s["konum"].toDouble() << ";"
-             << s["debi"].toDouble() << ";"
-             << (s["gecerli"].toBool() ? "Evet" : "Hayir") << "\n";
+    const QVariantList strokelar = strokeVerileriGetir(olcumId);
+    for (const QVariant &kayit : strokelar) {
+        const QVariantMap stroke = kayit.toMap();
+        akis << stroke["stroke"].toInt() << ";"
+             << stroke["tarih"].toString() << ";"
+             << stroke["saat"].toString() << ";"
+             << stroke["sure"].toDouble() << ";"
+             << stroke["pMaks"].toDouble() << ";"
+             << stroke["p0l"].toDouble() << ";"
+             << stroke["p0r"].toDouble() << ";"
+             << stroke["basinc"].toDouble() << ";"
+             << stroke["debi"].toDouble() << ";"
+             << stroke["agirlik"].toDouble() << ";"
+             << (stroke["gecerli"].toBool() ? "Evet" : "Hatali Stroke") << ";"
+             << (stroke["secili"].toBool() ? "Evet" : "Hayir") << "\n";
     }
+
+    const QVariantMap pqSonucu = binghamHesapla(olcumId);
+    const double kesisimA = pqSonucu["tau0"].toDouble();
+    const double egimB = pqSonucu["mu"].toDouble();
+    akis << "\n";
+    akis << "A (mbar);" << kesisimA << "\n";
+    akis << "B (mbar.h/m3);" << egimB << "\n";
+    akis << "a (mbar);" << SliperModel::schleibingerA(kesisimA) << "\n";
+    akis << "b (x1000);" << SliperModel::schleibingerB(egimB) * 1000.0 << "\n";
+    akis << "R2;" << pqSonucu["r2"].toDouble() << "\n";
 
     dosya.close();
     qDebug() << "CSV disa aktarildi:" << dosyaAdi;

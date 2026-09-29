@@ -96,7 +96,8 @@ Rectangle {
             if (aramaMetni.length > 0) {
                 var musteriEslesir = kayit.musteri.toLowerCase().indexOf(aramaMetni) !== -1
                 var receteEslesir = kayit.recete.toLowerCase().indexOf(aramaMetni) !== -1
-                if (!musteriEslesir && !receteEslesir) continue
+                var yerEslesir = (kayit.yer || "").toLowerCase().indexOf(aramaMetni) !== -1
+                if (!musteriEslesir && !receteEslesir && !yerEslesir) continue
             }
 
             if (ozelBaslangic || ozelBitis) {

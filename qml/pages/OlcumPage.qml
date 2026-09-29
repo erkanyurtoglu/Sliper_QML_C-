@@ -8,6 +8,8 @@ Rectangle {
 
     readonly property var metinler: ({
         testBilgileri: { tr: "TEST BİLGİLERİ", en: "TEST INFORMATION" },
+        olcumYeri: { tr: "Ölçüm Yeri", en: "Place of Measure" },
+        olcumYeriPlaceholder: { tr: "Laboratuvar / şantiye...", en: "Laboratory / site..." },
         musteri: { tr: "Müşteri", en: "Customer" },
         musteriPlaceholder: { tr: "Musteri adi girin...", en: "Enter customer name..." },
         betonRecetesi: { tr: "Beton Reçetesi", en: "Concrete Mix Design" },
@@ -15,8 +17,17 @@ Rectangle {
         cimentoEtiket: { tr: "Çimento ", en: "Cement " },
         suCimentoEtiket: { tr: "  •  Su/Çimento ", en: "  •  Water/Cement " },
         eklenenAgirlik: { tr: "Eklenen Ağırlık (kg)", en: "Added Weight (kg)" },
-        geriButon: { tr: "− Geri", en: "− Undo" },
-        sifirlaButon: { tr: "↺ Sıfırla", en: "↺ Reset" },
+        agirlikYok: { tr: "Ek ağırlık yok", en: "No added weight" },
+        sonStroke: { tr: "SON STROKE", en: "LAST STROKE" },
+        strokeYok: { tr: "Henüz stroke yok — boruyu üst konuma kaldırıp serbest bırakın", en: "No stroke yet — lift the pipe to the top position and release it" },
+        sure: { tr: "Süre", en: "Duration" },
+        gecerliStroke: { tr: "GEÇERLİ", en: "VALID" },
+        hataliStroke: { tr: "HATALI STROKE", en: "WRONG STROKE" },
+        nedenHiz: { tr: "hız ≤ 0", en: "speed ≤ 0" },
+        nedenBasinc: { tr: "p ≤ 0", en: "p ≤ 0" },
+        nedenOrnek: { tr: "yetersiz örnek", en: "too few samples" },
+        geriButon: { tr: "−", en: "−" },
+        sifirlaButon: { tr: "↺", en: "↺" },
         olcumuBaslatButon: { tr: "▶  Ölçümü Başlat", en: "▶  Start Measurement" },
         devamEtButon: { tr: "▶  Devam Et", en: "▶  Resume" },
         duraklatButon: { tr: "⏸  Duraklat", en: "⏸  Pause" },
@@ -40,7 +51,9 @@ Rectangle {
         testiSilVeBitir: { tr: "🗑  Testi Sil ve Bitir", en: "🗑  Delete Test and Finish" },
         vazgecTesteDevam: { tr: "Vazgeç, Teste Devam Et", en: "Cancel, Continue Testing" },
         uyariMusteriAdi: { tr: "Lütfen müşteri adını girin.", en: "Please enter the customer name." },
-        uyariReceteSec: { tr: "Lütfen bir beton reçetesi seçin.", en: "Please select a concrete mix design." },
+        uyariReceteSec: { tr: "Lütfen reçeteyi seçin veya yazın.", en: "Please select or type the mix design." },
+        recetePlaceholder: { tr: "Seçin veya yazın (örn. C30/37, K-12)...", en: "Select or type (e.g. C30/37, M-12)..." },
+        veriAkisiKesildi: { tr: "⚠ Veri akışı kesildi — cihazı ve Wi-Fi bağlantısını kontrol edin", en: "⚠ Data transfer interrupted — check the device and Wi-Fi connection" },
         uyariCihazBagliDegil: { tr: "Cihaz bağlı değil. Lütfen önce sol alttan SLIPER-ESP32'ye bağlanın.", en: "Device not connected. Please connect to SLIPER-ESP32 from the bottom left first." },
         uyariAktifOlcumYok: { tr: "Aktif bir ölçüm yok. Önce ölçümü başlatın.", en: "No active measurement. Please start a measurement first." }
     })
@@ -53,19 +66,53 @@ Rectangle {
     property string uyariMesaji: ""
     property bool bitirIcinDuraklatildi: false
 
+    property real baslangicZamaniS: -1
+    property var zamanGecmis: []
     property var basincGecmis: []
     property var konumGecmis: []
     property var hizGecmis: []
     property var debiGecmis: []
 
-    readonly property real agirlikBirim: 1.6
-    property int agirlikAdedi: 0
-    readonly property real agirlikToplam: agirlikAdedi * agirlikBirim
+    // Orijinal ağırlık seti: 3 x ~1.6 kg ve 3 x ~4.8 kg. Eklenen her ağırlık
+    // sırayla tutulur; "Geri" son ekleneni kaldırır. Her stroke, o anki toplam
+    // ağırlıkla kaydedilir (kılavuz: her yük için en az 3 stroke).
+    property var agirlikListesi: []
+    property real strokeAgirligi: -1
+    readonly property int agirlikAdedi: agirlikListesi.length
+    readonly property real agirlikToplam: {
+        var t = 0
+        for (var i = 0; i < agirlikListesi.length; i++) t += agirlikListesi[i]
+        return t
+    }
+
+    function agirlikEkle(kg) {
+        var yeni = agirlikListesi.slice()
+        yeni.push(kg)
+        agirlikListesi = yeni
+        agirlikEklendi()
+    }
+
+    function agirlikGeriAl() {
+        var yeni = agirlikListesi.slice()
+        yeni.pop()
+        agirlikListesi = yeni
+    }
+
+    function agirlikOzeti() {
+        if (agirlikListesi.length === 0) return txt("agirlikYok")
+        var kucukAgirlikSayisi = 0, buyukAgirlikSayisi = 0   // 1.6 kg ve 4.8 kg'lık parçalar
+        for (var i = 0; i < agirlikListesi.length; i++) {
+            if (agirlikListesi[i] < 3) kucukAgirlikSayisi++; else buyukAgirlikSayisi++
+        }
+        var parcalar = []
+        if (kucukAgirlikSayisi > 0) parcalar.push(kucukAgirlikSayisi + " x 1.6")
+        if (buyukAgirlikSayisi > 0) parcalar.push(buyukAgirlikSayisi + " x 4.8")
+        return parcalar.join(" + ") + " = " + agirlikToplam.toFixed(1) + " kg"
+    }
 
     // TS EN 206 / TS 13515 normal beton dayanım sınıfları (C sınıfı) — çimento dozajı
     // ve azami su/çimento oranı, ilgili sınıfın minimum bağlayıcı gereksinimine göre.
     readonly property var receteListesi: [
-        { sinifTr: "Reçete Seçin...", sinifEn: "Select Mix Design...", cimentoTr: "", cimentoEn: "", suCimentoTr: "", suCimentoEn: "", aciklamaTr: "", aciklamaEn: "" },
         { sinifTr: "C16/20", sinifEn: "C16/20", cimentoTr: "min. 260 kg/m³", cimentoEn: "min. 260 kg/m³", suCimentoTr: "maks. 0.65", suCimentoEn: "max. 0.65", aciklamaTr: "Hafif yükte yalın/donatılı beton", aciklamaEn: "Plain/reinforced concrete for light loads" },
         { sinifTr: "C20/25", sinifEn: "C20/25", cimentoTr: "min. 280 kg/m³", cimentoEn: "min. 280 kg/m³", suCimentoTr: "maks. 0.60", suCimentoEn: "max. 0.60", aciklamaTr: "Standart betonarme", aciklamaEn: "Standard reinforced concrete" },
         { sinifTr: "C25/30", sinifEn: "C25/30", cimentoTr: "min. 300 kg/m³", cimentoEn: "min. 300 kg/m³", suCimentoTr: "maks. 0.55", suCimentoEn: "max. 0.55", aciklamaTr: "Standart betonarme (TS EN 206)", aciklamaEn: "Standard reinforced concrete (TS EN 206)" },
@@ -85,8 +132,9 @@ Rectangle {
         uyariMesaji = ""
         bitirIcinDuraklatildi = false
         musteriKutusu.text = ""
-        receteKutusu.currentIndex = 0
-        agirlikAdedi = 0
+        receteKutusu.currentIndex = -1
+        receteKutusu.editText = ""
+        agirlikListesi = []
         calculator.sifirla()
         grafikleriSifirla()
     }
@@ -99,7 +147,7 @@ Rectangle {
             return
         }
 
-        if (receteKutusu.currentIndex <= 0) {
+        if (receteKutusu.editText.trim().length === 0) {
             uyariMesaji = txt("uyariReceteSec")
             return
         }
@@ -116,8 +164,10 @@ Rectangle {
         calculator.sifirla()
         aktifOlcumId = database.olcumBaslat(
             musteriKutusu.text,
-            receteKutusu.currentText,
-            agirlikToplam
+            receteKutusu.editText.trim(),
+            agirlikToplam,
+            yerKutusu.text,
+            ""
         )
         console.log("Aktif olcum id:", aktifOlcumId)
     }
@@ -136,6 +186,8 @@ Rectangle {
 
     function grafikleriSifirla() {
         zamanSayaci = 0
+        baslangicZamaniS = -1
+        zamanGecmis = []
         basincSerisi.clear()
         konumSerisi.clear()
         hizSerisi.clear()
@@ -174,37 +226,43 @@ Rectangle {
         if (dizi.length === 0) return { min: 0, max: 1100 }
         var maxDeger = Math.max.apply(null, dizi)
         var minDeger = Math.min.apply(null, dizi)
-        var pad = Math.max((maxDeger - minDeger) * 0.2, maxDeger * 0.02, 5)
-        return { min: Math.max(0, minDeger - pad), max: maxDeger + pad }
+        var kenarBoslugu = Math.max((maxDeger - minDeger) * 0.2, maxDeger * 0.02, 5)
+        return { min: Math.max(0, minDeger - kenarBoslugu), max: maxDeger + kenarBoslugu }
     }
 
     Connections {
         target: sensorManager
         function onVeriGuncellendi() {
-            if (!sensorManager.veriGecerli || aktifOlcumId <= 0 || calculator.duraklatildi) return
+            if (!sensorManager.veriGecerli || aktifOlcumId <= 0) return
 
-            zamanSayaci += 0.2
+            // Zaman ekseni cihazin zaman damgasindan gelir (sabit 0.2 s adim varsayilmaz).
+            if (baslangicZamaniS < 0) baslangicZamaniS = sensorManager.zamanS
+            zamanSayaci = sensorManager.zamanS - baslangicZamaniS
 
             basincSerisi.append(zamanSayaci, sensorManager.basinc)
             konumSerisi.append(zamanSayaci, sensorManager.konum)
             hizSerisi.append(zamanSayaci, sensorManager.hiz)
             debiSerisi.append(zamanSayaci, sensorManager.debi)
 
+            zamanGecmis.push(zamanSayaci)
             basincGecmis.push(sensorManager.basinc)
             konumGecmis.push(sensorManager.konum)
             hizGecmis.push(sensorManager.hiz)
             debiGecmis.push(sensorManager.debi)
 
             if (zamanSayaci > 60) {
-                basincSerisi.remove(0)
-                konumSerisi.remove(0)
-                hizSerisi.remove(0)
-                debiSerisi.remove(0)
+                while (zamanGecmis.length > 0 && zamanGecmis[0] < zamanSayaci - 60) {
+                    basincSerisi.remove(0)
+                    konumSerisi.remove(0)
+                    hizSerisi.remove(0)
+                    debiSerisi.remove(0)
 
-                basincGecmis.shift()
-                konumGecmis.shift()
-                hizGecmis.shift()
-                debiGecmis.shift()
+                    zamanGecmis.shift()
+                    basincGecmis.shift()
+                    konumGecmis.shift()
+                    hizGecmis.shift()
+                    debiGecmis.shift()
+                }
 
                 xEkseni.min = zamanSayaci - 60
                 xEkseni.max = zamanSayaci
@@ -219,11 +277,11 @@ Rectangle {
             var basincAralik = basincEkseniHesapla(basincGecmis)
             yEkseni.min = basincAralik.min
             yEkseni.max = basincAralik.max
-            konumYEkseni.max = eksenTavaniHesapla(konumGecmis, 500, 50)
+            konumYEkseni.max = eksenTavaniHesapla(konumGecmis, 1000, 50)
             hizYEkseni.max = eksenTavaniHesapla(hizGecmis, 4, 0.5)
             debiYEkseni.max = eksenTavaniHesapla(debiGecmis, 180, 10)
 
-            calculator.konumGuncelle(sensorManager.konum, sensorManager.hiz)
+            calculator.konumGuncelle(sensorManager.zamanS, sensorManager.konum, sensorManager.basinc)
         }
     }
 
@@ -255,8 +313,7 @@ Rectangle {
 
         function onEkleKomutu() {
             if (!visible) return
-            agirlikAdedi += 1
-            agirlikEklendi()
+            agirlikEkle(1.6)
         }
     }
 
@@ -290,6 +347,31 @@ Rectangle {
                 anchors.margins: 20
                 anchors.topMargin: 60
                 spacing: 6
+
+                Text {
+                    text: txt("olcumYeri")
+                    color: "#9ca3af"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 12
+                }
+
+                TextField {
+                    id: yerKutusu
+                    width: parent.width
+                    height: 34
+                    placeholderText: txt("olcumYeriPlaceholder")
+                    placeholderTextColor: "#4b5563"
+                    color: "#dce8f5"
+                    font.pixelSize: 13
+                    leftPadding: 10
+                    verticalAlignment: TextInput.AlignVCenter
+                    background: Rectangle {
+                        color: "#0a0a0d"
+                        radius: 6
+                        border.color: yerKutusu.activeFocus ? "#3b82f6" : "#1e2a3f"
+                        border.width: 1
+                    }
+                }
 
                 Text {
                     text: txt("musteri")
@@ -329,6 +411,10 @@ Rectangle {
                     height: 38
                     model: receteListesi
                     textRole: Translations.turkish ? "sinifTr" : "sinifEn"
+                    // Orijinal SLIPER'daki "Formula" serbest metindir: hazır sınıf
+                    // seçilebilir ya da firmanın kendi karışım kodu yazılabilir.
+                    editable: true
+                    currentIndex: -1
 
                     background: Rectangle {
                         color: "#0a0a0d"
@@ -337,12 +423,18 @@ Rectangle {
                         border.width: 1
                     }
 
-                    contentItem: Text {
-                        text: receteKutusu.displayText
-                        color: "#9ca3af"
+                    contentItem: TextField {
+                        text: receteKutusu.editText
+                        placeholderText: txt("recetePlaceholder")
+                        placeholderTextColor: "#4b5563"
+                        color: "#dce8f5"
                         font.pixelSize: 13
                         leftPadding: 10
-                        verticalAlignment: Text.AlignVCenter
+                        rightPadding: 30
+                        verticalAlignment: TextInput.AlignVCenter
+                        selectByMouse: true
+                        background: null
+                        onTextEdited: receteKutusu.editText = text
                     }
 
                     delegate: ItemDelegate {
@@ -401,16 +493,13 @@ Rectangle {
 
                         Button {
                             id: agirlikEkleButonu
-                            width: (parent.width - 2 * parent.spacing) / 3
+                            width: (parent.width - 3 * parent.spacing) / 4
                             height: 38
-                            text: "+ 1.6"
+                            text: "+1.6"
                             font.family: "Segoe UI"
                             font.pixelSize: 12
 
-                            onClicked: {
-                                agirlikAdedi += 1
-                                agirlikEklendi()
-                            }
+                            onClicked: agirlikEkle(1.6)
 
                             background: Rectangle {
                                 radius: 6
@@ -429,15 +518,41 @@ Rectangle {
                         }
 
                         Button {
+                            id: agirlikEkle48Butonu
+                            width: (parent.width - 3 * parent.spacing) / 4
+                            height: 38
+                            text: "+4.8"
+                            font.family: "Segoe UI"
+                            font.pixelSize: 12
+
+                            onClicked: agirlikEkle(4.8)
+
+                            background: Rectangle {
+                                radius: 6
+                                color: agirlikEkle48Butonu.pressed ? "#1e3a8a" : (agirlikEkle48Butonu.hovered ? "#1e3a8a" : "#1d4ed8")
+                                border.color: "#3b82f6"
+                                border.width: 1
+                            }
+
+                            contentItem: Text {
+                                text: agirlikEkle48Butonu.text
+                                color: "#dce8f5"
+                                font: agirlikEkle48Butonu.font
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                        }
+
+                        Button {
                             id: agirlikAzaltButonu
-                            width: (parent.width - 2 * parent.spacing) / 3
+                            width: (parent.width - 3 * parent.spacing) / 4
                             height: 38
                             text: txt("geriButon")
                             font.family: "Segoe UI"
                             font.pixelSize: 12
                             enabled: agirlikAdedi > 0
 
-                            onClicked: agirlikAdedi -= 1
+                            onClicked: agirlikGeriAl()
 
                             background: Rectangle {
                                 radius: 6
@@ -459,14 +574,14 @@ Rectangle {
 
                         Button {
                             id: sifirlaButonu
-                            width: (parent.width - 2 * parent.spacing) / 3
+                            width: (parent.width - 3 * parent.spacing) / 4
                             height: 38
                             text: txt("sifirlaButon")
                             font.family: "Segoe UI"
                             font.pixelSize: 12
                             enabled: agirlikAdedi > 0
 
-                            onClicked: agirlikAdedi = 0
+                            onClicked: agirlikListesi = []
 
                             background: Rectangle {
                                 radius: 6
@@ -497,7 +612,7 @@ Rectangle {
 
                         Text {
                             anchors.centerIn: parent
-                            text: agirlikAdedi + " x " + agirlikBirim.toFixed(1) + " = " + agirlikToplam.toFixed(1) + " kg"
+                            text: agirlikOzeti()
                             color: agirlikAdedi > 0 ? "#dce8f5" : "#4b5563"
                             font.family: "Segoe UI"
                             font.pixelSize: 13
@@ -845,7 +960,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.veriGecerli ? sensorManager.hiz.toFixed(1) : "--"
+                            text: sensorManager.veriGecerli ? sensorManager.hiz.toFixed(2) : "--"
                             color: "#f59e0b"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -929,9 +1044,105 @@ Rectangle {
             width: parent.width - testBilgileriPaneli.width - panelAyraci.width
             height: parent.height
 
-            Grid {
-                anchors.fill: parent
+            Rectangle {
+                id: sonStrokeCubugu
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
                 anchors.margins: 16
+                height: 52
+                radius: 10
+                color: "#12121a"
+                border.color: calculator.sonStroke.no === undefined ? "#1e2a3f"
+                              : (calculator.sonStroke.gecerli ? "#166534" : "#7f1d1d")
+                border.width: 1
+
+                readonly property var s: calculator.sonStroke
+                readonly property bool var_: s.no !== undefined
+
+                function nedenMetni(kod) {
+                    if (kod === "hiz") return txt("nedenHiz")
+                    if (kod === "basinc") return txt("nedenBasinc")
+                    if (kod === "ornek") return txt("nedenOrnek")
+                    return ""
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    visible: !sonStrokeCubugu.var_
+                    text: txt("strokeYok")
+                    color: "#6b7280"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 12
+                }
+
+                Row {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 22
+                    visible: sonStrokeCubugu.var_
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: txt("sonStroke") + "  #" + (sonStrokeCubugu.var_ ? sonStrokeCubugu.s.no : "")
+                        color: "#6b7280"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 11
+                        font.bold: true
+                        font.letterSpacing: 1
+                    }
+
+                    Repeater {
+                        model: sonStrokeCubugu.var_ ? [
+                            { e: txt("sure"), d: sonStrokeCubugu.s.sure.toFixed(2) + " s" },
+                            { e: "Pmax", d: sonStrokeCubugu.s.pMaks.toFixed(1) + " mbar" },
+                            { e: "P0l", d: sonStrokeCubugu.s.p0l.toFixed(1) + " mbar" },
+                            { e: "P0r", d: sonStrokeCubugu.s.p0r.toFixed(1) + " mbar" },
+                            { e: "p", d: sonStrokeCubugu.s.basinc.toFixed(2) + " mbar" },
+                            { e: "Q", d: sonStrokeCubugu.s.debi.toFixed(2) + " m³/h" },
+                            { e: "v", d: sonStrokeCubugu.s.hiz.toFixed(3) + " m/s" }
+                        ] : []
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 1
+                            Text { text: modelData.e; color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 10 }
+                            Text { text: modelData.d; color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 13; font.bold: true }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 14
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: sonStrokeCubugu.var_
+                    width: gecerlilikMetni.implicitWidth + 18
+                    height: 24
+                    radius: 12
+                    color: sonStrokeCubugu.var_ && sonStrokeCubugu.s.gecerli ? "#123321" : "#2a1414"
+
+                    Text {
+                        id: gecerlilikMetni
+                        anchors.centerIn: parent
+                        text: !sonStrokeCubugu.var_ ? "" : (sonStrokeCubugu.s.gecerli ? txt("gecerliStroke")
+                              : txt("hataliStroke") + " (" + sonStrokeCubugu.nedenMetni(sonStrokeCubugu.s.gecersizNedeni) + ")")
+                        color: sonStrokeCubugu.var_ && sonStrokeCubugu.s.gecerli ? "#4ade80" : "#f87171"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 11
+                        font.bold: true
+                    }
+                }
+            }
+
+            Grid {
+                anchors.top: sonStrokeCubugu.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 16
+                anchors.topMargin: 12
                 columns: 2
                 spacing: 16
 
@@ -1117,12 +1328,18 @@ Rectangle {
 
                         Connections {
                             target: calculator
-                            function onStrokeSayisiChanged() {
-                                if (aktifOlcumId > 0 && sensorManager.veriGecerli) {
-                                    // gecerli parametresi artik Calculator'un hiz>0 kontrolunden geliyor
-                                    // (orijinal SLIPER'daki "invalid stroke" mantigi), sabit "true" degil.
-                                    database.strokeKaydet(aktifOlcumId, sensorManager.basinc, sensorManager.konum, sensorManager.debi, calculator.sonStrokeGecerli)
+                            // Stroke sonunda anlik degerler degil, Calculator'un tum stroke
+                            // uzerinden hesapladigi p = Pmax - P0 ve Q = A*v kaydedilir.
+                            // Stroke, borunun bırakıldığı andaki ağırlıkla kaydedilir
+                            // (bitiş sonrası 2 s içinde ağırlık değiştirilse bile).
+                            function onDurumChanged() {
+                                if (calculator.durum === "INIYOR") strokeAgirligi = agirlikToplam
+                            }
+                            function onStrokeTamamlandi(stroke) {
+                                if (aktifOlcumId > 0) {
+                                    database.strokeKaydet(aktifOlcumId, stroke, strokeAgirligi >= 0 ? strokeAgirligi : agirlikToplam)
                                 }
+                                strokeAgirligi = -1
                             }
                         }
                     }
@@ -1168,7 +1385,7 @@ Rectangle {
                         Text {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.veriGecerli ? sensorManager.hiz.toFixed(1) + " m/s" : "-- m/s"
+                            text: sensorManager.veriGecerli ? sensorManager.hiz.toFixed(2) + " m/s" : "-- m/s"
                             color: "#f59e0b"
                             font.family: "Segoe UI"
                             font.pixelSize: 13
@@ -1310,6 +1527,30 @@ Rectangle {
                     }
                 }
             }
+        }
+    }
+
+    Rectangle {
+        id: veriKesintiUyarisi
+        visible: wifiManager.baglandi && !sensorManager.veriGecerli
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: 12
+        width: kesintiMetni.implicitWidth + 32
+        height: 36
+        radius: 8
+        color: "#7f1d1d"
+        border.color: "#dc2626"
+        border.width: 1
+        z: 20
+        Text {
+            id: kesintiMetni
+            anchors.centerIn: parent
+            text: txt("veriAkisiKesildi")
+            color: "#fecaca"
+            font.family: "Segoe UI"
+            font.pixelSize: 13
+            font.bold: true
         }
     }
 

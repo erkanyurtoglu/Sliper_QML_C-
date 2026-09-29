@@ -7,11 +7,15 @@
                     "access": "public",
                     "arguments": [
                         {
-                            "name": "konum",
+                            "name": "zamanS",
                             "type": "double"
                         },
                         {
-                            "name": "hiz",
+                            "name": "konumMm",
+                            "type": "double"
+                        },
+                        {
+                            "name": "basincMbar",
                             "type": "double"
                         }
                     ],
@@ -37,11 +41,11 @@
                     "access": "public",
                     "arguments": [
                         {
-                            "name": "tau0Mbar",
+                            "name": "aKesisimMbar",
                             "type": "double"
                         },
                         {
-                            "name": "muMbarHm3",
+                            "name": "bEgimMbarHm3",
                             "type": "double"
                         },
                         {
@@ -57,12 +61,95 @@
                             "type": "double"
                         },
                         {
+                            "name": "pompalamaYuksekligiM",
+                            "type": "double"
+                        },
+                        {
+                            "name": "yogunlukKgM3",
+                            "type": "double"
+                        },
+                        {
                             "name": "hataPayiYuzde",
                             "type": "double"
                         }
                     ],
                     "name": "boruHattiTahminHesapla",
                     "returnType": "QVariantMap"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "aKesisimMbar",
+                            "type": "double"
+                        },
+                        {
+                            "name": "bEgimMbarHm3",
+                            "type": "double"
+                        },
+                        {
+                            "name": "ayarlar",
+                            "type": "QVariantMap"
+                        }
+                    ],
+                    "name": "tahminTablosuHesapla",
+                    "returnType": "QVariantList"
+                },
+                {
+                    "access": "public",
+                    "name": "varsayilanTahminAyarlari",
+                    "returnType": "QVariantMap"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "kesisimA",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "schleibingerA",
+                    "returnType": "double"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "egimB",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "schleibingerB",
+                    "returnType": "double"
+                },
+                {
+                    "access": "public",
+                    "name": "sliperBoruCapiMm",
+                    "returnType": "double"
+                },
+                {
+                    "access": "public",
+                    "name": "sliperBoruUzunluguMm",
+                    "returnType": "double"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "zamanS",
+                            "type": "QVariantList"
+                        },
+                        {
+                            "name": "konumMm",
+                            "type": "QVariantList"
+                        },
+                        {
+                            "name": "konumYonu",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "hizEgrisiHesapla",
+                    "returnType": "QVariantList"
                 }
             ],
             "object": true,
@@ -122,6 +209,50 @@
                     "stored": true,
                     "type": "bool",
                     "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 4,
+                    "name": "sonStroke",
+                    "notify": "sonStrokeChanged",
+                    "read": "sonStroke",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QVariantMap",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 5,
+                    "name": "ustKonumMm",
+                    "notify": "konumSinirlariChanged",
+                    "read": "ustKonumMm",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false,
+                    "write": "setUstKonumMm"
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 6,
+                    "name": "altKonumMm",
+                    "notify": "konumSinirlariChanged",
+                    "read": "altKonumMm",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "double",
+                    "user": false,
+                    "write": "setAltKonumMm"
                 }
             ],
             "qualifiedClassName": "Calculator",
@@ -144,6 +275,27 @@
                 {
                     "access": "public",
                     "name": "sonStrokeGecerliChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "sonStrokeChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "konumSinirlariChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "stroke",
+                            "type": "QVariantMap"
+                        }
+                    ],
+                    "name": "strokeTamamlandi",
                     "returnType": "void"
                 }
             ],

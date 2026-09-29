@@ -1,4 +1,5 @@
 #include "WifiManager.h"
+#include "SliperModel.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QDebug>
@@ -22,6 +23,9 @@ WifiManager::WifiManager(SensorManager *sensorManager, Database *database, QObje
     // kapanma" davranisinin yazilimsal karsiligi).
     m_hareketsizlikTimer.setInterval(2 * 60 * 1000);
     connect(&m_hareketsizlikTimer, &QTimer::timeout, this, &WifiManager::hareketsizlikKontrolEt);
+
+    m_veriBekciTimer.setInterval(500);
+    connect(&m_veriBekciTimer, &QTimer::timeout, this, &WifiManager::veriAkisiniKontrolEt);
 }
 
 bool WifiManager::baglandi() const { return m_baglandi; }
@@ -55,23 +59,34 @@ void WifiManager::kalibrasyonYukle()
 
     m_loadCellHamDegerleri.clear();
     m_loadCellKiloDegerleri.clear();
-    const QVariantList noktalar = m_database->loadCellNoktalariGetir();
-    for (const QVariant &v : noktalar) {
-        QVariantMap n = v.toMap();
-        m_loadCellHamDegerleri.append(n["hamDeger"].toDouble());
-        m_loadCellKiloDegerleri.append(n["hedefKg"].toDouble());
+    const QVariantList loadCellNoktalari = m_database->loadCellNoktalariGetir();
+    for (const QVariant &kayit : loadCellNoktalari) {
+        const QVariantMap nokta = kayit.toMap();
+        m_loadCellHamDegerleri.append(nokta["hamDeger"].toDouble());
+        m_loadCellKiloDegerleri.append(nokta["hedefKg"].toDouble());
     }
     qDebug() << "Load cell" << m_loadCellHamDegerleri.size() << "nokta yuklendi.";
 
     m_mesafeHamDegerleri.clear();
     m_mesafeMmDegerleri.clear();
     const QVariantList mesafeNoktalari = m_database->mesafeNoktalariGetir();
-    for (const QVariant &v : mesafeNoktalari) {
-        QVariantMap n = v.toMap();
-        m_mesafeHamDegerleri.append(n["hamDeger"].toDouble());
-        m_mesafeMmDegerleri.append(n["hedefMm"].toDouble());
+    for (const QVariant &kayit : mesafeNoktalari) {
+        const QVariantMap nokta = kayit.toMap();
+        m_mesafeHamDegerleri.append(nokta["hamDeger"].toDouble());
+        m_mesafeMmDegerleri.append(nokta["hedefMm"].toDouble());
     }
     qDebug() << "Mesafe" << m_mesafeHamDegerleri.size() << "nokta yuklendi.";
+
+    // Konum yönü: üst referans alttan küçükse konum "sensörden uzaklık"tır.
+    // Kalibre edilmemişse varsayılan "sensörden uzaklık" (Calculator ile aynı).
+    const QVariantMap konumSinirlari = m_database->kalibrasyonGetir("konum_sinirlari");
+    if (konumSinirlari.value("mevcut").toBool()) {
+        const double ustKonumMm = konumSinirlari.value("deger1").toDouble();
+        const double altKonumMm = konumSinirlari.value("deger2").toDouble();
+        m_konumYonu = ustKonumMm < altKonumMm ? -1.0 : 1.0;
+    } else {
+        m_konumYonu = -1.0;
+    }
 
     QVariantMap egimKal = m_database->egimKalibrasyonuGetir();
     if (egimKal.value("mevcut").toBool()) {
@@ -97,6 +112,8 @@ void WifiManager::soketBaglandi()
     m_zamanlayici.restart();
     m_hareketsizlikZamanlayici.restart();
     m_hareketsizlikTimer.start();
+    m_sonVeriZamani.restart();
+    m_veriBekciTimer.start();
     kalibrasyonYukle();
 
     if (m_sensorManager) {
@@ -111,6 +128,7 @@ void WifiManager::soketAyrildi()
     m_baglandi = false;
     m_baglaniyor = false;
     m_hareketsizlikTimer.stop();
+    m_veriBekciTimer.stop();
     emit baglandiChanged();
     emit baglaniyorChanged();
     durumGuncelle("Bağlı Değil");
@@ -134,6 +152,18 @@ void WifiManager::hareketsizlikKontrolEt()
     }
 }
 
+void WifiManager::veriAkisiniKontrolEt()
+{
+    if (!m_baglandi || !m_sonVeriZamani.isValid()) return;
+    if (m_sonVeriZamani.elapsed() > VERI_KESINTI_MS) {
+        if (m_sensorManager && m_sensorManager->veriGecerli()) {
+            qWarning() << "Veri akisi kesildi (" << m_sonVeriZamani.elapsed() << "ms paket yok).";
+            m_sensorManager->veriyiGecersizYap();
+            durumGuncelle("Veri akışı kesildi");
+        }
+    }
+}
+
 void WifiManager::soketHata(QAbstractSocket::SocketError hata)
 {
     m_baglandi = false;
@@ -147,6 +177,11 @@ void WifiManager::soketHata(QAbstractSocket::SocketError hata)
 
 void WifiManager::veriHazir()
 {
+    m_sonVeriZamani.restart();
+    if (m_durumMesaji == "Veri akışı kesildi") {
+        durumGuncelle("SLIPER-ESP32 Bağlı");
+    }
+
     if (m_hareketsizlikZamanlayici.isValid()) {
         m_hareketsizlikZamanlayici.restart();
     }
@@ -164,12 +199,6 @@ void WifiManager::veriHazir()
     }
 }
 
-void WifiManager::egimHesapla(double accelX, double accelY, double accelZ, double &egimX, double &egimY) const
-{
-    egimX = std::atan2(accelY, accelZ) * 180.0 / M_PI;
-    egimY = std::atan2(-accelX, std::sqrt(accelY * accelY + accelZ * accelZ)) * 180.0 / M_PI;
-}
-
 void WifiManager::jsonSatiriIsle(const QByteArray &satir)
 {
     QJsonParseError hata;
@@ -180,15 +209,15 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
         return;
     }
 
-    QJsonObject obj = belge.object();
+    const QJsonObject paket = belge.object();
 
-    const double hamAgirlik = obj.value("hamAgirlik").toDouble();
-    const double hamMesafe = obj.contains("hamMesafe")
-        ? obj.value("hamMesafe").toDouble()
-        : obj.value("konum").toDouble();
-    const double accelX = obj.value("accelX").toDouble();
-    const double accelY = obj.value("accelY").toDouble();
-    const double accelZ = obj.value("accelZ").toDouble();
+    const double hamAgirlik = paket.value("hamAgirlik").toDouble();
+    const double hamMesafe = paket.contains("hamMesafe")
+        ? paket.value("hamMesafe").toDouble()
+        : paket.value("konum").toDouble();
+    const double accelX = paket.value("accelX").toDouble();
+    const double accelY = paket.value("accelY").toDouble();
+    const double accelZ = paket.value("accelZ").toDouble();
 
     // Kalibrasyon ekraninda gerekiyor: ham deger her zaman guncellensin
     if (m_sensorManager) {
@@ -199,39 +228,53 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
         // Batarya voltaji: firmware "hamBatarya" alanini gondermiyorsa
         // (henuz donanim baglanmadiysa) 0 olarak kalir, QML tarafinda
         // gosterge "bilinmiyor" durumunda birakilmalidir.
-        if (obj.contains("hamBatarya")) {
-            const double hamBatarya = obj.value("hamBatarya").toDouble();
-            const double voltaj = hamBatarya * ADS1115_LSB_VOLT * BATARYA_BOLUCU_ORANI;
-            m_sensorManager->bataryaVoltajGuncelle(voltaj);
+        if (BATARYA_OLCUMU_AKTIF && paket.contains("hamBatarya")) {
+            const double hamBatarya = paket.value("hamBatarya").toDouble();
+            m_sensorManager->bataryaVoltajGuncelle(SliperModel::bataryaVoltaji(hamBatarya));
         }
     }
 
-    const double konum = m_mesafeHamDegerleri.isEmpty()
+    // --- Konum ve basinc: kalibrasyon tablosu + load cell kuvveti / piston alani
+    // (SliperModel bolum 1 ve 2). Mesafe kalibre edilmemisse ham deger gosterilir. ---
+    const double konumMm = m_mesafeHamDegerleri.isEmpty()
         ? hamMesafe
-        : mesafeInterpolasyon(hamMesafe);
+        : SliperModel::kalibrasyonTablosundanOku(m_mesafeHamDegerleri, m_mesafeMmDegerleri, hamMesafe);
+    const double agirlikKg =
+        SliperModel::kalibrasyonTablosundanOku(m_loadCellHamDegerleri, m_loadCellKiloDegerleri, hamAgirlik);
+    const double basincMbar = SliperModel::agirliktanBasincMbar(agirlikKg);
 
-    // --- Basinc: kayitli kalibrasyon ile ---
-    const double agirlikKg = loadCellInterpolasyon(hamAgirlik);
-    const double basinc = agirlikKg * 98.1;
+    // --- Zaman: ESP32 zaman damgasi (ms). Paketin PC'ye varis zamani
+    // kullanilmaz; TCP birden fazla satiri ayni anda teslim edebilir. ---
+    // ESP32 yeniden başlarsa (veya bağlantı yenilenirse) zaman damgası sıfırlanır;
+    // zamanın geri gitmemesi için ofset eklenir (stroke tamponları ve grafikler
+    // monoton zaman bekler).
+    const double hamZamanMs = paket.contains("t")
+        ? paket.value("t").toDouble()
+        : static_cast<double>(m_zamanlayici.elapsed());
+    if (m_zamanBasladi && hamZamanMs + m_zamanOfsetiMs < m_oncekiZamanMs - 1000.0) {
+        m_zamanOfsetiMs = m_oncekiZamanMs + 20.0 - hamZamanMs;
+    }
+    const double simdikiZamanMs = hamZamanMs + m_zamanOfsetiMs;
+    m_zamanBasladi = true;
 
-    // --- Hiz ve debi: konum farkindan turetiliyor ---
-    double hiz = 0.0;
-    double debi = 0.0;
-
-    const qint64 simdikiZamanMs = m_zamanlayici.elapsed();
-
+    // --- Canli hiz ve debi (SliperModel bolum 10): yalnizca ekran icin.
+    // Stroke hizi/debisi Calculator'da ayrica dogru uydurularak hesaplanir. ---
     if (!m_ilkPaket) {
-        double dt = (simdikiZamanMs - m_oncekiZamanMs) / 1000.0;
-        if (dt <= 0.0) dt = 0.001;
-
-        const double boruAlaniM2 = M_PI * (BORU_CAPI_M / 2.0) * (BORU_CAPI_M / 2.0);
-        hiz = std::fabs(konum - m_oncekiKonum) / 1000.0 / dt;
-        debi = hiz * boruAlaniM2 * 3600.0;
+        const double gecenSureS = (simdikiZamanMs - m_oncekiZamanMs) / 1000.0;
+        if (gecenSureS > 0.0) {
+            const double anlikHiz =
+                SliperModel::anlikHizMs(m_oncekiKonum, konumMm, gecenSureS, m_konumYonu);
+            m_filtreliHiz = SliperModel::canliHizFiltrele(m_filtreliHiz, anlikHiz);
+        }
     } else {
         m_ilkPaket = false;
+        m_filtreliHiz = 0.0;
     }
 
-    m_oncekiKonum = konum;
+    const double hizMs = m_filtreliHiz;
+    const double debiM3h = SliperModel::hizdanDebiM3h(hizMs);
+
+    m_oncekiKonum = konumMm;
     m_oncekiZamanMs = simdikiZamanMs;
 
     // --- Egim: once ham ivme bias/gain ile duzeltilir, sonra aciya cevrilir ---
@@ -239,11 +282,12 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
     const double duzeltilmisY = (accelY - m_egimBiasY) / m_egimGainY;
     const double duzeltilmisZ = (accelZ - m_egimBiasZ) / m_egimGainZ;
 
-    double egimX = 0.0, egimY = 0.0;
-    egimHesapla(duzeltilmisX, duzeltilmisY, duzeltilmisZ, egimX, egimY);
+    const SliperModel::EgimAcilari egim =
+        SliperModel::egimAcilari(duzeltilmisX, duzeltilmisY, duzeltilmisZ);
 
     if (m_sensorManager) {
-        m_sensorManager->veriGuncelle(basinc, konum, hiz, debi, egimX, egimY);
+        m_sensorManager->veriGuncelle(simdikiZamanMs / 1000.0, basincMbar, konumMm, hizMs, debiM3h,
+                                      egim.xDerece, egim.yDerece);
     }
 }
 
@@ -255,54 +299,3 @@ void WifiManager::durumGuncelle(const QString &mesaj)
     }
 }
 
-double WifiManager::loadCellInterpolasyon(double hamDeger) const
-{
-    const int n = m_loadCellHamDegerleri.size();
-    if (n == 0) return 0.0;
-    if (n == 1) return m_loadCellKiloDegerleri[0];
-
-    int i;
-    if (hamDeger <= m_loadCellHamDegerleri[0]) {
-        i = 0;
-    } else if (hamDeger >= m_loadCellHamDegerleri[n - 1]) {
-        i = n - 2;
-    } else {
-        for (i = 0; i < n - 1; ++i) {
-            if (hamDeger <= m_loadCellHamDegerleri[i + 1]) break;
-        }
-    }
-
-    const double ham1 = m_loadCellHamDegerleri[i];
-    const double ham2 = m_loadCellHamDegerleri[i + 1];
-    const double kg1 = m_loadCellKiloDegerleri[i];
-    const double kg2 = m_loadCellKiloDegerleri[i + 1];
-
-    if (ham2 == ham1) return kg1;
-    return kg1 + (hamDeger - ham1) * (kg2 - kg1) / (ham2 - ham1);
-}
-
-double WifiManager::mesafeInterpolasyon(double hamDeger) const
-{
-    const int n = m_mesafeHamDegerleri.size();
-    if (n == 0) return 0.0;
-    if (n == 1) return m_mesafeMmDegerleri[0];
-
-    int i;
-    if (hamDeger <= m_mesafeHamDegerleri[0]) {
-        i = 0;
-    } else if (hamDeger >= m_mesafeHamDegerleri[n - 1]) {
-        i = n - 2;
-    } else {
-        for (i = 0; i < n - 1; ++i) {
-            if (hamDeger <= m_mesafeHamDegerleri[i + 1]) break;
-        }
-    }
-
-    const double ham1 = m_mesafeHamDegerleri[i];
-    const double ham2 = m_mesafeHamDegerleri[i + 1];
-    const double mm1 = m_mesafeMmDegerleri[i];
-    const double mm2 = m_mesafeMmDegerleri[i + 1];
-
-    if (ham2 == ham1) return mm1;
-    return mm1 + (hamDeger - ham1) * (mm2 - mm1) / (ham2 - ham1);
-}

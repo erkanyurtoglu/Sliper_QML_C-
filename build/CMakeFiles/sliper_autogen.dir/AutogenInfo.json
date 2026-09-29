@@ -872,6 +872,12 @@
 			null
 		],
 		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SliperModel.h",
+			"MU",
+			"UVLADIE3JM/moc_SliperModel.cpp",
+			null
+		],
+		[
 			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/VoiceCommandManager.h",
 			"MU",
 			"UVLADIE3JM/moc_VoiceCommandManager.cpp",
@@ -1035,6 +1041,11 @@
 		],
 		[
 			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SliperModel.cpp",
 			"MU",
 			null
 		],

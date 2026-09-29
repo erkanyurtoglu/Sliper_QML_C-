@@ -59,7 +59,21 @@ Rectangle {
         noktayiGuncelle: { tr: "Noktayı Güncelle", en: "Update Point" },
         kalibrasyonuTamamla: { tr: "Kalibrasyonu Tamamla", en: "Complete Calibration" },
         sonNoktayiKaydet: { tr: "Son Noktayı Kaydet", en: "Save Last Point" },
-        buNoktayiKaydet: { tr: "Bu Noktayı Kaydet", en: "Save This Point" }
+        buNoktayiKaydet: { tr: "Bu Noktayı Kaydet", en: "Save This Point" },
+        konumSinirlari: { tr: "Stroke Konumları", en: "Stroke Positions" },
+        konumSinirlariAciklama: { tr: "Üst / alt konum referansı", en: "Top / bottom position reference" },
+        konumBaslik: { tr: "Üst / Alt Konum Kalibrasyonu", en: "Top / Bottom Position Calibration" },
+        konumYonerge: { tr: "Stroke'ların otomatik algılanması için borunun üst ve alt konumu kaydedilmelidir. Boruyu tamamen üst konuma kaldırıp kilitleyin ve \"Üst Konumu Kaydet\"e basın. Sonra boruyu en alt konuma indirip \"Alt Konumu Kaydet\"e basın.", en: "For automatic stroke detection the top and bottom positions of the pipe must be saved. Lift the pipe fully to the top position, lock it and press \"Save Top Position\". Then lower the pipe to the bottom and press \"Save Bottom Position\"." },
+        anlikKonum: { tr: "ANLIK KONUM", en: "CURRENT POSITION" },
+        ustKonum: { tr: "Üst konum", en: "Top position" },
+        altKonum: { tr: "Alt konum", en: "Bottom position" },
+        ustKaydet: { tr: "Üst Konumu Kaydet", en: "Save Top Position" },
+        altKaydet: { tr: "Alt Konumu Kaydet", en: "Save Bottom Position" },
+        varsayilanaDon: { tr: "Varsayılana Dön", en: "Reset to Default" },
+        konumAralikHatasi: { tr: "✕ Üst ve alt konum arasında en az 100 mm fark olmalı", en: "✕ Top and bottom positions must differ by at least 100 mm" },
+        esikBilgisi: { tr: "Stroke başlangıcı: konum < %1 mm   ·   Stroke bitişi: konum ≤ %2 mm", en: "Stroke start: position < %1 mm   ·   Stroke end: position ≤ %2 mm" },
+        esikBilgisiTers: { tr: "Konum sensörden uzaklık olarak ölçülüyor.  Stroke başlangıcı: konum > %1 mm   ·   bitişi: konum ≥ %2 mm", en: "Position is measured as distance from the sensor.  Stroke start: position > %1 mm   ·   end: position ≥ %2 mm" },
+        varsayilan: { tr: " (varsayılan)", en: " (default)" }
     })
 
     function txt(anahtar) {
@@ -67,6 +81,32 @@ Rectangle {
     }
 
     property int seciliSensor: -1
+    property bool konumKayitliVar: false
+    property string konumSonTarih: ""
+    property string konumBildirim: ""
+    property bool konumBildirimHata: false
+
+    // Orijinal SLIPER: "Calibrate Top Position" / "Calibrate Bottom Position"
+    function konumSinirlariniKaydet(ust, alt) {
+        if (Math.abs(ust - alt) < 100) {
+            konumBildirim = txt("konumAralikHatasi")
+            konumBildirimHata = true
+            return
+        }
+        if (database.kalibrasyonKaydet("konum_sinirlari", ust, alt)) {
+            database.kalibrasyonTarihiKaydet("konum_sinirlari")
+            calculator.ustKonumMm = ust
+            calculator.altKonumMm = alt
+            wifiManager.kalibrasyonYenidenYukle()
+            konumKayitliVar = true
+            konumSonTarih = database.kalibrasyonTarihiGetir("konum_sinirlari")
+            konumBildirim = txt("kalibrasyonKaydedildiMesaj")
+            konumBildirimHata = false
+        } else {
+            konumBildirim = txt("kalibrasyonKaydedilemediMesaj")
+            konumBildirimHata = true
+        }
+    }
     property int loadCellAdimi: 0
 
     property bool egimKayitliVar: false
@@ -212,6 +252,10 @@ Rectangle {
         mesafeOlcumKayitliVar = mNoktalar.length > 0
         mesafeOlcumNoktaSayisi = mNoktalar.length
         mesafeSonTarih = mesafeOlcumKayitliVar ? database.kalibrasyonTarihiGetir("mesafe_olcum") : ""
+
+        var konumKal = database.kalibrasyonGetir("konum_sinirlari")
+        konumKayitliVar = konumKal.mevcut
+        konumSonTarih = konumKal.mevcut ? database.kalibrasyonTarihiGetir("konum_sinirlari") : ""
     }
 
     Component.onCompleted: kalibrasyonDurumunuYukle()
@@ -282,7 +326,7 @@ Rectangle {
 
                 Rectangle {
                     id: egimKarti
-                    width: 350
+                    width: 300
                     height: 450
                     radius: 12
                     color: "#12121a"
@@ -345,7 +389,7 @@ Rectangle {
 
                 Rectangle {
                     id: loadCellKarti
-                    width: 350
+                    width: 300
                     height: 450
                     radius: 12
                     color: "#12121a"
@@ -408,7 +452,7 @@ Rectangle {
 
                 Rectangle {
                     id: mesafeKarti
-                    width: 350
+                    width: 300
                     height: 450
                     radius: 12
                     color: "#12121a"
@@ -468,6 +512,71 @@ Rectangle {
                         onClicked: seciliSensor = 2
                     }
                 }
+
+                Rectangle {
+                    id: konumKarti
+                    width: 300
+                    height: 450
+                    radius: 12
+                    color: "#12121a"
+                    border.color: konumKarti.hovered ? "#f59e0b" : "#1e2a3f"
+                    border.width: 1
+                    property bool hovered: false
+                    scale: hovered ? 1.03 : 1.0
+                    Behavior on border.color { ColorAnimation { duration: 120 } }
+                    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
+
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 14
+
+                        Item {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            width: 210
+                            height: 150
+
+                            // Boru + üst/alt referans çizgileri
+                            Rectangle { x: 90; y: 20; width: 30; height: 110; radius: 4; color: "#1e2a3f"; border.color: "#f59e0b"; border.width: 2 }
+                            Rectangle { x: 40; y: 20; width: 130; height: 2; color: "#4ade80" }
+                            Rectangle { x: 40; y: 128; width: 130; height: 2; color: "#f87171" }
+                            Text { x: 176; y: 12; text: "▲"; color: "#4ade80"; font.pixelSize: 14 }
+                            Text { x: 176; y: 120; text: "▼"; color: "#f87171"; font.pixelSize: 14 }
+                        }
+
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: txt("konumSinirlari"); color: "#dce8f5"; font.family: "Segoe UI"; font.pixelSize: 24; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: txt("konumSinirlariAciklama"); color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 14 }
+
+                        Rectangle {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            visible: konumKayitliVar
+                            width: kaliMetni4.implicitWidth + 16
+                            height: 20
+                            radius: 10
+                            color: "#123321"
+
+                            Text {
+                                id: kaliMetni4
+                                anchors.centerIn: parent
+                                text: txt("kalibreEdildiOnEk") + konumSonTarih
+                                color: "#4ade80"
+                                font.pixelSize: 10
+                                font.bold: true
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onEntered: konumKarti.hovered = true
+                        onExited: konumKarti.hovered = false
+                        onClicked: {
+                            konumBildirim = ""
+                            seciliSensor = 3
+                        }
+                    }
+                }
             }
         }
 
@@ -512,6 +621,7 @@ Rectangle {
                         if (seciliSensor === 0) return "#14b8a6"
                         if (seciliSensor === 1) return "#3b82f6"
                         if (seciliSensor === 2) return "#9333ea"
+                        if (seciliSensor === 3) return "#f59e0b"
                         return "#6b7280"
                     }
                 }
@@ -522,12 +632,182 @@ Rectangle {
                         if (seciliSensor === 0) return txt("egimBaslik")
                         if (seciliSensor === 1) return txt("loadCellBaslik")
                         if (seciliSensor === 2) return txt("mesafeBaslik")
+                        if (seciliSensor === 3) return txt("konumBaslik")
                         return ""
                     }
                     color: "#dce8f5"
                     font.family: "Segoe UI"
                     font.pixelSize: 16
                     font.bold: true
+                }
+            }
+
+            Item {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.topMargin: 70
+                visible: seciliSensor === 3
+
+                Column {
+                    anchors.centerIn: parent
+                    width: 620
+                    spacing: 18
+
+                    Text {
+                        width: parent.width
+                        text: txt("konumYonerge")
+                        color: "#9ca3af"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 110
+                        radius: 12
+                        color: "#12121a"
+                        border.color: "#1e2a3f"
+                        border.width: 1
+
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: 4
+                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: txt("anlikKonum"); color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
+                            Text {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text: sensorManager.veriGecerli ? sensorManager.konum.toFixed(1) + " mm" : "-- mm"
+                                color: "#f59e0b"
+                                font.family: "Segoe UI"
+                                font.pixelSize: 40
+                                font.bold: true
+                            }
+                        }
+                    }
+
+                    Repeater {
+                        model: [
+                            { ad: txt("ustKonum"), deger: calculator.ustKonumMm, buton: txt("ustKaydet"), renk: "#16a34a", ust: true },
+                            { ad: txt("altKonum"), deger: calculator.altKonumMm, buton: txt("altKaydet"), renk: "#dc2626", ust: false }
+                        ]
+
+                        Rectangle {
+                            width: 620
+                            height: 60
+                            radius: 10
+                            color: "#12121a"
+                            border.color: "#1e2a3f"
+                            border.width: 1
+
+                            Rectangle { width: 4; height: parent.height; radius: 2; color: modelData.renk }
+
+                            Column {
+                                anchors.left: parent.left
+                                anchors.leftMargin: 20
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 2
+                                Text { text: modelData.ad; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
+                                Text {
+                                    text: modelData.deger.toFixed(1) + " mm" + (konumKayitliVar ? "" : txt("varsayilan"))
+                                    color: "#dce8f5"
+                                    font.family: "Segoe UI"
+                                    font.pixelSize: 18
+                                    font.bold: true
+                                }
+                            }
+
+                            Button {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: 220
+                                height: 38
+                                text: modelData.buton
+                                enabled: sensorManager.veriGecerli
+                                font.pixelSize: 13
+                                font.bold: true
+
+                                onClicked: {
+                                    var k = sensorManager.konum
+                                    if (modelData.ust) konumSinirlariniKaydet(k, calculator.altKonumMm)
+                                    else konumSinirlariniKaydet(calculator.ustKonumMm, k)
+                                }
+
+                                background: Rectangle {
+                                    radius: 8
+                                    color: parent.enabled ? (parent.hovered ? Qt.lighter(modelData.renk, 1.2) : modelData.renk) : "#1e2a3f"
+                                }
+
+                                contentItem: Text {
+                                    text: parent.text
+                                    color: "#dce8f5"
+                                    font: parent.font
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+                        }
+                    }
+
+                    Text {
+                        width: parent.width
+                        readonly property bool ters: calculator.ustKonumMm < calculator.altKonumMm
+                        text: txt(ters ? "esikBilgisiTers" : "esikBilgisi")
+                              .arg((calculator.ustKonumMm + (ters ? 5 : -5)).toFixed(0))
+                              .arg((calculator.altKonumMm + (ters ? -5 : 5)).toFixed(0))
+                        color: "#6b7280"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 11
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+
+                    Text {
+                        width: parent.width
+                        visible: !sensorManager.veriGecerli
+                        text: txt("cihazBagliDegilKalibrasyon")
+                        color: "#f87171"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 12
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+
+                    Text {
+                        width: parent.width
+                        visible: konumBildirim.length > 0
+                        text: konumBildirim
+                        color: konumBildirimHata ? "#f87171" : "#4ade80"
+                        font.family: "Segoe UI"
+                        font.pixelSize: 12
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+
+                    Button {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: 180
+                        height: 34
+                        text: txt("varsayilanaDon")
+                        font.pixelSize: 12
+                        onClicked: konumSinirlariniKaydet(100, 540)
+
+                        background: Rectangle {
+                            radius: 8
+                            color: parent.hovered ? "#1e2a3f" : "transparent"
+                            border.color: "#1e2a3f"
+                            border.width: 1
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#9ca3af"
+                            font: parent.font
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
                 }
             }
 

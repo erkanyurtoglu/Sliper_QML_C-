@@ -22,9 +22,16 @@ int main(int argc, char *argv[])
     SensorManager sensorManager;
     Calculator calculator;
     Database database;
-    ReportManager reportManager;
+    ReportManager reportManager(&database);
     WifiManager wifiManager(&sensorManager, &database);
     VoiceCommandManager voiceCommandManager;
+
+    // Kalibre edilmiş üst/alt boru konumları (stroke başlangıç/bitiş referansı)
+    const QVariantMap konumSinirlari = database.kalibrasyonGetir("konum_sinirlari");
+    if (konumSinirlari.value("mevcut").toBool()) {
+        calculator.setUstKonumMm(konumSinirlari.value("deger1").toDouble());
+        calculator.setAltKonumMm(konumSinirlari.value("deger2").toDouble());
+    }
 
     QQmlApplicationEngine engine;
 

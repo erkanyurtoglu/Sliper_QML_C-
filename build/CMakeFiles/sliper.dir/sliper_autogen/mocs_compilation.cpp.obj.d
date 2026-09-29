@@ -329,6 +329,13 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qobject.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qstring.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QVector \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QDateTime \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qdatetime.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qcalendar.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qlocale.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_Database.cpp \
  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/Database.h \
  C:/Qt/6.7.3/mingw_64/include/QtSql/QSqlDatabase \
@@ -342,6 +349,31 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qlist.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_ReportManager.cpp \
  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/ReportManager.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/QImage \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qimage.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qtguiglobal.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qtgui-config.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qtguiexports.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qcolor.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qrgb.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qrgba64.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpaintdevice.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qwindowdefs.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qwindowdefs_win.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qrect.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qmargins.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qsize.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qpoint.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpixelformat.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qtransform.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qpolygon.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qregion.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qline.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QPointF \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qpoint.h \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/QColor \
+ C:/Qt/6.7.3/mingw_64/include/QtGui/qcolor.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_SensorManager.cpp \
  C:/Users/yurto/Documents/GitHub/Sliper_QML_C++/src/SensorManager.h \
  C:\Users\yurto\Documents\GitHub\Sliper_QML_C++\build\sliper_autogen\UVLADIE3JM/moc_VoiceCommandManager.cpp \
@@ -372,9 +404,6 @@ CMakeFiles/sliper.dir/sliper_autogen/mocs_compilation.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtNetwork/qabstractsocket.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qiodevice.h \
  C:/Qt/6.7.3/mingw_64/include/QtNetwork/qhostaddress.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvariant.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QTimer \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qtimer.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qbasictimer.h \
- C:/Qt/6.7.3/mingw_64/include/QtCore/QVector \
- C:/Qt/6.7.3/mingw_64/include/QtCore/qvector.h
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qbasictimer.h

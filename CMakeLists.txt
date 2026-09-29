@@ -17,6 +17,8 @@ qt_add_executable(sliper
     src/SensorManager.cpp
     src/Calculator.h
     src/Calculator.cpp
+    src/SliperModel.h
+    src/SliperModel.cpp
     src/Database.h
     src/Database.cpp
     src/ReportManager.h
