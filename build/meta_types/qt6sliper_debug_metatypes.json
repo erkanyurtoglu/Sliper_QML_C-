@@ -185,6 +185,11 @@
                     },
                     {
                         "access": "public",
+                        "name": "ustYakalamaToleransiMm",
+                        "returnType": "double"
+                    },
+                    {
+                        "access": "public",
                         "name": "sliperBoruCapiMm",
                         "returnType": "double"
                     },

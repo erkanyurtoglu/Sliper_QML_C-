@@ -59,6 +59,10 @@ public:
     // P-Q kesişim/eğiminden Schleibinger a/b (bkz. SliperModel bölüm 8)
     Q_INVOKABLE double schleibingerA(double kesisimA) const;
     Q_INVOKABLE double schleibingerB(double egimB) const;
+    // Borunun "üstte" sayılması için üst referansa gereken yakınlık (mm).
+    // QML grafik kaydıyla Calculator'ın stroke mantığı aynı eşiği kullansın diye
+    // buradan okunur (bkz. SliperModel bölüm 4).
+    Q_INVOKABLE double ustYakalamaToleransiMm() const;
     Q_INVOKABLE double sliperBoruCapiMm() const;
     Q_INVOKABLE double sliperBoruUzunluguMm() const;
     // Sonuç sayfasındaki stroke hız eğrisi (bkz. SliperModel bölüm 10). Dönüş: m/s listesi

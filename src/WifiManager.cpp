@@ -155,9 +155,22 @@ void WifiManager::hareketsizlikKontrolEt()
 void WifiManager::veriAkisiniKontrolEt()
 {
     if (!m_baglandi || !m_sonVeriZamani.isValid()) return;
-    if (m_sonVeriZamani.elapsed() > VERI_KESINTI_MS) {
+
+    const qint64 gecenSureMs = m_sonVeriZamani.elapsed();
+
+    if (gecenSureMs > VERI_KESINTI_BAGLANTI_KES_MS) {
+        // Soket hala "bagli" gorunse bile bu kadar uzun suredir hic paket
+        // gelmemesi, ESP32'nin kapandigini/koptugunu gosterir. Kullanicinin
+        // "bagli olmadiginda bagli yazmasin" beklentisi icin baglanti burada
+        // gercekten sonlandirilir; soketAyrildi() m_baglandi'yi false yapar.
+        qWarning() << "Uzun suredir (" << gecenSureMs << "ms) veri gelmiyor, baglanti sonlandiriliyor.";
+        m_soket->abort();
+        return;
+    }
+
+    if (gecenSureMs > VERI_KESINTI_MS) {
         if (m_sensorManager && m_sensorManager->veriGecerli()) {
-            qWarning() << "Veri akisi kesildi (" << m_sonVeriZamani.elapsed() << "ms paket yok).";
+            qWarning() << "Veri akisi kesildi (" << gecenSureMs << "ms paket yok).";
             m_sensorManager->veriyiGecersizYap();
             durumGuncelle("Veri akışı kesildi");
         }
@@ -236,9 +249,19 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
 
     // --- Konum ve basinc: kalibrasyon tablosu + load cell kuvveti / piston alani
     // (SliperModel bolum 1 ve 2). Mesafe kalibre edilmemisse ham deger gosterilir. ---
-    const double konumMm = m_mesafeHamDegerleri.isEmpty()
+    const double konumKalibreliMm = m_mesafeHamDegerleri.isEmpty()
         ? hamMesafe
         : SliperModel::kalibrasyonTablosundanOku(m_mesafeHamDegerleri, m_mesafeMmDegerleri, hamMesafe);
+
+    // Mesafe sensörünün paket-paket gürültüsü burada bastırılır; bundan sonraki
+    // her şey (canlı hız, grafik, ekran, Calculator'a giden konum) bu filtrelenmiş
+    // değeri kullanır. İlk pakette filtre doğrudan ham değerden başlar, aksi halde
+    // 0'dan başlayıp yanlış bir sıçrama gösterir.
+    m_filtreliKonum = m_ilkPaket
+        ? konumKalibreliMm
+        : SliperModel::konumFiltrele(m_filtreliKonum, konumKalibreliMm);
+    const double konumMm = m_filtreliKonum;
+
     const double agirlikKg =
         SliperModel::kalibrasyonTablosundanOku(m_loadCellHamDegerleri, m_loadCellKiloDegerleri, hamAgirlik);
     const double basincMbar = SliperModel::agirliktanBasincMbar(agirlikKg);

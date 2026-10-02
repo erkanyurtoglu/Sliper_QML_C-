@@ -34,6 +34,9 @@ Rectangle {
         bitirButon: { tr: "⏹  Bitir", en: "⏹  Finish" },
         veriYok: { tr: "VERI YOK", en: "NO DATA" },
         duraklatildiDurum: { tr: "DURAKLATILDI", en: "PAUSED" },
+        ustKonumBekleniyor: { tr: "ÜSTE TAKIN", en: "ATTACH AT TOP" },
+        grafikDonduDurum: { tr: "STROKE BİTTİ", en: "STROKE FINISHED" },
+        ustKonumIpucu: { tr: "Cihazı üst sabitleme noktasına takıp mili sensörün önüne çevirin — kayıt kendiliğinden başlar", en: "Attach the device to the top fixture and turn the rod in front of the sensor — recording starts automatically" },
         anlikDegerler: { tr: "ANLIK DEĞERLER", en: "CURRENT VALUES" },
         basincEtiket: { tr: "BASINÇ", en: "PRESSURE" },
         konumEtiket: { tr: "KONUM", en: "POSITION" },
@@ -66,12 +69,68 @@ Rectangle {
     property string uyariMesaji: ""
     property bool bitirIcinDuraklatildi: false
 
+    // Anlık değer kutucukları (BASINÇ/KONUM/HIZ/DEBİ) sensörden gelen her
+    // paketle değil, aşağıdaki Timer ile yavaşlatılmış hızda güncellenir;
+    // aksi halde sayılar gözün takip edemeyeceği kadar hızlı değişip
+    // görüntü kirliliğine yol açıyordu. Grafikler ham veriyi olduğu gibi alır.
+    property real gosterilenBasinc: 0
+    property real gosterilenKonum: 0
+    property real gosterilenHiz: 0
+    property real gosterilenDebi: 0
+    property bool gosterilenVeriGecerli: false
+
+    Timer {
+        interval: 200
+        running: true
+        repeat: true
+        onTriggered: {
+            gosterilenBasinc = sensorManager.basinc
+            gosterilenKonum = sensorManager.konum
+            gosterilenHiz = sensorManager.hiz
+            gosterilenDebi = sensorManager.debi
+            gosterilenVeriGecerli = sensorManager.veriGecerli
+        }
+    }
+
     property real baslangicZamaniS: -1
+    // Duraklatma sirasinda cihazin saati akmaya devam eder; bu sure grafik
+    // zaman ekseninden dusulur, aksi halde Devam Et sonrasi grafikte bos bir
+    // bosluk olusur (stroke kaldigi yerden degil, duraklama kadar ileriden baslar).
+    property real toplamDuraklamaSuresiS: 0
+    property real duraklamaBaslangicZamanS: 0
     property var zamanGecmis: []
     property var basincGecmis: []
     property var konumGecmis: []
     property var hizGecmis: []
     property var debiGecmis: []
+
+    // --- Otomatik kayıt (üst sabitleme noktası) --------------------------------
+    // Cihaz üst sabitleme noktasında havada asılıyken mesafe sensörünün önünde
+    // demir mil yoktur ve sensör çok uzağı (~400 mm) okur. Mil çevrilip sensörün
+    // önüne geldiğinde kalibre edilen üst konum (~64 mm) okunur; gerçek stroke
+    // ancak o andan sonra başlar. Bu yüzden "Ölçümü Başlat" grafiği hemen
+    // akıtmaz, önce üst konumun görülmesini bekler.
+    //   BEKLEMEDE -> (üst konum görüldü) -> KAYITTA -> (iniş durdu) -> DONDU
+    //   DONDU -> (boru tekrar üst konuma alındı) -> KAYITTA (yeni stroke)
+    property string kayitDurumu: "BEKLEMEDE"
+    property bool inisBasladi: false
+    property real kayitBaslangicKonumuMm: 0
+    property real durgunlukBaslangicZamanS: -1
+
+    // Üst referansa bu kadar yaklaşılması "üst konumda" sayılır. Değer
+    // Calculator'dan okunur: grafik kaydı ile stroke hesabı aynı anda
+    // kollanmalı, aksi halde grafik yeni stroke'a hazırlanırken Calculator
+    // boruyu "üstte" saymaz ve iniş stroke olarak işlenmez.
+    readonly property real ustYakalamaToleransiMm: calculator.ustYakalamaToleransiMm()
+    // Grafiği erken dondurmamak için: boru bu kadar aşağı inmeden "iniş başladı" sayılmaz.
+    readonly property real inisBaslamaYoluMm: 40
+    // Bu hızın altı "duruyor", bu süre kadar sürerse iniş bitmiş kabul edilir.
+    readonly property real durmaHiziMs: 0.02
+    readonly property real durmaOnayiSuresiS: 0.2
+    // Üst konumda serbest bırakılma beklenirken grafikte tutulan son süre.
+    // Kısa tutulur: bekleme uzasa bile zaman ekseni şişmez ve iniş başladığında
+    // stroke grafiğin büyük kısmını kaplar (öncesinde yalnızca taban çizgisi görünür).
+    readonly property real beklemePenceresiS: 1.0
 
     // Orijinal ağırlık seti: 3 x ~1.6 kg ve 3 x ~4.8 kg. Eklenen her ağırlık
     // sırayla tutulur; "Geri" son ekleneni kaldırır. Her stroke, o anki toplam
@@ -136,6 +195,14 @@ Rectangle {
         receteKutusu.editText = ""
         agirlikListesi = []
         calculator.sifirla()
+        kayitDurumunaDon()
+    }
+
+    // Grafikleri temizler ve kaydı yeniden "üst konum bekleniyor" durumuna alır.
+    function kayitDurumunaDon() {
+        kayitDurumu = "BEKLEMEDE"
+        inisBasladi = false
+        durgunlukBaslangicZamanS = -1
         grafikleriSifirla()
     }
 
@@ -152,14 +219,17 @@ Rectangle {
             return
         }
 
-        if (!sensorManager.veriGecerli) {
-            console.warn("Gercek sensor verisi yok, olcum baslatilmadi.")
+        // Sensor verisi (veriGecerli) degil, TCP baglantisi kontrol edilir:
+        // sensorler takili olmasa bile (ornegin sadece Wi-Fi/TCP testi icin)
+        // ESP32'ye baglanildiysa olcum baslatilabilsin.
+        if (!wifiManager.baglandi) {
+            console.warn("ESP32'ye baglanti yok, olcum baslatilmadi.")
             uyariMesaji = txt("uyariCihazBagliDegil")
             return
         }
 
         uyariMesaji = ""
-        grafikleriSifirla()
+        kayitDurumunaDon()
 
         calculator.sifirla()
         aktifOlcumId = database.olcumBaslat(
@@ -187,6 +257,7 @@ Rectangle {
     function grafikleriSifirla() {
         zamanSayaci = 0
         baslangicZamaniS = -1
+        toplamDuraklamaSuresiS = 0
         zamanGecmis = []
         basincSerisi.clear()
         konumSerisi.clear()
@@ -196,48 +267,145 @@ Rectangle {
         konumGecmis = []
         hizGecmis = []
         debiGecmis = []
-        xEkseni.min = 0
-        xEkseni.max = 60
+        zamanEkseniniUygula(0)
         yEkseni.min = 0
-        yEkseni.max = 1100
-        konumXEkseni.min = 0
-        konumXEkseni.max = 60
-        konumYEkseni.max = 500
-        hizXEkseni.min = 0
-        hizXEkseni.max = 60
-        hizYEkseni.max = 4
-        debiXEkseni.min = 0
-        debiXEkseni.max = 60
-        debiYEkseni.max = 180
+        yEkseni.max = 10
+        konumYEkseni.min = 0
+        konumYEkseni.max = 600
+        hizYEkseni.min = 0
+        hizYEkseni.max = 1
+        debiYEkseni.min = 0
+        debiYEkseni.max = 50
     }
 
-    function eksenTavaniHesapla(dizi, tavan, taban) {
-        if (dizi.length === 0) return taban
-        var maxDeger = Math.max.apply(null, dizi)
-        var hedef = maxDeger * 1.25
-        if (hedef < taban) hedef = taban
-        if (hedef > tavan) hedef = tavan
-        return hedef
+    // Zaman ekseni tek bir stroke'u kapsar: veri hangi aralıktaysa eksen de o
+    // aralığa oturur, böylece eğri paneli boydan boya doldurur (sabit 0-60 s
+    // ekseninde 1.5 saniyelik bir stroke iğne gibi görünüyordu).
+    function zamanEkseniniUygula(sonZamanS) {
+        var ilkZamanS = zamanGecmis.length > 0 ? zamanGecmis[0] : 0
+        // Veri henüz çok kısayken eksen titremesin diye en az bu kadar genişlik tutulur.
+        var genislik = Math.max(sonZamanS - ilkZamanS, 1.0)
+        var bitis = ilkZamanS + genislik * 1.04
+        var eksenler = [xEkseni, konumXEkseni, hizXEkseni, debiXEkseni]
+        for (var i = 0; i < eksenler.length; i++) {
+            eksenler[i].min = ilkZamanS
+            eksenler[i].max = bitis
+        }
     }
 
-    // Basınç (mbar) atmosferik seviyede sabit bir taban etrafında dalgalanır,
-    // bu yüzden sabit tavanlı ölçekleme yerine veriye göre kayan min/max kullanılır.
-    function basincEkseniHesapla(dizi) {
-        if (dizi.length === 0) return { min: 0, max: 1100 }
+    // Y ekseni veriye oturtulur. sifirdanBasla: hız/debi gibi sıfırı anlamlı olan
+    // büyüklüklerde taban 0'da kalır; basınç ve konum kendi bandına yaklaştırılır.
+    function degerEkseniHesapla(dizi, sifirdanBasla, varsayilanTavan) {
+        if (dizi.length === 0) return { min: 0, max: varsayilanTavan }
         var maxDeger = Math.max.apply(null, dizi)
         var minDeger = Math.min.apply(null, dizi)
-        var kenarBoslugu = Math.max((maxDeger - minDeger) * 0.2, maxDeger * 0.02, 5)
-        return { min: Math.max(0, minDeger - kenarBoslugu), max: maxDeger + kenarBoslugu }
+        var kenarBoslugu = Math.max((maxDeger - minDeger) * 0.08, Math.abs(maxDeger) * 0.04, 0.5)
+        var taban = sifirdanBasla ? Math.min(0, minDeger) : minDeger - kenarBoslugu
+        return { min: taban, max: maxDeger + kenarBoslugu }
+    }
+
+    // Kalibrasyondaki üst/alt referansa göre yön: üst < alt ise konum, orijinal
+    // SLIPER'daki gibi "sensörden uzaklık"tır (üstte küçük, altta büyük).
+    function konumYonu() {
+        return calculator.ustKonumMm >= calculator.altKonumMm ? 1 : -1
+    }
+
+    // Boru üst sabitleme noktasında mı? (demir mil sensörün önünde)
+    function ustKonumda(konumMm) {
+        var yukseklikMm = konumYonu() * konumMm
+        return yukseklikMm > konumYonu() * calculator.ustKonumMm - ustYakalamaToleransiMm
+    }
+
+    // İniş başladığında: elde tutulan son saniyeler t = 0'dan başlayacak şekilde
+    // yeniden çizilir, böylece her stroke'un grafiği 0'dan başlar.
+    function zamanEkseniniSifirla() {
+        if (zamanGecmis.length === 0) return
+        var kaydirma = zamanGecmis[0]
+        if (kaydirma <= 0) return
+
+        basincSerisi.clear()
+        konumSerisi.clear()
+        hizSerisi.clear()
+        debiSerisi.clear()
+        for (var i = 0; i < zamanGecmis.length; i++) {
+            zamanGecmis[i] -= kaydirma
+            basincSerisi.append(zamanGecmis[i], basincGecmis[i])
+            konumSerisi.append(zamanGecmis[i], konumGecmis[i])
+            hizSerisi.append(zamanGecmis[i], hizGecmis[i])
+            debiSerisi.append(zamanGecmis[i], debiGecmis[i])
+        }
+        // Sonraki örnekler de aynı eksende kalsın
+        baslangicZamaniS += kaydirma
+        zamanSayaci -= kaydirma
+    }
+
+    // Üst konum yakalandığında kaydı başlatır, iniş bittiğinde grafiği dondurur.
+    function kayitDurumunuGuncelle() {
+        var konumMm = sensorManager.konum
+        var zamanS = sensorManager.zamanS
+
+        // 1) Boru üst sabitleme noktasına alındı: yeni stroke için grafiği sıfırla.
+        if (kayitDurumu !== "KAYITTA" && ustKonumda(konumMm)) {
+            grafikleriSifirla()
+            kayitDurumu = "KAYITTA"
+            kayitBaslangicKonumuMm = konumMm
+            inisBasladi = false
+            durgunlukBaslangicZamanS = -1
+            return
+        }
+
+        if (kayitDurumu !== "KAYITTA") return
+
+        // 2) İniş gerçekten başladı mı? Üstteki küçük kıpırtılar "iniş bitti" sayılmasın.
+        if (!inisBasladi) {
+            var inilenYolMm = konumYonu() * (kayitBaslangicKonumuMm - konumMm)
+            if (inilenYolMm > inisBaslamaYoluMm) {
+                inisBasladi = true
+                zamanEkseniniSifirla()
+            }
+            return
+        }
+
+        // 3) İniş durdu mu? Kısa doğrulama süresi, iniş sırasındaki tek örneklik
+        //    gürültünün grafiği erken dondurmasını engeller.
+        if (Math.abs(sensorManager.hiz) > durmaHiziMs) {
+            durgunlukBaslangicZamanS = -1
+            return
+        }
+        if (durgunlukBaslangicZamanS < 0) durgunlukBaslangicZamanS = zamanS
+        if (zamanS - durgunlukBaslangicZamanS >= durmaOnayiSuresiS) kayitDurumu = "DONDU"
+    }
+
+    Connections {
+        target: calculator
+        function onDuraklatildiChanged() {
+            if (calculator.duraklatildi) {
+                duraklamaBaslangicZamanS = sensorManager.zamanS
+            } else if (baslangicZamaniS >= 0) {
+                toplamDuraklamaSuresiS += sensorManager.zamanS - duraklamaBaslangicZamanS
+            }
+        }
     }
 
     Connections {
         target: sensorManager
         function onVeriGuncellendi() {
             if (!sensorManager.veriGecerli || aktifOlcumId <= 0) return
+            // Duraklatildiginda grafikler de donmali; aksi halde cihaz
+            // hareket ettirilince egriler Calculator durmus olsa bile akmaya devam eder.
+            if (calculator.duraklatildi) return
+
+            // Stroke hesabı her örnekle beslenir: grafik donmuş olsa bile borunun
+            // oturmasından sonraki P0r penceresi tamamlanmalı, aksi halde p bozulur.
+            calculator.konumGuncelle(sensorManager.zamanS, sensorManager.konum, sensorManager.basinc)
+
+            // Üst konum yakalandı mı / iniş bitti mi?
+            kayitDurumunuGuncelle()
+            if (kayitDurumu !== "KAYITTA") return
 
             // Zaman ekseni cihazin zaman damgasindan gelir (sabit 0.2 s adim varsayilmaz).
             if (baslangicZamaniS < 0) baslangicZamaniS = sensorManager.zamanS
-            zamanSayaci = sensorManager.zamanS - baslangicZamaniS
+            zamanSayaci = sensorManager.zamanS - baslangicZamaniS - toplamDuraklamaSuresiS
 
             basincSerisi.append(zamanSayaci, sensorManager.basinc)
             konumSerisi.append(zamanSayaci, sensorManager.konum)
@@ -250,38 +418,37 @@ Rectangle {
             hizGecmis.push(sensorManager.hiz)
             debiGecmis.push(sensorManager.debi)
 
-            if (zamanSayaci > 60) {
-                while (zamanGecmis.length > 0 && zamanGecmis[0] < zamanSayaci - 60) {
-                    basincSerisi.remove(0)
-                    konumSerisi.remove(0)
-                    hizSerisi.remove(0)
-                    debiSerisi.remove(0)
+            // Boru üstte serbest bırakılmayı beklerken yalnızca son birkaç saniye
+            // tutulur (bekleme uzasa bile eksen şişmesin); iniş başladıktan sonra
+            // stroke'un tamamı korunur, 60 s yalnızca güvenlik sınırıdır.
+            var tutulacakSureS = inisBasladi ? 60 : beklemePenceresiS
+            while (zamanGecmis.length > 1 && zamanGecmis[0] < zamanSayaci - tutulacakSureS) {
+                basincSerisi.remove(0)
+                konumSerisi.remove(0)
+                hizSerisi.remove(0)
+                debiSerisi.remove(0)
 
-                    zamanGecmis.shift()
-                    basincGecmis.shift()
-                    konumGecmis.shift()
-                    hizGecmis.shift()
-                    debiGecmis.shift()
-                }
-
-                xEkseni.min = zamanSayaci - 60
-                xEkseni.max = zamanSayaci
-                konumXEkseni.min = zamanSayaci - 60
-                konumXEkseni.max = zamanSayaci
-                hizXEkseni.min = zamanSayaci - 60
-                hizXEkseni.max = zamanSayaci
-                debiXEkseni.min = zamanSayaci - 60
-                debiXEkseni.max = zamanSayaci
+                zamanGecmis.shift()
+                basincGecmis.shift()
+                konumGecmis.shift()
+                hizGecmis.shift()
+                debiGecmis.shift()
             }
 
-            var basincAralik = basincEkseniHesapla(basincGecmis)
+            zamanEkseniniUygula(zamanSayaci)
+
+            var basincAralik = degerEkseniHesapla(basincGecmis, false, 10)
             yEkseni.min = basincAralik.min
             yEkseni.max = basincAralik.max
-            konumYEkseni.max = eksenTavaniHesapla(konumGecmis, 1000, 50)
-            hizYEkseni.max = eksenTavaniHesapla(hizGecmis, 4, 0.5)
-            debiYEkseni.max = eksenTavaniHesapla(debiGecmis, 180, 10)
-
-            calculator.konumGuncelle(sensorManager.zamanS, sensorManager.konum, sensorManager.basinc)
+            var konumAralik = degerEkseniHesapla(konumGecmis, false, 600)
+            konumYEkseni.min = konumAralik.min
+            konumYEkseni.max = konumAralik.max
+            var hizAralik = degerEkseniHesapla(hizGecmis, true, 1)
+            hizYEkseni.min = hizAralik.min
+            hizYEkseni.max = hizAralik.max
+            var debiAralik = degerEkseniHesapla(debiGecmis, true, 50)
+            debiYEkseni.min = debiAralik.min
+            debiYEkseni.max = debiAralik.max
         }
     }
 
@@ -755,6 +922,8 @@ Rectangle {
                         color: {
                             if (!sensorManager.veriGecerli) return "#dc2626"
                             if (calculator.duraklatildi) return "#6b7280"
+                            if (aktifOlcumId > 0 && kayitDurumu === "BEKLEMEDE") return "#3b82f6"
+                            if (aktifOlcumId > 0 && kayitDurumu === "DONDU") return "#6b7280"
                             if (calculator.durum === "YUKARIDA") return "#16a34a"
                             if (calculator.durum === "INIYOR") return "#f59e0b"
                             return "#dc2626"
@@ -777,6 +946,8 @@ Rectangle {
                         text: {
                             if (!sensorManager.veriGecerli) return txt("veriYok")
                             if (calculator.duraklatildi) return txt("duraklatildiDurum")
+                            if (aktifOlcumId > 0 && kayitDurumu === "BEKLEMEDE") return txt("ustKonumBekleniyor")
+                            if (aktifOlcumId > 0 && kayitDurumu === "DONDU") return txt("grafikDonduDurum")
                             return calculator.durum
                         }
                         color: "#dce8f5"
@@ -866,7 +1037,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.veriGecerli ? sensorManager.basinc.toFixed(1) : "--"
+                            text: gosterilenVeriGecerli ? gosterilenBasinc.toFixed(1) : "--"
                             color: "#3b82f6"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -913,7 +1084,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.veriGecerli ? sensorManager.konum.toFixed(1) : "--"
+                            text: gosterilenVeriGecerli ? gosterilenKonum.toFixed(1) : "--"
                             color: "#9333ea"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -960,7 +1131,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.veriGecerli ? sensorManager.hiz.toFixed(2) : "--"
+                            text: gosterilenVeriGecerli ? gosterilenHiz.toFixed(2) : "--"
                             color: "#f59e0b"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -1007,7 +1178,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.veriGecerli ? sensorManager.debi.toFixed(1) : "--"
+                            text: gosterilenVeriGecerli ? gosterilenDebi.toFixed(1) : "--"
                             color: "#16a34a"
                             font.family: "Segoe UI"
                             font.pixelSize: 22
@@ -1070,7 +1241,8 @@ Rectangle {
                 Text {
                     anchors.centerIn: parent
                     visible: !sonStrokeCubugu.var_
-                    text: txt("strokeYok")
+                    // Ölçüm başlatıldıysa kullanıcıya kaydın neyi beklediği anlatılır.
+                    text: (aktifOlcumId > 0 && kayitDurumu === "BEKLEMEDE") ? txt("ustKonumIpucu") : txt("strokeYok")
                     color: "#6b7280"
                     font.family: "Segoe UI"
                     font.pixelSize: 12
@@ -1141,10 +1313,10 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                anchors.margins: 16
-                anchors.topMargin: 12
+                anchors.margins: 10
+                anchors.topMargin: 8
                 columns: 2
-                spacing: 16
+                spacing: 8
 
                 Rectangle {
                     width: (parent.width - parent.spacing) / 2
@@ -1159,37 +1331,16 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.margins: 14
+                        anchors.margins: 12
                         height: 20
 
-                        Rectangle {
-                            id: basincNoktasi
-                            width: 8
-                            height: 8
-                            radius: 4
-                            color: "#3b82f6"
+                        Text {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            anchors.left: basincNoktasi.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
                             text: txt("basincZaman")
-                            color: "#9ca3af"
+                            color: "#dce8f5"
                             font.family: "Segoe UI"
-                            font.pixelSize: 13
-                            font.bold: true
-                        }
-
-                        Text {
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.veriGecerli ? sensorManager.basinc.toFixed(1) + " mbar" : "-- mbar"
-                            color: "#3b82f6"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 13
+                            font.pixelSize: 14
                             font.bold: true
                         }
                     }
@@ -1200,18 +1351,22 @@ Rectangle {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.topMargin: 4
-                        anchors.bottomMargin: 4
+                        anchors.bottomMargin: 6
                         backgroundColor: "transparent"
                         legend.visible: false
                         antialiasing: true
+                        margins.top: 4
+                        margins.bottom: 4
+                        margins.left: 4
+                        margins.right: 12
 
                         ValueAxis {
                             id: xEkseni
                             min: 0
                             max: 60
                             gridLineColor: "#1a1a20"
-                            labelsColor: "#4b5563"
-                            labelsFont.pixelSize: 9
+                            labelsColor: "#6b7280"
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -1221,8 +1376,8 @@ Rectangle {
                             min: 0
                             max: 1100
                             gridLineColor: "#1a1a20"
-                            labelsColor: "#4b5563"
-                            labelsFont.pixelSize: 9
+                            labelsColor: "#6b7280"
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -1232,7 +1387,7 @@ Rectangle {
                             axisX: xEkseni
                             axisY: yEkseni
                             color: "#3b82f6"
-                            width: 2
+                            width: 3
                         }
                     }
                 }
@@ -1250,37 +1405,16 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.margins: 14
+                        anchors.margins: 12
                         height: 20
 
-                        Rectangle {
-                            id: konumNoktasi
-                            width: 8
-                            height: 8
-                            radius: 4
-                            color: "#9333ea"
+                        Text {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            anchors.left: konumNoktasi.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
                             text: txt("konumZaman")
-                            color: "#9ca3af"
+                            color: "#dce8f5"
                             font.family: "Segoe UI"
-                            font.pixelSize: 13
-                            font.bold: true
-                        }
-
-                        Text {
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.veriGecerli ? sensorManager.konum.toFixed(1) + " mm" : "-- mm"
-                            color: "#9333ea"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 13
+                            font.pixelSize: 14
                             font.bold: true
                         }
                     }
@@ -1291,18 +1425,22 @@ Rectangle {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.topMargin: 4
-                        anchors.bottomMargin: 4
+                        anchors.bottomMargin: 6
                         backgroundColor: "transparent"
                         legend.visible: false
                         antialiasing: true
+                        margins.top: 4
+                        margins.bottom: 4
+                        margins.left: 4
+                        margins.right: 12
 
                         ValueAxis {
                             id: konumXEkseni
                             min: 0
                             max: 60
                             gridLineColor: "#1a1a20"
-                            labelsColor: "#4b5563"
-                            labelsFont.pixelSize: 9
+                            labelsColor: "#6b7280"
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -1312,8 +1450,8 @@ Rectangle {
                             min: 0
                             max: 500
                             gridLineColor: "#1a1a20"
-                            labelsColor: "#4b5563"
-                            labelsFont.pixelSize: 9
+                            labelsColor: "#6b7280"
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -1323,7 +1461,7 @@ Rectangle {
                             axisX: konumXEkseni
                             axisY: konumYEkseni
                             color: "#9333ea"
-                            width: 2
+                            width: 3
                         }
 
                         Connections {
@@ -1358,37 +1496,16 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.margins: 14
+                        anchors.margins: 12
                         height: 20
 
-                        Rectangle {
-                            id: hizNoktasi
-                            width: 8
-                            height: 8
-                            radius: 4
-                            color: "#f59e0b"
+                        Text {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            anchors.left: hizNoktasi.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
                             text: txt("hizZaman")
-                            color: "#9ca3af"
+                            color: "#dce8f5"
                             font.family: "Segoe UI"
-                            font.pixelSize: 13
-                            font.bold: true
-                        }
-
-                        Text {
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.veriGecerli ? sensorManager.hiz.toFixed(2) + " m/s" : "-- m/s"
-                            color: "#f59e0b"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 13
+                            font.pixelSize: 14
                             font.bold: true
                         }
                     }
@@ -1399,18 +1516,22 @@ Rectangle {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.topMargin: 4
-                        anchors.bottomMargin: 4
+                        anchors.bottomMargin: 6
                         backgroundColor: "transparent"
                         legend.visible: false
                         antialiasing: true
+                        margins.top: 4
+                        margins.bottom: 4
+                        margins.left: 4
+                        margins.right: 12
 
                         ValueAxis {
                             id: hizXEkseni
                             min: 0
                             max: 60
                             gridLineColor: "#1a1a20"
-                            labelsColor: "#4b5563"
-                            labelsFont.pixelSize: 9
+                            labelsColor: "#6b7280"
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -1420,8 +1541,8 @@ Rectangle {
                             min: 0
                             max: 4
                             gridLineColor: "#1a1a20"
-                            labelsColor: "#4b5563"
-                            labelsFont.pixelSize: 9
+                            labelsColor: "#6b7280"
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -1431,7 +1552,7 @@ Rectangle {
                             axisX: hizXEkseni
                             axisY: hizYEkseni
                             color: "#f59e0b"
-                            width: 2
+                            width: 3
                         }
                     }
                 }
@@ -1449,37 +1570,16 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.margins: 14
+                        anchors.margins: 12
                         height: 20
 
-                        Rectangle {
-                            id: debiNoktasi
-                            width: 8
-                            height: 8
-                            radius: 4
-                            color: "#16a34a"
+                        Text {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            anchors.left: debiNoktasi.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
                             text: txt("debiZaman")
-                            color: "#9ca3af"
+                            color: "#dce8f5"
                             font.family: "Segoe UI"
-                            font.pixelSize: 13
-                            font.bold: true
-                        }
-
-                        Text {
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.veriGecerli ? sensorManager.debi.toFixed(1) + " m3/h" : "-- m3/h"
-                            color: "#16a34a"
-                            font.family: "Segoe UI"
-                            font.pixelSize: 13
+                            font.pixelSize: 14
                             font.bold: true
                         }
                     }
@@ -1490,18 +1590,22 @@ Rectangle {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.topMargin: 4
-                        anchors.bottomMargin: 4
+                        anchors.bottomMargin: 6
                         backgroundColor: "transparent"
                         legend.visible: false
                         antialiasing: true
+                        margins.top: 4
+                        margins.bottom: 4
+                        margins.left: 4
+                        margins.right: 12
 
                         ValueAxis {
                             id: debiXEkseni
                             min: 0
                             max: 60
                             gridLineColor: "#1a1a20"
-                            labelsColor: "#4b5563"
-                            labelsFont.pixelSize: 9
+                            labelsColor: "#6b7280"
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -1511,8 +1615,8 @@ Rectangle {
                             min: 0
                             max: 180
                             gridLineColor: "#1a1a20"
-                            labelsColor: "#4b5563"
-                            labelsFont.pixelSize: 9
+                            labelsColor: "#6b7280"
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -1522,7 +1626,7 @@ Rectangle {
                             axisX: debiXEkseni
                             axisY: debiYEkseni
                             color: "#16a34a"
-                            width: 2
+                            width: 3
                         }
                     }
                 }

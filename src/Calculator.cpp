@@ -6,6 +6,7 @@
 
 // Stroke zamanlama sabitleri SliperModel bölüm 4'ten gelir
 using SliperModel::KONUM_TOLERANSI_MM;
+using SliperModel::UST_YAKALAMA_TOLERANSI_MM;
 using SliperModel::DURGUN_TOLERANS_MM;
 using SliperModel::ONCESI_PENCERE_S;
 using SliperModel::SONRASI_PENCERE_S;
@@ -41,7 +42,9 @@ void Calculator::setAltKonumMm(double deger)
 }
 
 // Boru bu yüksekliğin üstündeyse "üstte", altEsik'in altındaysa "altta" sayılır
-double Calculator::ustEsik() const { return yon() * m_ustKonumMm - KONUM_TOLERANSI_MM; }
+double Calculator::ustEsik() const { return yon() * m_ustKonumMm - UST_YAKALAMA_TOLERANSI_MM; }
+
+double Calculator::ustYakalamaToleransiMm() const { return UST_YAKALAMA_TOLERANSI_MM; }
 double Calculator::altEsik() const { return yon() * m_altKonumMm + KONUM_TOLERANSI_MM; }
 
 void Calculator::durumAyarla(const QString &yeniDurum)

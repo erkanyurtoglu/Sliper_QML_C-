@@ -49,6 +49,17 @@ bool mpuHazir = false;
 unsigned long sonMpuDenemeMs = 0;
 const unsigned long MPU_DENEME_ARALIGI_MS = 2000;
 
+// ADS1115 baslangicta bulunamazsa (sensorsuz test / henuz kablolanmamis
+// donanim), hamMesafeOku()/hamBataryaOku() ic I2C cagrilarini calistirmaya
+// devam etmek loop()'u kilitleyebiliyordu: bazi ESP32 core surumlerinde
+// ACK vermeyen bir I2C adresine Wire istegi zaman asimi olmadan asili
+// kalabiliyor, bu da TCP'ye hic paket gonderilmemesine (baglanti "acik"
+// gorunse bile veri akmamasina) yol aciyordu. MPU6050'deki mpuHazir
+// deseninin ayni: hazir degilse I2C'ye hic dokunmadan 0 dondurulur.
+bool adsHazir = false;
+unsigned long sonAdsDenemeMs = 0;
+const unsigned long ADS_DENEME_ARALIGI_MS = 2000;
+
 // ---------------- WiFi SoftAP Ayarlari ----------------
 const char *WIFI_SSID = "SLIPER-ESP32";
 const char *WIFI_SIFRE = "sliper1234"; // en az 8 karakter olmali
@@ -88,11 +99,13 @@ void setup() {
     // ADS1115 baslat
     if (!ads.begin()) {
         Serial.println("ADS1115 bulunamadi!");
+        adsHazir = false;
     } else {
         ads.setGain(GAIN_ONE);
         // Varsayilan 128 SPS'te tek okuma ~8 ms surer; 860 SPS ile ~1.2 ms.
         ads.setDataRate(RATE_ADS1115_860SPS);
         Serial.println("ADS1115 hazir.");
+        adsHazir = true;
     }
 
     // WiFi SoftAP baslat
@@ -132,10 +145,12 @@ void hamAgirlikGuncelle() {
 }
 
 int16_t hamMesafeOku() {
+    if (!adsHazir) return 0;
     return ads.readADC_SingleEnded(3);
 }
 
 int16_t hamBataryaOku() {
+    if (!adsHazir) return 0;
     return ads.readADC_SingleEnded(BATARYA_ADS_KANALI);
 }
 
@@ -161,6 +176,18 @@ void loop() {
             mpuHazir = true;
         } else {
             Serial.println("MPU6050 hala bulunamadi, tekrar denenecek...");
+        }
+    }
+
+    if (!adsHazir && millis() - sonAdsDenemeMs > ADS_DENEME_ARALIGI_MS) {
+        sonAdsDenemeMs = millis();
+        if (ads.begin()) {
+            ads.setGain(GAIN_ONE);
+            ads.setDataRate(RATE_ADS1115_860SPS);
+            Serial.println("ADS1115 sonradan hazir oldu.");
+            adsHazir = true;
+        } else {
+            Serial.println("ADS1115 hala bulunamadi, tekrar denenecek...");
         }
     }
 

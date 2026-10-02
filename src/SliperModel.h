@@ -47,6 +47,18 @@ double kalibrasyonTablosundanOku(const QVector<double> &hamNoktalar,
                                  const QVector<double> &gercekNoktalar,
                                  double hamDeger);
 
+// Mesafe sensörünün ham okumasındaki paket-paket gürültüyü bastırmak için
+// üstel ortalama (hız filtresiyle aynı mantık). Kalibrasyon tablosundan
+// okunduktan hemen sonra, konumu kullanan HER yer için (grafik, ekran,
+// stroke tespiti) tek sefer uygulanır.
+// K büyükse hızlı tepki/çok gürültü, küçükse yavaş tepki/az gürültü.
+constexpr double KONUM_FILTRE_KATSAYISI = 0.35;
+constexpr double konumFiltrele(double oncekiFiltreliKonumMm, double hamKonumMm)
+{
+    return KONUM_FILTRE_KATSAYISI * hamKonumMm
+           + (1.0 - KONUM_FILTRE_KATSAYISI) * oncekiFiltreliKonumMm;
+}
+
 // --- 2. Basınç ----------------------------------------------------------------
 // p [mbar] = m * g / A / 100        (1 mbar = 100 Pa)
 // 1 kg -> 9.80665 N / 0.01287 m2 = ~7.6 mbar (128 mm boru)
@@ -71,6 +83,12 @@ constexpr double hizdanDebiM3h(double hizMs)
 // Başlangıç: boru üst referansın KONUM_TOLERANSI_MM altına indiğinde.
 // Bitiş    : boru alt referansın KONUM_TOLERANSI_MM yakınına vardığında.
 constexpr double KONUM_TOLERANSI_MM = 5.0;    // üst/alt referansa bu kadar yaklaşınca
+// Boru "üstte / yeni stroke'a hazır" sayılması için kalibre edilmiş üst noktaya
+// bu kadar yaklaşması yeterlidir. KONUM_TOLERANSI_MM'den geniştir: boru elle
+// kaldırılıp sabitlendiğinde tam olarak kalibrasyon noktasına oturmaz. Dar bir
+// pencerede (5 mm) boru "üstte" sayılmaz ve sonraki iniş stroke olarak
+// işlenmez - özellikle duraklat/devam et sırasında boru yeniden konumlandığında.
+constexpr double UST_YAKALAMA_TOLERANSI_MM = 20.0;
 constexpr double DURGUN_TOLERANS_MM = 5.0;    // bu kadar kıpırtı hâlâ "hareketsiz" sayılır
 constexpr double ONCESI_PENCERE_S = 2.0;      // orijinal: başlangıçtan 2 s önce saklanır
 constexpr double SONRASI_PENCERE_S = 2.0;     // orijinal: bitişten 2 s sonra saklanır

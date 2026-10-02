@@ -61,6 +61,7 @@ private:
     double m_oncekiKonum = 0.0;
     double m_oncekiZamanMs = 0.0;
     double m_filtreliHiz = 0.0;
+    double m_filtreliKonum = 0.0;
     double m_zamanOfsetiMs = 0.0;
     bool m_zamanBasladi = false;
     double m_konumYonu = -1.0;  // +1: konum = yükseklik, -1: konum = sensörden uzaklık
@@ -93,5 +94,11 @@ private:
     QTimer m_veriBekciTimer;
     QElapsedTimer m_sonVeriZamani;
     static constexpr int VERI_KESINTI_MS = 1500;
+    // ESP32 aniden kapanir/resetlenir veya Wi-Fi sinyali koparsa, TCP soketi
+    // bunu her zaman hemen fark etmez (FIN/RST gelmeyebilir) ve arayuz
+    // "Bagli" gostermeye devam eder. Bu sure boyunca hic paket gelmezse
+    // baglanti gercekten sonlandirilir; kullanici "Bagli" yaziyorken aslinda
+    // veri akmiyor olma durumuna dusmesin.
+    static constexpr int VERI_KESINTI_BAGLANTI_KES_MS = 5000;
     static constexpr int HAREKETSIZLIK_LIMIT_MS = 2 * 60 * 60 * 1000; // 2 saat
 };
