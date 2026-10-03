@@ -110,23 +110,21 @@ Rectangle {
     // önüne geldiğinde kalibre edilen üst konum (~64 mm) okunur; gerçek stroke
     // ancak o andan sonra başlar. Bu yüzden "Ölçümü Başlat" grafiği hemen
     // akıtmaz, önce üst konumun görülmesini bekler.
-    //   BEKLEMEDE -> (üst konum görüldü) -> KAYITTA -> (iniş durdu) -> DONDU
+    //   BEKLEMEDE -> (üst konum görüldü) -> KAYITTA -> (Calculator inişi
+    //   kapattı: durum TAMAMLANDI) -> DONDU
     //   DONDU -> (boru tekrar üst konuma alındı) -> KAYITTA (yeni stroke)
     property string kayitDurumu: "BEKLEMEDE"
     property bool inisBasladi: false
     property real kayitBaslangicKonumuMm: 0
-    property real durgunlukBaslangicZamanS: -1
 
     // Üst referansa bu kadar yaklaşılması "üst konumda" sayılır. Değer
     // Calculator'dan okunur: grafik kaydı ile stroke hesabı aynı anda
     // kollanmalı, aksi halde grafik yeni stroke'a hazırlanırken Calculator
     // boruyu "üstte" saymaz ve iniş stroke olarak işlenmez.
     readonly property real ustYakalamaToleransiMm: calculator.ustYakalamaToleransiMm()
-    // Grafiği erken dondurmamak için: boru bu kadar aşağı inmeden "iniş başladı" sayılmaz.
-    readonly property real inisBaslamaYoluMm: 40
-    // Bu hızın altı "duruyor", bu süre kadar sürerse iniş bitmiş kabul edilir.
-    readonly property real durmaHiziMs: 0.02
-    readonly property real durmaOnayiSuresiS: 0.2
+    // Grafiği erken dondurmamak için: boru bu kadar aşağı inmeden "iniş başladı"
+    // sayılmaz. Calculator'ın iniş tanımıyla aynı kalsın diye oradan okunur.
+    readonly property real inisBaslamaYoluMm: calculator.minInisYoluMm()
     // Üst konumda serbest bırakılma beklenirken grafikte tutulan son süre.
     // Kısa tutulur: bekleme uzasa bile zaman ekseni şişmez ve iniş başladığında
     // stroke grafiğin büyük kısmını kaplar (öncesinde yalnızca taban çizgisi görünür).
@@ -202,7 +200,6 @@ Rectangle {
     function kayitDurumunaDon() {
         kayitDurumu = "BEKLEMEDE"
         inisBasladi = false
-        durgunlukBaslangicZamanS = -1
         grafikleriSifirla()
     }
 
@@ -342,7 +339,6 @@ Rectangle {
     // Üst konum yakalandığında kaydı başlatır, iniş bittiğinde grafiği dondurur.
     function kayitDurumunuGuncelle() {
         var konumMm = sensorManager.konum
-        var zamanS = sensorManager.zamanS
 
         // 1) Boru üst sabitleme noktasına alındı: yeni stroke için grafiği sıfırla.
         if (kayitDurumu !== "KAYITTA" && ustKonumda(konumMm)) {
@@ -350,7 +346,6 @@ Rectangle {
             kayitDurumu = "KAYITTA"
             kayitBaslangicKonumuMm = konumMm
             inisBasladi = false
-            durgunlukBaslangicZamanS = -1
             return
         }
 
@@ -366,14 +361,11 @@ Rectangle {
             return
         }
 
-        // 3) İniş durdu mu? Kısa doğrulama süresi, iniş sırasındaki tek örneklik
-        //    gürültünün grafiği erken dondurmasını engeller.
-        if (Math.abs(sensorManager.hiz) > durmaHiziMs) {
-            durgunlukBaslangicZamanS = -1
-            return
-        }
-        if (durgunlukBaslangicZamanS < 0) durgunlukBaslangicZamanS = zamanS
-        if (zamanS - durgunlukBaslangicZamanS >= durmaOnayiSuresiS) kayitDurumu = "DONDU"
+        // 3) İniş bitti mi? Karar Calculator'a aittir: inişin bittiği anı o
+        //    belirler (boru durdu ya da alt referansa vardı) ve stroke'u o anda
+        //    kapatır. Grafik ayrı bir ölçütle dondurulursa ikisi ayrışır -
+        //    rozet "stroke bitti" derken sayaç 0'da kalıyordu.
+        if (calculator.durum === "TAMAMLANDI") kayitDurumu = "DONDU"
     }
 
     Connections {

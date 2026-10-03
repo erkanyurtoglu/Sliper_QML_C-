@@ -81,7 +81,8 @@ constexpr double hizdanDebiM3h(double hizMs)
 //             |<-- ONCESI_PENCERE (2 s) -->|   ^başlangıç     ^bitiş  |<- SONRASI_PENCERE (2 s) ->|
 //
 // Başlangıç: boru üst referansın KONUM_TOLERANSI_MM altına indiğinde.
-// Bitiş    : boru alt referansın KONUM_TOLERANSI_MM yakınına vardığında.
+// Bitiş    : boru durduğunda (aşağıdaki durma ölçütü) ya da alt referansa
+//            ALT_YAKALAMA_TOLERANSI_MM kadar yaklaştığında - hangisi önce olursa.
 constexpr double KONUM_TOLERANSI_MM = 5.0;    // üst/alt referansa bu kadar yaklaşınca
 // Boru "üstte / yeni stroke'a hazır" sayılması için kalibre edilmiş üst noktaya
 // bu kadar yaklaşması yeterlidir. KONUM_TOLERANSI_MM'den geniştir: boru elle
@@ -89,7 +90,40 @@ constexpr double KONUM_TOLERANSI_MM = 5.0;    // üst/alt referansa bu kadar yak
 // pencerede (5 mm) boru "üstte" sayılmaz ve sonraki iniş stroke olarak
 // işlenmez - özellikle duraklat/devam et sırasında boru yeniden konumlandığında.
 constexpr double UST_YAKALAMA_TOLERANSI_MM = 20.0;
+// Alt referans için aynı gerekçe, daha da güçlüsü: boru alt noktaya betonun
+// üstüne oturarak varır, kalibrasyonda elle bastırılan noktaya kadar inmez
+// (sahada 538 mm'ye kalibre edilen alt nokta beton dolu boruda 517 mm'de
+// kalıyordu). Dar bir pencerede boru "alta vardı" sayılmaz, stroke hiç
+// kapanmaz ve durum INIYOR'da takılırdı.
+constexpr double ALT_YAKALAMA_TOLERANSI_MM = 25.0;
 constexpr double DURGUN_TOLERANS_MM = 5.0;    // bu kadar kıpırtı hâlâ "hareketsiz" sayılır
+// Stroke bitişinin asıl ölçütü: boru durdu. Boru DURMA_ONAYI_S saniye boyunca
+// DURMA_TOLERANSI_MM'den az kıpırdadıysa durmuş kabul edilir; yani ölçüt
+// aslında bir hız sınırıdır: DURMA_TOLERANSI_MM / DURMA_ONAYI_S ≈ 2 mm/s.
+// Alt referansa hiç varılmasa bile (kısa iniş, beton yüksekte kalması)
+// stroke böylece doğru anda kapanır.
+//
+// ÖNEMLİ - sınır neden bu kadar düşük: boru beton içinde sabit hızla kaymaz,
+// ilk anda hızlanıp sonra betonun direncine göre belirgin yavaşlar. Eski ölçüt
+// (5 mm / 0.2 s = 25 mm/s) bu yavaşlamayı "durdu" sanıp inişin ortasında
+// stroke'u kapatıyordu: grafik donuyor, boru hâlâ inerken yalnızca baştaki
+// hızlı bölüm kaydedildiği için v ve Q gerçeğin kat kat üstünde çıkıyordu.
+// Sınır gerçek kayma hızlarının (onlarca mm/s) belirgin altında kalmalı.
+constexpr double DURMA_TOLERANSI_MM = 2.0;
+constexpr double DURMA_ONAYI_S = 1.0;
+// Durma ölçütü ancak boru bu kadar yol indikten sonra işler; aksi halde
+// üstteki kıpırtı ya da inişin ilk ivmelenme anı "durdu" sayılırdı.
+constexpr double MIN_INIS_YOLU_MM = 40.0;
+// Durma ölçütü ayrıca iniş bu süreyi doldurmadan stroke'u kapatmaz. Kılavuzdaki
+// stroke'lar 1.5-5 s sürer; inişin ilk saniyesindeki hızlanma/yavaşlama
+// dalgalanması böylece stroke'u asla erken bitirmez (alt referansa varış bu
+// kuraldan bağımsızdır, orada iniş gerçekten tamamlanmıştır).
+constexpr double MIN_INIS_SURESI_S = 1.0;
+// Stroke kapandıktan sonra P0r penceresi toplanırken boru bu kadar yukarı
+// giderse (operatör yeni stroke için kaldırdı) pencere beklenmeden kapatılır.
+// Sensör gürültüsünün pencereyi boşa çıkarmaması için kıpırtı toleransının
+// belirgin üstündedir.
+constexpr double KALDIRMA_ESIGI_MM = 10.0;
 constexpr double ONCESI_PENCERE_S = 2.0;      // orijinal: başlangıçtan 2 s önce saklanır
 constexpr double SONRASI_PENCERE_S = 2.0;     // orijinal: bitişten 2 s sonra saklanır
 constexpr double HAREKET_PAYI_S = 0.3;        // hareketten hemen önceki bu süre P0l'e katılmaz

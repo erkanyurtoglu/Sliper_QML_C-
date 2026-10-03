@@ -69,6 +69,7 @@ constexpr auto qt_meta_stringdata_CLASSCalculatorENDCLASS = QtMocHelpers::string
     "schleibingerB",
     "egimB",
     "ustYakalamaToleransiMm",
+    "minInisYoluMm",
     "sliperBoruCapiMm",
     "sliperBoruUzunluguMm",
     "hizEgrisiHesapla",
@@ -92,36 +93,37 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSCalculatorENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      20,   14, // methods
-       7,  194, // properties
+      21,   14, // methods
+       7,  201, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
        7,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,  134,    2, 0x06,    8 /* Public */,
-       3,    0,  135,    2, 0x06,    9 /* Public */,
-       4,    0,  136,    2, 0x06,   10 /* Public */,
-       5,    0,  137,    2, 0x06,   11 /* Public */,
-       6,    0,  138,    2, 0x06,   12 /* Public */,
-       7,    0,  139,    2, 0x06,   13 /* Public */,
-       8,    1,  140,    2, 0x06,   14 /* Public */,
+       1,    0,  140,    2, 0x06,    8 /* Public */,
+       3,    0,  141,    2, 0x06,    9 /* Public */,
+       4,    0,  142,    2, 0x06,   10 /* Public */,
+       5,    0,  143,    2, 0x06,   11 /* Public */,
+       6,    0,  144,    2, 0x06,   12 /* Public */,
+       7,    0,  145,    2, 0x06,   13 /* Public */,
+       8,    1,  146,    2, 0x06,   14 /* Public */,
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-      10,    3,  143,    2, 0x02,   16 /* Public */,
-      14,    0,  150,    2, 0x02,   20 /* Public */,
-      15,    0,  151,    2, 0x02,   21 /* Public */,
-      16,    0,  152,    2, 0x02,   22 /* Public */,
-      17,    8,  153,    2, 0x102,   23 /* Public | MethodIsConst  */,
-      26,    3,  170,    2, 0x102,   32 /* Public | MethodIsConst  */,
-      28,    0,  177,    2, 0x102,   36 /* Public | MethodIsConst  */,
-      29,    1,  178,    2, 0x102,   37 /* Public | MethodIsConst  */,
-      31,    1,  181,    2, 0x102,   39 /* Public | MethodIsConst  */,
-      33,    0,  184,    2, 0x102,   41 /* Public | MethodIsConst  */,
-      34,    0,  185,    2, 0x102,   42 /* Public | MethodIsConst  */,
-      35,    0,  186,    2, 0x102,   43 /* Public | MethodIsConst  */,
-      36,    3,  187,    2, 0x102,   44 /* Public | MethodIsConst  */,
+      10,    3,  149,    2, 0x02,   16 /* Public */,
+      14,    0,  156,    2, 0x02,   20 /* Public */,
+      15,    0,  157,    2, 0x02,   21 /* Public */,
+      16,    0,  158,    2, 0x02,   22 /* Public */,
+      17,    8,  159,    2, 0x102,   23 /* Public | MethodIsConst  */,
+      26,    3,  176,    2, 0x102,   32 /* Public | MethodIsConst  */,
+      28,    0,  183,    2, 0x102,   36 /* Public | MethodIsConst  */,
+      29,    1,  184,    2, 0x102,   37 /* Public | MethodIsConst  */,
+      31,    1,  187,    2, 0x102,   39 /* Public | MethodIsConst  */,
+      33,    0,  190,    2, 0x102,   41 /* Public | MethodIsConst  */,
+      34,    0,  191,    2, 0x102,   42 /* Public | MethodIsConst  */,
+      35,    0,  192,    2, 0x102,   43 /* Public | MethodIsConst  */,
+      36,    0,  193,    2, 0x102,   44 /* Public | MethodIsConst  */,
+      37,    3,  194,    2, 0x102,   45 /* Public | MethodIsConst  */,
 
  // signals: parameters
     QMetaType::Void,
@@ -145,16 +147,17 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSCalculatorENDCLASS[] = {
     QMetaType::Double,
     QMetaType::Double,
     QMetaType::Double,
-    QMetaType::QVariantList, QMetaType::QVariantList, QMetaType::QVariantList, QMetaType::Double,   11,   12,   37,
+    QMetaType::Double,
+    QMetaType::QVariantList, QMetaType::QVariantList, QMetaType::QVariantList, QMetaType::Double,   11,   12,   38,
 
  // properties: name, type, flags
-      38, QMetaType::QString, 0x00015001, uint(0), 0,
-      39, QMetaType::Int, 0x00015001, uint(1), 0,
-      40, QMetaType::Bool, 0x00015001, uint(2), 0,
-      41, QMetaType::Bool, 0x00015001, uint(3), 0,
-      42, QMetaType::QVariantMap, 0x00015001, uint(4), 0,
-      43, QMetaType::Double, 0x00015103, uint(5), 0,
+      39, QMetaType::QString, 0x00015001, uint(0), 0,
+      40, QMetaType::Int, 0x00015001, uint(1), 0,
+      41, QMetaType::Bool, 0x00015001, uint(2), 0,
+      42, QMetaType::Bool, 0x00015001, uint(3), 0,
+      43, QMetaType::QVariantMap, 0x00015001, uint(4), 0,
       44, QMetaType::Double, 0x00015103, uint(5), 0,
+      45, QMetaType::Double, 0x00015103, uint(5), 0,
 
        0        // eod
 };
@@ -233,6 +236,8 @@ Q_CONSTINIT const QMetaObject Calculator::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<double, std::false_type>,
         // method 'ustYakalamaToleransiMm'
         QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        // method 'minInisYoluMm'
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
         // method 'sliperBoruCapiMm'
         QtPrivate::TypeAndForceComplete<double, std::false_type>,
         // method 'sliperBoruUzunluguMm'
@@ -275,11 +280,13 @@ void Calculator::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
         case 16: { double _r = _t->ustYakalamaToleransiMm();
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 17: { double _r = _t->sliperBoruCapiMm();
+        case 17: { double _r = _t->minInisYoluMm();
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 18: { double _r = _t->sliperBoruUzunluguMm();
+        case 18: { double _r = _t->sliperBoruCapiMm();
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 19: { QVariantList _r = _t->hizEgrisiHesapla((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])));
+        case 19: { double _r = _t->sliperBoruUzunluguMm();
+            if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
+        case 20: { QVariantList _r = _t->hizEgrisiHesapla((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])));
             if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
@@ -381,13 +388,13 @@ int Calculator::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 20)
+        if (_id < 21)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 20;
+        _id -= 21;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 20)
+        if (_id < 21)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 20;
+        _id -= 21;
     }else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::BindableProperty
             || _c == QMetaObject::RegisterPropertyMetaType) {

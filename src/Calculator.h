@@ -34,9 +34,11 @@ public:
     // basincMbar: piston üzerindeki toplam basınç (betonun ölü ağırlığı dahil).
     //
     // Stroke mantığı (orijinal SLIPER kılavuzu bölüm 5):
-    //  - Boru üst referansın altına indiğinde başlangıç, alt referansa
-    //    ulaştığında bitiş işaretlenir. Başlangıçtan 2 s önce ile bitişten
-    //    2 s sonrası arasındaki veri stroke olarak saklanır.
+    //  - Boru üst referansın altına indiğinde başlangıç işaretlenir. Bitiş,
+    //    borunun durduğu andır (alt referansa varmak da bitiştir, ama tek
+    //    ölçüt değildir: beton dolu boru alt kalibrasyon noktasına kadar
+    //    inmeyebilir ve stroke o zaman hiç kapanmazdı). Başlangıçtan 2 s önce
+    //    ile bitişten 2 s sonrası arasındaki veri stroke olarak saklanır.
     //  - P0l: hareket öncesi durağan basınç, P0r: bitiş sonrası durağan basınç
     //  - p, Q, v ve geçersizlik kuralı SliperModel'de (bölüm 5) hesaplanır;
     //    bu sınıf yalnızca hangi örneklerin kullanılacağını seçer.
@@ -63,6 +65,9 @@ public:
     // QML grafik kaydıyla Calculator'ın stroke mantığı aynı eşiği kullansın diye
     // buradan okunur (bkz. SliperModel bölüm 4).
     Q_INVOKABLE double ustYakalamaToleransiMm() const;
+    // "İniş gerçekten başladı" sayılması için gereken yol (mm). Grafik kaydı da
+    // bunu kullanır ki grafiğin ve stroke hesabının iniş tanımı aynı olsun.
+    Q_INVOKABLE double minInisYoluMm() const;
     Q_INVOKABLE double sliperBoruCapiMm() const;
     Q_INVOKABLE double sliperBoruUzunluguMm() const;
     // Sonuç sayfasındaki stroke hız eğrisi (bkz. SliperModel bölüm 10). Dönüş: m/s listesi
@@ -90,6 +95,11 @@ private:
 
     void strokuBaslat(double zamanS);
     void strokuBitir();
+    // İnişin bittiği an: boru durdu ya da alt referansa vardı.
+    // durmaBaslangicIndeksi: boru durduysa durmanın başladığı örneğin indeksi,
+    // durmadıysa -1. inisiKapat'a bitiş örneği olarak bu indeks verilir.
+    int durmaBaslangicIndeksi(double zamanS) const;
+    void inisiKapat(double zamanS, int bitisIndeksi = -1);
     void durumAyarla(const QString &yeniDurum);
     // Konum yönü kalibrasyondan çıkarılır: üst > alt ise konum "yükseklik",
     // üst < alt ise orijinal SLIPER'daki gibi "sensörden uzaklık"tır (üstte ~100,
@@ -111,7 +121,9 @@ private:
     QVector<Ornek> m_ustteBekleyenOrnekler;   // boru üstteyken son UST_TAMPON_S saniyelik örnekler
     QVector<Ornek> m_durgunOrnekler;          // stroke öncesi, boru hareketsizken (P0l bunlardan)
     QVector<Ornek> m_strokeOrnekleri;         // iniş + bitiş sonrası örnekler
-    int m_altaVarisIndeksi = -1;              // m_strokeOrnekleri içinde alta varılan örnek
+    int m_altaVarisIndeksi = -1;              // m_strokeOrnekleri içinde inişin bittiği örnek
+    double m_inisBaslangicYuksekligiMm = 0.0; // inişin başladığı yükseklik (inilen yol buna göre)
+    double m_bitisYuksekligiMm = 0.0;         // inişin bittiği yükseklik (boru burada durdu)
     double m_baslangicZamaniS = 0.0;
     double m_bitisZamaniS = 0.0;
     QDateTime m_bitisTarihi;

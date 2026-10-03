@@ -7,7 +7,13 @@
 // Stroke zamanlama sabitleri SliperModel bölüm 4'ten gelir
 using SliperModel::KONUM_TOLERANSI_MM;
 using SliperModel::UST_YAKALAMA_TOLERANSI_MM;
+using SliperModel::ALT_YAKALAMA_TOLERANSI_MM;
 using SliperModel::DURGUN_TOLERANS_MM;
+using SliperModel::DURMA_TOLERANSI_MM;
+using SliperModel::DURMA_ONAYI_S;
+using SliperModel::MIN_INIS_YOLU_MM;
+using SliperModel::MIN_INIS_SURESI_S;
+using SliperModel::KALDIRMA_ESIGI_MM;
 using SliperModel::ONCESI_PENCERE_S;
 using SliperModel::SONRASI_PENCERE_S;
 using SliperModel::HAREKET_PAYI_S;
@@ -45,7 +51,8 @@ void Calculator::setAltKonumMm(double deger)
 double Calculator::ustEsik() const { return yon() * m_ustKonumMm - UST_YAKALAMA_TOLERANSI_MM; }
 
 double Calculator::ustYakalamaToleransiMm() const { return UST_YAKALAMA_TOLERANSI_MM; }
-double Calculator::altEsik() const { return yon() * m_altKonumMm + KONUM_TOLERANSI_MM; }
+double Calculator::minInisYoluMm() const { return MIN_INIS_YOLU_MM; }
+double Calculator::altEsik() const { return yon() * m_altKonumMm + ALT_YAKALAMA_TOLERANSI_MM; }
 
 void Calculator::durumAyarla(const QString &yeniDurum)
 {
@@ -68,7 +75,10 @@ void Calculator::konumGuncelle(double zamanS, double konumMm, double basincMbar)
     // Bitiş sonrası 2 s: P0r ve eğrinin sönümlenen kısmı için veri toplanır.
     // Boru bu sürede tekrar kaldırılırsa stroke erken kapatılır.
     if (m_bitisSonrasiToplaniyor) {
-        const bool boruTekrarKaldirildi = yukseklikMm > altEsik() + DURGUN_TOLERANS_MM;
+        // Ölçüt stroke'un bittiği yüksekliğe göredir: iniş alt referansa
+        // varmadan da (boru betonun üstünde durur) kapanabildiği için sabit bir
+        // eşik kullanılamaz, yoksa kısa strokelarda P0r penceresi hiç toplanmaz.
+        const bool boruTekrarKaldirildi = yukseklikMm > m_bitisYuksekligiMm + KALDIRMA_ESIGI_MM;
         if (boruTekrarKaldirildi) {
             strokuBitir();
         } else {
@@ -98,22 +108,92 @@ void Calculator::konumGuncelle(double zamanS, double konumMm, double basincMbar)
     if (yukseklikMm > altEsik()) {
         if (m_durum == "YUKARIDA") {
             strokuBaslat(zamanS);
+            m_inisBaslangicYuksekligiMm = yukseklikMm;
         }
         if (m_durum == "YUKARIDA" || m_durum == "INIYOR") {
             m_strokeOrnekleri.append(yeniOrnek);
             durumAyarla("INIYOR");
+            // Alt referansa hiç varılmasa bile (beton yüksekte kalır, alt
+            // kalibrasyon noktası erişilmez olur) boru durduğunda stroke biter.
+            // İniş, onay süresinin sonunda değil borunun gerçekten durduğu
+            // örnekte kapatılır.
+            const int durmaIndeksi = durmaBaslangicIndeksi(zamanS);
+            if (durmaIndeksi >= 0) {
+                inisiKapat(m_strokeOrnekleri[durmaIndeksi].zamanS, durmaIndeksi);
+            }
         }
         return;
     }
 
-    // --- Boru alta vardı ---
+    // --- Boru alt referansa vardı ---
     if (m_durum == "INIYOR") {
         m_strokeOrnekleri.append(yeniOrnek);
-        m_altaVarisIndeksi = m_strokeOrnekleri.size() - 1;
-        m_bitisZamaniS = zamanS;
-        m_bitisTarihi = QDateTime::currentDateTime();
-        m_bitisSonrasiToplaniyor = true;
+        inisiKapat(zamanS);
+        return;
     }
+    // Devam eden iniş yoktu (ölçüme boru altta başlandı ya da stroke çoktan
+    // kapanmıştı): burada TAMAMLANDI yazılmaz. Aksi halde hiç var olmayan bir
+    // stroke "bitti" görünür ve durum bir daha YUKARIDA'ya dönene kadar
+    // sonraki inişler işlenmezdi.
+    if (m_durum != "TAMAMLANDI") {
+        durumAyarla("BEKLENIYOR");
+    }
+}
+
+// Boru durdu mu? Zamanda geriye gidilerek borunun kıpırdamadan durduğu kesintisiz
+// bölümün nerede başladığı aranır: son örnekten geriye doğru yükseklik salınımı
+// DURMA_TOLERANSI_MM'i aşana kadar ilerlenir. Bu bölüm DURMA_ONAYI_S saniyeyi
+// dolduruyorsa boru durmuştur ve dönüş değeri durmanın BAŞLADIĞI örneğin
+// indeksidir; durmadıysa -1 döner.
+//
+// Durmanın başladığı an ayrıca döndürülür ki stroke, onay süresinin sonunda
+// değil gerçekten durduğu anda kapansın: aksi halde süreye ve iniş örneklerine
+// her stroke'ta bir saniyelik hareketsiz kuyruk eklenirdi.
+//
+// Ölçüt ancak boru MIN_INIS_YOLU_MM kadar yol indikten ve iniş MIN_INIS_SURESI_S
+// kadar sürdükten sonra işler: inişin baştaki hızlanma/yavaşlama dalgalanması
+// "durdu" sayılmasın.
+int Calculator::durmaBaslangicIndeksi(double zamanS) const
+{
+    if (m_strokeOrnekleri.isEmpty()) return -1;
+
+    // 1) İniş erken evresindeyse hiç bakılmaz.
+    const double inilenYolMm = m_inisBaslangicYuksekligiMm - m_strokeOrnekleri.last().yukseklikMm;
+    if (inilenYolMm < MIN_INIS_YOLU_MM) return -1;
+    if (zamanS - m_baslangicZamaniS < MIN_INIS_SURESI_S) return -1;
+
+    // 2) Sondan geriye: salınım toleransı aşana kadar git, en geriye gidilen
+    //    örnek durmanın başlangıcıdır.
+    double enAzMm = m_strokeOrnekleri.last().yukseklikMm;
+    double enCokMm = enAzMm;
+    int durmaBasiIndeksi = m_strokeOrnekleri.size() - 1;
+    for (int i = m_strokeOrnekleri.size() - 1; i >= 0; --i) {
+        const double adayEnAzMm = std::min(enAzMm, m_strokeOrnekleri[i].yukseklikMm);
+        const double adayEnCokMm = std::max(enCokMm, m_strokeOrnekleri[i].yukseklikMm);
+        if (adayEnCokMm - adayEnAzMm >= DURMA_TOLERANSI_MM) break;
+        enAzMm = adayEnAzMm;
+        enCokMm = adayEnCokMm;
+        durmaBasiIndeksi = i;
+    }
+
+    // 3) Hareketsiz bölüm onay süresini doldurdu mu?
+    const double durmaSuresiS = zamanS - m_strokeOrnekleri[durmaBasiIndeksi].zamanS;
+    if (durmaSuresiS < DURMA_ONAYI_S) return -1;
+
+    return durmaBasiIndeksi;
+}
+
+// İniş bitti: bitiş anı işaretlenir, bundan sonraki SONRASI_PENCERE_S saniye
+// P0r için toplanır. bitisIndeksi, inişin son örneğidir (-1 = elde olan son
+// örnek); durma ölçütüyle kapanan stroke'larda onay süresi boyunca biriken
+// hareketsiz örnekler böylece inişe değil P0r penceresine sayılır.
+void Calculator::inisiKapat(double zamanS, int bitisIndeksi)
+{
+    m_altaVarisIndeksi = bitisIndeksi >= 0 ? bitisIndeksi : m_strokeOrnekleri.size() - 1;
+    m_bitisYuksekligiMm = m_strokeOrnekleri[m_altaVarisIndeksi].yukseklikMm;
+    m_bitisZamaniS = zamanS;
+    m_bitisTarihi = QDateTime::currentDateTime();
+    m_bitisSonrasiToplaniyor = true;
     durumAyarla("TAMAMLANDI");
 }
 
@@ -313,6 +393,8 @@ void Calculator::sifirla()
     m_ustteBekleyenOrnekler.clear();
     m_durgunOrnekler.clear();
     m_altaVarisIndeksi = -1;
+    m_inisBaslangicYuksekligiMm = 0.0;
+    m_bitisYuksekligiMm = 0.0;
     m_bitisSonrasiToplaniyor = false;
     emit strokeSayisiChanged();
     emit durumChanged();

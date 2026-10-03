@@ -129,6 +129,11 @@
                 },
                 {
                     "access": "public",
+                    "name": "minInisYoluMm",
+                    "returnType": "double"
+                },
+                {
+                    "access": "public",
                     "name": "sliperBoruCapiMm",
                     "returnType": "double"
                 },
