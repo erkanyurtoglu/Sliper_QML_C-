@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="utf-8">
-  <title>Sliper Kod Dökümü - 29.09.2026 10:33</title>
+  <title>Sliper Kod Dökümü - 05.10.2026 10:23</title>
   <style>
     @page { margin: 14mm; }
     body { font-family: 'Segoe UI', Arial, sans-serif; color: #111827; margin: 0; }
@@ -23,7 +23,7 @@
 </head>
 <body>
   <h1>Sliper Kod Dökümü</h1>
-  <div class="meta"><b>Oluşturulma tarihi:</b> 29.09.2026 10:33<br><b>Dosya sayısı:</b> 34<br><b>Toplam satır:</b> 12670</div>
+  <div class="meta"><b>Oluşturulma tarihi:</b> 05.10.2026 10:23<br><b>Dosya sayısı:</b> 36<br><b>Toplam satır:</b> 13410</div>
   <div class="toc">
     <h2>Dosyalar</h2>
     <ol>
@@ -61,10 +61,12 @@
       <li>src\VoiceRecognitionWorker.h</li>
       <li>src\WifiManager.cpp</li>
       <li>src\WifiManager.h</li>
+      <li>tools\esp32_baglanti_testi.py</li>
+      <li>tools\esp32_seri_dinle.py</li>
     </ol>
   </div>
   <section>
-    <div class="dosya-baslik"><h2>CMakeLists.txt</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>CMakeLists.txt</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>cmake_minimum_required(VERSION 3.16)
 project(sliper VERSION 1.0)
 
@@ -171,7 +173,7 @@ add_custom_command(TARGET sliper POST_BUILD
 )</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>esp32\sliper_esp32\sliper_esp32.ino</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>esp32\sliper_esp32\sliper_esp32.ino</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>/*
  * SLIPER - ESP32-S3 Firmware (WiFi SoftAP + TCP Versiyonu)
  * -----------------------------------------------------
@@ -196,6 +198,7 @@ add_custom_command(TARGET sliper POST_BUILD
 #include &lt;Adafruit_ADS1X15.h&gt;
 #include &lt;ArduinoJson.h&gt;
 #include &lt;WiFi.h&gt;
+#include &lt;esp_system.h&gt;
 
 // ---------------- Pin Tanimlari ----------------
 #define I2C_SDA 18
@@ -223,6 +226,31 @@ bool mpuHazir = false;
 unsigned long sonMpuDenemeMs = 0;
 const unsigned long MPU_DENEME_ARALIGI_MS = 2000;
 
+// ADS1115 baslangicta bulunamazsa (sensorsuz test / henuz kablolanmamis
+// donanim), hamMesafeOku()/hamBataryaOku() ic I2C cagrilarini calistirmaya
+// devam etmek loop()&#39;u kilitleyebiliyordu: bazi ESP32 core surumlerinde
+// ACK vermeyen bir I2C adresine Wire istegi zaman asimi olmadan asili
+// kalabiliyor, bu da TCP&#39;ye hic paket gonderilmemesine (baglanti &quot;acik&quot;
+// gorunse bile veri akmamasina) yol aciyordu. MPU6050&#39;deki mpuHazir
+// deseninin ayni: hazir degilse I2C&#39;ye hic dokunmadan 0 dondurulur.
+bool adsHazir = false;
+unsigned long sonAdsDenemeMs = 0;
+const unsigned long ADS_DENEME_ARALIGI_MS = 2000;
+
+// Sensor I2C adresleri: her okumadan once cihazin hala cevap verdigi
+// dogrulanir (asagidaki i2cCihazCevapVeriyor).
+const uint8_t ADS1115_I2C_ADRESI = 0x48;
+const uint8_t MPU6050_I2C_ADRESI = 0x68;
+// ADS1115 860 SPS&#39;te bir donusumu ~1.2 ms&#39;de bitirir; bu sureyi asarsa
+// cihaz kaybolmus demektir ve beklemeden cikilir.
+const unsigned long ADS_DONUSUM_ZAMAN_ASIMI_MS = 20;
+
+// I2C hattinin genel sagligi: cevapsiz deneme sayaci bu esige ulasinca
+// surucu bastan kurulur (bkz. i2cVeriYoluSagliginiKontrolEt).
+unsigned long i2cHataSayaci = 0;
+unsigned long i2cYenidenKurmaSayisi = 0;
+const unsigned long I2C_YENIDEN_KURMA_ESIGI = 10;
+
 // ---------------- WiFi SoftAP Ayarlari ----------------
 const char *WIFI_SSID = &quot;SLIPER-ESP32&quot;;
 const char *WIFI_SIFRE = &quot;sliper1234&quot;; // en az 8 karakter olmali
@@ -231,16 +259,42 @@ const uint16_t TCP_PORT = 8888;
 WiFiServer tcpSunucu(TCP_PORT);
 WiFiClient bagliIstemci;
 
+// Kartin en son neden yeniden basladigini seri porta yazar. Baglanti
+// kopmalarinin sebebini ayirt etmenin en hizli yolu budur.
+void yenidenBaslatmaSebebiniYazdir() {
+    const esp_reset_reason_t sebep = esp_reset_reason();
+    Serial.print(&quot;Yeniden baslatma sebebi: &quot;);
+    switch (sebep) {
+        case ESP_RST_POWERON:  Serial.println(&quot;Normal guc verme.&quot;); break;
+        case ESP_RST_SW:       Serial.println(&quot;Yazilimsal reset.&quot;); break;
+        case ESP_RST_PANIC:    Serial.println(&quot;PANIC/exception - kod cokmus!&quot;); break;
+        case ESP_RST_TASK_WDT: Serial.println(&quot;TASK WATCHDOG - loop() kilitlenmis!&quot;); break;
+        case ESP_RST_INT_WDT:  Serial.println(&quot;INTERRUPT WATCHDOG - kesme kilitlenmis!&quot;); break;
+        case ESP_RST_WDT:      Serial.println(&quot;WATCHDOG.&quot;); break;
+        case ESP_RST_BROWNOUT: Serial.println(&quot;BROWNOUT - besleme voltaji dustu!&quot;); break;
+        case ESP_RST_DEEPSLEEP:Serial.println(&quot;Derin uykudan uyanma.&quot;); break;
+        default:               Serial.println(sebep); break;
+    }
+}
+
 void setup() {
     Serial.begin(115200);
     delay(200);
 
+    // Onceki calismanin nasil bittigini soyler: kart beklenmedik sekilde
+    // yeniden baslayip baglantiyi dusuruyorsa sebebi burada gorunur.
+    //   TASK_WDT -&gt; loop() bir yerde kilitlendi (I2C / bloklayan yazma)
+    //   BROWNOUT -&gt; besleme voltaji dustu (pil / kondansator sorunu)
+    yenidenBaslatmaSebebiniYazdir();
+
     Wire.begin(I2C_SDA, I2C_SCL);
     Wire.setClock(100000);
+    // Kablo gevserse / cihaz ACK vermezse Wire cagrilari suresiz asili kalmasin.
+    Wire.setTimeOut(50);
     delay(100);
 
-    // MPU6050 baslat
-    if (!mpu.begin()) {
+    // MPU6050 baslat (once hatta var mi diye bakilir; bkz. i2cCihazCevapVeriyor)
+    if (!i2cCihazKararliCevapVeriyor(MPU6050_I2C_ADRESI) || !mpu.begin()) {
         Serial.println(&quot;MPU6050 bulunamadi! Loop icinde tekrar denenecek.&quot;);
         mpuHazir = false;
     } else {
@@ -259,18 +313,22 @@ void setup() {
         Serial.println(&quot;HX711 bulunamadi!&quot;);
     }
 
-    // ADS1115 baslat
-    if (!ads.begin()) {
+    // ADS1115 baslat (once hatta var mi diye bakilir; bkz. i2cCihazCevapVeriyor)
+    if (!i2cCihazKararliCevapVeriyor(ADS1115_I2C_ADRESI) || !ads.begin()) {
         Serial.println(&quot;ADS1115 bulunamadi!&quot;);
+        adsHazir = false;
     } else {
         ads.setGain(GAIN_ONE);
         // Varsayilan 128 SPS&#39;te tek okuma ~8 ms surer; 860 SPS ile ~1.2 ms.
         ads.setDataRate(RATE_ADS1115_860SPS);
         Serial.println(&quot;ADS1115 hazir.&quot;);
+        adsHazir = true;
     }
 
     // WiFi SoftAP baslat
     WiFi.softAP(WIFI_SSID, WIFI_SIFRE);
+    // Guc tasarrufu modu 50 Hz akista paket gecikmelerine ve kopmalara yol aciyor.
+    WiFi.setSleep(false);
     Serial.print(&quot;SoftAP baslatildi. IP adresi: &quot;);
     Serial.println(WiFi.softAPIP()); // Varsayilan: 192.168.4.1
 
@@ -295,6 +353,14 @@ unsigned long sonOrnekMs = 0;
 unsigned long sonBataryaMs = 0;
 unsigned long sonMpuMs = 0;
 long sonHamAgirlik = 0;
+unsigned long atlananPaketSayisi = 0;
+unsigned long gonderilenPaketSayisi = 0;
+unsigned long artArdaAtlananPaket = 0;
+unsigned long sonDurumYazisiMs = 0;
+// Tampon dolu raporlansa bile bu kadar paket ust uste atlandiysa yazma zorlanir.
+const unsigned long ZORLA_GONDER_ESIGI = 10;
+// Loop&#39;un yasadigini gosteren saniyelik seri port ozeti.
+const unsigned long DURUM_YAZISI_ARALIGI_MS = 1000;
 int16_t sonHamBatarya = 0;
 float sonAccelX = 0, sonAccelY = 0, sonAccelZ = 0;
 
@@ -305,18 +371,96 @@ void hamAgirlikGuncelle() {
     }
 }
 
+// I2C cihazi hala yerinde mi: kisa bir adres sorgusu yapar, ACK gelmezse false.
+// Wire.setTimeOut() sayesinde bu cagri en fazla birkac on ms surer.
+//
+// DIKKAT - bos bir beginTransmission/endTransmission ciftini (&quot;probe&quot;) ESP32
+// core 3.3.8 surucusu i2c_master_probe() ile karsilar; sensor kablosu
+// kopuk/gevsek oldugunda bu fonksiyon I2C kesme isleyicisinde cokuyor
+// (Guru Meditation / StoreProhibited) ve kart resetleniyor. Bu yuzden adres
+// sorgusuna tek bayt eklenir: surucu bunu normal bir yazma islemi olarak
+// isler, probe koduna hic girmez. Yazilan deger cihazlarin register
+// isaretcisidir, zararsizdir.
+bool i2cCihazCevapVeriyor(uint8_t adres) {
+    Wire.beginTransmission(adres);
+    Wire.write((uint8_t)0x00);
+    return Wire.endTransmission() == 0;
+}
+
+// Bosta kalan (pull-up&#39;siz) bir I2C hatti rastgele ACK uretebilir. Cihazi var
+// saymadan once ust uste iki kez dogrulanir; aksi halde Adafruit begin()
+// fonksiyonlari kendi probe cagrilariyla yine cokme riskine girer.
+bool i2cCihazKararliCevapVeriyor(uint8_t adres) {
+    if (!i2cCihazCevapVeriyor(adres)) return false;
+    delay(2);
+    return i2cCihazCevapVeriyor(adres);
+}
+
+// Art arda cok sayida I2C hatasi, hattin (kablo gevsemesi / kisa devre)
+// bozuldugunu gosterir. Bu durumda tek tek cihaz denemek yerine surucu
+// bastan kurulur; takilmis bir veri yolu ancak boyle toparlanir.
+void i2cVeriYoluSagliginiKontrolEt() {
+    if (i2cHataSayaci &lt; I2C_YENIDEN_KURMA_ESIGI) return;
+
+    Serial.println(&quot;I2C hatti cevapsiz, veri yolu yeniden kuruluyor...&quot;);
+    Wire.end();
+    delay(50);
+    Wire.begin(I2C_SDA, I2C_SCL);
+    Wire.setClock(100000);
+    Wire.setTimeOut(50);
+    i2cHataSayaci = 0;
+    i2cYenidenKurmaSayisi++;
+}
+
+// ADS1115&#39;ten tek kanal okur. Kutuphanenin readADC_SingleEnded() fonksiyonu
+// donusumun bitmesini kosulsuz bekler; test sirasindaki titresim I2C kablosunu
+// gevsetirse bu bekleme bitmez, loop() durur ve PC tarafi 5 s veri gelmediginde
+// baglantiyi koparir. Bu yuzden okuma once ACK ile dogrulanir, sonra donusum
+// zaman asimli beklenir; sorun varsa adsHazir false yapilip yeniden baslatma
+// dongusune birakilir.
+int16_t adsKanalOku(uint8_t kanal) {
+    if (!adsHazir) return 0;
+
+    if (!i2cCihazCevapVeriyor(ADS1115_I2C_ADRESI)) {
+        Serial.println(&quot;ADS1115 cevap vermiyor, yeniden baslatilacak.&quot;);
+        adsHazir = false;
+        i2cHataSayaci++;
+        return 0;
+    }
+
+    ads.startADCReading(MUX_BY_CHANNEL[kanal], /*continuous=*/false);
+
+    const unsigned long baslangicMs = millis();
+    while (!ads.conversionComplete()) {
+        if (millis() - baslangicMs &gt; ADS_DONUSUM_ZAMAN_ASIMI_MS) {
+            Serial.println(&quot;ADS1115 donusumu zaman asimina ugradi.&quot;);
+            adsHazir = false;
+            return 0;
+        }
+    }
+
+    return ads.getLastConversionResults();
+}
+
 int16_t hamMesafeOku() {
-    return ads.readADC_SingleEnded(3);
+    return adsKanalOku(3);
 }
 
 int16_t hamBataryaOku() {
-    return ads.readADC_SingleEnded(BATARYA_ADS_KANALI);
+    return adsKanalOku(BATARYA_ADS_KANALI);
 }
 
 void loop() {
+    // Kopmus istemci serbest birakilmazsa soket tanimlayicisi sizar ve bir sure
+    // sonra yeni baglantilar kabul edilemez olur.
+    if (bagliIstemci &amp;&amp; !bagliIstemci.connected()) {
+        bagliIstemci.stop();
+        Serial.println(&quot;PC baglantisi kapandi.&quot;);
+    }
+
     WiFiClient yeniIstemci = tcpSunucu.available();
     if (yeniIstemci) {
-        if (bagliIstemci &amp;&amp; bagliIstemci.connected()) {
+        if (bagliIstemci) {
             bagliIstemci.stop();
         }
         bagliIstemci = yeniIstemci;
@@ -327,7 +471,12 @@ void loop() {
 
     if (!mpuHazir &amp;&amp; millis() - sonMpuDenemeMs &gt; MPU_DENEME_ARALIGI_MS) {
         sonMpuDenemeMs = millis();
-        if (mpu.begin()) {
+        // Once ucuz ACK sorgusu: cihaz hatta yoksa begin() cagrilmaz.
+        // (bkz. i2cVeriYoluSagliginiKontrolEt - surekli begin() denemesi
+        // ESP32 core 3.x I2C surucusunu cokertiyor.)
+        if (!i2cCihazKararliCevapVeriyor(MPU6050_I2C_ADRESI)) {
+            i2cHataSayaci++;
+        } else if (mpu.begin()) {
             mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
             mpu.setGyroRange(MPU6050_RANGE_250_DEG);
             mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
@@ -337,6 +486,26 @@ void loop() {
             Serial.println(&quot;MPU6050 hala bulunamadi, tekrar denenecek...&quot;);
         }
     }
+
+    if (!adsHazir &amp;&amp; millis() - sonAdsDenemeMs &gt; ADS_DENEME_ARALIGI_MS) {
+        sonAdsDenemeMs = millis();
+        if (!i2cCihazKararliCevapVeriyor(ADS1115_I2C_ADRESI)) {
+            i2cHataSayaci++;
+        } else if (ads.begin()) {
+            ads.setGain(GAIN_ONE);
+            ads.setDataRate(RATE_ADS1115_860SPS);
+            Serial.println(&quot;ADS1115 sonradan hazir oldu.&quot;);
+            adsHazir = true;
+            i2cHataSayaci = 0;
+        } else {
+            Serial.println(&quot;ADS1115 ACK veriyor ama baslatilamadi.&quot;);
+        }
+    }
+
+    // Hat uzun suredir cevapsizsa I2C surucusunu komple yeniden kur: kablo
+    // gevsemesinden sonra surucu bazen takili kaliyor ve tek tek denemeler
+    // sonsuza kadar basarisiz oluyor.
+    i2cVeriYoluSagliginiKontrolEt();
 
     hamAgirlikGuncelle();
 
@@ -355,11 +524,19 @@ void loop() {
 
     if (mpuHazir &amp;&amp; simdi - sonMpuMs &gt;= MPU_ARALIGI_MS) {
         sonMpuMs = simdi;
-        sensors_event_t ivme, gyro, sicaklik;
-        mpu.getEvent(&amp;ivme, &amp;gyro, &amp;sicaklik);
-        sonAccelX = ivme.acceleration.x;
-        sonAccelY = ivme.acceleration.y;
-        sonAccelZ = ivme.acceleration.z;
+        // ADS1115&#39;teki ile ayni koruma: cihaz kaybolduysa getEvent() icinde
+        // beklemek yerine mpuHazir dusurulur ve yeniden baglanma denenir.
+        if (!i2cCihazCevapVeriyor(MPU6050_I2C_ADRESI)) {
+            Serial.println(&quot;MPU6050 cevap vermiyor, yeniden baslatilacak.&quot;);
+            mpuHazir = false;
+            i2cHataSayaci++;
+        } else {
+            sensors_event_t ivme, gyro, sicaklik;
+            mpu.getEvent(&amp;ivme, &amp;gyro, &amp;sicaklik);
+            sonAccelX = ivme.acceleration.x;
+            sonAccelY = ivme.acceleration.y;
+            sonAccelZ = ivme.acceleration.z;
+        }
     }
 
     StaticJsonDocument&lt;256&gt; doc;
@@ -377,8 +554,36 @@ void loop() {
     serializeJson(doc, json);
     json += &quot;\n&quot;;
 
+    // Wi-Fi sinyali zayifladiginda lwIP gonderim tamponu dolar ve print()
+    // bloklar; loop() durdugu icin PC tarafi veri akisi kesildi sanip
+    // baglantiyi koparir. Tamponda yer yoksa bu paket atlanir: 50 Hz&#39;de tek
+    // ornegin kaybi onemsiz, baglantinin kopmasi degil.
     if (bagliIstemci &amp;&amp; bagliIstemci.connected()) {
-        bagliIstemci.print(json);
+        // ESP32 core surumlerinin bir kismi availableForWrite()&#39;i her zaman
+        // dogru raporlamaz; sirf bu yuzden hic veri gonderilmemesini onlemek
+        // icin art arda belli sayida atlamadan sonra yazma yine de denenir.
+        const bool tamponYeterli = bagliIstemci.availableForWrite() &gt;= (int)json.length();
+        if (tamponYeterli || artArdaAtlananPaket &gt;= ZORLA_GONDER_ESIGI) {
+            bagliIstemci.print(json);
+            artArdaAtlananPaket = 0;
+            gonderilenPaketSayisi++;
+        } else {
+            artArdaAtlananPaket++;
+            atlananPaketSayisi++;
+        }
+    }
+
+    // Loop&#39;un hala dondugunu ve akisin durumunu gosteren saniyelik ozet:
+    // seri monitorde bu satir durursa loop() kilitlenmis demektir.
+    if (simdi - sonDurumYazisiMs &gt;= DURUM_YAZISI_ARALIGI_MS) {
+        sonDurumYazisiMs = simdi;
+        Serial.printf(&quot;[%lus] istemci=%d gonderilen=%lu atlanan=%lu ads=%d mpu=%d hx=%d i2cHata=%lu i2cReset=%lu\n&quot;,
+                      simdi / 1000,
+                      (bagliIstemci &amp;&amp; bagliIstemci.connected()) ? 1 : 0,
+                      gonderilenPaketSayisi, atlananPaketSayisi,
+                      adsHazir ? 1 : 0, mpuHazir ? 1 : 0,
+                      loadCell.is_ready() ? 1 : 0,
+                      i2cHataSayaci, i2cYenidenKurmaSayisi);
     }
 
 #if SERI_DEBUG
@@ -387,7 +592,7 @@ void loop() {
 }</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>main.cpp</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>main.cpp</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#include &lt;QQmlContext&gt;
 #include &lt;QApplication&gt;
 #include &lt;QQmlApplicationEngine&gt;
@@ -405,7 +610,7 @@ int main(int argc, char *argv[])
 {
     qputenv(&quot;QT_QUICK_CONTROLS_STYLE&quot;, &quot;Basic&quot;);
 
-    QApplication app(argc, argv);
+    QApplication app(argc, argv);   
     QApplication::setApplicationName(&quot;SLIPER&quot;);
 
     Backend backend;
@@ -449,7 +654,7 @@ int main(int argc, char *argv[])
 }</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\components\NavIkon.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\components\NavIkon.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 
 Canvas {
@@ -573,7 +778,7 @@ Canvas {
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\components\SuTerazisi.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\components\SuTerazisi.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 import sliper
 
@@ -664,7 +869,7 @@ Item {
 }</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\components\TarihSecici.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\components\TarihSecici.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 import QtQuick.Controls 6.7
 import sliper
@@ -974,7 +1179,7 @@ Item {
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\Main.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\Main.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Window 6.7
@@ -1006,7 +1211,7 @@ ApplicationWindow {
 }</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\pages\DashboardPage.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\pages\DashboardPage.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Layouts 6.7
@@ -1447,7 +1652,7 @@ Rectangle {
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\pages\GecmisPage.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\pages\GecmisPage.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 import QtQuick.Controls 6.7
 import &quot;../components&quot;
@@ -2595,7 +2800,7 @@ Rectangle {
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\pages\KalibrasyonPage.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\pages\KalibrasyonPage.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Layouts 6.7
@@ -5558,7 +5763,7 @@ Rectangle {
 }</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\pages\LoginPage.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\pages\LoginPage.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 import QtQuick.Controls 6.7
 import sliper
@@ -5970,7 +6175,7 @@ Rectangle {
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\pages\OlcumPage.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\pages\OlcumPage.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtCharts 6.7
@@ -6007,6 +6212,9 @@ Rectangle {
         bitirButon: { tr: &quot;⏹  Bitir&quot;, en: &quot;⏹  Finish&quot; },
         veriYok: { tr: &quot;VERI YOK&quot;, en: &quot;NO DATA&quot; },
         duraklatildiDurum: { tr: &quot;DURAKLATILDI&quot;, en: &quot;PAUSED&quot; },
+        ustKonumBekleniyor: { tr: &quot;&#220;STE TAKIN&quot;, en: &quot;ATTACH AT TOP&quot; },
+        grafikDonduDurum: { tr: &quot;STROKE BİTTİ&quot;, en: &quot;STROKE FINISHED&quot; },
+        ustKonumIpucu: { tr: &quot;Cihazı &#252;st sabitleme noktasına takıp mili sens&#246;r&#252;n &#246;n&#252;ne &#231;evirin — kayıt kendiliğinden başlar&quot;, en: &quot;Attach the device to the top fixture and turn the rod in front of the sensor — recording starts automatically&quot; },
         anlikDegerler: { tr: &quot;ANLIK DEĞERLER&quot;, en: &quot;CURRENT VALUES&quot; },
         basincEtiket: { tr: &quot;BASIN&#199;&quot;, en: &quot;PRESSURE&quot; },
         konumEtiket: { tr: &quot;KONUM&quot;, en: &quot;POSITION&quot; },
@@ -6039,12 +6247,61 @@ Rectangle {
     property string uyariMesaji: &quot;&quot;
     property bool bitirIcinDuraklatildi: false
 
+    // Anlık değer kutucukları (BASIN&#199;/KONUM/HIZ/DEBİ) sens&#246;rden gelen her
+    // paketle değil, aşağıdaki Timer ile yavaşlatılmış hızda g&#252;ncellenir;
+    // aksi halde sayılar g&#246;z&#252;n takip edemeyeceği kadar hızlı değişip
+    // g&#246;r&#252;nt&#252; kirliliğine yol a&#231;ıyordu. Grafikler ham veriyi olduğu gibi alır.
+    property real gosterilenBasinc: 0
+    property real gosterilenKonum: 0
+    property real gosterilenHiz: 0
+    property real gosterilenDebi: 0
+    property bool gosterilenVeriGecerli: false
+
+    Timer {
+        interval: 200
+        running: true
+        repeat: true
+        onTriggered: {
+            gosterilenBasinc = sensorManager.basinc
+            gosterilenKonum = sensorManager.konum
+            gosterilenHiz = sensorManager.hiz
+            gosterilenDebi = sensorManager.debi
+            gosterilenVeriGecerli = sensorManager.veriGecerli
+        }
+    }
+
     property real baslangicZamaniS: -1
     property var zamanGecmis: []
     property var basincGecmis: []
     property var konumGecmis: []
     property var hizGecmis: []
     property var debiGecmis: []
+
+    // --- Otomatik kayıt (&#252;st sabitleme noktası) --------------------------------
+    // Cihaz &#252;st sabitleme noktasında havada asılıyken mesafe sens&#246;r&#252;n&#252;n &#246;n&#252;nde
+    // demir mil yoktur ve sens&#246;r &#231;ok uzağı (~400 mm) okur. Mil &#231;evrilip sens&#246;r&#252;n
+    // &#246;n&#252;ne geldiğinde kalibre edilen &#252;st konum (~64 mm) okunur; ger&#231;ek stroke
+    // ancak o andan sonra başlar. Bu y&#252;zden &quot;&#214;l&#231;&#252;m&#252; Başlat&quot; grafiği hemen
+    // akıtmaz, &#246;nce &#252;st konumun g&#246;r&#252;lmesini bekler.
+    //   BEKLEMEDE -&gt; (&#252;st konum g&#246;r&#252;ld&#252;) -&gt; KAYITTA -&gt; (Calculator inişi
+    //   kapattı: durum TAMAMLANDI) -&gt; DONDU
+    //   DONDU -&gt; (boru tekrar &#252;st konuma alındı) -&gt; KAYITTA (yeni stroke)
+    property string kayitDurumu: &quot;BEKLEMEDE&quot;
+    property bool inisBasladi: false
+    property real kayitBaslangicKonumuMm: 0
+
+    // &#220;st referansa bu kadar yaklaşılması &quot;&#252;st konumda&quot; sayılır. Değer
+    // Calculator&#39;dan okunur: grafik kaydı ile stroke hesabı aynı anda
+    // kollanmalı, aksi halde grafik yeni stroke&#39;a hazırlanırken Calculator
+    // boruyu &quot;&#252;stte&quot; saymaz ve iniş stroke olarak işlenmez.
+    readonly property real ustYakalamaToleransiMm: calculator.ustYakalamaToleransiMm()
+    // Grafiği erken dondurmamak i&#231;in: boru bu kadar aşağı inmeden &quot;iniş başladı&quot;
+    // sayılmaz. Calculator&#39;ın iniş tanımıyla aynı kalsın diye oradan okunur.
+    readonly property real inisBaslamaYoluMm: calculator.minInisYoluMm()
+    // &#220;st konumda serbest bırakılma beklenirken grafikte tutulan son s&#252;re.
+    // Kısa tutulur: bekleme uzasa bile zaman ekseni şişmez ve iniş başladığında
+    // stroke grafiğin b&#252;y&#252;k kısmını kaplar (&#246;ncesinde yalnızca taban &#231;izgisi g&#246;r&#252;n&#252;r).
+    readonly property real beklemePenceresiS: 1.0
 
     // Orijinal ağırlık seti: 3 x ~1.6 kg ve 3 x ~4.8 kg. Eklenen her ağırlık
     // sırayla tutulur; &quot;Geri&quot; son ekleneni kaldırır. Her stroke, o anki toplam
@@ -6109,6 +6366,15 @@ Rectangle {
         receteKutusu.editText = &quot;&quot;
         agirlikListesi = []
         calculator.sifirla()
+        kayitDurumunaDon()
+    }
+
+    // Grafikleri temizler ve kaydı yeniden &quot;&#252;st konum bekleniyor&quot; durumuna alır.
+    // &#214;l&#231;&#252;m&#252;n kendisine (aktifOlcumId, kaydedilmiş stroke&#39;lar, stroke sayacı)
+    // dokunmaz; yalnızca ekrandaki kayıt yeni bir stroke&#39;a hazırlanır.
+    function kayitDurumunaDon() {
+        kayitDurumu = &quot;BEKLEMEDE&quot;
+        inisBasladi = false
         grafikleriSifirla()
     }
 
@@ -6125,14 +6391,17 @@ Rectangle {
             return
         }
 
-        if (!sensorManager.veriGecerli) {
-            console.warn(&quot;Gercek sensor verisi yok, olcum baslatilmadi.&quot;)
+        // Sensor verisi (veriGecerli) degil, TCP baglantisi kontrol edilir:
+        // sensorler takili olmasa bile (ornegin sadece Wi-Fi/TCP testi icin)
+        // ESP32&#39;ye baglanildiysa olcum baslatilabilsin.
+        if (!wifiManager.baglandi) {
+            console.warn(&quot;ESP32&#39;ye baglanti yok, olcum baslatilmadi.&quot;)
             uyariMesaji = txt(&quot;uyariCihazBagliDegil&quot;)
             return
         }
 
         uyariMesaji = &quot;&quot;
-        grafikleriSifirla()
+        kayitDurumunaDon()
 
         calculator.sifirla()
         aktifOlcumId = database.olcumBaslat(
@@ -6169,44 +6438,138 @@ Rectangle {
         konumGecmis = []
         hizGecmis = []
         debiGecmis = []
-        xEkseni.min = 0
-        xEkseni.max = 60
+        zamanEkseniniUygula(0)
         yEkseni.min = 0
-        yEkseni.max = 1100
-        konumXEkseni.min = 0
-        konumXEkseni.max = 60
-        konumYEkseni.max = 500
-        hizXEkseni.min = 0
-        hizXEkseni.max = 60
-        hizYEkseni.max = 4
-        debiXEkseni.min = 0
-        debiXEkseni.max = 60
-        debiYEkseni.max = 180
+        yEkseni.max = 10
+        konumYEkseni.min = 0
+        konumYEkseni.max = 600
+        hizYEkseni.min = 0
+        hizYEkseni.max = 1
+        debiYEkseni.min = 0
+        debiYEkseni.max = 50
     }
 
-    function eksenTavaniHesapla(dizi, tavan, taban) {
-        if (dizi.length === 0) return taban
-        var maxDeger = Math.max.apply(null, dizi)
-        var hedef = maxDeger * 1.25
-        if (hedef &lt; taban) hedef = taban
-        if (hedef &gt; tavan) hedef = tavan
-        return hedef
+    // Zaman ekseni tek bir stroke&#39;u kapsar: veri hangi aralıktaysa eksen de o
+    // aralığa oturur, b&#246;ylece eğri paneli boydan boya doldurur (sabit 0-60 s
+    // ekseninde 1.5 saniyelik bir stroke iğne gibi g&#246;r&#252;n&#252;yordu).
+    function zamanEkseniniUygula(sonZamanS) {
+        var ilkZamanS = zamanGecmis.length &gt; 0 ? zamanGecmis[0] : 0
+        // Veri hen&#252;z &#231;ok kısayken eksen titremesin diye en az bu kadar genişlik tutulur.
+        var genislik = Math.max(sonZamanS - ilkZamanS, 1.0)
+        var bitis = ilkZamanS + genislik * 1.04
+        var eksenler = [xEkseni, konumXEkseni, hizXEkseni, debiXEkseni]
+        for (var i = 0; i &lt; eksenler.length; i++) {
+            eksenler[i].min = ilkZamanS
+            eksenler[i].max = bitis
+        }
     }
 
-    // Basın&#231; (mbar) atmosferik seviyede sabit bir taban etrafında dalgalanır,
-    // bu y&#252;zden sabit tavanlı &#246;l&#231;ekleme yerine veriye g&#246;re kayan min/max kullanılır.
-    function basincEkseniHesapla(dizi) {
-        if (dizi.length === 0) return { min: 0, max: 1100 }
+    // Y ekseni veriye oturtulur. sifirdanBasla: hız/debi gibi sıfırı anlamlı olan
+    // b&#252;y&#252;kl&#252;klerde taban 0&#39;da kalır; basın&#231; ve konum kendi bandına yaklaştırılır.
+    function degerEkseniHesapla(dizi, sifirdanBasla, varsayilanTavan) {
+        if (dizi.length === 0) return { min: 0, max: varsayilanTavan }
         var maxDeger = Math.max.apply(null, dizi)
         var minDeger = Math.min.apply(null, dizi)
-        var kenarBoslugu = Math.max((maxDeger - minDeger) * 0.2, maxDeger * 0.02, 5)
-        return { min: Math.max(0, minDeger - kenarBoslugu), max: maxDeger + kenarBoslugu }
+        var kenarBoslugu = Math.max((maxDeger - minDeger) * 0.08, Math.abs(maxDeger) * 0.04, 0.5)
+        var taban = sifirdanBasla ? Math.min(0, minDeger) : minDeger - kenarBoslugu
+        return { min: taban, max: maxDeger + kenarBoslugu }
+    }
+
+    // Kalibrasyondaki &#252;st/alt referansa g&#246;re y&#246;n: &#252;st &lt; alt ise konum, orijinal
+    // SLIPER&#39;daki gibi &quot;sens&#246;rden uzaklık&quot;tır (&#252;stte k&#252;&#231;&#252;k, altta b&#252;y&#252;k).
+    function konumYonu() {
+        return calculator.ustKonumMm &gt;= calculator.altKonumMm ? 1 : -1
+    }
+
+    // Boru &#252;st sabitleme noktasında mı? (demir mil sens&#246;r&#252;n &#246;n&#252;nde)
+    function ustKonumda(konumMm) {
+        var yukseklikMm = konumYonu() * konumMm
+        return yukseklikMm &gt; konumYonu() * calculator.ustKonumMm - ustYakalamaToleransiMm
+    }
+
+    // İniş başladığında: elde tutulan son saniyeler t = 0&#39;dan başlayacak şekilde
+    // yeniden &#231;izilir, b&#246;ylece her stroke&#39;un grafiği 0&#39;dan başlar.
+    function zamanEkseniniSifirla() {
+        if (zamanGecmis.length === 0) return
+        var kaydirma = zamanGecmis[0]
+        if (kaydirma &lt;= 0) return
+
+        basincSerisi.clear()
+        konumSerisi.clear()
+        hizSerisi.clear()
+        debiSerisi.clear()
+        for (var i = 0; i &lt; zamanGecmis.length; i++) {
+            zamanGecmis[i] -= kaydirma
+            basincSerisi.append(zamanGecmis[i], basincGecmis[i])
+            konumSerisi.append(zamanGecmis[i], konumGecmis[i])
+            hizSerisi.append(zamanGecmis[i], hizGecmis[i])
+            debiSerisi.append(zamanGecmis[i], debiGecmis[i])
+        }
+        // Sonraki &#246;rnekler de aynı eksende kalsın
+        baslangicZamaniS += kaydirma
+        zamanSayaci -= kaydirma
+    }
+
+    // &#220;st konum yakalandığında kaydı başlatır, iniş bittiğinde grafiği dondurur.
+    function kayitDurumunuGuncelle() {
+        var konumMm = sensorManager.konum
+
+        // 1) Boru &#252;st sabitleme noktasına alındı: yeni stroke i&#231;in grafiği sıfırla.
+        if (kayitDurumu !== &quot;KAYITTA&quot; &amp;&amp; ustKonumda(konumMm)) {
+            grafikleriSifirla()
+            kayitDurumu = &quot;KAYITTA&quot;
+            kayitBaslangicKonumuMm = konumMm
+            inisBasladi = false
+            return
+        }
+
+        if (kayitDurumu !== &quot;KAYITTA&quot;) return
+
+        // 2) İniş ger&#231;ekten başladı mı? &#220;stteki k&#252;&#231;&#252;k kıpırtılar &quot;iniş bitti&quot; sayılmasın.
+        if (!inisBasladi) {
+            var inilenYolMm = konumYonu() * (kayitBaslangicKonumuMm - konumMm)
+            if (inilenYolMm &gt; inisBaslamaYoluMm) {
+                inisBasladi = true
+                zamanEkseniniSifirla()
+            }
+            return
+        }
+
+        // 3) İniş bitti mi? Karar Calculator&#39;a aittir: inişin bittiği anı o
+        //    belirler (boru durdu ya da alt referansa vardı) ve stroke&#39;u o anda
+        //    kapatır. Grafik ayrı bir &#246;l&#231;&#252;tle dondurulursa ikisi ayrışır -
+        //    rozet &quot;stroke bitti&quot; derken saya&#231; 0&#39;da kalıyordu.
+        if (calculator.durum === &quot;TAMAMLANDI&quot;) kayitDurumu = &quot;DONDU&quot;
+    }
+
+    Connections {
+        target: calculator
+        // Duraklatıldığında grafik ekranda donuk kalır (operat&#246;r son stroke&#39;u
+        // inceleyebilsin). Devam edildiğinde kayıt sıfırdan başlatılır: Calculator
+        // da duraklatmada b&#252;t&#252;n tamponlarını atar ve yeni stroke&#39;u ancak boru
+        // tekrar &#252;st eşiğin i&#231;ine girdikten sonra başlatır (bkz. Calculator::duraklat,
+        // devamEt). Grafik eski eğriyi tutmaya devam ederse ikisi ayrışır: ekran
+        // aynı eğrinin &#252;st&#252;ne &#231;izmeye devam ederken hi&#231;bir stroke kaydedilmezdi.
+        function onDuraklatildiChanged() {
+            if (!calculator.duraklatildi) kayitDurumunaDon()
+        }
     }
 
     Connections {
         target: sensorManager
         function onVeriGuncellendi() {
             if (!sensorManager.veriGecerli || aktifOlcumId &lt;= 0) return
+            // Duraklatildiginda grafikler de donmali; aksi halde cihaz
+            // hareket ettirilince egriler Calculator durmus olsa bile akmaya devam eder.
+            if (calculator.duraklatildi) return
+
+            // Stroke hesabı her &#246;rnekle beslenir: grafik donmuş olsa bile borunun
+            // oturmasından sonraki P0r penceresi tamamlanmalı, aksi halde p bozulur.
+            calculator.konumGuncelle(sensorManager.zamanS, sensorManager.konum, sensorManager.basinc)
+
+            // &#220;st konum yakalandı mı / iniş bitti mi?
+            kayitDurumunuGuncelle()
+            if (kayitDurumu !== &quot;KAYITTA&quot;) return
 
             // Zaman ekseni cihazin zaman damgasindan gelir (sabit 0.2 s adim varsayilmaz).
             if (baslangicZamaniS &lt; 0) baslangicZamaniS = sensorManager.zamanS
@@ -6223,38 +6586,37 @@ Rectangle {
             hizGecmis.push(sensorManager.hiz)
             debiGecmis.push(sensorManager.debi)
 
-            if (zamanSayaci &gt; 60) {
-                while (zamanGecmis.length &gt; 0 &amp;&amp; zamanGecmis[0] &lt; zamanSayaci - 60) {
-                    basincSerisi.remove(0)
-                    konumSerisi.remove(0)
-                    hizSerisi.remove(0)
-                    debiSerisi.remove(0)
+            // Boru &#252;stte serbest bırakılmayı beklerken yalnızca son birka&#231; saniye
+            // tutulur (bekleme uzasa bile eksen şişmesin); iniş başladıktan sonra
+            // stroke&#39;un tamamı korunur, 60 s yalnızca g&#252;venlik sınırıdır.
+            var tutulacakSureS = inisBasladi ? 60 : beklemePenceresiS
+            while (zamanGecmis.length &gt; 1 &amp;&amp; zamanGecmis[0] &lt; zamanSayaci - tutulacakSureS) {
+                basincSerisi.remove(0)
+                konumSerisi.remove(0)
+                hizSerisi.remove(0)
+                debiSerisi.remove(0)
 
-                    zamanGecmis.shift()
-                    basincGecmis.shift()
-                    konumGecmis.shift()
-                    hizGecmis.shift()
-                    debiGecmis.shift()
-                }
-
-                xEkseni.min = zamanSayaci - 60
-                xEkseni.max = zamanSayaci
-                konumXEkseni.min = zamanSayaci - 60
-                konumXEkseni.max = zamanSayaci
-                hizXEkseni.min = zamanSayaci - 60
-                hizXEkseni.max = zamanSayaci
-                debiXEkseni.min = zamanSayaci - 60
-                debiXEkseni.max = zamanSayaci
+                zamanGecmis.shift()
+                basincGecmis.shift()
+                konumGecmis.shift()
+                hizGecmis.shift()
+                debiGecmis.shift()
             }
 
-            var basincAralik = basincEkseniHesapla(basincGecmis)
+            zamanEkseniniUygula(zamanSayaci)
+
+            var basincAralik = degerEkseniHesapla(basincGecmis, false, 10)
             yEkseni.min = basincAralik.min
             yEkseni.max = basincAralik.max
-            konumYEkseni.max = eksenTavaniHesapla(konumGecmis, 1000, 50)
-            hizYEkseni.max = eksenTavaniHesapla(hizGecmis, 4, 0.5)
-            debiYEkseni.max = eksenTavaniHesapla(debiGecmis, 180, 10)
-
-            calculator.konumGuncelle(sensorManager.zamanS, sensorManager.konum, sensorManager.basinc)
+            var konumAralik = degerEkseniHesapla(konumGecmis, false, 600)
+            konumYEkseni.min = konumAralik.min
+            konumYEkseni.max = konumAralik.max
+            var hizAralik = degerEkseniHesapla(hizGecmis, true, 1)
+            hizYEkseni.min = hizAralik.min
+            hizYEkseni.max = hizAralik.max
+            var debiAralik = degerEkseniHesapla(debiGecmis, true, 50)
+            debiYEkseni.min = debiAralik.min
+            debiYEkseni.max = debiAralik.max
         }
     }
 
@@ -6728,6 +7090,8 @@ Rectangle {
                         color: {
                             if (!sensorManager.veriGecerli) return &quot;#dc2626&quot;
                             if (calculator.duraklatildi) return &quot;#6b7280&quot;
+                            if (aktifOlcumId &gt; 0 &amp;&amp; kayitDurumu === &quot;BEKLEMEDE&quot;) return &quot;#3b82f6&quot;
+                            if (aktifOlcumId &gt; 0 &amp;&amp; kayitDurumu === &quot;DONDU&quot;) return &quot;#6b7280&quot;
                             if (calculator.durum === &quot;YUKARIDA&quot;) return &quot;#16a34a&quot;
                             if (calculator.durum === &quot;INIYOR&quot;) return &quot;#f59e0b&quot;
                             return &quot;#dc2626&quot;
@@ -6750,6 +7114,8 @@ Rectangle {
                         text: {
                             if (!sensorManager.veriGecerli) return txt(&quot;veriYok&quot;)
                             if (calculator.duraklatildi) return txt(&quot;duraklatildiDurum&quot;)
+                            if (aktifOlcumId &gt; 0 &amp;&amp; kayitDurumu === &quot;BEKLEMEDE&quot;) return txt(&quot;ustKonumBekleniyor&quot;)
+                            if (aktifOlcumId &gt; 0 &amp;&amp; kayitDurumu === &quot;DONDU&quot;) return txt(&quot;grafikDonduDurum&quot;)
                             return calculator.durum
                         }
                         color: &quot;#dce8f5&quot;
@@ -6839,7 +7205,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.veriGecerli ? sensorManager.basinc.toFixed(1) : &quot;--&quot;
+                            text: gosterilenVeriGecerli ? gosterilenBasinc.toFixed(1) : &quot;--&quot;
                             color: &quot;#3b82f6&quot;
                             font.family: &quot;Segoe UI&quot;
                             font.pixelSize: 22
@@ -6886,7 +7252,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.veriGecerli ? sensorManager.konum.toFixed(1) : &quot;--&quot;
+                            text: gosterilenVeriGecerli ? gosterilenKonum.toFixed(1) : &quot;--&quot;
                             color: &quot;#9333ea&quot;
                             font.family: &quot;Segoe UI&quot;
                             font.pixelSize: 22
@@ -6933,7 +7299,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.veriGecerli ? sensorManager.hiz.toFixed(2) : &quot;--&quot;
+                            text: gosterilenVeriGecerli ? gosterilenHiz.toFixed(2) : &quot;--&quot;
                             color: &quot;#f59e0b&quot;
                             font.family: &quot;Segoe UI&quot;
                             font.pixelSize: 22
@@ -6980,7 +7346,7 @@ Rectangle {
                         }
 
                         Text {
-                            text: sensorManager.veriGecerli ? sensorManager.debi.toFixed(1) : &quot;--&quot;
+                            text: gosterilenVeriGecerli ? gosterilenDebi.toFixed(1) : &quot;--&quot;
                             color: &quot;#16a34a&quot;
                             font.family: &quot;Segoe UI&quot;
                             font.pixelSize: 22
@@ -7043,7 +7409,8 @@ Rectangle {
                 Text {
                     anchors.centerIn: parent
                     visible: !sonStrokeCubugu.var_
-                    text: txt(&quot;strokeYok&quot;)
+                    // &#214;l&#231;&#252;m başlatıldıysa kullanıcıya kaydın neyi beklediği anlatılır.
+                    text: (aktifOlcumId &gt; 0 &amp;&amp; kayitDurumu === &quot;BEKLEMEDE&quot;) ? txt(&quot;ustKonumIpucu&quot;) : txt(&quot;strokeYok&quot;)
                     color: &quot;#6b7280&quot;
                     font.family: &quot;Segoe UI&quot;
                     font.pixelSize: 12
@@ -7114,10 +7481,10 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                anchors.margins: 16
-                anchors.topMargin: 12
+                anchors.margins: 10
+                anchors.topMargin: 8
                 columns: 2
-                spacing: 16
+                spacing: 8
 
                 Rectangle {
                     width: (parent.width - parent.spacing) / 2
@@ -7132,37 +7499,16 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.margins: 14
+                        anchors.margins: 12
                         height: 20
 
-                        Rectangle {
-                            id: basincNoktasi
-                            width: 8
-                            height: 8
-                            radius: 4
-                            color: &quot;#3b82f6&quot;
+                        Text {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            anchors.left: basincNoktasi.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
                             text: txt(&quot;basincZaman&quot;)
-                            color: &quot;#9ca3af&quot;
+                            color: &quot;#dce8f5&quot;
                             font.family: &quot;Segoe UI&quot;
-                            font.pixelSize: 13
-                            font.bold: true
-                        }
-
-                        Text {
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.veriGecerli ? sensorManager.basinc.toFixed(1) + &quot; mbar&quot; : &quot;-- mbar&quot;
-                            color: &quot;#3b82f6&quot;
-                            font.family: &quot;Segoe UI&quot;
-                            font.pixelSize: 13
+                            font.pixelSize: 14
                             font.bold: true
                         }
                     }
@@ -7173,18 +7519,22 @@ Rectangle {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.topMargin: 4
-                        anchors.bottomMargin: 4
+                        anchors.bottomMargin: 6
                         backgroundColor: &quot;transparent&quot;
                         legend.visible: false
                         antialiasing: true
+                        margins.top: 4
+                        margins.bottom: 4
+                        margins.left: 4
+                        margins.right: 12
 
                         ValueAxis {
                             id: xEkseni
                             min: 0
                             max: 60
                             gridLineColor: &quot;#1a1a20&quot;
-                            labelsColor: &quot;#4b5563&quot;
-                            labelsFont.pixelSize: 9
+                            labelsColor: &quot;#6b7280&quot;
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -7194,8 +7544,8 @@ Rectangle {
                             min: 0
                             max: 1100
                             gridLineColor: &quot;#1a1a20&quot;
-                            labelsColor: &quot;#4b5563&quot;
-                            labelsFont.pixelSize: 9
+                            labelsColor: &quot;#6b7280&quot;
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -7205,7 +7555,7 @@ Rectangle {
                             axisX: xEkseni
                             axisY: yEkseni
                             color: &quot;#3b82f6&quot;
-                            width: 2
+                            width: 3
                         }
                     }
                 }
@@ -7223,37 +7573,16 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.margins: 14
+                        anchors.margins: 12
                         height: 20
 
-                        Rectangle {
-                            id: konumNoktasi
-                            width: 8
-                            height: 8
-                            radius: 4
-                            color: &quot;#9333ea&quot;
+                        Text {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            anchors.left: konumNoktasi.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
                             text: txt(&quot;konumZaman&quot;)
-                            color: &quot;#9ca3af&quot;
+                            color: &quot;#dce8f5&quot;
                             font.family: &quot;Segoe UI&quot;
-                            font.pixelSize: 13
-                            font.bold: true
-                        }
-
-                        Text {
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.veriGecerli ? sensorManager.konum.toFixed(1) + &quot; mm&quot; : &quot;-- mm&quot;
-                            color: &quot;#9333ea&quot;
-                            font.family: &quot;Segoe UI&quot;
-                            font.pixelSize: 13
+                            font.pixelSize: 14
                             font.bold: true
                         }
                     }
@@ -7264,18 +7593,22 @@ Rectangle {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.topMargin: 4
-                        anchors.bottomMargin: 4
+                        anchors.bottomMargin: 6
                         backgroundColor: &quot;transparent&quot;
                         legend.visible: false
                         antialiasing: true
+                        margins.top: 4
+                        margins.bottom: 4
+                        margins.left: 4
+                        margins.right: 12
 
                         ValueAxis {
                             id: konumXEkseni
                             min: 0
                             max: 60
                             gridLineColor: &quot;#1a1a20&quot;
-                            labelsColor: &quot;#4b5563&quot;
-                            labelsFont.pixelSize: 9
+                            labelsColor: &quot;#6b7280&quot;
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -7285,8 +7618,8 @@ Rectangle {
                             min: 0
                             max: 500
                             gridLineColor: &quot;#1a1a20&quot;
-                            labelsColor: &quot;#4b5563&quot;
-                            labelsFont.pixelSize: 9
+                            labelsColor: &quot;#6b7280&quot;
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -7296,7 +7629,7 @@ Rectangle {
                             axisX: konumXEkseni
                             axisY: konumYEkseni
                             color: &quot;#9333ea&quot;
-                            width: 2
+                            width: 3
                         }
 
                         Connections {
@@ -7331,37 +7664,16 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.margins: 14
+                        anchors.margins: 12
                         height: 20
 
-                        Rectangle {
-                            id: hizNoktasi
-                            width: 8
-                            height: 8
-                            radius: 4
-                            color: &quot;#f59e0b&quot;
+                        Text {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            anchors.left: hizNoktasi.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
                             text: txt(&quot;hizZaman&quot;)
-                            color: &quot;#9ca3af&quot;
+                            color: &quot;#dce8f5&quot;
                             font.family: &quot;Segoe UI&quot;
-                            font.pixelSize: 13
-                            font.bold: true
-                        }
-
-                        Text {
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.veriGecerli ? sensorManager.hiz.toFixed(2) + &quot; m/s&quot; : &quot;-- m/s&quot;
-                            color: &quot;#f59e0b&quot;
-                            font.family: &quot;Segoe UI&quot;
-                            font.pixelSize: 13
+                            font.pixelSize: 14
                             font.bold: true
                         }
                     }
@@ -7372,18 +7684,22 @@ Rectangle {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.topMargin: 4
-                        anchors.bottomMargin: 4
+                        anchors.bottomMargin: 6
                         backgroundColor: &quot;transparent&quot;
                         legend.visible: false
                         antialiasing: true
+                        margins.top: 4
+                        margins.bottom: 4
+                        margins.left: 4
+                        margins.right: 12
 
                         ValueAxis {
                             id: hizXEkseni
                             min: 0
                             max: 60
                             gridLineColor: &quot;#1a1a20&quot;
-                            labelsColor: &quot;#4b5563&quot;
-                            labelsFont.pixelSize: 9
+                            labelsColor: &quot;#6b7280&quot;
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -7393,8 +7709,8 @@ Rectangle {
                             min: 0
                             max: 4
                             gridLineColor: &quot;#1a1a20&quot;
-                            labelsColor: &quot;#4b5563&quot;
-                            labelsFont.pixelSize: 9
+                            labelsColor: &quot;#6b7280&quot;
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -7404,7 +7720,7 @@ Rectangle {
                             axisX: hizXEkseni
                             axisY: hizYEkseni
                             color: &quot;#f59e0b&quot;
-                            width: 2
+                            width: 3
                         }
                     }
                 }
@@ -7422,37 +7738,16 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.margins: 14
+                        anchors.margins: 12
                         height: 20
 
-                        Rectangle {
-                            id: debiNoktasi
-                            width: 8
-                            height: 8
-                            radius: 4
-                            color: &quot;#16a34a&quot;
+                        Text {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            anchors.left: debiNoktasi.right
-                            anchors.leftMargin: 8
-                            anchors.verticalCenter: parent.verticalCenter
                             text: txt(&quot;debiZaman&quot;)
-                            color: &quot;#9ca3af&quot;
+                            color: &quot;#dce8f5&quot;
                             font.family: &quot;Segoe UI&quot;
-                            font.pixelSize: 13
-                            font.bold: true
-                        }
-
-                        Text {
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: sensorManager.veriGecerli ? sensorManager.debi.toFixed(1) + &quot; m3/h&quot; : &quot;-- m3/h&quot;
-                            color: &quot;#16a34a&quot;
-                            font.family: &quot;Segoe UI&quot;
-                            font.pixelSize: 13
+                            font.pixelSize: 14
                             font.bold: true
                         }
                     }
@@ -7463,18 +7758,22 @@ Rectangle {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.topMargin: 4
-                        anchors.bottomMargin: 4
+                        anchors.bottomMargin: 6
                         backgroundColor: &quot;transparent&quot;
                         legend.visible: false
                         antialiasing: true
+                        margins.top: 4
+                        margins.bottom: 4
+                        margins.left: 4
+                        margins.right: 12
 
                         ValueAxis {
                             id: debiXEkseni
                             min: 0
                             max: 60
                             gridLineColor: &quot;#1a1a20&quot;
-                            labelsColor: &quot;#4b5563&quot;
-                            labelsFont.pixelSize: 9
+                            labelsColor: &quot;#6b7280&quot;
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -7484,8 +7783,8 @@ Rectangle {
                             min: 0
                             max: 180
                             gridLineColor: &quot;#1a1a20&quot;
-                            labelsColor: &quot;#4b5563&quot;
-                            labelsFont.pixelSize: 9
+                            labelsColor: &quot;#6b7280&quot;
+                            labelsFont.pixelSize: 12
                             lineVisible: false
                             minorGridVisible: false
                         }
@@ -7495,7 +7794,7 @@ Rectangle {
                             axisX: debiXEkseni
                             axisY: debiYEkseni
                             color: &quot;#16a34a&quot;
-                            width: 2
+                            width: 3
                         }
                     }
                 }
@@ -7715,7 +8014,7 @@ Rectangle {
 }</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\pages\RehberMockup.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\pages\RehberMockup.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 
 Rectangle {
@@ -8414,7 +8713,7 @@ Rectangle {
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\pages\RehberPage.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\pages\RehberPage.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Layouts 6.7
@@ -8995,7 +9294,7 @@ Rectangle {
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\pages\SonuclarPage.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\pages\SonuclarPage.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Layouts 6.7
@@ -10499,7 +10798,7 @@ Rectangle {
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>qml\Translations.qml</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>qml\Translations.qml</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>pragma Singleton
 import QtQuick
 
@@ -10514,7 +10813,7 @@ QtObject {
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\Backend.cpp</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\Backend.cpp</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#include &quot;Backend.h&quot;
 #include &lt;QDebug&gt;
 
@@ -10545,7 +10844,7 @@ bool Backend::sifreDogrula(const QString &amp;sifre)
 }</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\Backend.h</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\Backend.h</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#pragma once
 #include &lt;QObject&gt;
 
@@ -10562,7 +10861,7 @@ public:
 };</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\Calculator.cpp</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\Calculator.cpp</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#include &quot;Calculator.h&quot;
 #include &quot;SliperModel.h&quot;
 #include &lt;QtMath&gt;
@@ -10571,7 +10870,14 @@ public:
 
 // Stroke zamanlama sabitleri SliperModel b&#246;l&#252;m 4&#39;ten gelir
 using SliperModel::KONUM_TOLERANSI_MM;
+using SliperModel::UST_YAKALAMA_TOLERANSI_MM;
+using SliperModel::ALT_YAKALAMA_TOLERANSI_MM;
 using SliperModel::DURGUN_TOLERANS_MM;
+using SliperModel::DURMA_TOLERANSI_MM;
+using SliperModel::DURMA_ONAYI_S;
+using SliperModel::MIN_INIS_YOLU_MM;
+using SliperModel::MIN_INIS_SURESI_S;
+using SliperModel::KALDIRMA_ESIGI_MM;
 using SliperModel::ONCESI_PENCERE_S;
 using SliperModel::SONRASI_PENCERE_S;
 using SliperModel::HAREKET_PAYI_S;
@@ -10606,8 +10912,11 @@ void Calculator::setAltKonumMm(double deger)
 }
 
 // Boru bu y&#252;ksekliğin &#252;st&#252;ndeyse &quot;&#252;stte&quot;, altEsik&#39;in altındaysa &quot;altta&quot; sayılır
-double Calculator::ustEsik() const { return yon() * m_ustKonumMm - KONUM_TOLERANSI_MM; }
-double Calculator::altEsik() const { return yon() * m_altKonumMm + KONUM_TOLERANSI_MM; }
+double Calculator::ustEsik() const { return yon() * m_ustKonumMm - UST_YAKALAMA_TOLERANSI_MM; }
+
+double Calculator::ustYakalamaToleransiMm() const { return UST_YAKALAMA_TOLERANSI_MM; }
+double Calculator::minInisYoluMm() const { return MIN_INIS_YOLU_MM; }
+double Calculator::altEsik() const { return yon() * m_altKonumMm + ALT_YAKALAMA_TOLERANSI_MM; }
 
 void Calculator::durumAyarla(const QString &amp;yeniDurum)
 {
@@ -10630,7 +10939,10 @@ void Calculator::konumGuncelle(double zamanS, double konumMm, double basincMbar)
     // Bitiş sonrası 2 s: P0r ve eğrinin s&#246;n&#252;mlenen kısmı i&#231;in veri toplanır.
     // Boru bu s&#252;rede tekrar kaldırılırsa stroke erken kapatılır.
     if (m_bitisSonrasiToplaniyor) {
-        const bool boruTekrarKaldirildi = yukseklikMm &gt; altEsik() + DURGUN_TOLERANS_MM;
+        // &#214;l&#231;&#252;t stroke&#39;un bittiği y&#252;ksekliğe g&#246;redir: iniş alt referansa
+        // varmadan da (boru betonun &#252;st&#252;nde durur) kapanabildiği i&#231;in sabit bir
+        // eşik kullanılamaz, yoksa kısa strokelarda P0r penceresi hi&#231; toplanmaz.
+        const bool boruTekrarKaldirildi = yukseklikMm &gt; m_bitisYuksekligiMm + KALDIRMA_ESIGI_MM;
         if (boruTekrarKaldirildi) {
             strokuBitir();
         } else {
@@ -10660,22 +10972,92 @@ void Calculator::konumGuncelle(double zamanS, double konumMm, double basincMbar)
     if (yukseklikMm &gt; altEsik()) {
         if (m_durum == &quot;YUKARIDA&quot;) {
             strokuBaslat(zamanS);
+            m_inisBaslangicYuksekligiMm = yukseklikMm;
         }
         if (m_durum == &quot;YUKARIDA&quot; || m_durum == &quot;INIYOR&quot;) {
             m_strokeOrnekleri.append(yeniOrnek);
             durumAyarla(&quot;INIYOR&quot;);
+            // Alt referansa hi&#231; varılmasa bile (beton y&#252;ksekte kalır, alt
+            // kalibrasyon noktası erişilmez olur) boru durduğunda stroke biter.
+            // İniş, onay s&#252;resinin sonunda değil borunun ger&#231;ekten durduğu
+            // &#246;rnekte kapatılır.
+            const int durmaIndeksi = durmaBaslangicIndeksi(zamanS);
+            if (durmaIndeksi &gt;= 0) {
+                inisiKapat(m_strokeOrnekleri[durmaIndeksi].zamanS, durmaIndeksi);
+            }
         }
         return;
     }
 
-    // --- Boru alta vardı ---
+    // --- Boru alt referansa vardı ---
     if (m_durum == &quot;INIYOR&quot;) {
         m_strokeOrnekleri.append(yeniOrnek);
-        m_altaVarisIndeksi = m_strokeOrnekleri.size() - 1;
-        m_bitisZamaniS = zamanS;
-        m_bitisTarihi = QDateTime::currentDateTime();
-        m_bitisSonrasiToplaniyor = true;
+        inisiKapat(zamanS);
+        return;
     }
+    // Devam eden iniş yoktu (&#246;l&#231;&#252;me boru altta başlandı ya da stroke &#231;oktan
+    // kapanmıştı): burada TAMAMLANDI yazılmaz. Aksi halde hi&#231; var olmayan bir
+    // stroke &quot;bitti&quot; g&#246;r&#252;n&#252;r ve durum bir daha YUKARIDA&#39;ya d&#246;nene kadar
+    // sonraki inişler işlenmezdi.
+    if (m_durum != &quot;TAMAMLANDI&quot;) {
+        durumAyarla(&quot;BEKLENIYOR&quot;);
+    }
+}
+
+// Boru durdu mu? Zamanda geriye gidilerek borunun kıpırdamadan durduğu kesintisiz
+// b&#246;l&#252;m&#252;n nerede başladığı aranır: son &#246;rnekten geriye doğru y&#252;kseklik salınımı
+// DURMA_TOLERANSI_MM&#39;i aşana kadar ilerlenir. Bu b&#246;l&#252;m DURMA_ONAYI_S saniyeyi
+// dolduruyorsa boru durmuştur ve d&#246;n&#252;ş değeri durmanın BAŞLADIĞI &#246;rneğin
+// indeksidir; durmadıysa -1 d&#246;ner.
+//
+// Durmanın başladığı an ayrıca d&#246;nd&#252;r&#252;l&#252;r ki stroke, onay s&#252;resinin sonunda
+// değil ger&#231;ekten durduğu anda kapansın: aksi halde s&#252;reye ve iniş &#246;rneklerine
+// her stroke&#39;ta bir saniyelik hareketsiz kuyruk eklenirdi.
+//
+// &#214;l&#231;&#252;t ancak boru MIN_INIS_YOLU_MM kadar yol indikten ve iniş MIN_INIS_SURESI_S
+// kadar s&#252;rd&#252;kten sonra işler: inişin baştaki hızlanma/yavaşlama dalgalanması
+// &quot;durdu&quot; sayılmasın.
+int Calculator::durmaBaslangicIndeksi(double zamanS) const
+{
+    if (m_strokeOrnekleri.isEmpty()) return -1;
+
+    // 1) İniş erken evresindeyse hi&#231; bakılmaz.
+    const double inilenYolMm = m_inisBaslangicYuksekligiMm - m_strokeOrnekleri.last().yukseklikMm;
+    if (inilenYolMm &lt; MIN_INIS_YOLU_MM) return -1;
+    if (zamanS - m_baslangicZamaniS &lt; MIN_INIS_SURESI_S) return -1;
+
+    // 2) Sondan geriye: salınım toleransı aşana kadar git, en geriye gidilen
+    //    &#246;rnek durmanın başlangıcıdır.
+    double enAzMm = m_strokeOrnekleri.last().yukseklikMm;
+    double enCokMm = enAzMm;
+    int durmaBasiIndeksi = m_strokeOrnekleri.size() - 1;
+    for (int i = m_strokeOrnekleri.size() - 1; i &gt;= 0; --i) {
+        const double adayEnAzMm = std::min(enAzMm, m_strokeOrnekleri[i].yukseklikMm);
+        const double adayEnCokMm = std::max(enCokMm, m_strokeOrnekleri[i].yukseklikMm);
+        if (adayEnCokMm - adayEnAzMm &gt;= DURMA_TOLERANSI_MM) break;
+        enAzMm = adayEnAzMm;
+        enCokMm = adayEnCokMm;
+        durmaBasiIndeksi = i;
+    }
+
+    // 3) Hareketsiz b&#246;l&#252;m onay s&#252;resini doldurdu mu?
+    const double durmaSuresiS = zamanS - m_strokeOrnekleri[durmaBasiIndeksi].zamanS;
+    if (durmaSuresiS &lt; DURMA_ONAYI_S) return -1;
+
+    return durmaBasiIndeksi;
+}
+
+// İniş bitti: bitiş anı işaretlenir, bundan sonraki SONRASI_PENCERE_S saniye
+// P0r i&#231;in toplanır. bitisIndeksi, inişin son &#246;rneğidir (-1 = elde olan son
+// &#246;rnek); durma &#246;l&#231;&#252;t&#252;yle kapanan stroke&#39;larda onay s&#252;resi boyunca biriken
+// hareketsiz &#246;rnekler b&#246;ylece inişe değil P0r penceresine sayılır.
+void Calculator::inisiKapat(double zamanS, int bitisIndeksi)
+{
+    m_altaVarisIndeksi = bitisIndeksi &gt;= 0 ? bitisIndeksi : m_strokeOrnekleri.size() - 1;
+    m_bitisYuksekligiMm = m_strokeOrnekleri[m_altaVarisIndeksi].yukseklikMm;
+    m_bitisZamaniS = zamanS;
+    m_bitisTarihi = QDateTime::currentDateTime();
+    m_bitisSonrasiToplaniyor = true;
     durumAyarla(&quot;TAMAMLANDI&quot;);
 }
 
@@ -10850,6 +11232,9 @@ void Calculator::duraklat()
     m_strokeOrnekleri.clear();
     m_ustteBekleyenOrnekler.clear();
     m_durgunOrnekler.clear();
+    // &#214;rnekler atıldığı i&#231;in inişin bitiş indeksi de ge&#231;ersizdir; kalırsa
+    // devam edildikten sonraki ilk stroke eski indeksle değerlendirilebilir.
+    m_altaVarisIndeksi = -1;
     emit duraklatildiChanged();
 }
 
@@ -10860,6 +11245,10 @@ void Calculator::devamEt()
     }
 
     m_duraklatildi = false;
+    // Durum &quot;YUKARIDA&quot; değil &quot;BEKLENIYOR&quot; olur: yeni stroke, boru &#252;st eşiğin
+    // i&#231;ine tekrar girip YUKARIDA&#39;ya ge&#231;tikten sonra başlar. Duraklatmada P0l
+    // i&#231;in gereken &#252;st tampon atıldığından, boru &#252;ste alınmadan başlayan bir
+    // iniş zaten &#246;l&#231;&#252;lemez.
     durumAyarla(&quot;BEKLENIYOR&quot;);
     emit duraklatildiChanged();
 }
@@ -10875,6 +11264,8 @@ void Calculator::sifirla()
     m_ustteBekleyenOrnekler.clear();
     m_durgunOrnekler.clear();
     m_altaVarisIndeksi = -1;
+    m_inisBaslangicYuksekligiMm = 0.0;
+    m_bitisYuksekligiMm = 0.0;
     m_bitisSonrasiToplaniyor = false;
     emit strokeSayisiChanged();
     emit durumChanged();
@@ -10925,7 +11316,7 @@ QVariantList Calculator::hizEgrisiHesapla(const QVariantList &amp;zamanS, const 
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\Calculator.h</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\Calculator.h</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#pragma once
 #include &lt;QObject&gt;
 #include &lt;QVariantMap&gt;
@@ -10962,9 +11353,11 @@ public:
     // basincMbar: piston &#252;zerindeki toplam basın&#231; (betonun &#246;l&#252; ağırlığı dahil).
     //
     // Stroke mantığı (orijinal SLIPER kılavuzu b&#246;l&#252;m 5):
-    //  - Boru &#252;st referansın altına indiğinde başlangı&#231;, alt referansa
-    //    ulaştığında bitiş işaretlenir. Başlangı&#231;tan 2 s &#246;nce ile bitişten
-    //    2 s sonrası arasındaki veri stroke olarak saklanır.
+    //  - Boru &#252;st referansın altına indiğinde başlangı&#231; işaretlenir. Bitiş,
+    //    borunun durduğu andır (alt referansa varmak da bitiştir, ama tek
+    //    &#246;l&#231;&#252;t değildir: beton dolu boru alt kalibrasyon noktasına kadar
+    //    inmeyebilir ve stroke o zaman hi&#231; kapanmazdı). Başlangı&#231;tan 2 s &#246;nce
+    //    ile bitişten 2 s sonrası arasındaki veri stroke olarak saklanır.
     //  - P0l: hareket &#246;ncesi durağan basın&#231;, P0r: bitiş sonrası durağan basın&#231;
     //  - p, Q, v ve ge&#231;ersizlik kuralı SliperModel&#39;de (b&#246;l&#252;m 5) hesaplanır;
     //    bu sınıf yalnızca hangi &#246;rneklerin kullanılacağını se&#231;er.
@@ -10987,6 +11380,13 @@ public:
     // P-Q kesişim/eğiminden Schleibinger a/b (bkz. SliperModel b&#246;l&#252;m 8)
     Q_INVOKABLE double schleibingerA(double kesisimA) const;
     Q_INVOKABLE double schleibingerB(double egimB) const;
+    // Borunun &quot;&#252;stte&quot; sayılması i&#231;in &#252;st referansa gereken yakınlık (mm).
+    // QML grafik kaydıyla Calculator&#39;ın stroke mantığı aynı eşiği kullansın diye
+    // buradan okunur (bkz. SliperModel b&#246;l&#252;m 4).
+    Q_INVOKABLE double ustYakalamaToleransiMm() const;
+    // &quot;İniş ger&#231;ekten başladı&quot; sayılması i&#231;in gereken yol (mm). Grafik kaydı da
+    // bunu kullanır ki grafiğin ve stroke hesabının iniş tanımı aynı olsun.
+    Q_INVOKABLE double minInisYoluMm() const;
     Q_INVOKABLE double sliperBoruCapiMm() const;
     Q_INVOKABLE double sliperBoruUzunluguMm() const;
     // Sonu&#231; sayfasındaki stroke hız eğrisi (bkz. SliperModel b&#246;l&#252;m 10). D&#246;n&#252;ş: m/s listesi
@@ -11014,6 +11414,11 @@ private:
 
     void strokuBaslat(double zamanS);
     void strokuBitir();
+    // İnişin bittiği an: boru durdu ya da alt referansa vardı.
+    // durmaBaslangicIndeksi: boru durduysa durmanın başladığı &#246;rneğin indeksi,
+    // durmadıysa -1. inisiKapat&#39;a bitiş &#246;rneği olarak bu indeks verilir.
+    int durmaBaslangicIndeksi(double zamanS) const;
+    void inisiKapat(double zamanS, int bitisIndeksi = -1);
     void durumAyarla(const QString &amp;yeniDurum);
     // Konum y&#246;n&#252; kalibrasyondan &#231;ıkarılır: &#252;st &gt; alt ise konum &quot;y&#252;kseklik&quot;,
     // &#252;st &lt; alt ise orijinal SLIPER&#39;daki gibi &quot;sens&#246;rden uzaklık&quot;tır (&#252;stte ~100,
@@ -11035,7 +11440,9 @@ private:
     QVector&lt;Ornek&gt; m_ustteBekleyenOrnekler;   // boru &#252;stteyken son UST_TAMPON_S saniyelik &#246;rnekler
     QVector&lt;Ornek&gt; m_durgunOrnekler;          // stroke &#246;ncesi, boru hareketsizken (P0l bunlardan)
     QVector&lt;Ornek&gt; m_strokeOrnekleri;         // iniş + bitiş sonrası &#246;rnekler
-    int m_altaVarisIndeksi = -1;              // m_strokeOrnekleri i&#231;inde alta varılan &#246;rnek
+    int m_altaVarisIndeksi = -1;              // m_strokeOrnekleri i&#231;inde inişin bittiği &#246;rnek
+    double m_inisBaslangicYuksekligiMm = 0.0; // inişin başladığı y&#252;kseklik (inilen yol buna g&#246;re)
+    double m_bitisYuksekligiMm = 0.0;         // inişin bittiği y&#252;kseklik (boru burada durdu)
     double m_baslangicZamaniS = 0.0;
     double m_bitisZamaniS = 0.0;
     QDateTime m_bitisTarihi;
@@ -11045,7 +11452,7 @@ private:
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\Database.cpp</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\Database.cpp</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#include &quot;Database.h&quot;
 #include &lt;QSqlQuery&gt;
 #include &lt;QSqlError&gt;
@@ -12178,7 +12585,7 @@ QVariantMap Database::egimKalibrasyonuGetir()
 }</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\Database.h</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\Database.h</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#pragma once
 #include &lt;QObject&gt;
 #include &lt;QSqlDatabase&gt;
@@ -12251,7 +12658,7 @@ private:
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\ReportManager.cpp</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\ReportManager.cpp</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#include &quot;ReportManager.h&quot;
 #include &quot;Database.h&quot;
 #include &quot;SliperModel.h&quot;
@@ -12707,7 +13114,7 @@ QString ReportManager::pdfOlustur(int olcumId)
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\ReportManager.h</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\ReportManager.h</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#pragma once
 #include &lt;QObject&gt;
 #include &lt;QVariantMap&gt;
@@ -12751,7 +13158,7 @@ private:
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\SensorManager.cpp</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\SensorManager.cpp</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#include &quot;SensorManager.h&quot;
 
 SensorManager::SensorManager(QObject *parent)
@@ -12833,7 +13240,7 @@ void SensorManager::veriyiGecersizYap()
 }</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\SensorManager.h</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\SensorManager.h</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#pragma once
 #include &lt;QObject&gt;
 
@@ -12912,7 +13319,7 @@ private:
 };</code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\SliperModel.cpp</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\SliperModel.cpp</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#include &quot;SliperModel.h&quot;
 #include &lt;QtMath&gt;
 #include &lt;algorithm&gt;
@@ -13350,7 +13757,7 @@ EgimAcilari egimAcilari(double ivmeX, double ivmeY, double ivmeZ)
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\SliperModel.h</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\SliperModel.h</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#pragma once
 #include &lt;QVariantMap&gt;
 #include &lt;QVariantList&gt;
@@ -13360,11 +13767,10 @@ EgimAcilari egimAcilari(double ivmeX, double ivmeY, double ivmeZ)
 #include &lt;QStringList&gt;
 
 // =============================================================================
-//  SLIPER HESAP MODELİ — programdaki b&#252;t&#252;n sayılar ve form&#252;ller
+//  SLIPER HESAP MODELİ 
 // =============================================================================
-// Sade dilde, &#246;rnek sayılarla anlatım: docs/SLIPER_NASIL_CALISIR.md
 //
-// İ&#199;İNDEKİLER (&#246;l&#231;&#252;m zinciri sırasıyla)
+// İ&#199;İNDEKİLER 
 //   0. Sabitler            : SLIPER borusunun geometrisi
 //   1. Kalibrasyon         : ham sens&#246;r değeri -&gt; kg / mm (kalibrasyon tablosu)
 //   2. Basın&#231;              : load cell kuvveti / piston alanı
@@ -13377,19 +13783,6 @@ EgimAcilari egimAcilari(double ivmeX, double ivmeY, double ivmeZ)
 //   9. Pompa hattı tahmini : P = 4L/D*a + 16*L*Q/(pi*D^3)*b + rho*g*H
 //  10. G&#246;sterim hesapları  : canlı hız, hız eğrisi, eğim a&#231;ısı, batarya
 //                            (yalnızca ekrana; &#246;l&#231;&#252;m sonucuna girmez)
-//
-// Diğer sınıflar (WifiManager, Calculator, Database, ReportManager, QML) bu
-// fonksiyonları &#231;ağırır; kendi i&#231;lerinde form&#252;l ya da ayar sayısı tutmazlar.
-// Bir form&#252;l veya sayı değişecekse yalnızca bu dosya ve SliperModel.cpp değişir.
-//
-// Form&#252;ller Schleibinger SLIPER kılavuzu (v1.30) Excel &#231;ıktısı (Şekil 25) ve
-// tahmin tabloları (Şekil 19) ile doğrulanmıştır. Kaynak model: &quot;Virtual
-// Sliding Pipe Rheometer&quot; CFD makalesi, Denklem 1-3 (tıka&#231;/kayma akışı).
-//
-// Burada OLMAYANLAR (form&#252;l değil, d&#252;zen/akış mantığı):
-//   - Hangi &#246;rneğin stroke&#39;a, P0l&#39;e, P0r&#39;a gireceğinin se&#231;imi: Calculator.cpp
-//     (kullandığı s&#252;reler ve eşikler b&#246;l&#252;m 4&#39;tedir)
-//   - Grafik &#231;izimi (eksen adımı, piksel d&#246;n&#252;ş&#252;m&#252;): ReportManager.cpp, QML
 // =============================================================================
 namespace SliperModel {
 
@@ -13414,6 +13807,18 @@ double kalibrasyonTablosundanOku(const QVector&lt;double&gt; &amp;hamNoktalar,
                                  const QVector&lt;double&gt; &amp;gercekNoktalar,
                                  double hamDeger);
 
+// Mesafe sens&#246;r&#252;n&#252;n ham okumasındaki paket-paket g&#252;r&#252;lt&#252;y&#252; bastırmak i&#231;in
+// &#252;stel ortalama (hız filtresiyle aynı mantık). Kalibrasyon tablosundan
+// okunduktan hemen sonra, konumu kullanan HER yer i&#231;in (grafik, ekran,
+// stroke tespiti) tek sefer uygulanır.
+// K b&#252;y&#252;kse hızlı tepki/&#231;ok g&#252;r&#252;lt&#252;, k&#252;&#231;&#252;kse yavaş tepki/az g&#252;r&#252;lt&#252;.
+constexpr double KONUM_FILTRE_KATSAYISI = 0.35;
+constexpr double konumFiltrele(double oncekiFiltreliKonumMm, double hamKonumMm)
+{
+    return KONUM_FILTRE_KATSAYISI * hamKonumMm
+           + (1.0 - KONUM_FILTRE_KATSAYISI) * oncekiFiltreliKonumMm;
+}
+
 // --- 2. Basın&#231; ----------------------------------------------------------------
 // p [mbar] = m * g / A / 100        (1 mbar = 100 Pa)
 // 1 kg -&gt; 9.80665 N / 0.01287 m2 = ~7.6 mbar (128 mm boru)
@@ -13436,9 +13841,49 @@ constexpr double hizdanDebiM3h(double hizMs)
 //             |&lt;-- ONCESI_PENCERE (2 s) --&gt;|   ^başlangı&#231;     ^bitiş  |&lt;- SONRASI_PENCERE (2 s) -&gt;|
 //
 // Başlangı&#231;: boru &#252;st referansın KONUM_TOLERANSI_MM altına indiğinde.
-// Bitiş    : boru alt referansın KONUM_TOLERANSI_MM yakınına vardığında.
+// Bitiş    : boru durduğunda (aşağıdaki durma &#246;l&#231;&#252;t&#252;) ya da alt referansa
+//            ALT_YAKALAMA_TOLERANSI_MM kadar yaklaştığında - hangisi &#246;nce olursa.
 constexpr double KONUM_TOLERANSI_MM = 5.0;    // &#252;st/alt referansa bu kadar yaklaşınca
+// Boru &quot;&#252;stte / yeni stroke&#39;a hazır&quot; sayılması i&#231;in kalibre edilmiş &#252;st noktaya
+// bu kadar yaklaşması yeterlidir. KONUM_TOLERANSI_MM&#39;den geniştir: boru elle
+// kaldırılıp sabitlendiğinde tam olarak kalibrasyon noktasına oturmaz. Dar bir
+// pencerede (5 mm) boru &quot;&#252;stte&quot; sayılmaz ve sonraki iniş stroke olarak
+// işlenmez - &#246;zellikle duraklat/devam et sırasında boru yeniden konumlandığında.
+constexpr double UST_YAKALAMA_TOLERANSI_MM = 20.0;
+// Alt referans i&#231;in aynı gerek&#231;e, daha da g&#252;&#231;l&#252;s&#252;: boru alt noktaya betonun
+// &#252;st&#252;ne oturarak varır, kalibrasyonda elle bastırılan noktaya kadar inmez
+// (sahada 538 mm&#39;ye kalibre edilen alt nokta beton dolu boruda 517 mm&#39;de
+// kalıyordu). Dar bir pencerede boru &quot;alta vardı&quot; sayılmaz, stroke hi&#231;
+// kapanmaz ve durum INIYOR&#39;da takılırdı.
+constexpr double ALT_YAKALAMA_TOLERANSI_MM = 25.0;
 constexpr double DURGUN_TOLERANS_MM = 5.0;    // bu kadar kıpırtı h&#226;l&#226; &quot;hareketsiz&quot; sayılır
+// Stroke bitişinin asıl &#246;l&#231;&#252;t&#252;: boru durdu. Boru DURMA_ONAYI_S saniye boyunca
+// DURMA_TOLERANSI_MM&#39;den az kıpırdadıysa durmuş kabul edilir; yani &#246;l&#231;&#252;t
+// aslında bir hız sınırıdır: DURMA_TOLERANSI_MM / DURMA_ONAYI_S ≈ 2 mm/s.
+// Alt referansa hi&#231; varılmasa bile (kısa iniş, beton y&#252;ksekte kalması)
+// stroke b&#246;ylece doğru anda kapanır.
+//
+// &#214;NEMLİ - sınır neden bu kadar d&#252;ş&#252;k: boru beton i&#231;inde sabit hızla kaymaz,
+// ilk anda hızlanıp sonra betonun direncine g&#246;re belirgin yavaşlar. Eski &#246;l&#231;&#252;t
+// (5 mm / 0.2 s = 25 mm/s) bu yavaşlamayı &quot;durdu&quot; sanıp inişin ortasında
+// stroke&#39;u kapatıyordu: grafik donuyor, boru h&#226;l&#226; inerken yalnızca baştaki
+// hızlı b&#246;l&#252;m kaydedildiği i&#231;in v ve Q ger&#231;eğin kat kat &#252;st&#252;nde &#231;ıkıyordu.
+// Sınır ger&#231;ek kayma hızlarının (onlarca mm/s) belirgin altında kalmalı.
+constexpr double DURMA_TOLERANSI_MM = 2.0;
+constexpr double DURMA_ONAYI_S = 1.0;
+// Durma &#246;l&#231;&#252;t&#252; ancak boru bu kadar yol indikten sonra işler; aksi halde
+// &#252;stteki kıpırtı ya da inişin ilk ivmelenme anı &quot;durdu&quot; sayılırdı.
+constexpr double MIN_INIS_YOLU_MM = 40.0;
+// Durma &#246;l&#231;&#252;t&#252; ayrıca iniş bu s&#252;reyi doldurmadan stroke&#39;u kapatmaz. Kılavuzdaki
+// stroke&#39;lar 1.5-5 s s&#252;rer; inişin ilk saniyesindeki hızlanma/yavaşlama
+// dalgalanması b&#246;ylece stroke&#39;u asla erken bitirmez (alt referansa varış bu
+// kuraldan bağımsızdır, orada iniş ger&#231;ekten tamamlanmıştır).
+constexpr double MIN_INIS_SURESI_S = 1.0;
+// Stroke kapandıktan sonra P0r penceresi toplanırken boru bu kadar yukarı
+// giderse (operat&#246;r yeni stroke i&#231;in kaldırdı) pencere beklenmeden kapatılır.
+// Sens&#246;r g&#252;r&#252;lt&#252;s&#252;n&#252;n pencereyi boşa &#231;ıkarmaması i&#231;in kıpırtı toleransının
+// belirgin &#252;st&#252;ndedir.
+constexpr double KALDIRMA_ESIGI_MM = 10.0;
 constexpr double ONCESI_PENCERE_S = 2.0;      // orijinal: başlangı&#231;tan 2 s &#246;nce saklanır
 constexpr double SONRASI_PENCERE_S = 2.0;     // orijinal: bitişten 2 s sonra saklanır
 constexpr double HAREKET_PAYI_S = 0.3;        // hareketten hemen &#246;nceki bu s&#252;re P0l&#39;e katılmaz
@@ -13594,7 +14039,7 @@ constexpr double bataryaVoltaji(double hamDeger)
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\VoiceCommandManager.cpp</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\VoiceCommandManager.cpp</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#include &quot;VoiceCommandManager.h&quot;
 #include &quot;VoiceRecognitionWorker.h&quot;
 
@@ -13692,7 +14137,7 @@ void VoiceCommandManager::workerAnlikMetinDegisti(const QString &amp;metin)
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\VoiceCommandManager.h</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\VoiceCommandManager.h</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#pragma once
 #include &lt;QObject&gt;
 #include &lt;QString&gt;
@@ -13767,7 +14212,7 @@ private:
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\VoiceRecognitionWorker.cpp</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\VoiceRecognitionWorker.cpp</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#include &quot;VoiceRecognitionWorker.h&quot;
 #include &quot;vosk_api.h&quot;
 
@@ -14023,7 +14468,7 @@ void VoiceRecognitionWorker::metniDegerlendir(const QString &amp;metin)
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\VoiceRecognitionWorker.h</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\VoiceRecognitionWorker.h</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#pragma once
 #include &lt;QObject&gt;
 #include &lt;QString&gt;
@@ -14085,7 +14530,7 @@ private:
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\WifiManager.cpp</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\WifiManager.cpp</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#include &quot;WifiManager.h&quot;
 #include &quot;SliperModel.h&quot;
 #include &lt;QJsonDocument&gt;
@@ -14114,6 +14559,18 @@ WifiManager::WifiManager(SensorManager *sensorManager, Database *database, QObje
 
     m_veriBekciTimer.setInterval(500);
     connect(&amp;m_veriBekciTimer, &amp;QTimer::timeout, this, &amp;WifiManager::veriAkisiniKontrolEt);
+
+    // Kopan baglanti otomatik olarak yeniden kurulur: olcum ortasinda kullanicinin
+    // elle &quot;Baglan&quot; demesini beklemek veri kaybina yol aciyordu.
+    m_yenidenBaglanmaTimer.setSingleShot(true);
+    m_yenidenBaglanmaTimer.setInterval(YENIDEN_BAGLANMA_ARALIGI_MS);
+    connect(&amp;m_yenidenBaglanmaTimer, &amp;QTimer::timeout, this, &amp;WifiManager::baglan);
+
+    // connectToHost() yanitsiz kalirsa soket Connecting durumunda asili kalir;
+    // bu timer onu iptal edip yeniden denemeyi tetikler.
+    m_baglantiZamanAsimiTimer.setSingleShot(true);
+    m_baglantiZamanAsimiTimer.setInterval(BAGLANTI_ZAMAN_ASIMI_MS);
+    connect(&amp;m_baglantiZamanAsimiTimer, &amp;QTimer::timeout, this, &amp;WifiManager::baglantiZamanAsimiOldu);
 }
 
 bool WifiManager::baglandi() const { return m_baglandi; }
@@ -14122,18 +14579,58 @@ QString WifiManager::durumMesaji() const { return m_durumMesaji; }
 
 void WifiManager::baglan()
 {
+    // Kullanicinin elle baglanmasi, onceki &quot;kullanici kesti&quot; kararini iptal eder.
+    m_kullaniciKesti = false;
+    m_yenidenBaglanmaTimer.stop();
+
     if (m_baglandi || m_baglaniyor) return;
+
+    // Onceki denemeden kalan yarim acik soket (hata sonrasi Connecting/Closing
+    // durumunda kalmis olabilir) temizlenmeden connectToHost() sessizce yok sayilir.
+    if (m_soket-&gt;state() != QAbstractSocket::UnconnectedState) {
+        m_soket-&gt;abort();
+    }
 
     m_baglaniyor = true;
     emit baglaniyorChanged();
     durumGuncelle(&quot;SLIPER-ESP32&#39;ye baglaniliyor...&quot;);
 
     m_soket-&gt;connectToHost(QString(ESP32_IP), ESP32_PORT);
+    m_baglantiZamanAsimiTimer.start();
 }
 
 void WifiManager::baglantiyiKes()
 {
-    m_soket-&gt;disconnectFromHost();
+    // Bilerek kesildi: otomatik yeniden baglanma devreye girmemeli.
+    m_kullaniciKesti = true;
+    m_yenidenBaglanmaTimer.stop();
+    m_baglantiZamanAsimiTimer.stop();
+    m_soket-&gt;abort();
+    // abort() bagli olmayan bir sokette disconnected yaymaz; durum yine de guncellensin.
+    if (m_baglandi || m_baglaniyor) {
+        soketAyrildi();
+    }
+}
+
+void WifiManager::yenidenBaglanmayiPlanla()
+{
+    if (m_kullaniciKesti) return;
+    if (m_yenidenBaglanmaTimer.isActive()) return;
+
+    qDebug() &lt;&lt; &quot;Baglanti koptu,&quot; &lt;&lt; YENIDEN_BAGLANMA_ARALIGI_MS &lt;&lt; &quot;ms sonra yeniden denenecek.&quot;;
+    m_yenidenBaglanmaTimer.start();
+}
+
+void WifiManager::baglantiZamanAsimiOldu()
+{
+    if (!m_baglaniyor) return;
+
+    qWarning() &lt;&lt; &quot;Baglanti denemesi zaman asimina ugradi, soket iptal ediliyor.&quot;;
+    m_soket-&gt;abort();
+    m_baglaniyor = false;
+    emit baglaniyorChanged();
+    durumGuncelle(&quot;Baglanti kurulamadi, yeniden deneniyor...&quot;);
+    yenidenBaglanmayiPlanla();
 }
 
 void WifiManager::kalibrasyonYenidenYukle()
@@ -14192,15 +14689,23 @@ void WifiManager::soketBaglandi()
 {
     m_baglandi = true;
     m_baglaniyor = false;
+    m_baglantiZamanAsimiTimer.stop();
+    m_yenidenBaglanmaTimer.stop();
     emit baglandiChanged();
     emit baglaniyorChanged();
     durumGuncelle(&quot;SLIPER-ESP32 Bağlı&quot;);
+
+    // Kucuk paketler Nagle algoritmasiyla bekletilmesin (ESP32 tarafinda da ayni ayar var).
+    m_soket-&gt;setSocketOption(QAbstractSocket::LowDelayOption, 1);
+    // Wi-Fi/ESP32 sessizce kaybolursa isletim sistemi de kopmayi fark edebilsin.
+    m_soket-&gt;setSocketOption(QAbstractSocket::KeepAliveOption, 1);
 
     m_ilkPaket = true;
     m_zamanlayici.restart();
     m_hareketsizlikZamanlayici.restart();
     m_hareketsizlikTimer.start();
     m_sonVeriZamani.restart();
+    m_sonBekciTikZamani.restart();
     m_veriBekciTimer.start();
     kalibrasyonYukle();
 
@@ -14217,15 +14722,20 @@ void WifiManager::soketAyrildi()
     m_baglaniyor = false;
     m_hareketsizlikTimer.stop();
     m_veriBekciTimer.stop();
+    m_baglantiZamanAsimiTimer.stop();
     emit baglandiChanged();
     emit baglaniyorChanged();
-    durumGuncelle(&quot;Bağlı Değil&quot;);
+    durumGuncelle(m_kullaniciKesti ? &quot;Bağlı Değil&quot; : &quot;Bağlantı koptu, yeniden deneniyor...&quot;);
+
+    // Yarim kalmis satir bir sonraki baglantinin ilk paketine karismasin.
+    m_tamponVeri.clear();
 
     if (m_sensorManager) {
         m_sensorManager-&gt;veriyiGecersizYap();
     }
 
     qDebug() &lt;&lt; &quot;ESP32 baglantisi kesildi.&quot;;
+    yenidenBaglanmayiPlanla();
 }
 
 void WifiManager::hareketsizlikKontrolEt()
@@ -14234,18 +14744,50 @@ void WifiManager::hareketsizlikKontrolEt()
 
     if (m_hareketsizlikZamanlayici.elapsed() &gt;= HAREKETSIZLIK_LIMIT_MS) {
         qWarning() &lt;&lt; &quot;2 saatten uzun suredir veri akisi yok, baglanti otomatik kesiliyor.&quot;;
-        durumGuncelle(&quot;Hareketsizlik nedeniyle baglanti kesildi&quot;);
         emit hareketsizlikNedeniyleBaglantiKesildi();
+        // Bilerek kesilir: baglantiyiKes() otomatik yeniden baglanmayi da kapatir,
+        // aksi halde cihaz 2 saattir bos dururken surekli yeniden baglanilirdi.
         baglantiyiKes();
+        durumGuncelle(&quot;Hareketsizlik nedeniyle baglanti kesildi&quot;);
     }
 }
 
 void WifiManager::veriAkisiniKontrolEt()
 {
     if (!m_baglandi || !m_sonVeriZamani.isValid()) return;
-    if (m_sonVeriZamani.elapsed() &gt; VERI_KESINTI_MS) {
+
+    // Timer GUI thread&#39;inde calisiyor. Stroke kaydi, grafik cizimi veya rapor
+    // olusturma arayuzu birkac saniye bloklarsa gelen paketler islenemez ve
+    // m_sonVeriZamani guncellenmez; bu durumda sorun ESP32&#39;de degil PC&#39;dedir ve
+    // saglam bir baglantiyi koparmak yanlis olur. Timer&#39;in kendi gecikmesine
+    // bakarak bu iki durum ayirt edilir.
+    const qint64 bekciGecikmesiMs = m_sonBekciTikZamani.isValid()
+        ? m_sonBekciTikZamani.elapsed() - m_veriBekciTimer.interval()
+        : 0;
+    m_sonBekciTikZamani.restart();
+
+    if (bekciGecikmesiMs &gt; BEKCI_GECIKME_TOLERANSI_MS) {
+        qWarning() &lt;&lt; &quot;Arayuz&quot; &lt;&lt; bekciGecikmesiMs &lt;&lt; &quot;ms bloklandi, veri kesintisi sayilmiyor.&quot;;
+        m_sonVeriZamani.restart();
+        return;
+    }
+
+    const qint64 gecenSureMs = m_sonVeriZamani.elapsed();
+
+    if (gecenSureMs &gt; VERI_KESINTI_BAGLANTI_KES_MS) {
+        // Soket hala &quot;bagli&quot; gorunse bile bu kadar uzun suredir hic paket
+        // gelmemesi, ESP32&#39;nin kapandigini/koptugunu gosterir. Kullanicinin
+        // &quot;bagli olmadiginda bagli yazmasin&quot; beklentisi icin baglanti burada
+        // gercekten sonlandirilir; soketAyrildi() m_baglandi&#39;yi false yapar ve
+        // otomatik yeniden baglanmayi baslatir.
+        qWarning() &lt;&lt; &quot;Uzun suredir (&quot; &lt;&lt; gecenSureMs &lt;&lt; &quot;ms) veri gelmiyor, baglanti sonlandiriliyor.&quot;;
+        m_soket-&gt;abort();
+        return;
+    }
+
+    if (gecenSureMs &gt; VERI_KESINTI_MS) {
         if (m_sensorManager &amp;&amp; m_sensorManager-&gt;veriGecerli()) {
-            qWarning() &lt;&lt; &quot;Veri akisi kesildi (&quot; &lt;&lt; m_sonVeriZamani.elapsed() &lt;&lt; &quot;ms paket yok).&quot;;
+            qWarning() &lt;&lt; &quot;Veri akisi kesildi (&quot; &lt;&lt; gecenSureMs &lt;&lt; &quot;ms paket yok).&quot;;
             m_sensorManager-&gt;veriyiGecersizYap();
             durumGuncelle(&quot;Veri akışı kesildi&quot;);
         }
@@ -14254,13 +14796,32 @@ void WifiManager::veriAkisiniKontrolEt()
 
 void WifiManager::soketHata(QAbstractSocket::SocketError hata)
 {
+    const QString hataMetni = m_soket-&gt;errorString();
+
     m_baglandi = false;
     m_baglaniyor = false;
+    m_hareketsizlikTimer.stop();
+    m_veriBekciTimer.stop();
+    m_baglantiZamanAsimiTimer.stop();
+
+    // Hata sonrasi soket Connecting/Closing durumunda kalabiliyordu; temizlenmezse
+    // sonraki connectToHost() cagrisi sessizce yok sayilir ve bir daha baglanilamaz.
+    if (m_soket-&gt;state() != QAbstractSocket::UnconnectedState) {
+        m_soket-&gt;abort();
+    }
+    m_tamponVeri.clear();
+
     emit baglandiChanged();
     emit baglaniyorChanged();
-    durumGuncelle(&quot;Baglanti hatasi: &quot; + m_soket-&gt;errorString());
+    durumGuncelle(m_kullaniciKesti ? &quot;Baglanti hatasi: &quot; + hataMetni
+                                   : &quot;Baglanti hatasi, yeniden deneniyor...&quot;);
 
-    qWarning() &lt;&lt; &quot;Wifi soket hatasi:&quot; &lt;&lt; hata &lt;&lt; m_soket-&gt;errorString();
+    if (m_sensorManager) {
+        m_sensorManager-&gt;veriyiGecersizYap();
+    }
+
+    qWarning() &lt;&lt; &quot;Wifi soket hatasi:&quot; &lt;&lt; hata &lt;&lt; hataMetni;
+    yenidenBaglanmayiPlanla();
 }
 
 void WifiManager::veriHazir()
@@ -14324,9 +14885,19 @@ void WifiManager::jsonSatiriIsle(const QByteArray &amp;satir)
 
     // --- Konum ve basinc: kalibrasyon tablosu + load cell kuvveti / piston alani
     // (SliperModel bolum 1 ve 2). Mesafe kalibre edilmemisse ham deger gosterilir. ---
-    const double konumMm = m_mesafeHamDegerleri.isEmpty()
+    const double konumKalibreliMm = m_mesafeHamDegerleri.isEmpty()
         ? hamMesafe
         : SliperModel::kalibrasyonTablosundanOku(m_mesafeHamDegerleri, m_mesafeMmDegerleri, hamMesafe);
+
+    // Mesafe sens&#246;r&#252;n&#252;n paket-paket g&#252;r&#252;lt&#252;s&#252; burada bastırılır; bundan sonraki
+    // her şey (canlı hız, grafik, ekran, Calculator&#39;a giden konum) bu filtrelenmiş
+    // değeri kullanır. İlk pakette filtre doğrudan ham değerden başlar, aksi halde
+    // 0&#39;dan başlayıp yanlış bir sı&#231;rama g&#246;sterir.
+    m_filtreliKonum = m_ilkPaket
+        ? konumKalibreliMm
+        : SliperModel::konumFiltrele(m_filtreliKonum, konumKalibreliMm);
+    const double konumMm = m_filtreliKonum;
+
     const double agirlikKg =
         SliperModel::kalibrasyonTablosundanOku(m_loadCellHamDegerleri, m_loadCellKiloDegerleri, hamAgirlik);
     const double basincMbar = SliperModel::agirliktanBasincMbar(agirlikKg);
@@ -14390,7 +14961,7 @@ void WifiManager::durumGuncelle(const QString &amp;mesaj)
 </code></pre>
   </section>
   <section>
-    <div class="dosya-baslik"><h2>src\WifiManager.h</h2><span class="tarih">29.09.2026 10:33</span></div>
+    <div class="dosya-baslik"><h2>src\WifiManager.h</h2><span class="tarih">05.10.2026 10:23</span></div>
     <pre><code>#pragma once
 #include &lt;QObject&gt;
 #include &lt;QTcpSocket&gt;
@@ -14435,11 +15006,14 @@ private slots:
     void veriHazir();
     void hareketsizlikKontrolEt();
     void veriAkisiniKontrolEt();
+    void baglantiZamanAsimiOldu();
 
 private:
     void durumGuncelle(const QString &amp;mesaj);
     void jsonSatiriIsle(const QByteArray &amp;satir);
     void kalibrasyonYukle();
+    // Kullanici kendisi kesmediyse, kopan baglantiyi arka planda yeniden kurmayi dener.
+    void yenidenBaglanmayiPlanla();
 
     QTcpSocket *m_soket = nullptr;
     SensorManager *m_sensorManager = nullptr;
@@ -14450,10 +15024,15 @@ private:
     bool m_baglaniyor = false;
     QString m_durumMesaji = &quot;Bağlı Değil&quot;;
 
+    // Kullanici &quot;Baglantiyi Kes&quot; dediyse true olur; bu durumda otomatik
+    // yeniden baglanma denenmez. baglan() cagrildiginda tekrar false olur.
+    bool m_kullaniciKesti = false;
+
     bool m_ilkPaket = true;
     double m_oncekiKonum = 0.0;
     double m_oncekiZamanMs = 0.0;
     double m_filtreliHiz = 0.0;
+    double m_filtreliKonum = 0.0;
     double m_zamanOfsetiMs = 0.0;
     bool m_zamanBasladi = false;
     double m_konumYonu = -1.0;  // +1: konum = y&#252;kseklik, -1: konum = sens&#246;rden uzaklık
@@ -14485,9 +15064,273 @@ private:
     // Soket a&#231;ık kalsa bile VERI_KESINTI_MS boyunca paket gelmezse veri ge&#231;ersiz sayılır.
     QTimer m_veriBekciTimer;
     QElapsedTimer m_sonVeriZamani;
+    // Veri bek&#231;isi en son ne zaman &#231;alıştı: aray&#252;z donup timer ge&#231; tetiklenirse
+    // (stroke kaydı, grafik &#231;izimi vb.) bunu veri kesintisiyle karıştırmamak i&#231;in.
+    QElapsedTimer m_sonBekciTikZamani;
+    // Bağlantı koptuktan sonra otomatik yeniden deneme ve bağlanma zaman aşımı.
+    QTimer m_yenidenBaglanmaTimer;
+    QTimer m_baglantiZamanAsimiTimer;
     static constexpr int VERI_KESINTI_MS = 1500;
+    // ESP32 aniden kapanir/resetlenir veya Wi-Fi sinyali koparsa, TCP soketi
+    // bunu her zaman hemen fark etmez (FIN/RST gelmeyebilir) ve arayuz
+    // &quot;Bagli&quot; gostermeye devam eder. Bu sure boyunca hic paket gelmezse
+    // baglanti gercekten sonlandirilir; kullanici &quot;Bagli&quot; yaziyorken aslinda
+    // veri akmiyor olma durumuna dusmesin.
+    static constexpr int VERI_KESINTI_BAGLANTI_KES_MS = 5000;
     static constexpr int HAREKETSIZLIK_LIMIT_MS = 2 * 60 * 60 * 1000; // 2 saat
+    // Veri bek&#231;isi 500 ms&#39;de bir &#231;alışır. Aray&#252;z donduğunda timer &#231;ok ge&#231;
+    // tetiklenir; bu eşikten uzun bir gecikme &quot;ESP32 sustu&quot; değil &quot;PC meşguld&#252;&quot;
+    // demektir ve bağlantı koparılmaz, saya&#231; sıfırlanır.
+    static constexpr int BEKCI_GECIKME_TOLERANSI_MS = 2000;
+    // Kopan bağlantı bu aralıkla yeniden denenir (&#246;l&#231;&#252;m ortasında kullanıcıdan
+    // elle bağlanmasını beklememek i&#231;in).
+    static constexpr int YENIDEN_BAGLANMA_ARALIGI_MS = 2000;
+    // connectToHost() yanıtsız kalırsa soket Connecting durumunda asılı kalabilir;
+    // bu s&#252;re sonunda iptal edilip yeniden denenir.
+    static constexpr int BAGLANTI_ZAMAN_ASIMI_MS = 8000;
 };</code></pre>
+  </section>
+  <section>
+    <div class="dosya-baslik"><h2>tools\esp32_baglanti_testi.py</h2><span class="tarih">05.10.2026 10:23</span></div>
+    <pre><code>&quot;&quot;&quot;
+SLIPER ESP32 ham bağlantı testi.
+
+Qt uygulamasını aradan &#231;ıkarır: doğrudan 192.168.4.1:8888&#39;e bağlanıp ham TCP
+akışını dinler. B&#246;ylece &quot;veri gelmiyor&quot; sorununun kaynağı kesin ayrılır:
+
+  - Hi&#231; bağlanamıyorsa          -&gt; Wi-Fi / AP tarafı (yanlış ağ, sinyal, reset)
+  - Bağlanıp hi&#231; bayt gelmiyorsa -&gt; ESP32&#39;nin loop() fonksiyonu kilitlenmiş
+                                    (sens&#246;r okuması asılı kalmış; bkz. I2C)
+  - Veri gelip arada kesiliyorsa -&gt; sinyal / besleme kaynaklı kopma
+  - Veri d&#252;zg&#252;n akıyorsa         -&gt; sorun PC/Qt tarafında
+
+Kullanım (&#246;nce PC&#39;yi SLIPER-ESP32 ağına bağla):
+    python tools/esp32_baglanti_testi.py
+    python tools/esp32_baglanti_testi.py --sure 60
+&quot;&quot;&quot;
+
+import argparse
+import json
+import socket
+import subprocess
+import sys
+import time
+
+ESP32_IP = &quot;192.168.4.1&quot;
+ESP32_PORT = 8888
+
+
+def bagli_oldugumuz_agi_yazdir():
+    &quot;&quot;&quot;Testin yanlış ağda &#231;alıştırılması en sık yapılan hata; &#246;nce onu g&#246;sterir.&quot;&quot;&quot;
+    try:
+        cikti = subprocess.run(
+            [&quot;netsh&quot;, &quot;wlan&quot;, &quot;show&quot;, &quot;interfaces&quot;],
+            capture_output=True, text=True, timeout=10,
+        ).stdout
+    except Exception as hata:
+        print(f&quot;Wi-Fi durumu okunamadi: {hata}&quot;)
+        return
+
+    for satir in cikti.splitlines():
+        temiz = satir.strip()
+        if temiz.startswith((&quot;SSID&quot;, &quot;Signal&quot;, &quot;Rssi&quot;, &quot;State&quot;)) and &quot;BSSID&quot; not in temiz:
+            print(&quot;  &quot; + temiz)
+
+
+def ana():
+    ayristirici = argparse.ArgumentParser(description=&quot;SLIPER ESP32 ham baglanti testi&quot;)
+    ayristirici.add_argument(&quot;--sure&quot;, type=int, default=20, help=&quot;dinleme suresi (saniye)&quot;)
+    ayristirici.add_argument(&quot;--ip&quot;, default=ESP32_IP)
+    ayristirici.add_argument(&quot;--port&quot;, type=int, default=ESP32_PORT)
+    argumanlar = ayristirici.parse_args()
+
+    print(&quot;=== Wi-Fi durumu ===&quot;)
+    bagli_oldugumuz_agi_yazdir()
+
+    print(f&quot;\n=== TCP baglantisi: {argumanlar.ip}:{argumanlar.port} ===&quot;)
+    soket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    soket.settimeout(5.0)
+    baslangic = time.time()
+    try:
+        soket.connect((argumanlar.ip, argumanlar.port))
+    except Exception as hata:
+        print(f&quot;BAGLANAMADI: {hata}&quot;)
+        print(&quot;-&gt; PC SLIPER-ESP32 agina bagli degil ya da ESP32 kapali/resetleniyor.&quot;)
+        return 1
+    print(f&quot;Baglanti kuruldu ({(time.time() - baslangic) * 1000:.0f} ms).&quot;)
+
+    # --- Akışı dinle: gelen baytlar, satırlar ve en uzun sessizlik aralığı ---
+    print(f&quot;\n=== {argumanlar.sure} saniye dinleniyor ===&quot;)
+    soket.settimeout(1.0)
+    tampon = b&quot;&quot;
+    toplam_bayt = 0
+    satir_sayisi = 0
+    bozuk_satir = 0
+    ilk_satirlar = []
+    son_veri_zamani = time.time()
+    en_uzun_sessizlik = 0.0
+    ilk_zaman_damgasi = None
+    son_zaman_damgasi = None
+    dinleme_basi = time.time()
+
+    while time.time() - dinleme_basi &lt; argumanlar.sure:
+        try:
+            parca = soket.recv(4096)
+        except socket.timeout:
+            sessizlik = time.time() - son_veri_zamani
+            en_uzun_sessizlik = max(en_uzun_sessizlik, sessizlik)
+            if sessizlik &gt; 2.0:
+                print(f&quot;  [{time.time() - dinleme_basi:5.1f}s] {sessizlik:.1f} saniyedir veri yok&quot;)
+            continue
+        except Exception as hata:
+            print(f&quot;  Okuma hatasi: {hata}&quot;)
+            break
+
+        if not parca:
+            print(f&quot;  [{time.time() - dinleme_basi:5.1f}s] ESP32 baglantiyi kapatti.&quot;)
+            break
+
+        en_uzun_sessizlik = max(en_uzun_sessizlik, time.time() - son_veri_zamani)
+        son_veri_zamani = time.time()
+        toplam_bayt += len(parca)
+        tampon += parca
+
+        while b&quot;\n&quot; in tampon:
+            satir, tampon = tampon.split(b&quot;\n&quot;, 1)
+            satir = satir.strip()
+            if not satir:
+                continue
+            satir_sayisi += 1
+            try:
+                paket = json.loads(satir)
+                zaman = paket.get(&quot;t&quot;)
+                if zaman is not None:
+                    if ilk_zaman_damgasi is None:
+                        ilk_zaman_damgasi = zaman
+                    son_zaman_damgasi = zaman
+            except Exception:
+                bozuk_satir += 1
+            if len(ilk_satirlar) &lt; 3:
+                ilk_satirlar.append(satir.decode(&quot;utf-8&quot;, &quot;replace&quot;))
+
+    soket.close()
+    gecen_sure = time.time() - dinleme_basi
+
+    # --- &#214;zet ve yorum ---
+    print(&quot;\n=== SONUC ===&quot;)
+    print(f&quot;Sure            : {gecen_sure:.1f} s&quot;)
+    print(f&quot;Gelen bayt      : {toplam_bayt}&quot;)
+    print(f&quot;Gelen satir     : {satir_sayisi}  ({satir_sayisi / gecen_sure:.1f} paket/s, beklenen ~50)&quot;)
+    print(f&quot;Bozuk satir     : {bozuk_satir}&quot;)
+    print(f&quot;En uzun sessizlik: {en_uzun_sessizlik:.1f} s&quot;)
+    if ilk_zaman_damgasi is not None and son_zaman_damgasi is not None:
+        print(f&quot;ESP32 zamani    : {ilk_zaman_damgasi} -&gt; {son_zaman_damgasi} ms&quot;)
+        if son_zaman_damgasi &lt; ilk_zaman_damgasi:
+            print(&quot;  DIKKAT: zaman geri gitti -&gt; ESP32 test sirasinda yeniden basladi (reset).&quot;)
+    for satir in ilk_satirlar:
+        print(f&quot;Ornek paket     : {satir}&quot;)
+
+    print(&quot;\n=== YORUM ===&quot;)
+    if toplam_bayt == 0:
+        print(&quot;TCP baglandi ama TEK BAYT gelmedi.&quot;)
+        print(&quot;-&gt; Wi-Fi ve TCP katmani ESP32&#39;de ayri bir gorevde calisir; bu yuzden&quot;)
+        print(&quot;   Arduino loop() tamamen kilitlenmis olsa bile baglanti kurulur.&quot;)
+        print(&quot;   Sorun ESP32 firmware&#39;inde: sensor okumasi (buyuk ihtimalle ADS1115&quot;)
+        print(&quot;   veya MPU6050 I2C) donusumu bekleyen sonsuz dongude asili kalmis.&quot;)
+        print(&quot;   Yapilacak: ESP32&#39;nin gucunu kesip acin; duzelmezse I2C (SDA/SCL) ve&quot;)
+        print(&quot;   ADS1115 kablolarini kontrol edin, ardindan guncel firmware&#39;i yukleyin.&quot;)
+    elif satir_sayisi / gecen_sure &lt; 25:
+        print(&quot;Veri geliyor ama hiz beklenenin cok altinda (~50 paket/s olmali).&quot;)
+        print(&quot;-&gt; Zayif Wi-Fi sinyali veya ESP32 loop&#39;unda araliklar.&quot;)
+    elif en_uzun_sessizlik &gt; 1.5:
+        print(&quot;Akis genel olarak saglikli ama araliklarla kesiliyor.&quot;)
+        print(&quot;-&gt; Sinyal zayifligi ya da ESP32 beslemesi (brownout) incelenmeli.&quot;)
+    else:
+        print(&quot;Veri akisi saglikli. Sorun bu durumda PC/Qt tarafindadir.&quot;)
+
+    return 0
+
+
+if __name__ == &quot;__main__&quot;:
+    sys.exit(ana())
+</code></pre>
+  </section>
+  <section>
+    <div class="dosya-baslik"><h2>tools\esp32_seri_dinle.py</h2><span class="tarih">05.10.2026 10:23</span></div>
+    <pre><code>&quot;&quot;&quot;
+SLIPER ESP32 seri port dinleyici.
+
+Kartın a&#231;ılış mesajlarını ve saniyelik durum &#246;zetini okur. &#214;zellikle şu iki
+satır aranır:
+
+  &quot;Yeniden baslatma sebebi: ...&quot;  -&gt; kart beklenmedik şekilde yeniden
+                                     başlıyorsa sebebi (watchdog / brownout)
+  &quot;[12s] istemci=1 gonderilen=600 ...&quot; -&gt; loop() &#231;alışıyor; bu satır durursa
+                                     d&#246;ng&#252; kilitlenmiş demektir
+
+Kullanım:
+    python tools/esp32_seri_dinle.py            # 20 saniye dinler
+    python tools/esp32_seri_dinle.py --sure 60 --port COM14
+&quot;&quot;&quot;
+
+import argparse
+import sys
+import time
+
+try:
+    import serial  # pyserial
+except ImportError:
+    print(&quot;pyserial kurulu degil. Kurmak icin: python -m pip install pyserial&quot;)
+    sys.exit(1)
+
+
+def ana():
+    ayristirici = argparse.ArgumentParser(description=&quot;SLIPER ESP32 seri port dinleyici&quot;)
+    ayristirici.add_argument(&quot;--port&quot;, default=&quot;COM14&quot;)
+    ayristirici.add_argument(&quot;--sure&quot;, type=int, default=20, help=&quot;dinleme suresi (saniye)&quot;)
+    ayristirici.add_argument(&quot;--hiz&quot;, type=int, default=115200)
+    argumanlar = ayristirici.parse_args()
+
+    try:
+        baglanti = serial.Serial(argumanlar.port, argumanlar.hiz, timeout=1)
+    except Exception as hata:
+        print(f&quot;{argumanlar.port} acilamadi: {hata}&quot;)
+        print(&quot;-&gt; Arduino IDE&#39;nin seri monitoru acik olabilir; kapatip tekrar deneyin.&quot;)
+        return 1
+
+    print(f&quot;{argumanlar.port} dinleniyor ({argumanlar.sure} s). Kartin resetlenmesi icin bekleniyor...\n&quot;)
+
+    baslangic = time.time()
+    son_satir_zamani = time.time()
+    en_uzun_sessizlik = 0.0
+    satir_sayisi = 0
+
+    try:
+        while time.time() - baslangic &lt; argumanlar.sure:
+            ham = baglanti.readline()
+            if not ham:
+                en_uzun_sessizlik = max(en_uzun_sessizlik, time.time() - son_satir_zamani)
+                continue
+            son_satir_zamani = time.time()
+            satir_sayisi += 1
+            satir = ham.decode(&quot;utf-8&quot;, &quot;replace&quot;).rstrip()
+            print(f&quot;[{time.time() - baslangic:6.2f}s] {satir}&quot;)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        baglanti.close()
+
+    print(f&quot;\n--- {satir_sayisi} satir okundu, en uzun sessizlik {en_uzun_sessizlik:.1f} s ---&quot;)
+    if satir_sayisi == 0:
+        print(&quot;Hic cikti yok -&gt; kart calismiyor ya da USB CDC kapali yuklenmis olabilir.&quot;)
+    elif en_uzun_sessizlik &gt; 3:
+        print(&quot;Durum satiri uzun sure durmus -&gt; loop() kilitleniyor.&quot;)
+    return 0
+
+
+if __name__ == &quot;__main__&quot;:
+    sys.exit(ana())
+</code></pre>
   </section>
 </body>
 </html>

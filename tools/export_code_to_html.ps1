@@ -19,7 +19,7 @@ $pdfPath = if ([System.IO.Path]::IsPathRooted($PdfOutput)) {
     Join-Path $root $PdfOutput
 }
 
-$extensions = @(".cpp", ".c", ".h", ".hpp", ".qml", ".ino", ".txt")
+$extensions = @(".cpp", ".c", ".h", ".hpp", ".qml", ".ino", ".txt", ".py")
 $explicitFiles = @("CMakeLists.txt")
 $ignoredDirs = @(
     "\.git\",

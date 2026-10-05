@@ -368,6 +368,9 @@ void Calculator::duraklat()
     m_strokeOrnekleri.clear();
     m_ustteBekleyenOrnekler.clear();
     m_durgunOrnekler.clear();
+    // Örnekler atıldığı için inişin bitiş indeksi de geçersizdir; kalırsa
+    // devam edildikten sonraki ilk stroke eski indeksle değerlendirilebilir.
+    m_altaVarisIndeksi = -1;
     emit duraklatildiChanged();
 }
 
@@ -378,6 +381,10 @@ void Calculator::devamEt()
     }
 
     m_duraklatildi = false;
+    // Durum "YUKARIDA" değil "BEKLENIYOR" olur: yeni stroke, boru üst eşiğin
+    // içine tekrar girip YUKARIDA'ya geçtikten sonra başlar. Duraklatmada P0l
+    // için gereken üst tampon atıldığından, boru üste alınmadan başlayan bir
+    // iniş zaten ölçülemez.
     durumAyarla("BEKLENIYOR");
     emit duraklatildiChanged();
 }

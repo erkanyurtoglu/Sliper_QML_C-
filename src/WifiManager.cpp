@@ -26,6 +26,18 @@ WifiManager::WifiManager(SensorManager *sensorManager, Database *database, QObje
 
     m_veriBekciTimer.setInterval(500);
     connect(&m_veriBekciTimer, &QTimer::timeout, this, &WifiManager::veriAkisiniKontrolEt);
+
+    // Kopan baglanti otomatik olarak yeniden kurulur: olcum ortasinda kullanicinin
+    // elle "Baglan" demesini beklemek veri kaybina yol aciyordu.
+    m_yenidenBaglanmaTimer.setSingleShot(true);
+    m_yenidenBaglanmaTimer.setInterval(YENIDEN_BAGLANMA_ARALIGI_MS);
+    connect(&m_yenidenBaglanmaTimer, &QTimer::timeout, this, &WifiManager::baglan);
+
+    // connectToHost() yanitsiz kalirsa soket Connecting durumunda asili kalir;
+    // bu timer onu iptal edip yeniden denemeyi tetikler.
+    m_baglantiZamanAsimiTimer.setSingleShot(true);
+    m_baglantiZamanAsimiTimer.setInterval(BAGLANTI_ZAMAN_ASIMI_MS);
+    connect(&m_baglantiZamanAsimiTimer, &QTimer::timeout, this, &WifiManager::baglantiZamanAsimiOldu);
 }
 
 bool WifiManager::baglandi() const { return m_baglandi; }
@@ -34,18 +46,58 @@ QString WifiManager::durumMesaji() const { return m_durumMesaji; }
 
 void WifiManager::baglan()
 {
+    // Kullanicinin elle baglanmasi, onceki "kullanici kesti" kararini iptal eder.
+    m_kullaniciKesti = false;
+    m_yenidenBaglanmaTimer.stop();
+
     if (m_baglandi || m_baglaniyor) return;
+
+    // Onceki denemeden kalan yarim acik soket (hata sonrasi Connecting/Closing
+    // durumunda kalmis olabilir) temizlenmeden connectToHost() sessizce yok sayilir.
+    if (m_soket->state() != QAbstractSocket::UnconnectedState) {
+        m_soket->abort();
+    }
 
     m_baglaniyor = true;
     emit baglaniyorChanged();
     durumGuncelle("SLIPER-ESP32'ye baglaniliyor...");
 
     m_soket->connectToHost(QString(ESP32_IP), ESP32_PORT);
+    m_baglantiZamanAsimiTimer.start();
 }
 
 void WifiManager::baglantiyiKes()
 {
-    m_soket->disconnectFromHost();
+    // Bilerek kesildi: otomatik yeniden baglanma devreye girmemeli.
+    m_kullaniciKesti = true;
+    m_yenidenBaglanmaTimer.stop();
+    m_baglantiZamanAsimiTimer.stop();
+    m_soket->abort();
+    // abort() bagli olmayan bir sokette disconnected yaymaz; durum yine de guncellensin.
+    if (m_baglandi || m_baglaniyor) {
+        soketAyrildi();
+    }
+}
+
+void WifiManager::yenidenBaglanmayiPlanla()
+{
+    if (m_kullaniciKesti) return;
+    if (m_yenidenBaglanmaTimer.isActive()) return;
+
+    qDebug() << "Baglanti koptu," << YENIDEN_BAGLANMA_ARALIGI_MS << "ms sonra yeniden denenecek.";
+    m_yenidenBaglanmaTimer.start();
+}
+
+void WifiManager::baglantiZamanAsimiOldu()
+{
+    if (!m_baglaniyor) return;
+
+    qWarning() << "Baglanti denemesi zaman asimina ugradi, soket iptal ediliyor.";
+    m_soket->abort();
+    m_baglaniyor = false;
+    emit baglaniyorChanged();
+    durumGuncelle("Baglanti kurulamadi, yeniden deneniyor...");
+    yenidenBaglanmayiPlanla();
 }
 
 void WifiManager::kalibrasyonYenidenYukle()
@@ -104,15 +156,23 @@ void WifiManager::soketBaglandi()
 {
     m_baglandi = true;
     m_baglaniyor = false;
+    m_baglantiZamanAsimiTimer.stop();
+    m_yenidenBaglanmaTimer.stop();
     emit baglandiChanged();
     emit baglaniyorChanged();
     durumGuncelle("SLIPER-ESP32 Bağlı");
+
+    // Kucuk paketler Nagle algoritmasiyla bekletilmesin (ESP32 tarafinda da ayni ayar var).
+    m_soket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+    // Wi-Fi/ESP32 sessizce kaybolursa isletim sistemi de kopmayi fark edebilsin.
+    m_soket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
 
     m_ilkPaket = true;
     m_zamanlayici.restart();
     m_hareketsizlikZamanlayici.restart();
     m_hareketsizlikTimer.start();
     m_sonVeriZamani.restart();
+    m_sonBekciTikZamani.restart();
     m_veriBekciTimer.start();
     kalibrasyonYukle();
 
@@ -129,15 +189,20 @@ void WifiManager::soketAyrildi()
     m_baglaniyor = false;
     m_hareketsizlikTimer.stop();
     m_veriBekciTimer.stop();
+    m_baglantiZamanAsimiTimer.stop();
     emit baglandiChanged();
     emit baglaniyorChanged();
-    durumGuncelle("Bağlı Değil");
+    durumGuncelle(m_kullaniciKesti ? "Bağlı Değil" : "Bağlantı koptu, yeniden deneniyor...");
+
+    // Yarim kalmis satir bir sonraki baglantinin ilk paketine karismasin.
+    m_tamponVeri.clear();
 
     if (m_sensorManager) {
         m_sensorManager->veriyiGecersizYap();
     }
 
     qDebug() << "ESP32 baglantisi kesildi.";
+    yenidenBaglanmayiPlanla();
 }
 
 void WifiManager::hareketsizlikKontrolEt()
@@ -146,9 +211,11 @@ void WifiManager::hareketsizlikKontrolEt()
 
     if (m_hareketsizlikZamanlayici.elapsed() >= HAREKETSIZLIK_LIMIT_MS) {
         qWarning() << "2 saatten uzun suredir veri akisi yok, baglanti otomatik kesiliyor.";
-        durumGuncelle("Hareketsizlik nedeniyle baglanti kesildi");
         emit hareketsizlikNedeniyleBaglantiKesildi();
+        // Bilerek kesilir: baglantiyiKes() otomatik yeniden baglanmayi da kapatir,
+        // aksi halde cihaz 2 saattir bos dururken surekli yeniden baglanilirdi.
         baglantiyiKes();
+        durumGuncelle("Hareketsizlik nedeniyle baglanti kesildi");
     }
 }
 
@@ -156,13 +223,30 @@ void WifiManager::veriAkisiniKontrolEt()
 {
     if (!m_baglandi || !m_sonVeriZamani.isValid()) return;
 
+    // Timer GUI thread'inde calisiyor. Stroke kaydi, grafik cizimi veya rapor
+    // olusturma arayuzu birkac saniye bloklarsa gelen paketler islenemez ve
+    // m_sonVeriZamani guncellenmez; bu durumda sorun ESP32'de degil PC'dedir ve
+    // saglam bir baglantiyi koparmak yanlis olur. Timer'in kendi gecikmesine
+    // bakarak bu iki durum ayirt edilir.
+    const qint64 bekciGecikmesiMs = m_sonBekciTikZamani.isValid()
+        ? m_sonBekciTikZamani.elapsed() - m_veriBekciTimer.interval()
+        : 0;
+    m_sonBekciTikZamani.restart();
+
+    if (bekciGecikmesiMs > BEKCI_GECIKME_TOLERANSI_MS) {
+        qWarning() << "Arayuz" << bekciGecikmesiMs << "ms bloklandi, veri kesintisi sayilmiyor.";
+        m_sonVeriZamani.restart();
+        return;
+    }
+
     const qint64 gecenSureMs = m_sonVeriZamani.elapsed();
 
     if (gecenSureMs > VERI_KESINTI_BAGLANTI_KES_MS) {
         // Soket hala "bagli" gorunse bile bu kadar uzun suredir hic paket
         // gelmemesi, ESP32'nin kapandigini/koptugunu gosterir. Kullanicinin
         // "bagli olmadiginda bagli yazmasin" beklentisi icin baglanti burada
-        // gercekten sonlandirilir; soketAyrildi() m_baglandi'yi false yapar.
+        // gercekten sonlandirilir; soketAyrildi() m_baglandi'yi false yapar ve
+        // otomatik yeniden baglanmayi baslatir.
         qWarning() << "Uzun suredir (" << gecenSureMs << "ms) veri gelmiyor, baglanti sonlandiriliyor.";
         m_soket->abort();
         return;
@@ -179,13 +263,32 @@ void WifiManager::veriAkisiniKontrolEt()
 
 void WifiManager::soketHata(QAbstractSocket::SocketError hata)
 {
+    const QString hataMetni = m_soket->errorString();
+
     m_baglandi = false;
     m_baglaniyor = false;
+    m_hareketsizlikTimer.stop();
+    m_veriBekciTimer.stop();
+    m_baglantiZamanAsimiTimer.stop();
+
+    // Hata sonrasi soket Connecting/Closing durumunda kalabiliyordu; temizlenmezse
+    // sonraki connectToHost() cagrisi sessizce yok sayilir ve bir daha baglanilamaz.
+    if (m_soket->state() != QAbstractSocket::UnconnectedState) {
+        m_soket->abort();
+    }
+    m_tamponVeri.clear();
+
     emit baglandiChanged();
     emit baglaniyorChanged();
-    durumGuncelle("Baglanti hatasi: " + m_soket->errorString());
+    durumGuncelle(m_kullaniciKesti ? "Baglanti hatasi: " + hataMetni
+                                   : "Baglanti hatasi, yeniden deneniyor...");
 
-    qWarning() << "Wifi soket hatasi:" << hata << m_soket->errorString();
+    if (m_sensorManager) {
+        m_sensorManager->veriyiGecersizYap();
+    }
+
+    qWarning() << "Wifi soket hatasi:" << hata << hataMetni;
+    yenidenBaglanmayiPlanla();
 }
 
 void WifiManager::veriHazir()

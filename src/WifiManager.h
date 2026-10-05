@@ -42,11 +42,14 @@ private slots:
     void veriHazir();
     void hareketsizlikKontrolEt();
     void veriAkisiniKontrolEt();
+    void baglantiZamanAsimiOldu();
 
 private:
     void durumGuncelle(const QString &mesaj);
     void jsonSatiriIsle(const QByteArray &satir);
     void kalibrasyonYukle();
+    // Kullanici kendisi kesmediyse, kopan baglantiyi arka planda yeniden kurmayi dener.
+    void yenidenBaglanmayiPlanla();
 
     QTcpSocket *m_soket = nullptr;
     SensorManager *m_sensorManager = nullptr;
@@ -56,6 +59,10 @@ private:
     bool m_baglandi = false;
     bool m_baglaniyor = false;
     QString m_durumMesaji = "Bağlı Değil";
+
+    // Kullanici "Baglantiyi Kes" dediyse true olur; bu durumda otomatik
+    // yeniden baglanma denenmez. baglan() cagrildiginda tekrar false olur.
+    bool m_kullaniciKesti = false;
 
     bool m_ilkPaket = true;
     double m_oncekiKonum = 0.0;
@@ -93,6 +100,12 @@ private:
     // Soket açık kalsa bile VERI_KESINTI_MS boyunca paket gelmezse veri geçersiz sayılır.
     QTimer m_veriBekciTimer;
     QElapsedTimer m_sonVeriZamani;
+    // Veri bekçisi en son ne zaman çalıştı: arayüz donup timer geç tetiklenirse
+    // (stroke kaydı, grafik çizimi vb.) bunu veri kesintisiyle karıştırmamak için.
+    QElapsedTimer m_sonBekciTikZamani;
+    // Bağlantı koptuktan sonra otomatik yeniden deneme ve bağlanma zaman aşımı.
+    QTimer m_yenidenBaglanmaTimer;
+    QTimer m_baglantiZamanAsimiTimer;
     static constexpr int VERI_KESINTI_MS = 1500;
     // ESP32 aniden kapanir/resetlenir veya Wi-Fi sinyali koparsa, TCP soketi
     // bunu her zaman hemen fark etmez (FIN/RST gelmeyebilir) ve arayuz
@@ -101,4 +114,14 @@ private:
     // veri akmiyor olma durumuna dusmesin.
     static constexpr int VERI_KESINTI_BAGLANTI_KES_MS = 5000;
     static constexpr int HAREKETSIZLIK_LIMIT_MS = 2 * 60 * 60 * 1000; // 2 saat
+    // Veri bekçisi 500 ms'de bir çalışır. Arayüz donduğunda timer çok geç
+    // tetiklenir; bu eşikten uzun bir gecikme "ESP32 sustu" değil "PC meşguldü"
+    // demektir ve bağlantı koparılmaz, sayaç sıfırlanır.
+    static constexpr int BEKCI_GECIKME_TOLERANSI_MS = 2000;
+    // Kopan bağlantı bu aralıkla yeniden denenir (ölçüm ortasında kullanıcıdan
+    // elle bağlanmasını beklememek için).
+    static constexpr int YENIDEN_BAGLANMA_ARALIGI_MS = 2000;
+    // connectToHost() yanıtsız kalırsa soket Connecting durumunda asılı kalabilir;
+    // bu süre sonunda iptal edilip yeniden denenir.
+    static constexpr int BAGLANTI_ZAMAN_ASIMI_MS = 8000;
 };

@@ -123,6 +123,11 @@
                     "access": "private",
                     "name": "veriAkisiniKontrolEt",
                     "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "baglantiZamanAsimiOldu",
+                    "returnType": "void"
                 }
             ],
             "superClasses": [

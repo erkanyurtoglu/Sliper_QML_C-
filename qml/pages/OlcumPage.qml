@@ -93,11 +93,6 @@ Rectangle {
     }
 
     property real baslangicZamaniS: -1
-    // Duraklatma sirasinda cihazin saati akmaya devam eder; bu sure grafik
-    // zaman ekseninden dusulur, aksi halde Devam Et sonrasi grafikte bos bir
-    // bosluk olusur (stroke kaldigi yerden degil, duraklama kadar ileriden baslar).
-    property real toplamDuraklamaSuresiS: 0
-    property real duraklamaBaslangicZamanS: 0
     property var zamanGecmis: []
     property var basincGecmis: []
     property var konumGecmis: []
@@ -197,6 +192,8 @@ Rectangle {
     }
 
     // Grafikleri temizler ve kaydı yeniden "üst konum bekleniyor" durumuna alır.
+    // Ölçümün kendisine (aktifOlcumId, kaydedilmiş stroke'lar, stroke sayacı)
+    // dokunmaz; yalnızca ekrandaki kayıt yeni bir stroke'a hazırlanır.
     function kayitDurumunaDon() {
         kayitDurumu = "BEKLEMEDE"
         inisBasladi = false
@@ -254,7 +251,6 @@ Rectangle {
     function grafikleriSifirla() {
         zamanSayaci = 0
         baslangicZamaniS = -1
-        toplamDuraklamaSuresiS = 0
         zamanGecmis = []
         basincSerisi.clear()
         konumSerisi.clear()
@@ -370,12 +366,14 @@ Rectangle {
 
     Connections {
         target: calculator
+        // Duraklatıldığında grafik ekranda donuk kalır (operatör son stroke'u
+        // inceleyebilsin). Devam edildiğinde kayıt sıfırdan başlatılır: Calculator
+        // da duraklatmada bütün tamponlarını atar ve yeni stroke'u ancak boru
+        // tekrar üst eşiğin içine girdikten sonra başlatır (bkz. Calculator::duraklat,
+        // devamEt). Grafik eski eğriyi tutmaya devam ederse ikisi ayrışır: ekran
+        // aynı eğrinin üstüne çizmeye devam ederken hiçbir stroke kaydedilmezdi.
         function onDuraklatildiChanged() {
-            if (calculator.duraklatildi) {
-                duraklamaBaslangicZamanS = sensorManager.zamanS
-            } else if (baslangicZamaniS >= 0) {
-                toplamDuraklamaSuresiS += sensorManager.zamanS - duraklamaBaslangicZamanS
-            }
+            if (!calculator.duraklatildi) kayitDurumunaDon()
         }
     }
 
@@ -397,7 +395,7 @@ Rectangle {
 
             // Zaman ekseni cihazin zaman damgasindan gelir (sabit 0.2 s adim varsayilmaz).
             if (baslangicZamaniS < 0) baslangicZamaniS = sensorManager.zamanS
-            zamanSayaci = sensorManager.zamanS - baslangicZamaniS - toplamDuraklamaSuresiS
+            zamanSayaci = sensorManager.zamanS - baslangicZamaniS
 
             basincSerisi.append(zamanSayaci, sensorManager.basinc)
             konumSerisi.append(zamanSayaci, sensorManager.konum)
