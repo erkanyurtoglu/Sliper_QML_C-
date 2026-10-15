@@ -10,6 +10,8 @@ class Calculator : public QObject
     Q_PROPERTY(QString durum READ durum NOTIFY durumChanged)
     Q_PROPERTY(int strokeSayisi READ strokeSayisi NOTIFY strokeSayisiChanged)
     Q_PROPERTY(bool duraklatildi READ duraklatildi NOTIFY duraklatildiChanged)
+    Q_PROPERTY(bool hazirlaniyor READ hazirlaniyor NOTIFY hazirlikChanged)
+    Q_PROPERTY(bool hazir READ hazir NOTIFY hazirlikChanged)
     Q_PROPERTY(bool sonStrokeGecerli READ sonStrokeGecerli NOTIFY sonStrokeGecerliChanged)
     Q_PROPERTY(QVariantMap sonStroke READ sonStroke NOTIFY sonStrokeChanged)
     // Kalibre edilmiş üst/alt boru konumları (mm). Orijinal cihazdaki
@@ -22,6 +24,8 @@ public:
     QString durum() const;
     int strokeSayisi() const;
     bool duraklatildi() const;
+    bool hazirlaniyor() const;
+    bool hazir() const;
     bool sonStrokeGecerli() const;
     QVariantMap sonStroke() const;
     double ustKonumMm() const;
@@ -44,6 +48,10 @@ public:
     //    bu sınıf yalnızca hangi örneklerin kullanılacağını seçer.
     //  - Sonuç strokeTamamlandi sinyaliyle bildirilir.
     Q_INVOKABLE void konumGuncelle(double zamanS, double konumMm, double basincMbar);
+    // Stroke ancak "Hazırla" ile alınan durağan basınçtan sonra algılanır.
+    // Boru üstte hareketsizken çağrılır; HAZIRLAMA_SURESI_S boyunca basınç
+    // toplanır ve P0l olarak sabitlenir. Her stroke'tan sonra yeniden gerekir.
+    Q_INVOKABLE void hazirla();
     Q_INVOKABLE void duraklat();
     Q_INVOKABLE void devamEt();
     Q_INVOKABLE void sifirla();
@@ -58,6 +66,8 @@ public:
     Q_INVOKABLE QVariantList tahminTablosuHesapla(double aKesisimMbar, double bEgimMbarHm3,
                                                    const QVariantMap &ayarlar) const;
     Q_INVOKABLE QVariantMap varsayilanTahminAyarlari() const;
+    Q_INVOKABLE QString tahminGuvenilmezNedeni(double kesisimA, double egimB, double r2) const;
+    Q_INVOKABLE bool tahminKarariVerilemez(const QString &guvenilmezNedeni) const;
     // P-Q kesişim/eğiminden Schleibinger a/b (bkz. SliperModel bölüm 8)
     Q_INVOKABLE double schleibingerA(double kesisimA) const;
     Q_INVOKABLE double schleibingerB(double egimB) const;
@@ -78,6 +88,7 @@ signals:
     void durumChanged();
     void strokeSayisiChanged();
     void duraklatildiChanged();
+    void hazirlikChanged();
     void sonStrokeGecerliChanged();
     void sonStrokeChanged();
     void konumSinirlariChanged();
@@ -95,6 +106,9 @@ private:
 
     void strokuBaslat(double zamanS);
     void strokuBitir();
+    void hazirlamaOrnegiIsle(const Ornek &yeniOrnek);
+    void hazirlamayiIptalEt();
+    void hazirligiSifirla();
     // İnişin bittiği an: boru durdu ya da alt referansa vardı.
     // durmaBaslangicIndeksi: boru durduysa durmanın başladığı örneğin indeksi,
     // durmadıysa -1. inisiKapat'a bitiş örneği olarak bu indeks verilir.
@@ -118,6 +132,11 @@ private:
     double m_ustKonumMm = 40.0;
     double m_altKonumMm = 540.0;
 
+    bool m_hazirlaniyor = false;
+    bool m_hazir = false;
+    QVector<Ornek> m_hazirlamaOrnekleri;      // Hazırla basıldıktan sonra kayan pencere
+    double m_hazirlananP0lMbar = 0.0;         // HAZIR olunduğu anda sabitlenen durağan basınç
+    double m_strokeP0lMbar = 0.0;             // devam eden stroke'un P0l'i (strokuBaslat'ta kopyalanır)
     QVector<Ornek> m_ustteBekleyenOrnekler;   // boru üstteyken son UST_TAMPON_S saniyelik örnekler
     QVector<Ornek> m_durgunOrnekler;          // stroke öncesi, boru hareketsizken (P0l bunlardan)
     QVector<Ornek> m_strokeOrnekleri;         // iniş + bitiş sonrası örnekler

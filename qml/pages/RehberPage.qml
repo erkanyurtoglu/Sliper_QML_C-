@@ -50,7 +50,7 @@ Rectangle {
                 {
                     baslikTr: "Ağırlık ekleyin, gerekirse duraklatın",
                     baslikEn: "Add weight, pause if needed",
-                    metinTr: "Boruyu üst konuma kaldırıp kilitleyin ve serbest bırakın: stroke otomatik algılanır, üstteki \"SON STROKE\" çubuğunda Pmax, P0l, P0r, p ve Q gösterilir. Her yük için en az 3 stroke atın; yükü \"+1.6\" / \"+4.8\" butonlarıyla girin (her stroke o anki ağırlıkla kaydedilir). \"⏸ Duraklat\" stroke algılamayı durdurur, canlı veri akmaya devam eder.",
+                    metinTr: "Boruyu üst konuma kaldırıp kilitleyin, \"● Hazırla\"ya basın ve HAZIR görününce serbest bırakın: durağan basınç (P0l) hazırlama sırasında alınır, stroke otomatik algılanır. Her stroke'tan sonra yeniden hazırlamak gerekir. Üstteki \"SON STROKE\" çubuğunda Pmax, P0l, P0r, p ve Q gösterilir. Her yük için en az 3 stroke atın; yükü \"+1.6\" / \"+4.8\" butonlarıyla girin (her stroke o anki ağırlıkla kaydedilir). \"⏸ Duraklat\" stroke algılamayı durdurur, canlı veri akmaya devam eder.",
                     metinEn: "Lift the pipe to the top position, lock it and release it: the stroke is detected automatically and the \"LAST STROKE\" bar shows Pmax, P0l, P0r, p and Q. Do at least 3 strokes per load; enter the load with \"+1.6\" / \"+4.8\" (each stroke is saved with the current weight). \"⏸ Pause\" stops stroke detection while live data keeps flowing.",
                     mockup: { tur: "olcum", bolge: "agirlikDuraklat" }
                 }

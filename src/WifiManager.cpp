@@ -173,6 +173,7 @@ void WifiManager::soketBaglandi()
     m_soket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
 
     m_ilkPaket = true;
+    m_agirlikFiltresiBasladi = false;
     m_zamanlayici.restart();
     m_hareketsizlikZamanlayici.restart();
     m_hareketsizlikTimer.start();
@@ -332,7 +333,19 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
 
     const QJsonObject paket = belge.object();
 
-    const double hamAgirlik = paket.value("hamAgirlik").toDouble();
+    // Load cell ham değeri burada filtrelenir; bundan sonra her yer (kalibrasyon
+    // ekranı dahil) filtreli ham değeri görür. Aynı değer tekrar gelirse HX711'den
+    // yeni örnek gelmemiştir, filtre ilerletilmez.
+    const double gelenHamAgirlik = paket.value("hamAgirlik").toDouble();
+    if (!m_agirlikFiltresiBasladi) {
+        m_filtreliHamAgirlik = gelenHamAgirlik;
+        m_agirlikFiltresiBasladi = true;
+    } else if (gelenHamAgirlik != m_oncekiGelenHamAgirlik) {
+        m_filtreliHamAgirlik = SliperModel::agirlikFiltrele(m_filtreliHamAgirlik, gelenHamAgirlik);
+    }
+    m_oncekiGelenHamAgirlik = gelenHamAgirlik;
+    const double hamAgirlik = m_filtreliHamAgirlik;
+
     const double hamMesafe = paket.contains("hamMesafe")
         ? paket.value("hamMesafe").toDouble()
         : paket.value("konum").toDouble();

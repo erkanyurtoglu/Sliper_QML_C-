@@ -35,8 +35,12 @@ Rectangle {
         veriYok: { tr: "VERI YOK", en: "NO DATA" },
         duraklatildiDurum: { tr: "DURAKLATILDI", en: "PAUSED" },
         ustKonumBekleniyor: { tr: "ÜSTE TAKIN", en: "ATTACH AT TOP" },
+        hazirlaButon: { tr: "●  Hazırla", en: "●  Prepare" },
+        hazirlayinDurum: { tr: "HAZIRLAYIN", en: "PRESS PREPARE" },
+        hazirlaniyorDurum: { tr: "HAZIRLANIYOR", en: "PREPARING" },
+        hazirDurum: { tr: "HAZIR", en: "READY" },
         grafikDonduDurum: { tr: "STROKE BİTTİ", en: "STROKE FINISHED" },
-        ustKonumIpucu: { tr: "Cihazı üst sabitleme noktasına takıp mili sensörün önüne çevirin — kayıt kendiliğinden başlar", en: "Attach the device to the top fixture and turn the rod in front of the sensor — recording starts automatically" },
+        ustKonumIpucu: { tr: "Boruyu üste takın, \"Hazırla\"ya basın, HAZIR görününce serbest bırakın", en: "Attach the pipe at the top, press \"Prepare\", release when READY" },
         anlikDegerler: { tr: "ANLIK DEĞERLER", en: "CURRENT VALUES" },
         basincEtiket: { tr: "BASINÇ", en: "PRESSURE" },
         konumEtiket: { tr: "KONUM", en: "POSITION" },
@@ -335,7 +339,7 @@ Rectangle {
         var konumMm = sensorManager.konum
 
         // 1) Boru üst sabitleme noktasına alındı: yeni stroke için grafiği sıfırla.
-        if (kayitDurumu !== "KAYITTA" && ustKonumda(konumMm)) {
+        if (kayitDurumu !== "KAYITTA" && calculator.hazir && ustKonumda(konumMm)) {
             grafikleriSifirla()
             kayitDurumu = "KAYITTA"
             kayitBaslangicKonumuMm = konumMm
@@ -817,6 +821,33 @@ Rectangle {
                     wrapMode: Text.WordWrap
                 }
 
+                Button {
+                    id: hazirlaButonu
+                    width: parent.width
+                    height: 40
+                    enabled: aktifOlcumId > 0 && !calculator.duraklatildi && calculator.durum !== "INIYOR"
+                    text: txt("hazirlaButon")
+                    font.family: "Segoe UI"
+                    font.pixelSize: 13
+
+                    onClicked: calculator.hazirla()
+
+                    background: Rectangle {
+                        radius: 8
+                        color: !hazirlaButonu.enabled ? "#1e3a8a" : (hazirlaButonu.pressed ? "#1d4ed8" : (hazirlaButonu.hovered ? "#3b82f6" : "#2563eb"))
+                        opacity: hazirlaButonu.enabled ? 1.0 : 0.5
+                    }
+
+                    contentItem: Text {
+                        text: hazirlaButonu.text
+                        color: "#dce8f5"
+                        opacity: hazirlaButonu.enabled ? 1.0 : 0.6
+                        font: hazirlaButonu.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
                 Row {
                     width: parent.width
                     spacing: 10
@@ -910,6 +941,8 @@ Rectangle {
                         color: {
                             if (!sensorManager.veriGecerli) return "#dc2626"
                             if (calculator.duraklatildi) return "#6b7280"
+                            if (calculator.hazir) return "#16a34a"
+                            if (calculator.hazirlaniyor) return "#f59e0b"
                             if (aktifOlcumId > 0 && kayitDurumu === "BEKLEMEDE") return "#3b82f6"
                             if (aktifOlcumId > 0 && kayitDurumu === "DONDU") return "#6b7280"
                             if (calculator.durum === "YUKARIDA") return "#16a34a"
@@ -934,7 +967,11 @@ Rectangle {
                         text: {
                             if (!sensorManager.veriGecerli) return txt("veriYok")
                             if (calculator.duraklatildi) return txt("duraklatildiDurum")
-                            if (aktifOlcumId > 0 && kayitDurumu === "BEKLEMEDE") return txt("ustKonumBekleniyor")
+                            if (calculator.hazir) return txt("hazirDurum")
+                            if (calculator.hazirlaniyor) return txt("hazirlaniyorDurum")
+                            if (aktifOlcumId > 0 && kayitDurumu === "BEKLEMEDE") {
+                                return ustKonumda(sensorManager.konum) ? txt("hazirlayinDurum") : txt("ustKonumBekleniyor")
+                            }
                             if (aktifOlcumId > 0 && kayitDurumu === "DONDU") return txt("grafikDonduDurum")
                             return calculator.durum
                         }

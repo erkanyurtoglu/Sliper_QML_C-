@@ -69,6 +69,9 @@ private:
     double m_oncekiZamanMs = 0.0;
     double m_filtreliHiz = 0.0;
     double m_filtreliKonum = 0.0;
+    double m_filtreliHamAgirlik = 0.0;
+    double m_oncekiGelenHamAgirlik = 0.0;
+    bool m_agirlikFiltresiBasladi = false;
     double m_zamanOfsetiMs = 0.0;
     bool m_zamanBasladi = false;
     double m_konumYonu = -1.0;  // +1: konum = yükseklik, -1: konum = sensörden uzaklık

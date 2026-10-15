@@ -19,6 +19,8 @@ using SliperModel::SONRASI_PENCERE_S;
 using SliperModel::HAREKET_PAYI_S;
 using SliperModel::P0R_OTURMA_S;
 using SliperModel::UST_TAMPON_S;
+using SliperModel::HAZIRLAMA_SURESI_S;
+using SliperModel::HAZIRLAMA_BASINC_TOLERANSI_MBAR;
 
 Calculator::Calculator(QObject *parent)
     : QObject(parent)
@@ -28,6 +30,8 @@ Calculator::Calculator(QObject *parent)
 QString Calculator::durum() const { return m_durum; }
 int Calculator::strokeSayisi() const { return m_strokeSayisi; }
 bool Calculator::duraklatildi() const { return m_duraklatildi; }
+bool Calculator::hazirlaniyor() const { return m_hazirlaniyor; }
+bool Calculator::hazir() const { return m_hazir; }
 bool Calculator::sonStrokeGecerli() const { return m_sonStrokeGecerli; }
 QVariantMap Calculator::sonStroke() const { return m_sonStroke; }
 double Calculator::ustKonumMm() const { return m_ustKonumMm; }
@@ -72,6 +76,10 @@ void Calculator::konumGuncelle(double zamanS, double konumMm, double basincMbar)
     const double yukseklikMm = yon() * konumMm;      // yukarı = büyük
     const Ornek yeniOrnek { zamanS, yukseklikMm, basincMbar };
 
+    if (m_hazirlaniyor) {
+        hazirlamaOrnegiIsle(yeniOrnek);
+    }
+
     // Bitiş sonrası 2 s: P0r ve eğrinin sönümlenen kısmı için veri toplanır.
     // Boru bu sürede tekrar kaldırılırsa stroke erken kapatılır.
     if (m_bitisSonrasiToplaniyor) {
@@ -107,6 +115,9 @@ void Calculator::konumGuncelle(double zamanS, double konumMm, double basincMbar)
     // --- Boru iniyor (üst ve alt eşik arasında) ---
     if (yukseklikMm > altEsik()) {
         if (m_durum == "YUKARIDA") {
+            if (!m_hazir) {
+                return;
+            }
             strokuBaslat(zamanS);
             m_inisBaslangicYuksekligiMm = yukseklikMm;
         }
@@ -210,6 +221,8 @@ void Calculator::strokuBaslat(double zamanS)
     m_baslangicZamaniS = zamanS;
     m_strokeOrnekleri.clear();
     m_durgunOrnekler.clear();
+    m_strokeP0lMbar = m_hazirlananP0lMbar;
+    hazirligiSifirla();
 
     const QVector<Ornek> &ustte = m_ustteBekleyenOrnekler;
 
@@ -263,12 +276,7 @@ void Calculator::strokuBitir()
     // ornekler[sonInisIndeksi+1 .. ]   = bitiş sonrası (boru altta duruyor)
     const int sonInisIndeksi = m_altaVarisIndeksi;
 
-    // --- P0l: hareket öncesi durağan basınç ---
-    QVector<double> durgunBasinclar;
-    for (const Ornek &ornek : m_durgunOrnekler) durgunBasinclar.append(ornek.basincMbar);
-    const double p0l = durgunBasinclar.isEmpty()
-        ? ornekler.first().basincMbar
-        : SliperModel::durgunBasincMbar(durgunBasinclar);
+    const double p0l = m_strokeP0lMbar;
 
     // --- P0r: bitiş sonrası durağan basınç (ilk P0R_OTURMA_S saniye sönümlenme, atlanır) ---
     QVector<double> bitisSonrasiBasinclar;
@@ -353,11 +361,83 @@ void Calculator::strokuBitir()
     emit strokeTamamlandi(stroke);
 }
 
+void Calculator::hazirla()
+{
+    if (m_duraklatildi || m_durum == "INIYOR" || m_bitisSonrasiToplaniyor) {
+        return;
+    }
+    m_hazir = false;
+    m_hazirlamaOrnekleri.clear();
+    m_hazirlaniyor = true;
+    emit hazirlikChanged();
+}
+
+void Calculator::hazirlamaOrnegiIsle(const Ornek &yeniOrnek)
+{
+    if (yeniOrnek.yukseklikMm <= ustEsik()) {
+        hazirlamayiIptalEt();
+        return;
+    }
+
+    m_hazirlamaOrnekleri.append(yeniOrnek);
+    const double pencereSuresiS = yeniOrnek.zamanS - m_hazirlamaOrnekleri.first().zamanS;
+    if (pencereSuresiS < HAZIRLAMA_SURESI_S) {
+        return;
+    }
+
+    double enDusukBasincMbar = yeniOrnek.basincMbar;
+    double enYuksekBasincMbar = yeniOrnek.basincMbar;
+    double enDusukYukseklikMm = yeniOrnek.yukseklikMm;
+    double enYuksekYukseklikMm = yeniOrnek.yukseklikMm;
+    QVector<double> pencereBasinclari;
+    for (const Ornek &ornek : m_hazirlamaOrnekleri) {
+        enDusukBasincMbar = std::min(enDusukBasincMbar, ornek.basincMbar);
+        enYuksekBasincMbar = std::max(enYuksekBasincMbar, ornek.basincMbar);
+        enDusukYukseklikMm = std::min(enDusukYukseklikMm, ornek.yukseklikMm);
+        enYuksekYukseklikMm = std::max(enYuksekYukseklikMm, ornek.yukseklikMm);
+        pencereBasinclari.append(ornek.basincMbar);
+    }
+
+    const bool basincSakin = enYuksekBasincMbar - enDusukBasincMbar <= HAZIRLAMA_BASINC_TOLERANSI_MBAR;
+    const bool boruSakin = enYuksekYukseklikMm - enDusukYukseklikMm <= DURGUN_TOLERANS_MM;
+    if (!basincSakin || !boruSakin) {
+        m_hazirlamaOrnekleri.removeFirst();
+        return;
+    }
+
+    m_hazirlananP0lMbar = SliperModel::durgunBasincMbar(pencereBasinclari);
+    m_hazirlamaOrnekleri.clear();
+    m_hazirlaniyor = false;
+    m_hazir = true;
+    emit hazirlikChanged();
+}
+
+void Calculator::hazirlamayiIptalEt()
+{
+    m_hazirlamaOrnekleri.clear();
+    if (m_hazirlaniyor) {
+        m_hazirlaniyor = false;
+        emit hazirlikChanged();
+    }
+}
+
+void Calculator::hazirligiSifirla()
+{
+    const bool degisti = m_hazirlaniyor || m_hazir;
+    m_hazirlaniyor = false;
+    m_hazir = false;
+    m_hazirlamaOrnekleri.clear();
+    if (degisti) {
+        emit hazirlikChanged();
+    }
+}
+
 void Calculator::duraklat()
 {
     if (m_duraklatildi) {
         return;
     }
+    hazirligiSifirla();
 
     // Bitmiş ama sonrası toplanmakta olan stroke kaybolmasın.
     if (m_bitisSonrasiToplaniyor) {
@@ -403,6 +483,7 @@ void Calculator::sifirla()
     m_inisBaslangicYuksekligiMm = 0.0;
     m_bitisYuksekligiMm = 0.0;
     m_bitisSonrasiToplaniyor = false;
+    hazirligiSifirla();
     emit strokeSayisiChanged();
     emit durumChanged();
     emit duraklatildiChanged();
@@ -431,6 +512,16 @@ QVariantList Calculator::tahminTablosuHesapla(double aKesisimMbar, double bEgimM
 QVariantMap Calculator::varsayilanTahminAyarlari() const
 {
     return SliperModel::varsayilanTahminAyarlari();
+}
+
+QString Calculator::tahminGuvenilmezNedeni(double kesisimA, double egimB, double r2) const
+{
+    return SliperModel::tahminGuvenilmezNedeni(kesisimA, egimB, r2);
+}
+
+bool Calculator::tahminKarariVerilemez(const QString &guvenilmezNedeni) const
+{
+    return SliperModel::tahminKarariVerilemez(guvenilmezNedeni);
 }
 
 double Calculator::schleibingerA(double kesisimA) const { return SliperModel::schleibingerA(kesisimA); }

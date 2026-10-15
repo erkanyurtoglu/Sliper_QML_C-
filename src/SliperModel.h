@@ -59,6 +59,18 @@ constexpr double konumFiltrele(double oncekiFiltreliKonumMm, double hamKonumMm)
            + (1.0 - KONUM_FILTRE_KATSAYISI) * oncekiFiltreliKonumMm;
 }
 
+// Load cell ham okumasındaki gürültüyü bastırmak için üstel ortalama. Ham değerin
+// kendisine uygulanır; kalibrasyon ekranı, grafik, basınç ve stroke hesapları
+// hep bu filtreli ham değeri görür. HX711 saniyede 10 yeni örnek üretir, ESP32 ise
+// 50 Hz'de aynı değeri tekrar gönderir; filtre yalnızca değer değiştiğinde ilerler.
+// 0.4 katsayısı yaklaşık 4 örneklik ortalamaya (~250 ms zaman sabiti) denktir.
+constexpr double AGIRLIK_FILTRE_KATSAYISI = 0.4;
+constexpr double agirlikFiltrele(double oncekiFiltreliHamAgirlik, double hamAgirlik)
+{
+    return AGIRLIK_FILTRE_KATSAYISI * hamAgirlik
+           + (1.0 - AGIRLIK_FILTRE_KATSAYISI) * oncekiFiltreliHamAgirlik;
+}
+
 // --- 2. Basınç ----------------------------------------------------------------
 // p [mbar] = m * g / A / 100        (1 mbar = 100 Pa)
 // 1 kg -> 9.80665 N / 0.01287 m2 = ~7.6 mbar (128 mm boru)
@@ -129,6 +141,11 @@ constexpr double SONRASI_PENCERE_S = 2.0;     // orijinal: bitişten 2 s sonra s
 constexpr double HAREKET_PAYI_S = 0.3;        // hareketten hemen önceki bu süre P0l'e katılmaz
 constexpr double P0R_OTURMA_S = 0.5;          // bitişten sonraki bu süre P0r'a katılmaz (sönümlenme)
 constexpr double UST_TAMPON_S = 4.0;          // boru üstteyken hafızada tutulan son süre
+// "Hazırla" düğmesi: boru üstte hareketsizken bu kadar süre basınç toplanır ve
+// P0l bu pencerenin ortalamasıdır. Pencere içinde basınç ya da konum bu
+// toleransları aşarsa pencere kayar, sakinleşene kadar HAZIR olunmaz.
+constexpr double HAZIRLAMA_SURESI_S = 2.0;
+constexpr double HAZIRLAMA_BASINC_TOLERANSI_MBAR = 10.0;
 
 // --- 5. Stroke değerlendirme -----------------------------------------------------
 // Stroke hızı: strokun orta bölümünde (yolun HIZ_UYUM_ALT..HIZ_UYUM_UST kısmı)
@@ -234,8 +251,15 @@ QVariantMap basincTahmini(double kesisimA, double egimB, double debiM3h, double 
                           double hataPayiYuzde);
 
 // Orijinal "Table of Results": {Q1, Q2} x {L2, L3, L4}. Satır alanları:
-// debi, uzunluk, basincBar, altSinirBar, ustSinirBar, pompaAsildi
+// debi, uzunluk, basincBar, altSinirBar, ustSinirBar, pompaAsildi, basincNegatif
 QVariantList tahminTablosu(double kesisimA, double egimB, const QVariantMap &ayarlar);
+
+// Pompa kararı verilebilir mi? Boş = güvenilir.
+//   "egimNegatif"    : B < 0, debi arttıkça basınç düşüyor (fiziksel değil) -> karar verilmez
+//   "kesisimNegatif" : A < 0 -> karar verilmez
+//   "dusukR2"        : R² < MIN_R2 -> karar gösterilir ama "güvenilir değil"
+QString tahminGuvenilmezNedeni(double kesisimA, double egimB, double r2);
+bool tahminKarariVerilemez(const QString &guvenilmezNedeni);
 
 // --- 10. Gösterim hesapları (ölçüm sonucuna girmez) --------------------------------
 

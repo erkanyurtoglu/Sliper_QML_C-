@@ -62,6 +62,11 @@ Rectangle {
         kaydedildi: { tr: "✓ Tahmin ayarları kaydedildi", en: "✓ Forecast preferences saved" },
         pompalanabilir: { tr: "POMPALANABİLİR", en: "PUMPABLE" },
         pompalamaSorunu: { tr: "POMPALAMA SORUNU", en: "PUMPING ISSUE" },
+        pompalanabilirGuvenilmez: { tr: "POMPALANABİLİR — GÜVENİLİR DEĞİL", en: "PUMPABLE — UNRELIABLE" },
+        durumEgimNegatif: { tr: "P–Q eğimi (B) negatif: tahmin fiziksel değil, pompalanabilirlik kararı verilemez. Ölçümü tekrarlayın.", en: "p–Q slope (B) is negative: forecast is not physical, no pumpability decision. Repeat the measurement." },
+        durumKesisimNegatif: { tr: "P–Q kesişimi (A) negatif: tahmin fiziksel değil, pompalanabilirlik kararı verilemez. Ölçümü tekrarlayın.", en: "p–Q intercept (A) is negative: forecast is not physical, no pumpability decision. Repeat the measurement." },
+        durumDusukR2: { tr: "En yüksek tahmin %1 bar pompa kapasitesi içinde, ancak uyum kalitesi düşük (R² = %2): sonuç güvenilir değil.", en: "Highest estimate %1 bar is within pump capacity, but fit quality is low (R² = %2): result is unreliable." },
+        gecersiz: { tr: "geçersiz", en: "invalid" },
         degerlendirilmedi: { tr: "DEĞERLENDİRİLMEDİ", en: "NOT EVALUATED" },
         durumYetersizVeri: { tr: "Yeterli stroke verisi yok.", en: "Not enough stroke data." },
         durumPompaYok: { tr: "Pompalanabilirlik kararı için pompa maks. basıncını girip tahmini hesaplayın.", en: "Enter the pump max. pressure and calculate the forecast to evaluate pumpability." },
@@ -282,6 +287,8 @@ Rectangle {
     // Pompalanabilirlik: tablodaki en kötü durum (hata payı üst sınırı) pompa kapasitesiyle karşılaştırılır
     readonly property var durumBilgisi: {
         if (!sonuc.yeterliVeri) return { kod: "yetersiz" }
+        var guvenilmezNedeni = calculator.tahminGuvenilmezNedeni(sonuc.tau0, sonuc.mu, sonuc.r2)
+        if (calculator.tahminKarariVerilemez(guvenilmezNedeni)) return { kod: "gecersizModel", neden: guvenilmezNedeni }
         var pompa = tahminAyarlari.pompaMaks || 0
         if (pompa <= 0 || tahminSatirlari.length === 0) return { kod: "yok" }
         var enKotu = tahminSatirlari[0], asilan = 0
@@ -293,7 +300,8 @@ Rectangle {
         var baskin = "akma"
         if (enKotu.viskozMbar > enKotu.akmaMbar && enKotu.viskozMbar >= enKotu.yukseklikMbar) baskin = "viskoz"
         else if (enKotu.yukseklikMbar > enKotu.akmaMbar && enKotu.yukseklikMbar > enKotu.viskozMbar) baskin = "yukseklik"
-        return { kod: asilan === 0 ? "uygun" : "sorun", enKotu: enKotu, asilan: asilan, pompa: pompa, baskin: baskin }
+        var kod = asilan > 0 ? "sorun" : (guvenilmezNedeni === "dusukR2" ? "guvenilmez" : "uygun")
+        return { kod: kod, enKotu: enKotu, asilan: asilan, pompa: pompa, baskin: baskin }
     }
 
     // --------------------------------------------------------------- Stroke eğrisi
@@ -645,7 +653,9 @@ Rectangle {
                         width: parent.width
                         height: durumSutunu.implicitHeight + 20
                         visible: olcumId > 0
-                        property color vurgu: durumBilgisi.kod === "uygun" ? "#16a34a" : (durumBilgisi.kod === "sorun" ? "#dc2626" : "#6b7280")
+                        property color vurgu: durumBilgisi.kod === "uygun" ? "#16a34a"
+                                              : (durumBilgisi.kod === "sorun" ? "#dc2626"
+                                              : (durumBilgisi.kod === "guvenilmez" ? "#f59e0b" : "#6b7280"))
                         border.color: Qt.darker(vurgu, 1.6)
                         Rectangle { width: 4; height: parent.height; radius: 2; color: durumKutusu.vurgu }
                         Column {
@@ -655,7 +665,9 @@ Rectangle {
                             spacing: 4
                             Text {
                                 text: durumBilgisi.kod === "uygun" ? "✓ " + txt("pompalanabilir")
-                                      : (durumBilgisi.kod === "sorun" ? "! " + txt("pompalamaSorunu") : "? " + txt("degerlendirilmedi"))
+                                      : (durumBilgisi.kod === "sorun" ? "! " + txt("pompalamaSorunu")
+                                      : (durumBilgisi.kod === "guvenilmez" ? "? " + txt("pompalanabilirGuvenilmez")
+                                      : "? " + txt("degerlendirilmedi")))
                                 color: durumKutusu.vurgu; font.family: "Segoe UI"; font.pixelSize: 14; font.bold: true; font.letterSpacing: 1
                             }
                             Text {
@@ -666,7 +678,10 @@ Rectangle {
                                     var d = durumBilgisi
                                     if (d.kod === "yetersiz") return txt("durumYetersizVeri")
                                     if (d.kod === "yok") return txt("durumPompaYok")
+                                    if (d.kod === "gecersizModel") return txt(d.neden === "egimNegatif" ? "durumEgimNegatif" : "durumKesisimNegatif")
                                     var bar = sayi(d.enKotu.ustSinirBar, 1)
+                                    if (d.kod === "guvenilmez")
+                                        return txt("durumDusukR2").arg(bar).arg(sayi(sonuc.r2, 2))
                                     if (d.kod === "uygun")
                                         return txt("durumUygun").arg(bar).arg(sayi(d.enKotu.debi, 1)).arg(sayi(d.enKotu.uzunluk, 0))
                                                                 .arg(sayi(d.enKotu.ustSinirBar / d.pompa * 100, 0))
@@ -1109,6 +1124,8 @@ Rectangle {
                                         height: 34
                                         color: index % 2 === 0 ? "transparent" : "#0e0e14"
                                         readonly property bool pompaVar: tahminAyarlari.pompaMaks > 0
+                                        readonly property bool satirGecersiz: durumBilgisi.kod === "gecersizModel" || tahminSatiri.modelData.basincNegatif
+                                        readonly property bool satirGuvenilmez: durumBilgisi.kod === "guvenilmez"
                                         Row {
                                             anchors.fill: parent
                                             Hucre { width: tahminTablosu.width * 0.18; height: tahminSatiri.height; text: sayi(tahminSatiri.modelData.debi, 1) }
@@ -1117,8 +1134,14 @@ Rectangle {
                                             Hucre { width: tahminTablosu.width * 0.28; height: tahminSatiri.height; text: sayi(tahminSatiri.modelData.altSinirBar, 2) + " – " + sayi(tahminSatiri.modelData.ustSinirBar, 2); color: "#9ca3af" }
                                             Hucre {
                                                 width: tahminTablosu.width * 0.18; height: tahminSatiri.height
-                                                text: !tahminSatiri.pompaVar ? "—" : (tahminSatiri.modelData.pompaAsildi ? "✕ " + txt("asildi") : "✓ " + txt("uygun"))
-                                                color: !tahminSatiri.pompaVar ? "#6b7280" : (tahminSatiri.modelData.pompaAsildi ? "#f87171" : "#4ade80")
+                                                text: !tahminSatiri.pompaVar ? "—"
+                                                      : (tahminSatiri.satirGecersiz ? "✕ " + txt("gecersiz")
+                                                      : (tahminSatiri.modelData.pompaAsildi ? "✕ " + txt("asildi")
+                                                      : (tahminSatiri.satirGuvenilmez ? "? " + txt("uygun") : "✓ " + txt("uygun"))))
+                                                color: !tahminSatiri.pompaVar ? "#6b7280"
+                                                       : (tahminSatiri.satirGecersiz ? "#6b7280"
+                                                       : (tahminSatiri.modelData.pompaAsildi ? "#f87171"
+                                                       : (tahminSatiri.satirGuvenilmez ? "#f59e0b" : "#4ade80")))
                                                 font.bold: true
                                             }
                                         }

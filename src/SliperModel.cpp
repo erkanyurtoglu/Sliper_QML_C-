@@ -345,8 +345,9 @@ QVariantMap basincTahmini(double kesisimA, double egimB, double debiM3h, double 
 
     sonuc["gecerliGiris"] = true;
     sonuc["basincBar"] = toplamBar;
-    sonuc["altSinirBar"] = toplamBar - surtunmeBar * hataOrani;
-    sonuc["ustSinirBar"] = toplamBar + surtunmeBar * hataOrani;
+    const double hataBandiBar = std::abs(surtunmeBar) * hataOrani;
+    sonuc["altSinirBar"] = toplamBar - hataBandiBar;
+    sonuc["ustSinirBar"] = toplamBar + hataBandiBar;
     sonuc["akmaMbar"] = akmaPayiMbar;
     sonuc["viskozMbar"] = hizPayiMbar;
     sonuc["yukseklikMbar"] = yukseklikPayiMbar;
@@ -373,10 +374,24 @@ QVariantList tahminTablosu(double kesisimA, double egimB, const QVariantMap &aya
             satir["debi"] = debi;
             satir["uzunluk"] = uzunluk;
             satir["pompaAsildi"] = pompaMaksBar > 0.0 && satir["ustSinirBar"].toDouble() > pompaMaksBar;
+            satir["basincNegatif"] = satir["basincBar"].toDouble() < 0.0;
             satirlar.append(satir);
         }
     }
     return satirlar;
+}
+
+QString tahminGuvenilmezNedeni(double kesisimA, double egimB, double r2)
+{
+    if (egimB < 0.0) return "egimNegatif";
+    if (kesisimA < 0.0) return "kesisimNegatif";
+    if (r2 < MIN_R2) return "dusukR2";
+    return QString();
+}
+
+bool tahminKarariVerilemez(const QString &guvenilmezNedeni)
+{
+    return guvenilmezNedeni == "egimNegatif" || guvenilmezNedeni == "kesisimNegatif";
 }
 
 // =============================================================================

@@ -85,6 +85,11 @@
                     },
                     {
                         "access": "public",
+                        "name": "hazirla",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
                         "name": "duraklat",
                         "returnType": "void"
                     },
@@ -160,6 +165,36 @@
                         "access": "public",
                         "name": "varsayilanTahminAyarlari",
                         "returnType": "QVariantMap"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "kesisimA",
+                                "type": "double"
+                            },
+                            {
+                                "name": "egimB",
+                                "type": "double"
+                            },
+                            {
+                                "name": "r2",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "tahminGuvenilmezNedeni",
+                        "returnType": "QString"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "guvenilmezNedeni",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "tahminKarariVerilemez",
+                        "returnType": "bool"
                     },
                     {
                         "access": "public",
@@ -272,6 +307,34 @@
                         "designable": true,
                         "final": false,
                         "index": 3,
+                        "name": "hazirlaniyor",
+                        "notify": "hazirlikChanged",
+                        "read": "hazirlaniyor",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "name": "hazir",
+                        "notify": "hazirlikChanged",
+                        "read": "hazir",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 5,
                         "name": "sonStrokeGecerli",
                         "notify": "sonStrokeGecerliChanged",
                         "read": "sonStrokeGecerli",
@@ -285,7 +348,7 @@
                         "constant": false,
                         "designable": true,
                         "final": false,
-                        "index": 4,
+                        "index": 6,
                         "name": "sonStroke",
                         "notify": "sonStrokeChanged",
                         "read": "sonStroke",
@@ -299,7 +362,7 @@
                         "constant": false,
                         "designable": true,
                         "final": false,
-                        "index": 5,
+                        "index": 7,
                         "name": "ustKonumMm",
                         "notify": "konumSinirlariChanged",
                         "read": "ustKonumMm",
@@ -314,7 +377,7 @@
                         "constant": false,
                         "designable": true,
                         "final": false,
-                        "index": 6,
+                        "index": 8,
                         "name": "altKonumMm",
                         "notify": "konumSinirlariChanged",
                         "read": "altKonumMm",
@@ -341,6 +404,11 @@
                     {
                         "access": "public",
                         "name": "duraklatildiChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "hazirlikChanged",
                         "returnType": "void"
                     },
                     {

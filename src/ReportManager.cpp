@@ -295,14 +295,26 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
         + satir({ "Pompa maks. basıncı", ayarlar["pompaMaks"].toDouble() > 0 ? sayi(ayarlar["pompaMaks"].toDouble(), 1) + " bar" : "girilmedi" }));
 
     const double pompaMaksBar = ayarlar["pompaMaks"].toDouble();
+    const QString guvenilmezNedeni = SliperModel::tahminGuvenilmezNedeni(kesisimA, egimB, pqSonucu["r2"].toDouble());
+    const bool kararVerilemez = SliperModel::tahminKarariVerilemez(guvenilmezNedeni);
+    const bool dusukGuven = guvenilmezNedeni == "dusukR2";
     double enYuksekTahminBar = 0.0;   // hata payı üst sınırıyla en kötü durum
     if (!tahminSatirlari.isEmpty()) {
         QString icerik = satir({ "Q [m³/h]", "L [m]", "P [bar]", "Alt–Üst [bar]", "Pompa" }, true);
         for (const QVariant &kayit : tahminSatirlari) {
             const QVariantMap tahmin = kayit.toMap();
             enYuksekTahminBar = std::max(enYuksekTahminBar, tahmin["ustSinirBar"].toDouble());
-            const QString pompaDurumu = pompaMaksBar <= 0 ? "—" : (tahmin["pompaAsildi"].toBool()
-                ? "<span style='color:#dc2626;'><b>aşıldı</b></span>" : "<span style='color:#16a34a;'>uygun</span>");
+            QString pompaDurumu = "—";
+            if (pompaMaksBar > 0) {
+                if (kararVerilemez || tahmin["basincNegatif"].toBool())
+                    pompaDurumu = "<span style='color:#6b7280;'>geçersiz</span>";
+                else if (tahmin["pompaAsildi"].toBool())
+                    pompaDurumu = "<span style='color:#dc2626;'><b>aşıldı</b></span>";
+                else if (dusukGuven)
+                    pompaDurumu = "<span style='color:#b45309;'>uygun?</span>";
+                else
+                    pompaDurumu = "<span style='color:#16a34a;'>uygun</span>";
+            }
             icerik += satir({ sayi(tahmin["debi"].toDouble(), 1), sayi(tahmin["uzunluk"].toDouble(), 0),
                               "<b>" + sayi(tahmin["basincBar"].toDouble(), 2) + "</b>",
                               sayi(tahmin["altSinirBar"].toDouble(), 2) + " – " + sayi(tahmin["ustSinirBar"].toDouble(), 2),
@@ -360,12 +372,25 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
     QString durumMetni = "DEĞERLENDİRİLMEDİ (pompa maks. basıncı girilmedi)";
     if (!yeterliVeri) {
         durumMetni = "DEĞERLENDİRİLEMEDİ (yetersiz stroke verisi)";
+    } else if (kararVerilemez) {
+        durumMetni = guvenilmezNedeni == "egimNegatif"
+            ? "DEĞERLENDİRİLEMEDİ — P–Q eğimi (B) negatif, tahmin fiziksel değil. Ölçümü tekrarlayın."
+            : "DEĞERLENDİRİLEMEDİ — P–Q kesişimi (A) negatif, tahmin fiziksel değil. Ölçümü tekrarlayın.";
     } else if (pompaMaksBar > 0) {
         const bool pompaYeterli = enYuksekTahminBar <= pompaMaksBar;
-        durumRengi = pompaYeterli ? "#16a34a" : "#dc2626";
-        durumMetni = QString("%1 — en yüksek tahmin %2 bar / pompa %3 bar")
-            .arg(pompaYeterli ? "TÜM DURUMLARDA POMPALANABİLİR" : "BAZI DURUMLARDA POMPA KAPASİTESİ YETERSİZ",
-                 sayi(enYuksekTahminBar, 1), sayi(pompaMaksBar, 1));
+        if (!pompaYeterli) {
+            durumRengi = "#dc2626";
+            durumMetni = QString("BAZI DURUMLARDA POMPA KAPASİTESİ YETERSİZ — en yüksek tahmin %1 bar / pompa %2 bar")
+                .arg(sayi(enYuksekTahminBar, 1), sayi(pompaMaksBar, 1));
+        } else if (dusukGuven) {
+            durumRengi = "#b45309";
+            durumMetni = QString("POMPALANABİLİR — GÜVENİLİR DEĞİL (R² = %1) — en yüksek tahmin %2 bar / pompa %3 bar")
+                .arg(sayi(pqSonucu["r2"].toDouble(), 2), sayi(enYuksekTahminBar, 1), sayi(pompaMaksBar, 1));
+        } else {
+            durumRengi = "#16a34a";
+            durumMetni = QString("TÜM DURUMLARDA POMPALANABİLİR — en yüksek tahmin %1 bar / pompa %2 bar")
+                .arg(sayi(enYuksekTahminBar, 1), sayi(pompaMaksBar, 1));
+        }
     }
     html += QString("<p style='margin-top:16px;'><b>Durum:</b> <span style='color:%1; font-weight:bold;'>%2</span></p>")
                 .arg(durumRengi, durumMetni.toHtmlEscaped());
