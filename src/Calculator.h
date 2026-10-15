@@ -115,7 +115,7 @@ private:
     QVariantMap m_sonStroke;
     // Kalibre edilmemişken varsayılan: konum = sensörden uzaklık (Liya cihazında
     // sensör tepede sabit, reflektör çubuk borunun dibinde; orijinal SLIPER gibi).
-    double m_ustKonumMm = 100.0;
+    double m_ustKonumMm = 40.0;
     double m_altKonumMm = 540.0;
 
     QVector<Ornek> m_ustteBekleyenOrnekler;   // boru üstteyken son UST_TAMPON_S saniyelik örnekler

@@ -57,7 +57,6 @@ Rectangle {
         yogunluk: { tr: "Yoğunluk ρ (kg/m³)", en: "Density ρ (kg/m³)" },
         hataPayi: { tr: "Hata payı (%)", en: "Error bar tol. (%)" },
         pompaMaks: { tr: "Pompa maks. (bar)", en: "Pump max. (bar)" },
-        pompaIpucu: { tr: "tipik 85–130, yüksek basınç 200–250. h negatif = aşağı pompalama.", en: "typical 85–130, high pressure 200–250. Negative h = pumping downward." },
         hesaplaKaydet: { tr: "Tahmini Hesapla ve Kaydet", en: "Calculate and Save Forecast" },
         gecersizGirdi: { tr: "Geçersiz değer: tüm alanlar sayı olmalı, D > 0.", en: "Invalid value: all fields must be numbers, D > 0." },
         kaydedildi: { tr: "✓ Tahmin ayarları kaydedildi", en: "✓ Forecast preferences saved" },
@@ -85,7 +84,6 @@ Rectangle {
         regresyon: { tr: "Regresyon", en: "Regression" },
         oynat: { tr: "▶ Oynat", en: "▶ Play" },
         durdur: { tr: "⏸ Durdur", en: "⏸ Pause" },
-        tabloIpucu: { tr: "Kutucuk: stroke'u tahmine dahil et / çıkar. Satıra tıkla: seç, çift tıkla: eğrisini aç. Hatalı stroke'lar otomatik hariç tutulur.", en: "Checkbox: include / exclude the stroke from the forecast. Click a row to select, double-click to open its curve. Wrong strokes are excluded automatically." },
         no: { tr: "No", en: "No" },
         saat: { tr: "Saat", en: "Time" },
         sure: { tr: "Süre s", en: "Dur. s" },
@@ -114,7 +112,6 @@ Rectangle {
         uygun: { tr: "uygun", en: "ok" },
         asildi: { tr: "aşıldı", en: "exceeded" },
         tahminYok: { tr: "Tahmin için en az 2 geçerli stroke gerekir.", en: "At least 2 valid strokes are required for a forecast." },
-        modelNotu: { tr: "Model: P = 4L/D·a + 16·L·Q/(π·D³)·b + ρ·g·h   (a = d·A/4l, b = B·π·d³/16l;  d = %1 mm, l = %2 mm). Hata payı sürtünme kısmına uygulanır.", en: "Model: P = 4L/D·a + 16·L·Q/(π·D³)·b + ρ·g·h   (a = d·A/4l, b = B·π·d³/16l;  d = %1 mm, l = %2 mm). The error tolerance applies to the friction part." },
         tahmin: { tr: "Tahmin", en: "Forecast" },
         pompaCizgi: { tr: "Pompa maks.", en: "Pump max." },
         olcumBilgisi: { tr: "Ölçüm Bilgileri", en: "Measurement Information" },
@@ -626,7 +623,6 @@ Rectangle {
                                 Girdi { id: yogunlukAlani; width: ayarIzgarasi.hucre; etiket: txt("yogunluk") }
                                 Girdi { id: pompaAlani; width: ayarIzgarasi.hucre; etiket: txt("pompaMaks"); ipucu: "85–130" }
                             }
-                            Text { width: parent.width; text: txt("pompaIpucu"); color: "#4b5563"; font.family: "Segoe UI"; font.pixelSize: 9; wrapMode: Text.WordWrap }
                             Dugme {
                                 width: parent.width
                                 text: txt("hesaplaKaydet")
@@ -837,19 +833,9 @@ Rectangle {
                         id: tabloSekmesi
                         readonly property var kolonlar: [0.05, 0.05, 0.1, 0.07, 0.08, 0.08, 0.08, 0.08, 0.09, 0.09, 0.19, 0.04]
 
-                        Text {
-                            id: tabloIpucu
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            text: txt("tabloIpucu")
-                            color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11; wrapMode: Text.WordWrap
-                        }
-
                         Row {
                             id: tabloBasligi
-                            anchors.top: tabloIpucu.bottom
-                            anchors.topMargin: 10
+                            anchors.top: parent.top
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.leftMargin: 6
@@ -1138,12 +1124,6 @@ Rectangle {
                                         }
                                     }
                                 }
-                            }
-
-                            Text {
-                                width: parent.width
-                                text: txt("modelNotu").arg(calculator.sliperBoruCapiMm()).arg(calculator.sliperBoruUzunluguMm())
-                                color: "#4b5563"; font.family: "Segoe UI"; font.pixelSize: 10; wrapMode: Text.WordWrap
                             }
                         }
                     }

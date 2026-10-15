@@ -126,10 +126,8 @@ Rectangle {
 
     readonly property var metinlerBaslik: ({
         gecmisBaslik: { tr: "Geçmiş Kayıtlar", en: "History Records" },
-        gecmisAltBaslik: { tr: "Tamamlanan reoloji testlerinin arşivi", en: "Archive of completed rheology tests" },
         toplamKayit: { tr: "Toplam Kayıt", en: "Total Records" },
-        sonucBulunamadi: { tr: "Eşleşen kayıt bulunamadı", en: "No matching records found" },
-        sonucBulunamadiAlt: { tr: "Arama veya filtre koşullarını değiştirmeyi deneyin", en: "Try adjusting your search or filter criteria" }
+        sonucBulunamadi: { tr: "Eşleşen kayıt bulunamadı", en: "No matching records found" }
     })
 
     function txt2(anahtar) {
@@ -161,13 +159,6 @@ Rectangle {
                     font.pixelSize: 22
                     font.bold: true
                     font.letterSpacing: 0.3
-                }
-
-                Text {
-                    text: txt2("gecmisAltBaslik")
-                    color: "#6b7280"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 12
                 }
             }
 
@@ -600,14 +591,6 @@ Rectangle {
                 font.family: "Segoe UI"
                 font.pixelSize: 14
                 font.bold: true
-            }
-
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: txt2("sonucBulunamadiAlt")
-                color: "#4b5563"
-                font.family: "Segoe UI"
-                font.pixelSize: 12
             }
         }
     }

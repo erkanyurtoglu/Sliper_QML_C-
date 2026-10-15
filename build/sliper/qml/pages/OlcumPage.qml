@@ -57,6 +57,7 @@ Rectangle {
         uyariReceteSec: { tr: "Lütfen reçeteyi seçin veya yazın.", en: "Please select or type the mix design." },
         recetePlaceholder: { tr: "Seçin veya yazın (örn. C30/37, K-12)...", en: "Select or type (e.g. C30/37, M-12)..." },
         veriAkisiKesildi: { tr: "⚠ Veri akışı kesildi — cihazı ve Wi-Fi bağlantısını kontrol edin", en: "⚠ Data transfer interrupted — check the device and Wi-Fi connection" },
+        uyariStrokeKaydedilemedi: { tr: "Stroke %1 veritabanına kaydedilemedi!", en: "Stroke %1 could not be saved to the database!" },
         uyariCihazBagliDegil: { tr: "Cihaz bağlı değil. Lütfen önce sol alttan SLIPER-ESP32'ye bağlanın.", en: "Device not connected. Please connect to SLIPER-ESP32 from the bottom left first." },
         uyariAktifOlcumYok: { tr: "Aktif bir ölçüm yok. Önce ölçümü başlatın.", en: "No active measurement. Please start a measurement first." }
     })
@@ -179,7 +180,7 @@ Rectangle {
     signal olcumTamamlandi(int id)
     signal agirlikEklendi()
 
-    function resetMeasurementScreen() {
+    function resetMeasurementScreen() { //Ekranı temizleme fonksiyonu
         aktifOlcumId = -1
         uyariMesaji = ""
         bitirIcinDuraklatildi = false
@@ -213,9 +214,6 @@ Rectangle {
             return
         }
 
-        // Sensor verisi (veriGecerli) degil, TCP baglantisi kontrol edilir:
-        // sensorler takili olmasa bile (ornegin sadece Wi-Fi/TCP testi icin)
-        // ESP32'ye baglanildiysa olcum baslatilabilsin.
         if (!wifiManager.baglandi) {
             console.warn("ESP32'ye baglanti yok, olcum baslatilmadi.")
             uyariMesaji = txt("uyariCihazBagliDegil")
@@ -1465,7 +1463,10 @@ Rectangle {
                             }
                             function onStrokeTamamlandi(stroke) {
                                 if (aktifOlcumId > 0) {
-                                    database.strokeKaydet(aktifOlcumId, stroke, strokeAgirligi >= 0 ? strokeAgirligi : agirlikToplam)
+                                    var kayitId = database.strokeKaydet(aktifOlcumId, stroke, strokeAgirligi >= 0 ? strokeAgirligi : agirlikToplam)
+                                    if (kayitId <= 0) {
+                                        uyariMesaji = txt("uyariStrokeKaydedilemedi").arg(stroke.no)
+                                    }
                                 }
                                 strokeAgirligi = -1
                             }

@@ -70,9 +70,7 @@ Rectangle {
         ustKaydet: { tr: "Üst Konumu Kaydet", en: "Save Top Position" },
         altKaydet: { tr: "Alt Konumu Kaydet", en: "Save Bottom Position" },
         varsayilanaDon: { tr: "Varsayılana Dön", en: "Reset to Default" },
-        konumAralikHatasi: { tr: "✕ Üst ve alt konum arasında en az 100 mm fark olmalı", en: "✕ Top and bottom positions must differ by at least 100 mm" },
-        esikBilgisi: { tr: "Stroke başlangıcı: konum < %1 mm   ·   Stroke bitişi: konum ≤ %2 mm", en: "Stroke start: position < %1 mm   ·   Stroke end: position ≤ %2 mm" },
-        esikBilgisiTers: { tr: "Konum sensörden uzaklık olarak ölçülüyor.  Stroke başlangıcı: konum > %1 mm   ·   bitişi: konum ≥ %2 mm", en: "Position is measured as distance from the sensor.  Stroke start: position > %1 mm   ·   end: position ≥ %2 mm" },
+        konumAralikHatasi: { tr: "✕ Üst ve alt konum arasında en az 10 cm fark olmalı", en: "✕ Top and bottom positions must differ by at least 10 cm" },
         varsayilan: { tr: " (varsayılan)", en: " (default)" }
     })
 
@@ -679,7 +677,7 @@ Rectangle {
                             Text { anchors.horizontalCenter: parent.horizontalCenter; text: txt("anlikKonum"); color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 11; font.bold: true; font.letterSpacing: 1 }
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                text: sensorManager.veriGecerli ? sensorManager.konum.toFixed(1) + " mm" : "-- mm"
+                                text: sensorManager.veriGecerli ? (sensorManager.konum / 10).toFixed(1) + " cm" : "-- cm"
                                 color: "#f59e0b"
                                 font.family: "Segoe UI"
                                 font.pixelSize: 40
@@ -711,7 +709,7 @@ Rectangle {
                                 spacing: 2
                                 Text { text: modelData.ad; color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12 }
                                 Text {
-                                    text: modelData.deger.toFixed(1) + " mm" + (konumKayitliVar ? "" : txt("varsayilan"))
+                                    text: (modelData.deger / 10).toFixed(1) + " cm" + (konumKayitliVar ? "" : txt("varsayilan"))
                                     color: "#dce8f5"
                                     font.family: "Segoe UI"
                                     font.pixelSize: 18
@@ -754,18 +752,6 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        readonly property bool ters: calculator.ustKonumMm < calculator.altKonumMm
-                        text: txt(ters ? "esikBilgisiTers" : "esikBilgisi")
-                              .arg((calculator.ustKonumMm + (ters ? 5 : -5)).toFixed(0))
-                              .arg((calculator.altKonumMm + (ters ? -5 : 5)).toFixed(0))
-                        color: "#6b7280"
-                        font.family: "Segoe UI"
-                        font.pixelSize: 11
-                        horizontalAlignment: Text.AlignHCenter
-                    }
-
-                    Text {
-                        width: parent.width
                         visible: !sensorManager.veriGecerli
                         text: txt("cihazBagliDegilKalibrasyon")
                         color: "#f87171"
@@ -791,7 +777,7 @@ Rectangle {
                         height: 34
                         text: txt("varsayilanaDon")
                         font.pixelSize: 12
-                        onClicked: konumSinirlariniKaydet(100, 540)
+                        onClicked: konumSinirlariniKaydet(40, 540)
 
                         background: Rectangle {
                             radius: 8

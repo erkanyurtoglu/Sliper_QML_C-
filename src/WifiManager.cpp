@@ -145,9 +145,14 @@ void WifiManager::kalibrasyonYukle()
         m_egimBiasX = egimKal.value("biasX").toDouble();
         m_egimBiasY = egimKal.value("biasY").toDouble();
         m_egimBiasZ = egimKal.value("biasZ").toDouble();
-        m_egimGainX = egimKal.value("gainX").toDouble();
-        m_egimGainY = egimKal.value("gainY").toDouble();
-        m_egimGainZ = egimKal.value("gainZ").toDouble();
+        // Sıfır veya bozuk gain bölmede NaN/sonsuz üretir; o eksen düzeltmesiz (1.0) kullanılır.
+        auto gecerliGain = [](const QVariant &kayitliDeger) {
+            const double gain = kayitliDeger.toDouble();
+            return std::isfinite(gain) && std::abs(gain) > 1e-9 ? gain : 1.0;
+        };
+        m_egimGainX = gecerliGain(egimKal.value("gainX"));
+        m_egimGainY = gecerliGain(egimKal.value("gainY"));
+        m_egimGainZ = gecerliGain(egimKal.value("gainZ"));
         qDebug() << "Egim ivme kalibrasyonu yuklendi.";
     }
 }
@@ -352,8 +357,12 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
 
     // --- Konum ve basinc: kalibrasyon tablosu + load cell kuvveti / piston alani
     // (SliperModel bolum 1 ve 2). Mesafe kalibre edilmemisse ham deger gosterilir. ---
-    const double konumKalibreliMm = m_mesafeHamDegerleri.isEmpty()
-        ? hamMesafe
+    // TOF250 mesafeyi doğrudan mm gönderir ("mesafeMm"); eski analog lazerden
+    // kalan ham ADC kalibrasyon tablosu bu değere uygulanmaz.
+    const bool mesafeDogrudanMm = paket.contains("mesafeMm");
+    const double sensorCmdenMmCarpani = 10.0;
+    const double konumKalibreliMm = (mesafeDogrudanMm || m_mesafeHamDegerleri.isEmpty())
+        ? hamMesafe * sensorCmdenMmCarpani
         : SliperModel::kalibrasyonTablosundanOku(m_mesafeHamDegerleri, m_mesafeMmDegerleri, hamMesafe);
 
     // Mesafe sensörünün paket-paket gürültüsü burada bastırılır; bundan sonraki

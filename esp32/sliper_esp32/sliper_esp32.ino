@@ -4,7 +4,7 @@
  * Sensorler:
  *   - MPU6050        : Ham ivme (X/Y/Z)        -> I2C
  *   - HX711 + S-tipi load cell : Ham agirlik    -> Dijital (DT/SCK)
- *   - ATEK LMS lazer : Konum (ham ADC, Qt tarafinda mm'e kalibre ediliyor, ADS1115 uzerinden) -> I2C
+ *   - TOF250 lazer   : Konum (dogrudan mm)                   -> I2C (0x52)
  *
  * NOT: Turetilmis hesaplamalar (basinc kalibrasyonu, hiz, debi, egim acisi)
  * artik ESP32'de degil, Qt/PC tarafinda yapiliyor. ESP32 sadece ham veri
@@ -25,21 +25,32 @@
 #include <esp_system.h>
 
 // ---------------- Pin Tanimlari ----------------
-#define I2C_SDA 18
-#define I2C_SCL 17
+#define I2C_SDA 17
+#define I2C_SCL 18
 
 #define HX711_DT 39
-#define HX711_SCK 40
+#define HX711_SCK 38
 
-// Batarya voltaj olcumu: ADS1115'in 3. kanali (index 3) mesafe sensoru
-// icin kullaniliyor, bu yuzden batarya icin 0. kanal ayrildi.
+// TOF250 lazer mesafe sensoru (I2C, MPU6050/ADS1115 ile ayni hat).
+const uint8_t TOF250_I2C_ADRESI = 0x52;
+const uint8_t TOF250_MESAFE_REGISTERI = 0x00;
+// Ham degeri mm'ye ceviren carpan (sensor mm veriyor).
+const long TOF250_MM_CARPANI = 1;
+// Sensor 10 Hz olcum uretir.
+const unsigned long TOF250_OKUMA_ARALIGI_MS = 100;
+// Bu sure boyunca gecerli olcum gelmezse sensor kopuk sayilir.
+const unsigned long TOF250_ZAMAN_ASIMI_MS = 500;
+const long TOF250_MAKSIMUM_MM = 2500;
+
+// Batarya voltaj olcumu: ADS1115 A1 kanali (A0 eski analog lazerdendi).
+// Batarya bolucusu henuz bagli degil; A1 bos oldugu icin okunan deger anlamsizdir.
 // TODO: Gercek voltaj bolucu direnc degerleri (R1/R2) donanima baglanip
 // bir multimetreyle dogrulandiktan sonra Qt tarafindaki
 // SliperModel::BATARYA_BOLUCU_ORANI degeri (src/SliperModel.h) buna gore kalibre edilmelidir.
 // Su an bu deger yer tutucu (placeholder) bir varsayimdir.
 // DIKKAT: ADS1115 girisi VDD+0.3 V'u (3.6 V) asmamalidir. 14.7 V pil icin
 // en az 1:5 oraninda bolucu gerekir (ornegin 100k / 22k -> ~2.65 V).
-#define BATARYA_ADS_KANALI 0
+#define BATARYA_ADS_KANALI 1
 
 // ---------------- Nesneler ----------------
 Adafruit_MPU6050 mpu;
@@ -166,7 +177,7 @@ void setup() {
 // NOT: Kullanilan HX711 modulunde RATE pini kart uzerinde GND'ye sabit,
 // yani 10 SPS calisir: basinc saniyede 10 kez yenilenir, arada son deger
 // tekrar gonderilir. Stroke basina 13-46 basinc okumasi dusar, bu yeterlidir;
-// 10 SPS ayrica 50 Hz sebeke gurultusunu bastirir. Konum 50 Hz'de okunur.
+// 10 SPS ayrica 50 Hz sebeke gurultusunu bastirir. Konum (TOF250) 10 Hz'de okunur.
 const unsigned long ORNEK_ARALIGI_MS = 20;
 const unsigned long BATARYA_ARALIGI_MS = 1000;
 const unsigned long MPU_ARALIGI_MS = 100;
@@ -266,8 +277,45 @@ int16_t adsKanalOku(uint8_t kanal) {
     return ads.getLastConversionResults();
 }
 
-int16_t hamMesafeOku() {
-    return adsKanalOku(3);
+// TOF250 mesafe registerini (2 bayt, buyuk uclu) okur. Once repeated-start
+// denenir; sensor kabul etmezse STOP ile tekrar yazilir.
+bool tofHamMesafeOku(uint16_t &hamMesafe) {
+    Wire.beginTransmission(TOF250_I2C_ADRESI);
+    Wire.write(TOF250_MESAFE_REGISTERI);
+    if (Wire.endTransmission(false) != 0) {
+        Wire.beginTransmission(TOF250_I2C_ADRESI);
+        Wire.write(TOF250_MESAFE_REGISTERI);
+        if (Wire.endTransmission(true) != 0) return false;
+    }
+    if (Wire.requestFrom((int)TOF250_I2C_ADRESI, 2) != 2) return false;
+    const uint8_t yuksekBayt = Wire.read();
+    const uint8_t dusukBayt = Wire.read();
+    hamMesafe = ((uint16_t)yuksekBayt << 8) | dusukBayt;
+    return true;
+}
+
+long sonMesafeMm = 0;
+unsigned long sonMesafeZamaniMs = 0;
+unsigned long sonTofOkumaMs = 0;
+
+void tofMesafeGuncelle() {
+    if (millis() - sonTofOkumaMs < TOF250_OKUMA_ARALIGI_MS) return;
+    sonTofOkumaMs = millis();
+
+    uint16_t hamMesafe;
+    if (!tofHamMesafeOku(hamMesafe)) {
+        i2cHataSayaci++;
+        return;
+    }
+    const long mesafeMm = (long)hamMesafe * TOF250_MM_CARPANI;
+    if (mesafeMm <= TOF250_MAKSIMUM_MM) {
+        sonMesafeMm = mesafeMm;
+        sonMesafeZamaniMs = millis();
+    }
+}
+
+bool tofHazir() {
+    return sonMesafeZamaniMs != 0 && millis() - sonMesafeZamaniMs < TOF250_ZAMAN_ASIMI_MS;
 }
 
 int16_t hamBataryaOku() {
@@ -332,14 +380,13 @@ void loop() {
     i2cVeriYoluSagliginiKontrolEt();
 
     hamAgirlikGuncelle();
+    tofMesafeGuncelle();
 
     const unsigned long simdi = millis();
     if (simdi - sonOrnekMs < ORNEK_ARALIGI_MS) {
         return;
     }
     sonOrnekMs = simdi;
-
-    const int16_t hamMesafe = hamMesafeOku();
 
     if (simdi - sonBataryaMs >= BATARYA_ARALIGI_MS) {
         sonBataryaMs = simdi;
@@ -368,7 +415,9 @@ void loop() {
     // (paketin PC'ye varis zamani WiFi/TCP gecikmesi nedeniyle guvenilmez).
     doc["t"] = simdi;
     doc["hamAgirlik"] = sonHamAgirlik;
-    doc["hamMesafe"] = hamMesafe;
+    doc["hamMesafe"] = sonMesafeMm;
+    // Qt tarafi bu alani gorunce degeri kalibrasyon tablosuna sokmadan mm kabul eder.
+    doc["mesafeMm"] = sonMesafeMm;
     doc["hamBatarya"] = sonHamBatarya;
     doc["accelX"] = round(sonAccelX * 1000) / 1000.0;
     doc["accelY"] = round(sonAccelY * 1000) / 1000.0;
@@ -401,10 +450,11 @@ void loop() {
     // seri monitorde bu satir durursa loop() kilitlenmis demektir.
     if (simdi - sonDurumYazisiMs >= DURUM_YAZISI_ARALIGI_MS) {
         sonDurumYazisiMs = simdi;
-        Serial.printf("[%lus] istemci=%d gonderilen=%lu atlanan=%lu ads=%d mpu=%d hx=%d i2cHata=%lu i2cReset=%lu\n",
+        Serial.printf("[%lus] istemci=%d gonderilen=%lu atlanan=%lu tof=%d mesafe=%ldmm ads=%d mpu=%d hx=%d i2cHata=%lu i2cReset=%lu\n",
                       simdi / 1000,
                       (bagliIstemci && bagliIstemci.connected()) ? 1 : 0,
                       gonderilenPaketSayisi, atlananPaketSayisi,
+                      tofHazir() ? 1 : 0, sonMesafeMm,
                       adsHazir ? 1 : 0, mpuHazir ? 1 : 0,
                       loadCell.is_ready() ? 1 : 0,
                       i2cHataSayaci, i2cYenidenKurmaSayisi);
