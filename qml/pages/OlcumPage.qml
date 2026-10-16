@@ -480,11 +480,22 @@ Rectangle {
         anchors.fill: parent
         spacing: 0
 
-        Rectangle {
+        Flickable {
             id: testBilgileriPaneli
             width: 280
             height: parent.height
-            color: "#12121a"
+            contentWidth: width
+            contentHeight: anlikDegerlerIzgarasi.y + anlikDegerlerIzgarasi.height + 20
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+
+            Rectangle {
+                z: -1
+                width: testBilgileriPaneli.width
+                height: Math.max(testBilgileriPaneli.height, testBilgileriPaneli.contentHeight)
+                color: "#12121a"
+            }
 
             Text {
                 anchors.top: parent.top
@@ -504,7 +515,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.margins: 20
-                anchors.topMargin: 60
+                anchors.topMargin: 52
                 spacing: 6
 
                 Text {
@@ -917,7 +928,7 @@ Rectangle {
                 anchors.top: formAlanlari.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.topMargin: 20
+                anchors.topMargin: 14
                 anchors.leftMargin: 20
                 anchors.rightMargin: 20
                 height: 52
@@ -1012,7 +1023,7 @@ Rectangle {
                 id: anlikDegerlerBaslik
                 anchors.top: durumKarti.bottom
                 anchors.left: parent.left
-                anchors.topMargin: 24
+                anchors.topMargin: 16
                 anchors.leftMargin: 20
                 text: txt("anlikDegerler")
                 color: "#6b7280"
@@ -1023,6 +1034,7 @@ Rectangle {
             }
 
             Grid {
+                id: anlikDegerlerIzgarasi
                 anchors.top: anlikDegerlerBaslik.bottom
                 anchors.left: parent.left
                 anchors.topMargin: 12
