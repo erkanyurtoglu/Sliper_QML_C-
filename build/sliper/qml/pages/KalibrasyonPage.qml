@@ -160,6 +160,9 @@ Rectangle {
     function loadCellKaydetVeBildir() {
         var sirali = loadCellSiraliKopya(loadCellNoktalari)
         var basarili = database.loadCellNoktalariKaydet(sirali)
+        if (basarili) {
+            wifiManager.kalibrasyonYenidenYukle()
+        }
         loadCellBildirimBasarili = basarili
         loadCellBildirimMesaj = basarili ? txt("kalibrasyonKaydedildiMesaj") : txt("kalibrasyonKaydedilemediMesaj")
         loadCellBildirimGoster = true

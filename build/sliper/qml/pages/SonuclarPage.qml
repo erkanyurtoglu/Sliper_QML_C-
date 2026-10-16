@@ -37,15 +37,6 @@ Rectangle {
         gradyanB: { tr: "b (Pressure Gradient ×1000)", en: "b (Pressure Gradient ×1000)" },
         uyumKalitesi: { tr: "UYUM (R²)", en: "FIT (R²)" },
         kullanilanStroke: { tr: "KULLANILAN STROKE", en: "STROKES USED" },
-        uyarilarBaslik: { tr: "ÖLÇÜM KALİTESİ UYARILARI", en: "MEASUREMENT QUALITY WARNINGS" },
-        uyari_azStroke: { tr: "Yeterli geçerli stroke yok (en az 3; her yük için 3 stroke önerilir).", en: "Not enough valid strokes (at least 3; 3 per load recommended)." },
-        uyari_egimNegatif: { tr: "Eğim (B) negatif: debi arttıkça basınç düşüyor. Ayrışma/blokaj veya ölçüm hatası olabilir.", en: "Slope (B) is negative: pressure drops as flow rises. Possible segregation/blockage or measurement error." },
-        uyari_kesisimNegatif: { tr: "Kesişim (A) negatif: durağan basınç (P0) hatalı ölçülmüş olabilir.", en: "Intercept (A) is negative: static pressure (P0) may be wrong." },
-        uyari_dusukR2: { tr: "Uyum kalitesi düşük (R² < 0.90): noktalar doğrudan çok sapıyor.", en: "Low fit quality (R² < 0.90): points scatter strongly around the line." },
-        uyari_darDebiAraligi: { tr: "Debi aralığı dar: farklı ağırlıklarla stroke atın, aksi halde eğim güvenilir değil.", en: "Flow range too narrow: use different weights, otherwise the slope is unreliable." },
-        uyari_yukBasinaAzStroke: { tr: "Bazı yüklerde 3'ten az geçerli stroke var; kılavuz her yük için en az 3 stroke önerir.", en: "Some loads have fewer than 3 valid strokes; the manual recommends at least 3 strokes per load." },
-        uyari_tekYuk: { tr: "Tüm stroke'lar aynı ağırlıkla atılmış: en az iki farklı yük kullanın.", en: "All strokes used the same weight: use at least two different loads." },
-        uyari_cokGecersiz: { tr: "Stroke'ların %30'undan fazlası hatalı: boru sıkışması veya ayrışma belirtisi olabilir.", en: "More than 30% of strokes are invalid: possible pipe jamming or segregation." },
         tahminAyarlari: { tr: "TAHMİN AYARLARI", en: "FORECAST PREFERENCES" },
         q1: { tr: "Q1 (m³/h)", en: "Q1 (m³/h)" },
         q2: { tr: "Q2 (m³/h)", en: "Q2 (m³/h)" },
@@ -576,29 +567,6 @@ Rectangle {
                             DegerSatiri { width: sonucSutunu.width; etiket: txt("gradyanB"); deger: sonuc.yeterliVeri ? sayi(schleibingerB(sonuc.mu) * 1000, 3) : "—"; cizgi: "#7c3aed" }
                             DegerSatiri { width: sonucSutunu.width; etiket: txt("uyumKalitesi"); deger: sonuc.yeterliVeri ? sayi(sonuc.r2, 3) : "—"; cizgi: "#16a34a" }
                             DegerSatiri { width: sonucSutunu.width; etiket: txt("kullanilanStroke"); deger: (sonuc.n || 0) + " / " + (sonuc.toplamStroke || 0); cizgi: "#6b7280" }
-                        }
-                    }
-
-                    // --- Kalite uyarıları ---
-                    Kart {
-                        width: parent.width
-                        height: uyariSutunu.implicitHeight + 20
-                        visible: olcumId > 0 && sonuc.uyarilar !== undefined && sonuc.uyarilar.length > 0
-                        border.color: "#78350f"
-                        Column {
-                            id: uyariSutunu
-                            anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
-                            anchors.margins: 10
-                            spacing: 6
-                            KartBaslik { text: "⚠ " + txt("uyarilarBaslik"); color: "#f59e0b" }
-                            Repeater {
-                                model: sonuc.uyarilar || []
-                                Text {
-                                    width: uyariSutunu.width
-                                    text: "• " + (metinler["uyari_" + modelData] ? txt("uyari_" + modelData) : modelData)
-                                    color: "#fbbf24"; font.family: "Segoe UI"; font.pixelSize: 11; wrapMode: Text.WordWrap
-                                }
-                            }
                         }
                     }
 

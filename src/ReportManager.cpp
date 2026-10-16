@@ -50,7 +50,10 @@ QString uyariMetni(const QString &kod)
         { "darDebiAraligi", "Debi aralığı çok dar: farklı ağırlıklarla stroke atılmalı, aksi halde eğim güvenilir değil." },
         { "yukBasinaAzStroke", "Bazı yüklerde 3'ten az geçerli stroke var; kılavuz her yük için en az 3 stroke önerir." },
         { "tekYuk", "Tüm stroke'lar aynı ek ağırlıkla atılmış: en az iki farklı yük kullanılmalı." },
-        { "cokGecersiz", "Stroke'ların %30'undan fazlası geçersiz: boru sıkışması veya ayrışma belirtisi olabilir." }
+        { "cokGecersiz", "Stroke'ların %30'undan fazlası geçersiz: boru sıkışması veya ayrışma belirtisi olabilir." },
+        { "agirlikTepkisiZayif", "Eklenen ağırlık Pmax'ta görünmüyor: her kg Pmax'ı 7.6 mbar yükseltmeliydi. "
+                                 "Ağırlık load cell'e ulaşmıyor (kızak sürtünmesi, ağırlığın boruya oturmaması "
+                                 "veya load cell kalibrasyonu). Bu ölçümde eğim ölçülmüş değildir." }
     };
     return metinler.value(kod, kod);
 }

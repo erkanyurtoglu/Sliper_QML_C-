@@ -303,7 +303,7 @@ void Calculator::strokuBitir()
     }
     const double hizMs = SliperModel::strokeHiziMs(inisZamanlari, inisYukseklikleri);
     const double debiM3h = SliperModel::hizdanDebiM3h(hizMs);
-    const double pMaks = SliperModel::filtreliMaksimum(inisBasinclari);
+    const double pMaks = SliperModel::filtreliMaksimum(inisZamanlari, inisBasinclari);
     const double basincMbar = SliperModel::strokeBasinciMbar(pMaks, p0l);
 
     const int inisOrnekSayisi = sonInisIndeksi + 1;

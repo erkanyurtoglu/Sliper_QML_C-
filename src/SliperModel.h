@@ -145,7 +145,12 @@ constexpr double UST_TAMPON_S = 4.0;          // boru üstteyken hafızada tutul
 // P0l bu pencerenin ortalamasıdır. Pencere içinde basınç ya da konum bu
 // toleransları aşarsa pencere kayar, sakinleşene kadar HAZIR olunmaz.
 constexpr double HAZIRLAMA_SURESI_S = 2.0;
-constexpr double HAZIRLAMA_BASINC_TOLERANSI_MBAR = 10.0;
+// 1.6 kg ek ağırlık basıncı 12.2 mbar yükseltir. 10 mbar'lık eski tolerans bu
+// basamağın neredeyse tamamı kadardı: oturmamış, hâlâ sürüklenen bir taban
+// "sakin" sayılıp P0l olarak sabitlenebiliyordu ve bütün gürültü doğrudan
+// p = Pmax - P0l'e geçiyordu. Tolerans bir ağırlık basamağının belirgin
+// altında kalmalı.
+constexpr double HAZIRLAMA_BASINC_TOLERANSI_MBAR = 3.0;
 
 // --- 5. Stroke değerlendirme -----------------------------------------------------
 // Stroke hızı: strokun orta bölümünde (yolun HIZ_UYUM_ALT..HIZ_UYUM_UST kısmı)
@@ -157,15 +162,34 @@ constexpr double HIZ_UYUM_UST = 0.8;
 // zamanS ve yukseklikMm: iniş örnekleri (ilk = üst, son = alt referans). Dönüş: m/s
 double strokeHiziMs(const QVector<double> &zamanS, const QVector<double> &yukseklikMm);
 
-// Pmax: basınç eğrisi PMAKS_PENCERE örneklik merkezi hareketli ortalamayla
+// Pmax: basınç eğrisi PMAKS_PENCERE_S saniyelik merkezi hareketli ortalamayla
 // filtrelendikten sonraki en büyük değer (tek örnek gürültü tepelerini bastırır).
-// Örnekler 50 Hz gelir ama Liya cihazındaki HX711 modülü 10 SPS'te çalışır
-// (RATE pini modül üzerinde GND'ye sabit); her basınç değeri ~5 kez tekrarlanır.
-// 15 örnek = 0.3 s ≈ 3 gerçek HX711 okuması.
-constexpr int PMAKS_PENCERE = 15;
-double filtreliMaksimum(const QVector<double> &basincMbar, int pencere = PMAKS_PENCERE);
+//
+// ÖNEMLİ - pencere neden ÖRNEK SAYISI değil SÜRE: eskiden pencere 15 örnekti ve
+// bu "50 Hz'de 0.3 s" varsayımına dayanıyordu. Kayıtlı ham veri örneklerin
+// aslında ~4.5 Hz (0.22 s aralık) geldiğini gösteriyor; 15 örnek o hızda
+// 3.3 saniyelik ortalama demekti - stroke'un kendisinden (~2 s) uzun. Basınç
+// tepesi düz tabanla birlikte ortalanıp siliniyor, Pmax 30-70 mbar düşük
+// çıkıyordu. Kayıp her stroke'un süresine göre değiştiği için eklenen ağırlığın
+// sinyali (kg başına 7.6 mbar) gürültüye boğuluyor, P-Q eğimi negatife dönüyordu.
+// Süre tabanlı pencere örnekleme hızından bağımsızdır.
+constexpr double PMAKS_PENCERE_S = 0.30;
+// Pencere ayrıca en az bu kadar örnek içermelidir. Örnekler seyrek geldiğinde
+// (ölçülen ~4.5 Hz'de aralık 0.22 s) 0.3 s'lik pencereye yalnızca merkez örnek
+// düşer ve filtre hiç çalışmaz: Pmax ham tepe değeri olur, tek örneklik bir
+// gürültü sıçraması doğrudan sonuca girer. Asgari örnek şartı, örnekleme hızı
+// ne olursa olsun gürültü bastırmayı garanti eder; hızlı örneklemede ise
+// süre şartı baskın kalır ve pencere gereksiz genişlemez.
+constexpr int PMAKS_MIN_ORNEK = 3;
+// zamanS ve basincMbar: iniş örnekleri, aynı uzunlukta
+double filtreliMaksimum(const QVector<double> &zamanS, const QVector<double> &basincMbar,
+                        double pencereS = PMAKS_PENCERE_S);
 
-// P0l / P0r: durağan bölgedeki örneklerin aritmetik ortalaması.
+// P0l / P0r: durağan bölgedeki örneklerin ortanca (medyan) değeri.
+// Ortalama değil: durağan pencereye düşen tek bir sıçrama (operatörün boruya
+// dokunması, load cell'in ani kayması) ortalamayı doğrudan kaydırır ve P0l
+// hatası olduğu gibi p = Pmax - P0l'e geçer. Ortanca böyle tek tük
+// sıçramalardan etkilenmez, gerçek durağan seviyeyi verir.
 double durgunBasincMbar(const QVector<double> &basincMbar);
 
 // Stroke basıncı (Schleibinger Excel: p = pmax - P0l). P0l çıkarılarak
@@ -206,14 +230,38 @@ DogruUyumu pqDogrusu(const QVector<double> &debiM3h, const QVector<double> &basi
 //   tekYuk            : bütün stroke'lar aynı ek ağırlıkla
 //   yukBasinaAzStroke : bir ağırlıkta MIN_YUK_BASINA_STROKE'tan az stroke (kılavuz 5.3)
 //   cokGecersiz       : stroke'ların %MAKS_GECERSIZ_YUZDE'sinden fazlası geçersiz
+//   agirlikTepkisiZayif : eklenen ağırlık Pmax'ta görünmüyor (bkz. agirlikTepkiOrani)
 constexpr int MIN_STROKE_SAYISI = 3;
 constexpr double MIN_R2 = 0.9;
 constexpr double MIN_DEBI_ARALIGI_ORANI = 0.3;
 constexpr int MIN_YUK_BASINA_STROKE = 3;
 constexpr int MAKS_GECERSIZ_YUZDE = 30;
+
+// Ağırlık tepkisi: eklenen her kg piston alanına bindiği için Pmax'ı
+// agirliktanBasincMbar(1) = 7.62 mbar (128 mm boru) yükseltmek ZORUNDADIR.
+// Bu, reolojiden bağımsız, saf kuvvet/alan ilişkisidir; betonun kıvamı
+// değiştiremez. En hafif ve en ağır yük grubunun ortalama Pmax farkı ölçülür
+// ve beklenen farka bölünür:
+//
+//   oran = (Pmax_enAgir - Pmax_enHafif) / (agirlikFarkiKg * 7.62)
+//
+// Sağlam bir düzenekte oran ~1 çıkar. Belirgin altındaysa eklenen ağırlık
+// load cell'e ULAŞMIYOR demektir (kızak sürtünmesi, ağırlığın boruya tam
+// oturmaması, load cell kalibrasyon ölçeğinin hatalı olması). O durumda
+// P-Q doğrusunun eğimi ölçülen bir büyüklük değil yalnızca gürültüdür;
+// R² düşük ve B çoğunlukla negatif çıkar. Bu uyarı olmadan arıza sessiz
+// kalır, kullanıcı da sonucu reçeteye/betona yorar.
+//
+// agirlikBasinaOrtalamaPmax: ek ağırlık (0.1 kg anahtarlı) -> ortalama Pmax [mbar]
+// Dönüş: ölçülen/beklenen oranı; iki farklı yük yoksa NaN.
+constexpr double MIN_AGIRLIK_TEPKI_ORANI = 0.5;
+double agirlikTepkiOrani(const QHash<qint64, double> &agirlikBasinaOrtalamaPmax);
+
 // agirlikBasinaStrokeSayisi: ek ağırlık -> o ağırlıkla atılan kullanılan stroke sayısı
+// agirlikBasinaOrtalamaPmax: ek ağırlık -> o ağırlıktaki ortalama Pmax [mbar]
 QStringList olcumUyarilari(const DogruUyumu &pqCizgisi,
                            const QHash<qint64, int> &agirlikBasinaStrokeSayisi,
+                           const QHash<qint64, double> &agirlikBasinaOrtalamaPmax,
                            int toplamStrokeSayisi, int gecersizStrokeSayisi);
 
 // --- 8. a / b (borudan bağımsız parametreler) -----------------------------------

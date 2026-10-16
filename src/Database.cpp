@@ -383,7 +383,7 @@ QVariantMap Database::binghamHesapla(int olcumId)
 
     QSqlQuery sorgu;
     sorgu.prepare(
-        "SELECT basinc, debi, gecerli, secili, agirlik FROM Strokelar WHERE olcumId = :olcumId"
+        "SELECT basinc, debi, gecerli, secili, agirlik, pMaks FROM Strokelar WHERE olcumId = :olcumId"
     );
     sorgu.bindValue(":olcumId", olcumId);
 
@@ -392,6 +392,7 @@ QVariantMap Database::binghamHesapla(int olcumId)
     // Ek ağırlık 0.1 kg hassasiyetle anahtar yapılır (1.6 kg -> 16), kayan nokta
     // karşılaştırma hatası olmasın diye.
     QHash<qint64, int> agirlikBasinaStrokeSayisi;
+    QHash<qint64, double> agirlikBasinaPmaksToplami;
     int toplamStrokeSayisi = 0;
     int gecersizStrokeSayisi = 0;
 
@@ -406,7 +407,15 @@ QVariantMap Database::binghamHesapla(int olcumId)
             debilerM3h.append(sorgu.value("debi").toDouble());
             const qint64 agirlikAnahtari = qRound64(sorgu.value("agirlik").toDouble() * 10.0);
             agirlikBasinaStrokeSayisi[agirlikAnahtari] += 1;
+            agirlikBasinaPmaksToplami[agirlikAnahtari] += sorgu.value("pMaks").toDouble();
         }
+    }
+
+    // Ağırlık tepkisi kontrolü ortalama Pmax ile çalışır (bkz. SliperModel bölüm 7)
+    QHash<qint64, double> agirlikBasinaOrtalamaPmaks;
+    for (auto it = agirlikBasinaPmaksToplami.constBegin();
+         it != agirlikBasinaPmaksToplami.constEnd(); ++it) {
+        agirlikBasinaOrtalamaPmaks[it.key()] = it.value() / agirlikBasinaStrokeSayisi.value(it.key(), 1);
     }
 
     const int kullanilanStrokeSayisi = basinclarMbar.size();
@@ -429,6 +438,7 @@ QVariantMap Database::binghamHesapla(int olcumId)
     // Eski kayıtlarla uyum için sonuçta "tau0" = A (kesişim), "mu" = B (eğim) adıyla saklanır.
     const SliperModel::DogruUyumu pqCizgisi = SliperModel::pqDogrusu(debilerM3h, basinclarMbar);
     uyarilar = SliperModel::olcumUyarilari(pqCizgisi, agirlikBasinaStrokeSayisi,
+                                           agirlikBasinaOrtalamaPmaks,
                                            toplamStrokeSayisi, gecersizStrokeSayisi);
 
     sonuc["tau0"] = pqCizgisi.kesisimA;

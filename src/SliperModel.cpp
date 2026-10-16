@@ -2,6 +2,7 @@
 #include <QtMath>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 namespace SliperModel {
 
@@ -163,36 +164,62 @@ double strokeHiziMs(const QVector<double> &zamanS, const QVector<double> &yuksek
 // En yüksek basınç (Pmax).
 // Basınç sinyali titrer; tek bir anlık sıçramayı Pmax sanmamak için her noktanın
 // etrafındaki "pencere" kadar örneğin ortalaması alınır, bu ortalamaların en büyüğü seçilir.
-double filtreliMaksimum(const QVector<double> &basincMbar, int pencereGenisligi)
+// Pencere genişliği süreyle tanımlıdır, örnek sayısıyla değil; gerekçe SliperModel.h bölüm 5.
+double filtreliMaksimum(const QVector<double> &zamanS, const QVector<double> &basincMbar,
+                        double pencereS)
 {
-    const int ornekSayisi = basincMbar.size();
+    const int ornekSayisi = std::min(zamanS.size(), basincMbar.size());
     if (ornekSayisi == 0) return 0.0;
 
-    const int yariPencere = pencereGenisligi / 2;
+    const double yariPencereS = pencereS / 2.0;
     double enBuyukOrtalama = -1e300;
     for (int merkez = 0; merkez < ornekSayisi; ++merkez) {
-        const int pencereBasi = std::max(0, merkez - yariPencere);
-        const int pencereSonu = std::min(ornekSayisi - 1, merkez + yariPencere);
+        const double merkezZamaniS = zamanS[merkez];
+
+        // Örnekler zamana göre sıralı: merkezden iki yana pencere sınırına kadar yürünür
+        int pencereBasi = merkez;
+        while (pencereBasi > 0 && merkezZamaniS - zamanS[pencereBasi - 1] <= yariPencereS) {
+            --pencereBasi;
+        }
+        int pencereSonu = merkez;
+        while (pencereSonu < ornekSayisi - 1 && zamanS[pencereSonu + 1] - merkezZamaniS <= yariPencereS) {
+            ++pencereSonu;
+        }
+
+        // Süre şartı az örnek bıraktıysa pencere iki yana dengeli genişletilir
+        while (pencereSonu - pencereBasi + 1 < PMAKS_MIN_ORNEK
+               && (pencereBasi > 0 || pencereSonu < ornekSayisi - 1)) {
+            const bool solaGenislet = pencereBasi > 0
+                && (pencereSonu == ornekSayisi - 1
+                    || merkezZamaniS - zamanS[pencereBasi - 1] <= zamanS[pencereSonu + 1] - merkezZamaniS);
+            if (solaGenislet) --pencereBasi;
+            else ++pencereSonu;
+        }
 
         double penceredekiToplam = 0.0;
         for (int i = pencereBasi; i <= pencereSonu; ++i) {
             penceredekiToplam += basincMbar[i];
         }
-        const int penceredekiOrnekSayisi = pencereSonu - pencereBasi + 1;
-        const double penceredekiOrtalama = penceredekiToplam / penceredekiOrnekSayisi;
+        const double penceredekiOrtalama = penceredekiToplam / (pencereSonu - pencereBasi + 1);
 
         enBuyukOrtalama = std::max(enBuyukOrtalama, penceredekiOrtalama);
     }
     return enBuyukOrtalama;
 }
 
-// Durağan basınç (P0l veya P0r): boru hareketsizken ölçülen basınçların ortalaması.
+// Durağan basınç (P0l veya P0r): boru hareketsizken ölçülen basınçların ortancası.
+// Ortalama yerine ortanca alınır; gerekçe SliperModel.h bölüm 5'te.
 double durgunBasincMbar(const QVector<double> &basincMbar)
 {
     if (basincMbar.isEmpty()) return 0.0;
-    double toplam = 0.0;
-    for (double basinc : basincMbar) toplam += basinc;
-    return toplam / basincMbar.size();
+
+    QVector<double> siraliBasinclar = basincMbar;
+    std::sort(siraliBasinclar.begin(), siraliBasinclar.end());
+
+    const int ornekSayisi = siraliBasinclar.size();
+    const int ortaIndeks = ornekSayisi / 2;
+    if (ornekSayisi % 2 == 1) return siraliBasinclar[ortaIndeks];
+    return (siraliBasinclar[ortaIndeks - 1] + siraliBasinclar[ortaIndeks]) / 2.0;
 }
 
 // Hatalı stroke kontrolü. Boş metin = stroke geçerli.
@@ -242,8 +269,32 @@ DogruUyumu pqDogrusu(const QVector<double> &debiM3h, const QVector<double> &basi
 // =============================================================================
 //  7. Ölçüm kalitesi uyarıları
 // =============================================================================
+// Eklenen ağırlık Pmax'ta gerçekten görünüyor mu? Gerekçe SliperModel.h bölüm 7.
+double agirlikTepkiOrani(const QHash<qint64, double> &agirlikBasinaOrtalamaPmax)
+{
+    if (agirlikBasinaOrtalamaPmax.size() < 2) return std::numeric_limits<double>::quiet_NaN();
+
+    qint64 enHafifAnahtar = agirlikBasinaOrtalamaPmax.constBegin().key();
+    qint64 enAgirAnahtar = enHafifAnahtar;
+    for (auto it = agirlikBasinaOrtalamaPmax.constBegin();
+         it != agirlikBasinaOrtalamaPmax.constEnd(); ++it) {
+        enHafifAnahtar = std::min(enHafifAnahtar, it.key());
+        enAgirAnahtar = std::max(enAgirAnahtar, it.key());
+    }
+
+    // Anahtarlar 0.1 kg hassasiyetinde tam sayıdır (1.6 kg -> 16)
+    const double agirlikFarkiKg = (enAgirAnahtar - enHafifAnahtar) / 10.0;
+    if (agirlikFarkiKg <= 0.0) return std::numeric_limits<double>::quiet_NaN();
+
+    const double beklenenArtisMbar = agirliktanBasincMbar(agirlikFarkiKg);
+    const double olculenArtisMbar = agirlikBasinaOrtalamaPmax.value(enAgirAnahtar)
+                                    - agirlikBasinaOrtalamaPmax.value(enHafifAnahtar);
+    return olculenArtisMbar / beklenenArtisMbar;
+}
+
 QStringList olcumUyarilari(const DogruUyumu &pqCizgisi,
                            const QHash<qint64, int> &agirlikBasinaStrokeSayisi,
+                           const QHash<qint64, double> &agirlikBasinaOrtalamaPmax,
                            int toplamStrokeSayisi, int gecersizStrokeSayisi)
 {
     QStringList uyarilar;
@@ -256,6 +307,13 @@ QStringList olcumUyarilari(const DogruUyumu &pqCizgisi,
     const double debiAraligi = pqCizgisi.qMaks - pqCizgisi.qMin;
     if (pqCizgisi.qOrt > 0.0 && debiAraligi < MIN_DEBI_ARALIGI_ORANI * pqCizgisi.qOrt) {
         uyarilar << "darDebiAraligi";
+    }
+
+    // Ağırlık load cell'e ulaşmıyorsa eğim ölçülmüş değil, gürültüdür.
+    // Diğer uyarılardan (düşük R², negatif eğim) önce gelir: onların sebebi budur.
+    const double tepkiOrani = agirlikTepkiOrani(agirlikBasinaOrtalamaPmax);
+    if (!std::isnan(tepkiOrani) && tepkiOrani < MIN_AGIRLIK_TEPKI_ORANI) {
+        uyarilar.prepend("agirlikTepkisiZayif");
     }
 
     if (agirlikBasinaStrokeSayisi.size() < 2) uyarilar << "tekYuk";

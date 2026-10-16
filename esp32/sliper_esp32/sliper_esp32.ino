@@ -22,6 +22,7 @@
 #include <Adafruit_ADS1X15.h>
 #include <ArduinoJson.h>
 #include <WiFi.h>
+#include <lwip/sockets.h>
 #include <esp_system.h>
 
 // ---------------- Pin Tanimlari ----------------
@@ -190,14 +191,31 @@ unsigned long sonMpuMs = 0;
 long sonHamAgirlik = 0;
 unsigned long atlananPaketSayisi = 0;
 unsigned long gonderilenPaketSayisi = 0;
-unsigned long artArdaAtlananPaket = 0;
 unsigned long sonDurumYazisiMs = 0;
-// Tampon dolu raporlansa bile bu kadar paket ust uste atlandiysa yazma zorlanir.
-const unsigned long ZORLA_GONDER_ESIGI = 10;
 // Loop'un yasadigini gosteren saniyelik seri port ozeti.
 const unsigned long DURUM_YAZISI_ARALIGI_MS = 1000;
 int16_t sonHamBatarya = 0;
 float sonAccelX = 0, sonAccelY = 0, sonAccelZ = 0;
+
+// Gonderim tamponunda yer var mi: soketin yazilabilir olup olmadigini bekleme
+// suresi SIFIR ile sorar, hicbir zaman bloklamaz.
+//
+// availableForWrite() KULLANILMAZ: Print::availableForWrite() varsayilan olarak
+// 0 doner ("bir yazma bloklayabilir" demek) ve NetworkClient bunu ezmez. Eski
+// kod bu yuzden her paketi "tampon dolu" sayip atliyordu; yalnizca art arda 10
+// atlamadan sonraki zorla gonderim geciyordu. Sonuc: 20 ms yerine 11 x 20 =
+// 220 ms'de bir paket, yani 50 Hz yerine 4.5 Hz veri (bkz. SliperModel.h,
+// PMAKS_PENCERE_S).
+bool soketYazmayaHazir(NetworkClient &istemci) {
+    const int soket = istemci.fd();
+    if (soket < 0) return false;
+
+    fd_set yazmaKumesi;
+    FD_ZERO(&yazmaKumesi);
+    FD_SET(soket, &yazmaKumesi);
+    struct timeval beklemeYok = {0, 0};
+    return select(soket + 1, NULL, &yazmaKumesi, NULL, &beklemeYok) > 0;
+}
 
 // Bloklamaz: HX711 yeni donusum hazirsa okur, degilse son degeri korur.
 void hamAgirlikGuncelle() {
@@ -432,16 +450,10 @@ void loop() {
     // baglantiyi koparir. Tamponda yer yoksa bu paket atlanir: 50 Hz'de tek
     // ornegin kaybi onemsiz, baglantinin kopmasi degil.
     if (bagliIstemci && bagliIstemci.connected()) {
-        // ESP32 core surumlerinin bir kismi availableForWrite()'i her zaman
-        // dogru raporlamaz; sirf bu yuzden hic veri gonderilmemesini onlemek
-        // icin art arda belli sayida atlamadan sonra yazma yine de denenir.
-        const bool tamponYeterli = bagliIstemci.availableForWrite() >= (int)json.length();
-        if (tamponYeterli || artArdaAtlananPaket >= ZORLA_GONDER_ESIGI) {
+        if (soketYazmayaHazir(bagliIstemci)) {
             bagliIstemci.print(json);
-            artArdaAtlananPaket = 0;
             gonderilenPaketSayisi++;
         } else {
-            artArdaAtlananPaket++;
             atlananPaketSayisi++;
         }
     }
