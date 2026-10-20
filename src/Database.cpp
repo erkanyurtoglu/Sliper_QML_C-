@@ -75,6 +75,9 @@ void Database::tablolariOlustur()
     kolonEkle("Olcumler", "yer", "TEXT DEFAULT ''");
     kolonEkle("Olcumler", "yorum", "TEXT DEFAULT ''");
     kolonEkle("Olcumler", "tahminAyarlari", "TEXT DEFAULT ''");
+    // Olcum sirasinda uygulanan dara (mbar). A/a bu kadar kaydirildigi icin
+    // raporda belgelenir; eski kayitlarda dara yoktur, 0 kalir.
+    kolonEkle("Olcumler", "daraBasinci", "REAL DEFAULT 0");
 
     // Orijinal SLIPER stroke kaydı: Date, Time, Duration, pmax, P0l, P0r, p, Q
     // + ham eğri (başlangıçtan 2 s önce - bitişten 2 s sonra) ve tahmine dahil/hariç bilgisi
@@ -185,6 +188,22 @@ bool Database::olcumBilgisiGuncelle(int olcumId, const QString &yer, const QStri
 
     if (!sorgu.exec()) {
         qWarning() << "Olcum bilgisi guncellenemedi:" << sorgu.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool Database::olcumDarasiKaydet(int olcumId, double daraBasinciMbar)
+{
+    if (olcumId <= 0) return false;
+
+    QSqlQuery sorgu;
+    sorgu.prepare("UPDATE Olcumler SET daraBasinci = :daraBasinci WHERE id = :id");
+    sorgu.bindValue(":daraBasinci", daraBasinciMbar);
+    sorgu.bindValue(":id", olcumId);
+
+    if (!sorgu.exec()) {
+        qWarning() << "Olcum darasi kaydedilemedi:" << sorgu.lastError().text();
         return false;
     }
     return true;
@@ -611,7 +630,8 @@ QVariantMap Database::olcumBilgisiGetir(int olcumId)
     QVariantMap sonuc;
 
     QSqlQuery sorgu;
-    sorgu.prepare("SELECT tarih, musteri, recete, agirlik, yer, yorum FROM Olcumler WHERE id = :id");
+    sorgu.prepare("SELECT tarih, musteri, recete, agirlik, yer, yorum, daraBasinci "
+                  "FROM Olcumler WHERE id = :id");
     sorgu.bindValue(":id", olcumId);
 
     if (sorgu.exec() && sorgu.next()) {
@@ -621,6 +641,7 @@ QVariantMap Database::olcumBilgisiGetir(int olcumId)
         sonuc["agirlik"] = sorgu.value("agirlik");
         sonuc["yer"] = sorgu.value("yer").toString();
         sonuc["yorum"] = sorgu.value("yorum").toString();
+        sonuc["daraBasinci"] = sorgu.value("daraBasinci").toDouble();
         sonuc["bulundu"] = true;
     } else {
         sonuc["bulundu"] = false;

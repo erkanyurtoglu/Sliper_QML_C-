@@ -79,6 +79,24 @@ constexpr double agirliktanBasincMbar(double kutleKg)
     return kutleKg * YERCEKIMI / BORU_ALANI_M2 / 100.0;
 }
 
+// Dara (sıfır kayması): load cell'in sıfır noktası sıcaklıkla ve mekanik
+// oturmayla kayar, boru yüksüzken basınç 0 yerine birkaç mbar okunur. Dara bu
+// kaymayı siler; kalibrasyon tablosuna dokunmaz, tablodan çıkan basınca
+// uygulanan sabit bir çıkarmadır.
+//
+// Sabit kayma P-Q doğrusunun kesişimini (A, dolayısıyla a) tam dara kadar
+// aşağı indirir. Eğim (B/b) ve agirlikTepkiOrani sabit kaymadan etkilenmez,
+// çünkü ikisi de fark üzerinden hesaplanır.
+//
+// Dara YALNIZCA yüksüz durumda (boş boru yerinde, ek ağırlık ve beton yok)
+// alınabilir. Boruda beton varken alınan dara gerçek basıncı siler, a
+// olduğundan küçük çıkar ve bu hata agirlikTepkiOrani uyarısıyla da
+// yakalanamaz (yük grupları arasındaki fark değişmez). Üst sınır bu kazayı
+// engeller: sıfır kayması hiçbir zaman bu kadar büyük olmaz, boruyu dolduran
+// beton ise her zaman daha ağırdır.
+constexpr double DARA_UST_SINIRI_KG = 2.0;
+constexpr double DARA_UST_SINIRI_MBAR = agirliktanBasincMbar(DARA_UST_SINIRI_KG);
+
 // --- 3. Debi ------------------------------------------------------------------
 // Q [m3/h] = A [m2] * v [m/s] * 3600
 constexpr double hizdanDebiM3h(double hizMs)

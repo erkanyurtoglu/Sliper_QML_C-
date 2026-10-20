@@ -114,6 +114,21 @@
                 },
                 {
                     "access": "public",
+                    "arguments": [
+                        {
+                            "name": "olcumId",
+                            "type": "int"
+                        },
+                        {
+                            "name": "daraBasinciMbar",
+                            "type": "double"
+                        }
+                    ],
+                    "name": "olcumDarasiKaydet",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
                     "name": "tumOlcumleriGetir",
                     "returnType": "QVariantList"
                 },

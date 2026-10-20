@@ -17,6 +17,8 @@ public:
     Q_INVOKABLE bool olcumBilgisiGuncelle(int olcumId, const QString &yer, const QString &musteri,
                                           const QString &recete, const QString &yorum);
     Q_INVOKABLE bool olcumSil(int olcumId);
+    // Ölçüm sırasında uygulanan dara (mbar); raporda belgelenir.
+    Q_INVOKABLE bool olcumDarasiKaydet(int olcumId, double daraBasinciMbar);
     Q_INVOKABLE QVariantList tumOlcumleriGetir();
     Q_INVOKABLE QVariantMap olcumBilgisiGetir(int olcumId);
 

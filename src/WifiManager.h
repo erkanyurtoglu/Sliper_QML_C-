@@ -13,6 +13,8 @@ class WifiManager : public QObject
     Q_PROPERTY(bool baglandi READ baglandi NOTIFY baglandiChanged)
     Q_PROPERTY(bool baglaniyor READ baglaniyor NOTIFY baglaniyorChanged)
     Q_PROPERTY(QString durumMesaji READ durumMesaji NOTIFY durumMesajiChanged)
+    Q_PROPERTY(double daraBasinciMbar READ daraBasinciMbar NOTIFY daraBasinciMbarChanged)
+    Q_PROPERTY(double daraUstSiniriMbar READ daraUstSiniriMbar CONSTANT)
 
 public:
     explicit WifiManager(SensorManager *sensorManager, Database *database, QObject *parent = nullptr);
@@ -20,15 +22,24 @@ public:
     bool baglandi() const;
     bool baglaniyor() const;
     QString durumMesaji() const;
+    double daraBasinciMbar() const;
+    double daraUstSiniriMbar() const;
 
     Q_INVOKABLE void baglan();
     Q_INVOKABLE void baglantiyiKes();
     Q_INVOKABLE void kalibrasyonYenidenYukle();
 
+    // Guncel (darasiz) basinci dara olarak alir. Yuksuz durumda cagrilmalidir;
+    // gerekcesi ve ust sinir SliperModel.h bolum 2'de.
+    // Donus: true kaydedildi, false reddedildi (veri yok veya ust sinir asildi).
+    Q_INVOKABLE bool daraAl();
+    Q_INVOKABLE void daraSifirla();
+
 signals:
     void baglandiChanged();
     void baglaniyorChanged();
     void durumMesajiChanged();
+    void daraBasinciMbarChanged();
     // Orijinal SLIPER'daki "2 saat hareketsizlikten sonra otomatik kapanma"
     // davranışının yazılımsal karşılığı: gerçek donanımsal güç kesme yerine,
     // uzun süre veri akışı olmayınca bağlantı otomatik kesilip kullanıcı
@@ -72,6 +83,15 @@ private:
     double m_filtreliHamAgirlik = 0.0;
     double m_oncekiGelenHamAgirlik = 0.0;
     bool m_agirlikFiltresiBasladi = false;
+
+    // --- Dara ---
+    // Son pakette kalibrasyon tablosundan cikan, dara uygulanmamis basinc:
+    // daraAl() bu degeri dara olarak alir.
+    double m_darasizBasincMbar = 0.0;
+    // Uygulanan dara. Sifir kaymasi oturuma/sicakliga bagli oldugu icin
+    // veritabanina yazilmaz; uygulama kapanirsa dusurulur. Baglanti kopup
+    // yeniden kurulursa korunur, olcum ortasinda dara kaybolmasin.
+    double m_daraBasinciMbar = 0.0;
     double m_zamanOfsetiMs = 0.0;
     bool m_zamanBasladi = false;
     double m_konumYonu = -1.0;  // +1: konum = yükseklik, -1: konum = sensörden uzaklık

@@ -105,6 +105,48 @@ void WifiManager::kalibrasyonYenidenYukle()
     kalibrasyonYukle();
 }
 
+double WifiManager::daraBasinciMbar() const
+{
+    return m_daraBasinciMbar;
+}
+
+double WifiManager::daraUstSiniriMbar() const
+{
+    return SliperModel::DARA_UST_SINIRI_MBAR;
+}
+
+bool WifiManager::daraAl()
+{
+    // Veri akmiyorken alinan dara eski/anlamsiz bir basinci sabitler.
+    if (!m_sensorManager || !m_sensorManager->veriGecerli()) {
+        qWarning() << "Dara alinamadi: gecerli sensor verisi yok.";
+        return false;
+    }
+
+    // Dara olarak alinacak deger, o anda uygulanan daradan bagimsiz olmali;
+    // aksi halde ust uste basmak darayi birikterek buyutur.
+    const double yeniDara = m_darasizBasincMbar;
+
+    if (std::abs(yeniDara) > SliperModel::DARA_UST_SINIRI_MBAR) {
+        qWarning() << "Dara reddedildi, ust sinir asildi:" << yeniDara << "mbar >"
+                   << SliperModel::DARA_UST_SINIRI_MBAR << "mbar";
+        return false;
+    }
+
+    m_daraBasinciMbar = yeniDara;
+    emit daraBasinciMbarChanged();
+    qDebug() << "Dara alindi:" << m_daraBasinciMbar << "mbar";
+    return true;
+}
+
+void WifiManager::daraSifirla()
+{
+    if (m_daraBasinciMbar == 0.0) return;
+    m_daraBasinciMbar = 0.0;
+    emit daraBasinciMbarChanged();
+    qDebug() << "Dara sifirlandi.";
+}
+
 void WifiManager::kalibrasyonYukle()
 {
     if (!m_database) return;
@@ -389,7 +431,10 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
 
     const double agirlikKg =
         SliperModel::kalibrasyonTablosundanOku(m_loadCellHamDegerleri, m_loadCellKiloDegerleri, hamAgirlik);
-    const double basincMbar = SliperModel::agirliktanBasincMbar(agirlikKg);
+    // Darasiz basinc daraAl() icin saklanir; ekran, grafik ve stroke hesabi
+    // dara uygulanmis degeri gorur (SliperModel bolum 2).
+    m_darasizBasincMbar = SliperModel::agirliktanBasincMbar(agirlikKg);
+    const double basincMbar = m_darasizBasincMbar - m_daraBasinciMbar;
 
     // --- Zaman: ESP32 zaman damgasi (ms). Paketin PC'ye varis zamani
     // kullanilmaz; TCP birden fazla satiri ayni anda teslim edebilir. ---

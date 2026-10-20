@@ -408,7 +408,12 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
                   ? sayi(konumSinirlari["deger1"].toDouble(), 1) + " / " + sayi(konumSinirlari["deger2"].toDouble(), 1) + " mm"
                   : "kalibre edilmedi (varsayılan)" })
         + satir({ "Load cell kalibrasyonu", tarihVeyaCizgi(m_database->kalibrasyonTarihiGetir("loadcell")) })
-        + satir({ "Mesafe sensörü kalibrasyonu", tarihVeyaCizgi(m_database->kalibrasyonTarihiGetir("mesafe_olcum")) }));
+        + satir({ "Mesafe sensörü kalibrasyonu", tarihVeyaCizgi(m_database->kalibrasyonTarihiGetir("mesafe_olcum")) })
+        // Dara, basıncın tamamını sabit miktarda kaydırır; A ve a tam bu kadar
+        // düşüktür. Sonuç bu bilgi olmadan yorumlanamaz.
+        + satir({ "Uygulanan dara", bilgi["daraBasinci"].toDouble() != 0.0
+                  ? sayi(bilgi["daraBasinci"].toDouble(), 2) + " mbar (A ve a bu kadar düşüktür)"
+                  : "yok" }));
 
     html += "<hr style='border:none; border-top:1px solid #d1d5db; margin-top:20px;'>"
             "<p style='color:#6b7280; font-size:8pt;'>Liya Laboratuvar Test Cihazları - SLIPER Analiz Sistemi</p>"

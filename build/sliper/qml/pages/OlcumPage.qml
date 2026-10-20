@@ -63,7 +63,14 @@ Rectangle {
         veriAkisiKesildi: { tr: "⚠ Veri akışı kesildi — cihazı ve Wi-Fi bağlantısını kontrol edin", en: "⚠ Data transfer interrupted — check the device and Wi-Fi connection" },
         uyariStrokeKaydedilemedi: { tr: "Stroke %1 veritabanına kaydedilemedi!", en: "Stroke %1 could not be saved to the database!" },
         uyariCihazBagliDegil: { tr: "Cihaz bağlı değil. Lütfen önce sol alttan SLIPER-ESP32'ye bağlanın.", en: "Device not connected. Please connect to SLIPER-ESP32 from the bottom left first." },
-        uyariAktifOlcumYok: { tr: "Aktif bir ölçüm yok. Önce ölçümü başlatın.", en: "No active measurement. Please start a measurement first." }
+        uyariAktifOlcumYok: { tr: "Aktif bir ölçüm yok. Önce ölçümü başlatın.", en: "No active measurement. Please start a measurement first." },
+        daraAlButon: { tr: "DARA AL", en: "TARE" },
+        daraSifirlaButon: { tr: "↺", en: "↺" },
+        daraEtiket: { tr: "Dara: ", en: "Tare: " },
+        daraYok: { tr: "Dara yok", en: "No tare" },
+        uyariDaraVeriYok: { tr: "Dara alınamadı: cihazdan geçerli veri gelmiyor.", en: "Tare failed: no valid data from the device." },
+        uyariDaraCokBuyuk: { tr: "Dara alınamadı: basınç %1 mbar, sınır %2 mbar. Load cell yüklü görünüyor — boruyu boşaltıp ağırlıkları kaldırın.", en: "Tare failed: pressure is %1 mbar, limit %2 mbar. The load cell appears loaded — empty the pipe and remove the weights." },
+        uyariDaraStrokeVar: { tr: "Dara bu ölçümde değiştirilemez: kaydedilmiş stroke'lar darasız ölçüldü, karıştırılırsa P-Q doğrusu bozulur. Daranın değişmesi gerekiyorsa ölçümü bitirip yeni bir ölçüm başlatın.", en: "The tare cannot be changed in this measurement: the recorded strokes were measured without it, and mixing them would corrupt the P-Q line. If the tare must change, finish this measurement and start a new one." }
     })
 
     function txt(anahtar) {
@@ -236,6 +243,59 @@ Rectangle {
             ""
         )
         console.log("Aktif olcum id:", aktifOlcumId)
+        daraVeritabaninaYaz()
+    }
+
+    // Dara, boru yüksüzken basıncı 0'a çeker (load cell sıfır kayması). Alınan
+    // değer aktif ölçümle birlikte saklanır, çünkü P-Q doğrusunun kesişimi
+    // (A, dolayısıyla a) tam dara kadar kayar. Gerekçe ve üst sınır:
+    // SliperModel.h bölüm 2.
+    //
+    // Stroke kaydedildikten sonra dara kilitlenir: aynı P-Q doğrusuna darasız
+    // ve daralı stroke'lar girerse sabit kayma yalnızca bir kısmına uygulanmış
+    // olur, doğru bozulur ve bu sonradan hiçbir kayıttan anlaşılamaz.
+    function daraDegistirilebilir() {
+        return aktifOlcumId <= 0 || calculator.strokeSayisi === 0
+    }
+
+    function daraAl() {
+        if (!daraDegistirilebilir()) {
+            uyariMesaji = txt("uyariDaraStrokeVar")
+            return
+        }
+
+        if (wifiManager.daraAl()) {
+            uyariMesaji = ""
+            daraVeritabaninaYaz()
+            return
+        }
+
+        if (!sensorManager.veriGecerli) {
+            uyariMesaji = txt("uyariDaraVeriYok")
+            return
+        }
+
+        // Reddedilen aday, o anda uygulanan daradan bağımsız olan darasız basınç
+        var darasizBasinc = sensorManager.basinc + wifiManager.daraBasinciMbar
+        uyariMesaji = txt("uyariDaraCokBuyuk")
+            .arg(darasizBasinc.toFixed(1))
+            .arg(wifiManager.daraUstSiniriMbar.toFixed(1))
+    }
+
+    function daraSifirla() {
+        if (!daraDegistirilebilir()) {
+            uyariMesaji = txt("uyariDaraStrokeVar")
+            return
+        }
+        wifiManager.daraSifirla()
+        uyariMesaji = ""
+        daraVeritabaninaYaz()
+    }
+
+    function daraVeritabaninaYaz() {
+        if (aktifOlcumId > 0) {
+            database.olcumDarasiKaydet(aktifOlcumId, wifiManager.daraBasinciMbar)
+        }
     }
 
     function bitirTalebiGoster() {
@@ -485,7 +545,7 @@ Rectangle {
             width: 280
             height: parent.height
             contentWidth: width
-            contentHeight: anlikDegerlerIzgarasi.y + anlikDegerlerIzgarasi.height + 20
+            contentHeight: daraDurumu.y + daraDurumu.height + 20
             clip: true
             boundsBehavior: Flickable.StopAtBounds
             ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
@@ -1230,6 +1290,92 @@ Rectangle {
                         }
                     }
                 }
+            }
+
+            Row {
+                id: daraSatiri
+                anchors.top: anlikDegerlerIzgarasi.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 10
+                anchors.leftMargin: 20
+                width: anlikDegerlerIzgarasi.width
+                spacing: 8
+
+                Button {
+                    id: daraAlButonu
+                    width: daraSatiri.width - daraSifirlaButonu.width - daraSatiri.spacing
+                    height: 34
+                    enabled: wifiManager.baglandi && sensorManager.veriGecerli && daraDegistirilebilir()
+                    text: txt("daraAlButon")
+                    font.family: "Segoe UI"
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1
+
+                    onClicked: daraAl()
+
+                    background: Rectangle {
+                        radius: 8
+                        color: !daraAlButonu.enabled ? "#1f2937" : (daraAlButonu.pressed ? "#334155" : (daraAlButonu.hovered ? "#475569" : "#374151"))
+                        border.color: "#1e2a3f"
+                        border.width: 1
+                        opacity: daraAlButonu.enabled ? 1.0 : 0.5
+                    }
+
+                    contentItem: Text {
+                        text: daraAlButonu.text
+                        color: "#dce8f5"
+                        opacity: daraAlButonu.enabled ? 1.0 : 0.6
+                        font: daraAlButonu.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Button {
+                    id: daraSifirlaButonu
+                    width: 40
+                    height: 34
+                    enabled: wifiManager.daraBasinciMbar !== 0 && daraDegistirilebilir()
+                    text: txt("daraSifirlaButon")
+                    font.family: "Segoe UI"
+                    font.pixelSize: 14
+
+                    onClicked: daraSifirla()
+
+                    background: Rectangle {
+                        radius: 8
+                        color: !daraSifirlaButonu.enabled ? "#1f2937" : (daraSifirlaButonu.pressed ? "#7f1d1d" : (daraSifirlaButonu.hovered ? "#b91c1c" : "#991b1b"))
+                        border.color: "#1e2a3f"
+                        border.width: 1
+                        opacity: daraSifirlaButonu.enabled ? 1.0 : 0.4
+                    }
+
+                    contentItem: Text {
+                        text: daraSifirlaButonu.text
+                        color: "#dce8f5"
+                        opacity: daraSifirlaButonu.enabled ? 1.0 : 0.6
+                        font: daraSifirlaButonu.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+            }
+
+            Text {
+                id: daraDurumu
+                anchors.top: daraSatiri.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 6
+                anchors.leftMargin: 20
+                width: anlikDegerlerIzgarasi.width
+                text: wifiManager.daraBasinciMbar !== 0
+                      ? txt("daraEtiket") + wifiManager.daraBasinciMbar.toFixed(2) + " mbar"
+                      : txt("daraYok")
+                color: wifiManager.daraBasinciMbar !== 0 ? "#fbbf24" : "#4b5563"
+                font.family: "Segoe UI"
+                font.pixelSize: 11
+                wrapMode: Text.WordWrap
             }
         }
 

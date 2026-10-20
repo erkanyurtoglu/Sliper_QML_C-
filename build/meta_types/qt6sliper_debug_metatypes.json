@@ -565,6 +565,21 @@
                     },
                     {
                         "access": "public",
+                        "arguments": [
+                            {
+                                "name": "olcumId",
+                                "type": "int"
+                            },
+                            {
+                                "name": "daraBasinciMbar",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "olcumDarasiKaydet",
+                        "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
                         "name": "tumOlcumleriGetir",
                         "returnType": "QVariantList"
                     },
@@ -1685,6 +1700,16 @@
                         "access": "public",
                         "name": "kalibrasyonYenidenYukle",
                         "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "daraAl",
+                        "returnType": "bool"
+                    },
+                    {
+                        "access": "public",
+                        "name": "daraSifirla",
+                        "returnType": "void"
                     }
                 ],
                 "object": true,
@@ -1730,6 +1755,33 @@
                         "stored": true,
                         "type": "QString",
                         "user": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 3,
+                        "name": "daraBasinciMbar",
+                        "notify": "daraBasinciMbarChanged",
+                        "read": "daraBasinciMbar",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 4,
+                        "name": "daraUstSiniriMbar",
+                        "read": "daraUstSiniriMbar",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "double",
+                        "user": false
                     }
                 ],
                 "qualifiedClassName": "WifiManager",
@@ -1747,6 +1799,11 @@
                     {
                         "access": "public",
                         "name": "durumMesajiChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "daraBasinciMbarChanged",
                         "returnType": "void"
                     },
                     {
