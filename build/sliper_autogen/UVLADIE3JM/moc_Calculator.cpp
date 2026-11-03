@@ -72,6 +72,9 @@ constexpr auto qt_meta_stringdata_CLASSCalculatorENDCLASS = QtMocHelpers::string
     "r2",
     "tahminKarariVerilemez",
     "guvenilmezNedeni",
+    "pompaSorunuNedeni",
+    "tahminSatiri",
+    "pompaMaksBar",
     "schleibingerA",
     "schleibingerB",
     "ustYakalamaToleransiMm",
@@ -101,41 +104,42 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSCalculatorENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      25,   14, // methods
-       9,  237, // properties
+      26,   14, // methods
+       9,  248, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
        8,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,  164,    2, 0x06,   10 /* Public */,
-       3,    0,  165,    2, 0x06,   11 /* Public */,
-       4,    0,  166,    2, 0x06,   12 /* Public */,
-       5,    0,  167,    2, 0x06,   13 /* Public */,
-       6,    0,  168,    2, 0x06,   14 /* Public */,
-       7,    0,  169,    2, 0x06,   15 /* Public */,
-       8,    0,  170,    2, 0x06,   16 /* Public */,
-       9,    1,  171,    2, 0x06,   17 /* Public */,
+       1,    0,  170,    2, 0x06,   10 /* Public */,
+       3,    0,  171,    2, 0x06,   11 /* Public */,
+       4,    0,  172,    2, 0x06,   12 /* Public */,
+       5,    0,  173,    2, 0x06,   13 /* Public */,
+       6,    0,  174,    2, 0x06,   14 /* Public */,
+       7,    0,  175,    2, 0x06,   15 /* Public */,
+       8,    0,  176,    2, 0x06,   16 /* Public */,
+       9,    1,  177,    2, 0x06,   17 /* Public */,
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-      11,    3,  174,    2, 0x02,   19 /* Public */,
-      15,    0,  181,    2, 0x02,   23 /* Public */,
-      16,    0,  182,    2, 0x02,   24 /* Public */,
-      17,    0,  183,    2, 0x02,   25 /* Public */,
-      18,    0,  184,    2, 0x02,   26 /* Public */,
-      19,    8,  185,    2, 0x102,   27 /* Public | MethodIsConst  */,
-      28,    3,  202,    2, 0x102,   36 /* Public | MethodIsConst  */,
-      30,    0,  209,    2, 0x102,   40 /* Public | MethodIsConst  */,
-      31,    3,  210,    2, 0x102,   41 /* Public | MethodIsConst  */,
-      35,    1,  217,    2, 0x102,   45 /* Public | MethodIsConst  */,
-      37,    1,  220,    2, 0x102,   47 /* Public | MethodIsConst  */,
-      38,    1,  223,    2, 0x102,   49 /* Public | MethodIsConst  */,
-      39,    0,  226,    2, 0x102,   51 /* Public | MethodIsConst  */,
-      40,    0,  227,    2, 0x102,   52 /* Public | MethodIsConst  */,
-      41,    0,  228,    2, 0x102,   53 /* Public | MethodIsConst  */,
-      42,    0,  229,    2, 0x102,   54 /* Public | MethodIsConst  */,
-      43,    3,  230,    2, 0x102,   55 /* Public | MethodIsConst  */,
+      11,    3,  180,    2, 0x02,   19 /* Public */,
+      15,    0,  187,    2, 0x02,   23 /* Public */,
+      16,    0,  188,    2, 0x02,   24 /* Public */,
+      17,    0,  189,    2, 0x02,   25 /* Public */,
+      18,    0,  190,    2, 0x02,   26 /* Public */,
+      19,    8,  191,    2, 0x102,   27 /* Public | MethodIsConst  */,
+      28,    3,  208,    2, 0x102,   36 /* Public | MethodIsConst  */,
+      30,    0,  215,    2, 0x102,   40 /* Public | MethodIsConst  */,
+      31,    3,  216,    2, 0x102,   41 /* Public | MethodIsConst  */,
+      35,    1,  223,    2, 0x102,   45 /* Public | MethodIsConst  */,
+      37,    2,  226,    2, 0x102,   47 /* Public | MethodIsConst  */,
+      40,    1,  231,    2, 0x102,   50 /* Public | MethodIsConst  */,
+      41,    1,  234,    2, 0x102,   52 /* Public | MethodIsConst  */,
+      42,    0,  237,    2, 0x102,   54 /* Public | MethodIsConst  */,
+      43,    0,  238,    2, 0x102,   55 /* Public | MethodIsConst  */,
+      44,    0,  239,    2, 0x102,   56 /* Public | MethodIsConst  */,
+      45,    0,  240,    2, 0x102,   57 /* Public | MethodIsConst  */,
+      46,    3,  241,    2, 0x102,   58 /* Public | MethodIsConst  */,
 
  // signals: parameters
     QMetaType::Void,
@@ -158,24 +162,25 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSCalculatorENDCLASS[] = {
     QMetaType::QVariantMap,
     QMetaType::QString, QMetaType::Double, QMetaType::Double, QMetaType::Double,   32,   33,   34,
     QMetaType::Bool, QMetaType::QString,   36,
+    QMetaType::QString, QMetaType::QVariantMap, QMetaType::Double,   38,   39,
     QMetaType::Double, QMetaType::Double,   32,
     QMetaType::Double, QMetaType::Double,   33,
     QMetaType::Double,
     QMetaType::Double,
     QMetaType::Double,
     QMetaType::Double,
-    QMetaType::QVariantList, QMetaType::QVariantList, QMetaType::QVariantList, QMetaType::Double,   12,   13,   44,
+    QMetaType::QVariantList, QMetaType::QVariantList, QMetaType::QVariantList, QMetaType::Double,   12,   13,   47,
 
  // properties: name, type, flags
-      45, QMetaType::QString, 0x00015001, uint(0), 0,
-      46, QMetaType::Int, 0x00015001, uint(1), 0,
-      47, QMetaType::Bool, 0x00015001, uint(2), 0,
-      48, QMetaType::Bool, 0x00015001, uint(3), 0,
-      49, QMetaType::Bool, 0x00015001, uint(3), 0,
-      50, QMetaType::Bool, 0x00015001, uint(4), 0,
-      51, QMetaType::QVariantMap, 0x00015001, uint(5), 0,
-      52, QMetaType::Double, 0x00015103, uint(6), 0,
-      53, QMetaType::Double, 0x00015103, uint(6), 0,
+      48, QMetaType::QString, 0x00015001, uint(0), 0,
+      49, QMetaType::Int, 0x00015001, uint(1), 0,
+      50, QMetaType::Bool, 0x00015001, uint(2), 0,
+      51, QMetaType::Bool, 0x00015001, uint(3), 0,
+      52, QMetaType::Bool, 0x00015001, uint(3), 0,
+      53, QMetaType::Bool, 0x00015001, uint(4), 0,
+      54, QMetaType::QVariantMap, 0x00015001, uint(5), 0,
+      55, QMetaType::Double, 0x00015103, uint(6), 0,
+      56, QMetaType::Double, 0x00015103, uint(6), 0,
 
        0        // eod
 };
@@ -262,6 +267,10 @@ Q_CONSTINIT const QMetaObject Calculator::staticMetaObject = { {
         // method 'tahminKarariVerilemez'
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
+        // method 'pompaSorunuNedeni'
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QVariantMap &, std::false_type>,
+        QtPrivate::TypeAndForceComplete<double, std::false_type>,
         // method 'schleibingerA'
         QtPrivate::TypeAndForceComplete<double, std::false_type>,
         QtPrivate::TypeAndForceComplete<double, std::false_type>,
@@ -314,19 +323,21 @@ void Calculator::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
         case 17: { bool _r = _t->tahminKarariVerilemez((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 18: { double _r = _t->schleibingerA((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])));
+        case 18: { QString _r = _t->pompaSorunuNedeni((*reinterpret_cast< std::add_pointer_t<QVariantMap>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])));
+            if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
+        case 19: { double _r = _t->schleibingerA((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])));
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 19: { double _r = _t->schleibingerB((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])));
+        case 20: { double _r = _t->schleibingerB((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])));
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 20: { double _r = _t->ustYakalamaToleransiMm();
+        case 21: { double _r = _t->ustYakalamaToleransiMm();
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 21: { double _r = _t->minInisYoluMm();
+        case 22: { double _r = _t->minInisYoluMm();
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 22: { double _r = _t->sliperBoruCapiMm();
+        case 23: { double _r = _t->sliperBoruCapiMm();
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 23: { double _r = _t->sliperBoruUzunluguMm();
+        case 24: { double _r = _t->sliperBoruUzunluguMm();
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 24: { QVariantList _r = _t->hizEgrisiHesapla((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])));
+        case 25: { QVariantList _r = _t->hizEgrisiHesapla((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])));
             if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
@@ -437,13 +448,13 @@ int Calculator::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 25)
+        if (_id < 26)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 25;
+        _id -= 26;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 25)
+        if (_id < 26)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 25;
+        _id -= 26;
     }else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::BindableProperty
             || _c == QMetaObject::RegisterPropertyMetaType) {

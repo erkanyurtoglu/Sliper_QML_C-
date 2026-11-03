@@ -473,6 +473,14 @@ bool tahminKarariVerilemez(const QString &guvenilmezNedeni)
     return guvenilmezNedeni == "egimNegatif" || guvenilmezNedeni == "kesisimNegatif";
 }
 
+QString pompaSorunuNedeni(const QVariantMap &tahminSatiri, double pompaMaksBar)
+{
+    const double yukseklikBar = tahminSatiri["yukseklikMbar"].toDouble() / 1000.0;
+    if (yukseklikBar >= pompaMaksBar) return "yukseklik";
+    if (tahminSatiri["viskozMbar"].toDouble() > tahminSatiri["akmaMbar"].toDouble()) return "viskoz";
+    return "akma";
+}
+
 double penceredekiHizMs(const QVector<double> &zamanS, const QVector<double> &konumMm, double konumYonu)
 {
     const Cizgi cizgi = enUygunCizgi(zamanS, konumMm);

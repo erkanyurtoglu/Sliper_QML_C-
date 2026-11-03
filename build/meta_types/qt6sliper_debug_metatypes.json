@@ -200,6 +200,21 @@
                         "access": "public",
                         "arguments": [
                             {
+                                "name": "tahminSatiri",
+                                "type": "QVariantMap"
+                            },
+                            {
+                                "name": "pompaMaksBar",
+                                "type": "double"
+                            }
+                        ],
+                        "name": "pompaSorunuNedeni",
+                        "returnType": "QString"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
                                 "name": "kesisimA",
                                 "type": "double"
                             }

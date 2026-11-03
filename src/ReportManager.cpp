@@ -292,10 +292,12 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
     const bool kararVerilemez = SliperModel::tahminKarariVerilemez(guvenilmezNedeni);
     const bool dusukGuven = guvenilmezNedeni == "dusukR2";
     double enYuksekTahminBar = 0.0;
+    QVariantMap enKotuTahmin;
     if (!tahminSatirlari.isEmpty()) {
         QString icerik = satir({ "Q [m³/h]", "L [m]", "P [bar]", "Alt–Üst [bar]", "Pompa" }, true);
         for (const QVariant &kayit : tahminSatirlari) {
             const QVariantMap tahmin = kayit.toMap();
+            if (enKotuTahmin.isEmpty() || tahmin["ustSinirBar"].toDouble() > enYuksekTahminBar) enKotuTahmin = tahmin;
             enYuksekTahminBar = std::max(enYuksekTahminBar, tahmin["ustSinirBar"].toDouble());
             pompaAsildi = pompaAsildi || tahmin["pompaAsildi"].toBool();
             QString pompaDurumu = "—";
@@ -381,6 +383,38 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
     }
     html += QString("<p style='margin-top:16px;'><b>Durum:</b> <span style='color:%1; font-weight:bold;'>%2</span></p>")
                 .arg(durumRengi, durumMetni.toHtmlEscaped());
+
+    if (yeterliVeri && !kararVerilemez && pompaMaksBar > 0 && pompaAsildi) {
+        const QString sorunNedeni = SliperModel::pompaSorunuNedeni(enKotuTahmin, pompaMaksBar);
+        QString oneriBasligi;
+        QString gerekce;
+        QStringList maddeler;
+        if (sorunNedeni == "yukseklik") {
+            oneriBasligi = "Reçeteyle çözülmez";
+            gerekce = "Yalnızca pompalama yüksekliğinden gelen basınç (ρ·g·h) pompa kapasitesine ulaşıyor; "
+                      "karışımın sürtünmesini azaltmak yeterli olmaz.";
+            maddeler = { "Daha yüksek basınçlı pompa gerekir" };
+        } else if (sorunNedeni == "viskoz") {
+            oneriBasligi = "Karışım yapışkan";
+            gerekce = "Sürtünmenin büyük kısmı viskoz terimden (b) geliyor: boru cidarındaki kayma tabakası koyu, "
+                      "direnç debiyle hızla artıyor.";
+            maddeler = { "Katkıyı (akışkanlaştırıcı) artırın", "Viskozite düzenleyici katkıyı azaltın",
+                         "Toz / ince malzemeyi azaltın" };
+        } else {
+            oneriBasligi = "Karışım sert";
+            gerekce = "Sürtünmenin büyük kısmı akma teriminden (a) geliyor: boru cidarında kayma tabakasını "
+                      "oluşturacak harç yetersiz, betonu harekete geçirmek için yüksek basınç gerekiyor.";
+            maddeler = { "Katkıyı (akışkanlaştırıcı) artırın", "İnce kum / harç oranını artırın",
+                         "İri agregayı azaltın" };
+        }
+        html += baslik("Reçete Önerisi");
+        html += "<p><b>" + oneriBasligi.toHtmlEscaped() + "</b></p><ul>";
+        for (const QString &madde : maddeler) html += "<li>" + madde.toHtmlEscaped() + "</li>";
+        html += "</ul>";
+        if (sorunNedeni != "yukseklik") html += "<p>Değişiklikten sonra tekrar ölçün.</p>";
+        html += "<p style='color:#6b7280; font-size:8pt;'>" + gerekce.toHtmlEscaped()
+                + " Öneriler yön belirtir; miktar kullanılan malzemeye bağlıdır ve yeniden ölçümle doğrulanmalıdır.</p>";
+    }
 
     const QVariantMap konumSinirlari = m_database->kalibrasyonGetir("konum_sinirlari");
     html += baslik("Cihaz Parametreleri");

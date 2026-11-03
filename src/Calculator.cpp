@@ -453,6 +453,11 @@ bool Calculator::tahminKarariVerilemez(const QString &guvenilmezNedeni) const
     return SliperModel::tahminKarariVerilemez(guvenilmezNedeni);
 }
 
+QString Calculator::pompaSorunuNedeni(const QVariantMap &tahminSatiri, double pompaMaksBar) const
+{
+    return SliperModel::pompaSorunuNedeni(tahminSatiri, pompaMaksBar);
+}
+
 double Calculator::schleibingerA(double kesisimA) const { return SliperModel::schleibingerA(kesisimA); }
 double Calculator::schleibingerB(double egimB) const { return SliperModel::schleibingerB(egimB); }
 double Calculator::sliperBoruCapiMm() const { return SliperModel::BORU_CAPI_M * 1000.0; }

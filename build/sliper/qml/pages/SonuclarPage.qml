@@ -62,9 +62,17 @@ Rectangle {
         durumYetersizVeri: { tr: "Yeterli stroke verisi yok.", en: "Not enough stroke data." },
         durumPompaYok: { tr: "Pompalanabilirlik kararı için pompa maks. basıncını girip tahmini hesaplayın.", en: "Enter the pump max. pressure and calculate the forecast to evaluate pumpability." },
         durumUygun: { tr: "Gereken basınç en fazla %1 bar (Q = %2 m³/h, hesap uzunluğu %3 m), pompa kapasitesi kullanımı %%4.", en: "Required pressure up to %1 bar (Q = %2 m³/h, calc. length %3 m), %4% of pump capacity." },
-        durumAkma: { tr: "Gereken basınç %2 bar, pompa kapasitesini aşıyor. Basıncın çoğu akma (A) teriminden geliyor: süperakışkanlaştırıcı veya ince malzeme/pasta miktarını artırmayı, daha kısa/geniş hattı değerlendirin.", en: "Required pressure %2 bar exceeds pump capacity. Mostly from the yield (A) term: consider more superplasticizer or fines/paste, or a shorter/wider line." },
-        durumViskoz: { tr: "Gereken basınç %2 bar, pompa kapasitesini aşıyor. Basıncın çoğu viskoz (B) terimden geliyor: debiyi düşürmeyi, daha geniş boruyu veya daha düşük viskoziteli karışımı değerlendirin.", en: "Required pressure %2 bar exceeds pump capacity. Mostly from the viscous (B) term: consider a lower flow rate, a wider pipe or a less viscous mix." },
-        durumYukseklik: { tr: "Gereken basınç %2 bar, pompa kapasitesini aşıyor. Basıncın çoğu dikey yükseklikten (ρ·g·h) geliyor: daha yüksek basınçlı pompa gerekir.", en: "Required pressure %2 bar exceeds pump capacity. Mostly from the vertical height (ρ·g·h): a higher-pressure pump is required." },
+        durumSorun: { tr: "Gereken basınç %1 bar, pompa kapasitesi %2 bar.", en: "Required pressure %1 bar, pump capacity %2 bar." },
+        oneriAkmaBaslik: { tr: "Karışım sert", en: "Mix is stiff" },
+        oneriViskozBaslik: { tr: "Karışım yapışkan", en: "Mix is sticky" },
+        oneriYukseklikBaslik: { tr: "Reçeteyle çözülmez", en: "Cannot be solved by the mix" },
+        oneriKatkiArtir: { tr: "Katkıyı (akışkanlaştırıcı) artırın", en: "Increase the admixture (plasticizer)" },
+        oneriInceKumArtir: { tr: "İnce kum / harç oranını artırın", en: "Increase fine sand / mortar content" },
+        oneriIriAgregaAzalt: { tr: "İri agregayı azaltın", en: "Reduce coarse aggregate" },
+        oneriViskoziteKatkisiAzalt: { tr: "Viskozite düzenleyici katkıyı azaltın", en: "Reduce the viscosity-modifying admixture" },
+        oneriTozAzalt: { tr: "Toz / ince malzemeyi azaltın", en: "Reduce powder / fines" },
+        oneriPompa: { tr: "Daha yüksek basınçlı pompa gerekir", en: "A higher-pressure pump is required" },
+        oneriTekrarOlc: { tr: "Değişiklikten sonra tekrar ölçün.", en: "Measure again after the change." },
         pdfRaporOnizle: { tr: "📄  PDF Rapor Önizle", en: "📄  Preview PDF Report" },
         excelCsvOnizle: { tr: "📊  Excel (CSV) Önizle", en: "📊  Preview Excel (CSV)" },
         excelXmlDisaAktar: { tr: "📑  Excel (XML) Dışa Aktar", en: "📑  Export Excel (XML)" },
@@ -285,11 +293,20 @@ Rectangle {
             if (satir.ustSinirBar > enKotu.ustSinirBar) enKotu = satir
             if (satir.pompaAsildi) asilan++
         }
-        var baskin = "akma"
-        if (enKotu.viskozMbar > enKotu.akmaMbar && enKotu.viskozMbar >= enKotu.yukseklikMbar) baskin = "viskoz"
-        else if (enKotu.yukseklikMbar > enKotu.akmaMbar && enKotu.yukseklikMbar > enKotu.viskozMbar) baskin = "yukseklik"
         var kod = asilan > 0 ? "sorun" : (guvenilmezNedeni === "dusukR2" ? "guvenilmez" : "uygun")
-        return { kod: kod, enKotu: enKotu, asilan: asilan, pompa: pompa, baskin: baskin }
+        return { kod: kod, enKotu: enKotu, asilan: asilan, pompa: pompa,
+                 sorunNedeni: calculator.pompaSorunuNedeni(enKotu, pompa) }
+    }
+
+    readonly property var receteOnerisi: {
+        if (durumBilgisi.kod !== "sorun") return null
+        if (durumBilgisi.sorunNedeni === "yukseklik")
+            return { baslik: txt("oneriYukseklikBaslik"), maddeler: [txt("oneriPompa")], tekrarOlc: false }
+        if (durumBilgisi.sorunNedeni === "viskoz")
+            return { baslik: txt("oneriViskozBaslik"), tekrarOlc: true,
+                     maddeler: [txt("oneriKatkiArtir"), txt("oneriViskoziteKatkisiAzalt"), txt("oneriTozAzalt")] }
+        return { baslik: txt("oneriAkmaBaslik"), tekrarOlc: true,
+                 maddeler: [txt("oneriKatkiArtir"), txt("oneriInceKumArtir"), txt("oneriIriAgregaAzalt")] }
     }
 
     function strokeEgrisiniCiz() {
@@ -639,8 +656,36 @@ Rectangle {
                                     if (d.kod === "uygun")
                                         return txt("durumUygun").arg(bar).arg(sayi(d.enKotu.debi, 1)).arg(sayi(d.enKotu.uzunluk, 0))
                                                                 .arg(sayi(d.enKotu.ustSinirBar / d.pompa * 100, 0))
-                                    var anahtar = d.baskin === "viskoz" ? "durumViskoz" : (d.baskin === "yukseklik" ? "durumYukseklik" : "durumAkma")
-                                    return txt(anahtar).replace("%2", bar)
+                                    return txt("durumSorun").arg(bar).arg(sayi(d.pompa, 1))
+                                }
+                            }
+                            Column {
+                                width: parent.width
+                                visible: receteOnerisi !== null
+                                spacing: 3
+                                topPadding: 4
+                                Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    text: receteOnerisi ? receteOnerisi.baslik : ""
+                                    color: "#e5e7eb"; font.family: "Segoe UI"; font.pixelSize: 12; font.bold: true
+                                }
+                                Repeater {
+                                    model: receteOnerisi ? receteOnerisi.maddeler : []
+                                    Text {
+                                        required property string modelData
+                                        width: parent.width
+                                        wrapMode: Text.WordWrap
+                                        text: "•  " + modelData
+                                        color: "#d1d5db"; font.family: "Segoe UI"; font.pixelSize: 12
+                                    }
+                                }
+                                Text {
+                                    width: parent.width
+                                    visible: receteOnerisi ? receteOnerisi.tekrarOlc : false
+                                    wrapMode: Text.WordWrap
+                                    text: txt("oneriTekrarOlc")
+                                    color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 11; font.italic: true
                                 }
                             }
                         }

@@ -140,6 +140,7 @@ QVariantList tahminTablosu(double kesisimA, double egimB, const QVariantMap &aya
 
 QString tahminGuvenilmezNedeni(double kesisimA, double egimB, double r2);
 bool tahminKarariVerilemez(const QString &guvenilmezNedeni);
+QString pompaSorunuNedeni(const QVariantMap &tahminSatiri, double pompaMaksBar);
 
 constexpr double HIZ_PENCERESI_S = 0.40;
 double penceredekiHizMs(const QVector<double> &zamanS, const QVector<double> &konumMm, double konumYonu);

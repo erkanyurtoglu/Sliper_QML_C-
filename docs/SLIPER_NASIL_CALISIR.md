@@ -175,9 +175,14 @@ Bu formülün doğruluğunu kontrol ettik: Schleibinger kılavuzundaki tahmin ta
 Tahmin tablosundaki **en kötü durum** (hata payı dahil en yüksek basınç), girdiğiniz **pompa maksimum basıncı** ile karşılaştırılır:
 
 - Hepsi pompa kapasitesinin altındaysa → **POMPALANABİLİR**
-- Biri bile aşıyorsa → **POMPALAMA SORUNU**; hangi payın (akma / hız / yükseklik) baskın olduğuna göre öneri gösterilir.
+- Biri bile aşıyorsa → **POMPALAMA SORUNU** ve laboratuvar teknisyenine reçete önerisi gösterilir:
+  - Yükseklik payı tek başına pompa kapasitesine ulaşıyorsa → **Reçeteyle çözülmez** (daha yüksek basınçlı pompa gerekir)
+  - Hız (viskoz) payı akma payından büyükse → **Karışım yapışkan**: katkıyı artırın, viskozite düzenleyici katkıyı azaltın, toz / ince malzemeyi azaltın
+  - Aksi halde → **Karışım sert**: katkıyı artırın, ince kum / harç oranını artırın, iri agregayı azaltın
 
-**Kodda nerede?** `qml/pages/SonuclarPage.qml` → `durumBilgisi` (ekran), `src/ReportManager.cpp` (rapordaki durum satırı)
+  Öneriler yalnızca yön verir (artırın / azaltın); miktar malzemeye bağlı olduğu için değişiklikten sonra tekrar ölçülür. Hat ve debi önerilmez, çünkü şantiyede belirlenmiştir.
+
+**Kodda nerede?** `src/SliperModel.cpp` → `pompaSorunuNedeni()`, `qml/pages/SonuclarPage.qml` → `durumBilgisi` / `receteOnerisi` (ekran), `src/ReportManager.cpp` (rapordaki durum ve reçete önerisi)
 
 ### Adım K — Kayıt ve çıktılar
 

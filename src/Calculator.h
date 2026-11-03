@@ -48,6 +48,7 @@ public:
     Q_INVOKABLE QVariantMap varsayilanTahminAyarlari() const;
     Q_INVOKABLE QString tahminGuvenilmezNedeni(double kesisimA, double egimB, double r2) const;
     Q_INVOKABLE bool tahminKarariVerilemez(const QString &guvenilmezNedeni) const;
+    Q_INVOKABLE QString pompaSorunuNedeni(const QVariantMap &tahminSatiri, double pompaMaksBar) const;
     Q_INVOKABLE double schleibingerA(double kesisimA) const;
     Q_INVOKABLE double schleibingerB(double egimB) const;
     Q_INVOKABLE double ustYakalamaToleransiMm() const;
