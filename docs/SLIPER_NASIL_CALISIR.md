@@ -244,7 +244,7 @@ Komutlar yalnızca **Ölçüm ekranı açıkken** uygulanır. Dinleme sırasınd
 | Veri kesinti uyarı süresi (1,5 s) | `src/WifiManager.h` | `VERI_KESINTI_MS` |
 | Tahmin ayarlarının varsayılanı | `src/SliperModel.cpp` | `varsayilanTahminAyarlari()` |
 | Ölçüm uyarıları (R² < 0,90 vb.) | `src/SliperModel.h` bölüm 7 | `MIN_R2`, `MIN_DEBI_ARALIGI_ORANI`, `MAKS_GECERSIZ_YUZDE` ... |
-| Canlı hız göstergesinin yumuşaklığı | `src/SliperModel.h` bölüm 10 | `CANLI_HIZ_FILTRE_KATSAYISI` |
+| Hız göstergesi ve hız eğrisinin yumuşaklığı | `src/SliperModel.h` bölüm 10 | `HIZ_PENCERESI_S` (0,4 s) |
 | Sesli komut kelimeleri | `src/VoiceRecognitionWorker.cpp` | `grammarKelimeleri()` ve `...Adaylari` listeleri (ikisi birlikte) |
 | Sesli komutun sayfadaki karşılığı ("ekle" kaç kg) | `qml/pages/OlcumPage.qml` | `onEkleKomutu()` vb. |
 | Giriş kullanıcı adı / şifresi | `src/Backend.cpp` | `girisYap()`, `sifreDogrula()` |

@@ -16,9 +16,6 @@ Item {
         return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
     }
 
-    // Kontrollü bileşen: seçili tarih dışarıdan (ör. gecmisSayfasi.baslangicTarihi)
-    // bağlanır, kullanıcı bir gün seçtiğinde sadece tarihSecildi sinyali yayılır —
-    // root.secilenTarih burada asla doğrudan atanmaz ki dışarıdaki binding kopmasın.
     property string secilenTarih: ""
     property string placeholderText: txt("placeholderMetni")
     property date gorunenAy: new Date()
@@ -41,14 +38,11 @@ Item {
         return new Date(yil, ay + 1, 0).getDate()
     }
 
-    // Takvim ızgarasını (önceki/sonraki aydan taşan günler dahil, Pazartesi başlangıçlı,
-    // her zaman 6 hafta = 42 hücre) saf QtQuick ile hesaplar; Qt.labs.calendar modülüne
-    // bağımlı değildir çünkü bu Qt kurulumunda mevcut değil.
     function ayGunleriniHesapla(ay) {
         var yil = ay.getFullYear()
         var ayIndeks = ay.getMonth()
         var ilkGun = new Date(yil, ayIndeks, 1)
-        var haftaBaslangicKaymasi = (ilkGun.getDay() + 6) % 7 // Pazartesi = 0
+        var haftaBaslangicKaymasi = (ilkGun.getDay() + 6) % 7
         var baslangic = new Date(yil, ayIndeks, 1 - haftaBaslangicKaymasi)
 
         var gunler = []

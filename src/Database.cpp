@@ -60,7 +60,6 @@ void Database::tablolariOlustur()
         ")"
     );
 
-    // Eski veritabanlarını yeni şemaya taşı (eksik kolonlar eklenir, veri korunur)
     auto kolonEkle = [](const QString &tablo, const QString &kolon, const QString &tanim) {
         QSqlQuery kontrol(QString("PRAGMA table_info(%1)").arg(tablo));
         while (kontrol.next()) {
@@ -75,12 +74,8 @@ void Database::tablolariOlustur()
     kolonEkle("Olcumler", "yer", "TEXT DEFAULT ''");
     kolonEkle("Olcumler", "yorum", "TEXT DEFAULT ''");
     kolonEkle("Olcumler", "tahminAyarlari", "TEXT DEFAULT ''");
-    // Olcum sirasinda uygulanan dara (mbar). A/a bu kadar kaydirildigi icin
-    // raporda belgelenir; eski kayitlarda dara yoktur, 0 kalir.
     kolonEkle("Olcumler", "daraBasinci", "REAL DEFAULT 0");
 
-    // Orijinal SLIPER stroke kaydı: Date, Time, Duration, pmax, P0l, P0r, p, Q
-    // + ham eğri (başlangıçtan 2 s önce - bitişten 2 s sonra) ve tahmine dahil/hariç bilgisi
     kolonEkle("Strokelar", "debi", "REAL DEFAULT 0");
     kolonEkle("Strokelar", "tarih", "TEXT DEFAULT ''");
     kolonEkle("Strokelar", "sure", "REAL DEFAULT 0");
@@ -93,8 +88,6 @@ void Database::tablolariOlustur()
     kolonEkle("Strokelar", "gecersizNedeni", "TEXT DEFAULT ''");
     kolonEkle("Strokelar", "hamVeri", "TEXT DEFAULT ''");
 
-    // Otomatik eleme: otomatikHaricNedeni boş değilse program stroke'u hariç tuttu.
-    // kullaniciKarari NULL = karar programın; 0/1 = kullanıcı elle hariç/dahil etti.
     bool otomatikElemeKolonlariVardi = false;
     {
         QSqlQuery kontrol("PRAGMA table_info(Strokelar)");
@@ -105,8 +98,6 @@ void Database::tablolariOlustur()
     kolonEkle("Strokelar", "otomatikHaricNedeni", "TEXT DEFAULT ''");
     kolonEkle("Strokelar", "kullaniciKarari", "INTEGER DEFAULT NULL");
     if (!otomatikElemeKolonlariVardi) {
-        // Eskiden elle hariç tutulanlar kullanıcı kararı sayılır; sonra bütün
-        // geçmiş testlere otomatik eleme bir kez uygulanır.
         QSqlQuery eskiKararlar;
         eskiKararlar.exec("UPDATE Strokelar SET kullaniciKarari = 0 WHERE secili = 0");
         QSqlQuery olcumler("SELECT DISTINCT olcumId FROM Strokelar");
@@ -181,7 +172,6 @@ int Database::olcumBaslat(const QString &musteri, const QString &recete, double 
     sorgu.bindValue(":agirlik", agirlik);
     sorgu.bindValue(":yer", yer);
     sorgu.bindValue(":yorum", yorum);
-    // Orijinal uygulamadaki gibi: yeni ölçüm, güncel "Forecast Preferences" ile başlar
     sorgu.bindValue(":tahminAyarlari", jsonYaz(varsayilanTahminAyarlariGetir()));
 
     if (!sorgu.exec()) {
@@ -286,7 +276,6 @@ void Database::otomatikElemeUygula(int olcumId)
         strokeIdleri.append(sorgu.value("id").toInt());
         agirlikAnahtarlari.append(qRound64(sorgu.value("agirlik").toDouble() * 10.0));
 
-        // Ham veriden yalnızca iniş (tBaslangic..tBitis) kullanılır
         const QVariantMap hamVeri = jsonOku(sorgu.value("hamVeri").toString());
         const QVariantList zamanlar = hamVeri.value("t").toList();
         const QVariantList konumlar = hamVeri.value("x").toList();
@@ -348,7 +337,6 @@ bool Database::strokeSil(int strokeId)
         qWarning() << "Stroke silinemedi:" << sorgu.lastError().text();
         return false;
     }
-    // Eleme sınırları stroke sayısına bağlı: kalan stroke'lar için yeniden karar verilir
     if (olcumId > 0) otomatikElemeUygula(olcumId);
     return true;
 }
@@ -458,7 +446,6 @@ QVariantList Database::strokeVerileriGetir(int olcumId)
         satir["agirlik"] = sorgu.value("agirlik").toDouble();
         satir["secili"] = sorgu.value("secili").isNull() ? true : sorgu.value("secili").toBool();
         satir["gecersizNedeni"] = sorgu.value("gecersizNedeni").toString();
-        // Program tarafından hariç tutuldu ve kullanıcı bu kararı değiştirmedi
         satir["otomatikHaric"] = sorgu.value("kullaniciKarari").isNull()
                                  && !sorgu.value("otomatikHaricNedeni").toString().isEmpty();
         satir["otomatikHaricNedeni"] = sorgu.value("otomatikHaricNedeni").toString();
@@ -479,8 +466,6 @@ QVariantMap Database::strokeHamVeriGetir(int strokeId)
     return QVariantMap();
 }
 
-// P-Q doğrusu: yalnızca geçerli ve tahmine dahil edilmiş (secili) stroke'lar.
-// Ayrıca ölçüm kalitesi uyarıları üretilir (eşik gerektirmeyen, fiziksel/istatistiksel kontroller).
 QVariantMap Database::binghamHesapla(int olcumId)
 {
     QVariantMap sonuc;
@@ -491,11 +476,9 @@ QVariantMap Database::binghamHesapla(int olcumId)
     );
     sorgu.bindValue(":olcumId", olcumId);
 
-    QVector<double> basinclarMbar;             // her kullanılan stroke'un p değeri
-    QVector<double> debilerM3h;                // her kullanılan stroke'un Q değeri
-    QVector<qint64> agirlikAnahtarlari;        // her kullanılan stroke'un ek ağırlık anahtarı
-    // Ek ağırlık 0.1 kg hassasiyetle anahtar yapılır (1.6 kg -> 16), kayan nokta
-    // karşılaştırma hatası olmasın diye.
+    QVector<double> basinclarMbar;
+    QVector<double> debilerM3h;
+    QVector<qint64> agirlikAnahtarlari;
     QHash<qint64, int> agirlikBasinaStrokeSayisi;
     QHash<qint64, double> agirlikBasinaPmaksToplami;
     int toplamStrokeSayisi = 0;
@@ -517,7 +500,6 @@ QVariantMap Database::binghamHesapla(int olcumId)
         }
     }
 
-    // Ağırlık tepkisi kontrolü ortalama Pmax ile çalışır (bkz. SliperModel bölüm 7)
     QHash<qint64, double> agirlikBasinaOrtalamaPmaks;
     for (auto it = agirlikBasinaPmaksToplami.constBegin();
          it != agirlikBasinaPmaksToplami.constEnd(); ++it) {
@@ -540,8 +522,6 @@ QVariantMap Database::binghamHesapla(int olcumId)
         return sonuc;
     }
 
-    // p = A + B*Q ve uyarılar: SliperModel bölüm 6 ve 7.
-    // Eski kayıtlarla uyum için sonuçta "tau0" = A (kesişim), "mu" = B (eğim) adıyla saklanır.
     const SliperModel::DogruUyumu pqCizgisi = SliperModel::pqDogrusu(debilerM3h, basinclarMbar, agirlikAnahtarlari);
     uyarilar = SliperModel::olcumUyarilari(pqCizgisi, agirlikBasinaStrokeSayisi,
                                            agirlikBasinaOrtalamaPmaks,
@@ -582,7 +562,6 @@ bool Database::tahminAyarlariKaydet(int olcumId, const QVariantMap &ayarlar)
         qWarning() << "Tahmin ayarlari kaydedilemedi:" << sorgu.lastError().text();
         return false;
     }
-    // Sonraki ölçümler de bu ayarlarla başlasın (orijinal "Forecast Preferences")
     ayarKaydet("varsayilanTahminAyarlari", jsonYaz(tam));
     return true;
 }
@@ -737,11 +716,6 @@ QVariantMap Database::olcumBilgisiGetir(int olcumId)
     return sonuc;
 }
 
-// Orijinal SLIPER'daki Excel dışa aktarımıyla aynı düzen (kılavuz bölüm 5.6,
-// Şekil 25): "Results" sayfasında temel veri, stroke özeti (Date, Time,
-// Duration, pmax, P0l, P0r, p, Q), tahmin girdileri, a/b parametreleri,
-// tahmin tablosu ve cihaz parametreleri; "Stroke_1".."Stroke_N" sayfalarında
-// her stroke'un ham verisi. Format: Office 2003 SpreadsheetML (Excel doğrudan açar).
 QString Database::xmlDisaAktar(int olcumId)
 {
     QVariantMap bilgi = olcumBilgisiGetir(olcumId);
@@ -757,7 +731,6 @@ QString Database::xmlDisaAktar(int olcumId)
     }
 
     const QVariantList strokelar = strokeVerileriGetir(olcumId);
-    // Orijinal dosya adı: önek + ilk stroke'un zaman damgası
     QString zamanDamgasi = QDateTime::currentDateTime().toString("yyyy-MM-dd_HH_mm_ss");
     if (!strokelar.isEmpty()) {
         const QVariantMap ilk = strokelar.first().toMap();
@@ -780,7 +753,6 @@ QString Database::xmlDisaAktar(int olcumId)
     QTextStream akis(&dosya);
     akis.setEncoding(QStringConverter::Utf8);
 
-    // XML'de özel anlamı olan karakterler metin içinde kaçışlanır
     auto xmlKacis = [](QString yazi) {
         yazi.replace("&", "&amp;");
         yazi.replace("<", "&lt;");
@@ -804,7 +776,6 @@ QString Database::xmlDisaAktar(int olcumId)
             "xmlns:x=\"urn:schemas-microsoft-com:office:excel\" "
             "xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">\n";
 
-    // --- Results sayfası ---
     akis << "<Worksheet ss:Name=\"Results\">\n<Table>\n";
     const QDateTime simdi = QDateTime::currentDateTime();
     satir({ metin("Export Date"), metin(simdi.toString("yyyy-MM-dd")) });
@@ -880,7 +851,6 @@ QString Database::xmlDisaAktar(int olcumId)
     satir({ metin("Distance sensor calibration"), metin(kalibrasyonTarihiGetir("mesafe_olcum")) });
     akis << "</Table>\n</Worksheet>\n";
 
-    // --- Her stroke için ham veri sayfası ---
     for (const QVariant &kayit : strokelar) {
         const QVariantMap stroke = kayit.toMap();
         const QVariantMap hamVeri = strokeHamVeriGetir(stroke["id"].toInt());
@@ -906,10 +876,6 @@ QString Database::xmlDisaAktar(int olcumId)
     return dosyaAdi;
 }
 
-// Orijinal SLIPER'daki (Expert Settings > Database Export, sifre korumali)
-// veritabani disa aktarim ozelligine karsilik gelir. Aktif SQLite baglantisi
-// dosya uzerinde kilit tutabileceginden, kopyalamadan once WAL/journal'in
-// diske yazilmasi icin basit bir bekleme (checkpoint) yapilir.
 QString Database::veriTabaniDisaAktar()
 {
     if (m_veriTabaniDosyaYolu.isEmpty() || !QFile::exists(m_veriTabaniDosyaYolu)) {
@@ -923,7 +889,6 @@ QString Database::veriTabaniDisaAktar()
         return QString();
     }
 
-    // Bekleyen yazmalarin diske gitmesini garantiye almak icin.
     QSqlQuery checkpoint(m_db);
     checkpoint.exec("PRAGMA wal_checkpoint(FULL)");
 
@@ -939,9 +904,6 @@ QString Database::veriTabaniDisaAktar()
     return hedefDosya;
 }
 
-// Orijinal SLIPER'daki "Database Import" ozelligine karsilik gelir. Ice
-// aktarmadan once mevcut veritabaninin bir yedegi otomatik alinir; sonra
-// baglanti kapatilip yeni dosya yerine kopyalanir ve yeniden acilir.
 bool Database::veriTabaniIcaAktar(const QString &kaynakDosyaYolu)
 {
     if (!QFile::exists(kaynakDosyaYolu)) {
@@ -949,7 +911,6 @@ bool Database::veriTabaniIcaAktar(const QString &kaynakDosyaYolu)
         return false;
     }
 
-    // Guvenlik: mevcut veriyi kaybetmemek icin otomatik yedek al.
     veriTabaniDisaAktar();
 
     m_db.close();
@@ -977,9 +938,6 @@ bool Database::veriTabaniIcaAktar(const QString &kaynakDosyaYolu)
     return true;
 }
 
-// Orijinal SLIPER'daki "Database Delete" ozelligine karsilik gelir. Sadece
-// olcum/stroke verilerini siler; sensor kalibrasyonlari (load cell, mesafe,
-// egim) korunur, cunku bunlar donanimsal kalibrasyon olup ayri bir islemdir.
 bool Database::tumVeriyiSil()
 {
     if (!m_db.transaction()) {
@@ -1036,7 +994,6 @@ QString Database::csvDisaAktar(int olcumId)
 
     QTextStream akis(&dosya);
     akis.setEncoding(QStringConverter::Utf8);
-    // Alan içindeki ';' ve '"' karakterleri tabloyu bozmasın
     auto alan = [](QString yazi) {
         if (yazi.contains(';') || yazi.contains('"') || yazi.contains('\n')) {
             yazi.replace("\"", "\"\"");

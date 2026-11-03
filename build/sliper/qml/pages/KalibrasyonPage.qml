@@ -84,7 +84,6 @@ Rectangle {
     property string konumBildirim: ""
     property bool konumBildirimHata: false
 
-    // Orijinal SLIPER: "Calibrate Top Position" / "Calibrate Bottom Position"
     function konumSinirlariniKaydet(ust, alt) {
         if (Math.abs(ust - alt) < 100) {
             konumBildirim = txt("konumAralikHatasi")
@@ -236,9 +235,6 @@ Rectangle {
         }
     }
 
-    // Sensör kartlarının "Kalibre Edildi" rozeti ve tarihi kalıcı depodan (SQLite)
-    // okunur; sadece o an kalibrasyon yapılınca değil, sayfa her açıldığında yeniden
-    // yüklenmeli ki uygulama yeniden başlatıldığında da rozet doğru görünsün.
     function kalibrasyonDurumunuYukle() {
         var egimKal = database.egimKalibrasyonuGetir()
         egimKayitliVar = egimKal.mevcut
@@ -536,7 +532,6 @@ Rectangle {
                             width: 210
                             height: 150
 
-                            // Boru + üst/alt referans çizgileri
                             Rectangle { x: 90; y: 20; width: 30; height: 110; radius: 4; color: "#1e2a3f"; border.color: "#f59e0b"; border.width: 2 }
                             Rectangle { x: 40; y: 20; width: 130; height: 2; color: "#4ade80" }
                             Rectangle { x: 40; y: 128; width: 130; height: 2; color: "#f87171" }
@@ -1720,7 +1715,6 @@ Rectangle {
                                     var yeniNokta = { hedefKg: parseFloat(hedefKgKutusu.text), hamDeger: sensorManager.hamAgirlik }
 
                                     if (loadCellDuzenlemeIndex >= 0) {
-                                        // Var olan bir noktayı yerinde güncelliyoruz, diğer noktalar etkilenmiyor
                                         var guncelDizi = loadCellNoktalari.slice()
                                         guncelDizi[loadCellDuzenlemeIndex] = yeniNokta
                                         loadCellNoktalari = guncelDizi
@@ -1942,9 +1936,6 @@ Rectangle {
                 anchors.topMargin: 70
                 visible: seciliSensor === 2
 
-                // =========================================================
-                // OLCUM KALIBRASYONU — cok nokta (load cell birebir kopyasi)
-                // =========================================================
                 Item {
                     anchors.fill: parent
 
@@ -2705,7 +2696,6 @@ Rectangle {
                                         var yeniNokta = { hedefMm: parseFloat(hedefCmKutusu.text) * 10, hamDeger: sensorManager.hamMesafe }
 
                                         if (mesafeDuzenlemeIndex >= 0) {
-                                            // Var olan bir noktayı yerinde güncelliyoruz, diğer noktalar etkilenmiyor
                                             var guncelDizi = mesafeNoktalari.slice()
                                             guncelDizi[mesafeDuzenlemeIndex] = yeniNokta
                                             mesafeNoktalari = guncelDizi

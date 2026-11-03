@@ -354,7 +354,6 @@ Rectangle {
         anchors.fill: parent
         currentIndex: seciliKonu === -1 ? 0 : 1
 
-        // SAYFA 0: konu kartları
         ScrollView {
             id: konularScroll
             clip: true
@@ -411,7 +410,6 @@ Rectangle {
             }
         }
 
-        // SAYFA 1: konu detayı
         ScrollView {
             id: detayScroll
             clip: true

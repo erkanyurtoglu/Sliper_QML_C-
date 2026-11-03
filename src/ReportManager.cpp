@@ -25,14 +25,12 @@ namespace {
 QString sayi(double deger, int basamak) { return QString::number(deger, 'f', basamak); }
 QString tarihVeyaCizgi(const QString &tarih) { return tarih.isEmpty() ? QStringLiteral("—") : tarih; }
 
-// Eksen çizgileri arasındaki okunaklı adım: 1, 2, 5, 10, 20, 50 ... gibi.
-//   örnek: aralık 0..37, 8 çizgi isteniyor -> kaba adım 4.6 -> 5 seçilir
 double okunakliEksenAdimi(double aralik, int hedefCizgiSayisi)
 {
     if (aralik <= 0.0) return 1.0;
     const double kabaAdim = aralik / hedefCizgiSayisi;
-    const double onunKuvveti = std::pow(10.0, std::floor(std::log10(kabaAdim)));   // 4.6 -> 1, 46 -> 10
-    const double ilkRakam = kabaAdim / onunKuvveti;                                // 1 ile 10 arası
+    const double onunKuvveti = std::pow(10.0, std::floor(std::log10(kabaAdim)));
+    const double ilkRakam = kabaAdim / onunKuvveti;
     double yuvarlakRakam = 10.0;
     if (ilkRakam <= 1.0) yuvarlakRakam = 1.0;
     else if (ilkRakam <= 2.0) yuvarlakRakam = 2.0;
@@ -64,13 +62,11 @@ QString uyariMetni(const QString &kod)
 QImage ReportManager::grafikCiz(const QString &baslik, const QString &xEtiket, const QString &yEtiket,
                                 const QVector<Seri> &seriler)
 {
-    // Görsel boyutu (piksel) ve içindeki çizim alanı (kenarlarda eksen yazıları için boşluk)
     const int gorselGenislik = 1000, gorselYukseklik = 560;
     const QRectF cizimAlani(90, 50, gorselGenislik - 120, gorselYukseklik - 130);
     QImage gorsel(gorselGenislik, gorselYukseklik, QImage::Format_ARGB32);
     gorsel.fill(Qt::white);
 
-    // Veri aralığı (0 dahil, eksenler sıfırdan başlar)
     double xMin = 0, xMaks = 1, yMin = 0, yMaks = 1;
     bool ilkNokta = true;
     auto araligaKat = [&](const QPointF &nokta) {
@@ -82,7 +78,6 @@ QImage ReportManager::grafikCiz(const QString &baslik, const QString &xEtiket, c
         for (const QPointF &nokta : seri.noktalar) araligaKat(nokta);
         for (const auto &cubuk : seri.hataCubuklari) { araligaKat(cubuk.first); araligaKat(cubuk.second); }
     }
-    // Eksen sınırları adımın katına yuvarlanır; üstte biraz boşluk bırakılır
     const double xAdim = okunakliEksenAdimi(xMaks - xMin, 8);
     const double yAdim = okunakliEksenAdimi(yMaks - yMin, 6);
     xMin = std::floor(xMin / xAdim) * xAdim; xMaks = std::ceil(xMaks * 1.05 / xAdim) * xAdim;
@@ -90,7 +85,6 @@ QImage ReportManager::grafikCiz(const QString &baslik, const QString &xEtiket, c
     if (xMaks <= xMin) xMaks = xMin + xAdim;
     if (yMaks <= yMin) yMaks = yMin + yAdim;
 
-    // Veri koordinatı (ör. Q, p) -> görsel üzerindeki piksel konumu
     auto pikseleCevir = [&](const QPointF &veriNoktasi) {
         return QPointF(cizimAlani.left() + (veriNoktasi.x() - xMin) / (xMaks - xMin) * cizimAlani.width(),
                        cizimAlani.bottom() - (veriNoktasi.y() - yMin) / (yMaks - yMin) * cizimAlani.height());
@@ -101,7 +95,6 @@ QImage ReportManager::grafikCiz(const QString &baslik, const QString &xEtiket, c
     QFont normalYazi("Segoe UI", 11);
     kalem.setFont(normalYazi);
 
-    // Izgara çizgileri
     kalem.setPen(QPen(QColor("#e5e7eb"), 1));
     for (double x = xMin; x <= xMaks + xAdim * 0.01; x += xAdim) {
         const QPointF piksel = pikseleCevir({ x, yMin });
@@ -111,7 +104,6 @@ QImage ReportManager::grafikCiz(const QString &baslik, const QString &xEtiket, c
         const QPointF piksel = pikseleCevir({ xMin, y });
         kalem.drawLine(QPointF(cizimAlani.left(), piksel.y()), QPointF(cizimAlani.right(), piksel.y()));
     }
-    // Eksen sayıları
     kalem.setPen(QColor("#374151"));
     for (double x = xMin; x <= xMaks + xAdim * 0.01; x += xAdim) {
         const QPointF piksel = pikseleCevir({ x, yMin });
@@ -126,11 +118,10 @@ QImage ReportManager::grafikCiz(const QString &baslik, const QString &xEtiket, c
     kalem.setPen(QPen(QColor("#6b7280"), 1.5));
     kalem.drawRect(cizimAlani);
 
-    // Eksen adları ve başlık
     kalem.drawText(QRectF(cizimAlani.left(), gorselYukseklik - 50, cizimAlani.width(), 24), Qt::AlignCenter, xEtiket);
     kalem.save();
     kalem.translate(18, cizimAlani.center().y());
-    kalem.rotate(-90);   // y ekseni adı dikey yazılır
+    kalem.rotate(-90);
     kalem.drawText(QRectF(-cizimAlani.height() / 2, -12, cizimAlani.height(), 24), Qt::AlignCenter, yEtiket);
     kalem.restore();
     QFont baslikYazisi("Segoe UI", 14, QFont::Bold);
@@ -139,7 +130,6 @@ QImage ReportManager::grafikCiz(const QString &baslik, const QString &xEtiket, c
     kalem.drawText(QRectF(0, 10, gorselGenislik, 30), Qt::AlignCenter, baslik);
     kalem.setFont(normalYazi);
 
-    // Seriler (nokta veya çizgi) ve hata çubukları
     kalem.setClipRect(cizimAlani.adjusted(-6, -6, 6, 6));
     for (const Seri &seri : seriler) {
         if (seri.noktaMi) {
@@ -163,7 +153,6 @@ QImage ReportManager::grafikCiz(const QString &baslik, const QString &xEtiket, c
     }
     kalem.setClipping(false);
 
-    // Lejant (sol üst köşe, yan yana)
     double lejantX = cizimAlani.left() + 12;
     const double lejantY = cizimAlani.top() + 12;
     for (const Seri &seri : seriler) {
@@ -215,7 +204,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
             "<p style='color:#6b7280; font-size:9pt; margin-top:0;'>Liya Laboratuvar Test Cihazları — Sliding Pipe Rheometer</p>"
             "<hr style='border:none; border-top:1px solid #d1d5db;'>";
 
-    // --- Temel veriler ---
     html += tablo(
         satir({ "<b>Ölçüm ID</b>", QString::number(olcumId) })
         + satir({ "<b>Ölçüm tarihi</b>", bilgi["tarih"].toString().toHtmlEscaped() })
@@ -225,7 +213,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
         + satir({ "<b>Yorum</b>", bilgi["yorum"].toString().toHtmlEscaped() })
         + satir({ "<b>Rapor tarihi</b>", QDateTime::currentDateTime().toString("dd.MM.yyyy HH:mm") }));
 
-    // --- P–Q sonuçları ---
     html += baslik("P–Q Sonuçları");
     html += tablo(
         satir({ "Parametre", "Değer" }, true)
@@ -243,7 +230,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
         html += "</p>";
     }
 
-    // --- p-Q grafiği ---
     {
         Seri dahilNoktalar; dahilNoktalar.noktaMi = true; dahilNoktalar.renk = QColor("#3b82f6"); dahilNoktalar.ad = "Stroke (tahmine dahil)";
         Seri haricNoktalar; haricNoktalar.noktaMi = true; haricNoktalar.renk = QColor("#9ca3af"); haricNoktalar.ad = "Hariç / hatalı";
@@ -268,7 +254,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
         html += "<p align='center'><img src='__pq__' width='620'></p>";
     }
 
-    // --- Stroke özeti ---
     html += baslik("Stroke Özeti");
     {
         QString icerik = satir({ "No", "Saat", "Süre [s]", "Ağırlık [kg]", "Pmax", "P0l", "P0r", "p [mbar]", "Q [m³/h]", "Durum" }, true);
@@ -287,7 +272,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
         html += tablo(icerik);
     }
 
-    // --- Tahmin ---
     html += baslik("Pompa Basıncı Tahmini");
     html += tablo(
         satir({ "Girdi", "Değer" }, true)
@@ -307,7 +291,7 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
     const QString guvenilmezNedeni = SliperModel::tahminGuvenilmezNedeni(kesisimA, egimB, pqSonucu["r2"].toDouble());
     const bool kararVerilemez = SliperModel::tahminKarariVerilemez(guvenilmezNedeni);
     const bool dusukGuven = guvenilmezNedeni == "dusukR2";
-    double enYuksekTahminBar = 0.0;   // hata payı üst sınırıyla en kötü durum
+    double enYuksekTahminBar = 0.0;
     if (!tahminSatirlari.isEmpty()) {
         QString icerik = satir({ "Q [m³/h]", "L [m]", "P [bar]", "Alt–Üst [bar]", "Pompa" }, true);
         for (const QVariant &kayit : tahminSatirlari) {
@@ -335,7 +319,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
                 + QString("(a = d·A/4l, b = B·π·d³/16l; d = %1 m, l = %2 m)</p>")
                       .arg(SliperModel::BORU_CAPI_M).arg(SliperModel::BORU_UZUNLUGU_M);
 
-        // Tahmin grafiği: hat için P(Q) doğrusu + hedef debide hata çubuğu
         const double hedefDebi = ayarlar["hedefDebi"].toDouble();
         const double grafikSonuDebi = std::max(hedefDebi * 1.5, 10.0);
         const double hatCapiMm = ayarlar["cap"].toDouble();
@@ -346,7 +329,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
         QVector<Seri> seriler;
         Seri tahminCizgisi; tahminCizgisi.renk = QColor("#2563eb"); tahminCizgisi.stil = Qt::SolidLine;
         tahminCizgisi.ad = QString("Tahmin %1 m").arg(sayi(hatUzunluguM, 0));
-        // Tahmin Q'ya göre düz çizgidir: iki uç nokta yeter
         for (double debi : { 0.0, grafikSonuDebi }) {
             const QVariantMap tahmin = SliperModel::basincTahmini(kesisimA, egimB, debi, hatCapiMm,
                 hatUzunluguM, yukseklikM, yogunluk, hataPayi);
@@ -374,7 +356,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
         html += "<p style='color:#6b7280;'>Tahmin için yeterli geçerli stroke yok.</p>";
     }
 
-    // --- Durum ---
     QString durumRengi = "#6b7280";
     QString durumMetni = "DEĞERLENDİRİLMEDİ (pompa maks. basıncı girilmedi)";
     if (!yeterliVeri) {
@@ -401,7 +382,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
     html += QString("<p style='margin-top:16px;'><b>Durum:</b> <span style='color:%1; font-weight:bold;'>%2</span></p>")
                 .arg(durumRengi, durumMetni.toHtmlEscaped());
 
-    // --- Cihaz parametreleri ---
     const QVariantMap konumSinirlari = m_database->kalibrasyonGetir("konum_sinirlari");
     html += baslik("Cihaz Parametreleri");
     html += tablo(
@@ -412,8 +392,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
                   : "kalibre edilmedi (varsayılan)" })
         + satir({ "Load cell kalibrasyonu", tarihVeyaCizgi(m_database->kalibrasyonTarihiGetir("loadcell")) })
         + satir({ "Mesafe sensörü kalibrasyonu", tarihVeyaCizgi(m_database->kalibrasyonTarihiGetir("mesafe_olcum")) })
-        // Dara, basıncın tamamını sabit miktarda kaydırır; A ve a tam bu kadar
-        // düşüktür. Sonuç bu bilgi olmadan yorumlanamaz.
         + satir({ "Uygulanan dara", bilgi["daraBasinci"].toDouble() != 0.0
                   ? sayi(bilgi["daraBasinci"].toDouble(), 2) + " mbar (A ve a bu kadar düşüktür)"
                   : "yok" }));
@@ -424,8 +402,6 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
     return html;
 }
 
-// Önizleme: grafikler geçici PNG dosyalarına yazılıp file:/// ile gösterilir
-// (QML RichText yerel dosya görsellerini yükleyebilir).
 QString ReportManager::pdfOnizlemeHtml(int olcumId)
 {
     QMap<QString, QImage> gorseller;
@@ -466,7 +442,6 @@ QString ReportManager::pdfOlustur(int olcumId)
     for (auto it = gorseller.constBegin(); it != gorseller.constEnd(); ++it) {
         html.replace("__" + it.key() + "__", "gorsel://" + it.key());
     }
-    // setHtml belgeyi temizlerken kaynakları da silebildiği için iki kez eklenir
     kaynaklariEkle();
     belge.setHtml(html);
     kaynaklariEkle();

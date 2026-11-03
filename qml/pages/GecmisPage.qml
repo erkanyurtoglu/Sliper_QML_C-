@@ -351,7 +351,7 @@ Rectangle {
             }
         }
 
-        } // ustBolum
+        }
 
         Rectangle {
             id: sonucPaneli
@@ -751,11 +751,6 @@ Rectangle {
         }
     }
 
-    // Orijinal SLIPER'daki "Expert Settings > Database Export / Import / Delete"
-    // özelliklerine karşılık gelir (bkz. slipermanV13.pdf bölüm 6). Şifre
-    // doğrulaması, uygulamada zaten var olan giriş şifresini (backend.sifreDogrula)
-    // kullanır; orijinal cihazdaki ayrı "2603" servis şifresi yerine bu tercih
-    // edildi çünkü uygulamada zaten tek bir şifre akışı var.
     Popup {
         id: gelismisAyarlarPopup
         anchors.centerIn: parent
@@ -1024,8 +1019,6 @@ Rectangle {
         }
     }
 
-    // "Tüm Verileri Sil" için çift onay (orijinal cihazdaki "Confirm if you
-    // are really sure" uyarısına karşılık gelir).
     Popup {
         id: tumVeriyiSilOnayPopup
         anchors.centerIn: parent

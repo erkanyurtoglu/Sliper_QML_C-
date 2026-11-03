@@ -1,20 +1,3 @@
-/*
- * SLIPER - ESP32-S3 Firmware (WiFi SoftAP + TCP Versiyonu)
- * -----------------------------------------------------
- * Sensorler:
- *   - MPU6050        : Ham ivme (X/Y/Z)        -> I2C
- *   - HX711 + S-tipi load cell : Ham agirlik    -> Dijital (DT/SCK)
- *   - TOF250 lazer   : Konum (dogrudan mm)                   -> I2C (0x52)
- *
- * NOT: Turetilmis hesaplamalar (basinc kalibrasyonu, hiz, debi, egim acisi)
- * artik ESP32'de degil, Qt/PC tarafinda yapiliyor. ESP32 sadece ham veri
- * gonderiyor - islemci yukunu azaltmak ve kalibrasyon degerlerini
- * yeniden derleme yapmadan Qt tarafinda ayarlayabilmek icin.
- *
- * NOT: I2C_SDA/I2C_SCL degerleri, fiziksel kablolamada SDA/SCL'nin
- * ters baglanmis olmasi nedeniyle yazilimsal olarak yer degistirilmistir.
- */
-
 #include <Wire.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
@@ -25,35 +8,21 @@
 #include <lwip/sockets.h>
 #include <esp_system.h>
 
-// ---------------- Pin Tanimlari ----------------
 #define I2C_SDA 17
 #define I2C_SCL 18
 
 #define HX711_DT 39
 #define HX711_SCK 38
 
-// TOF250 lazer mesafe sensoru (I2C, MPU6050/ADS1115 ile ayni hat).
 const uint8_t TOF250_I2C_ADRESI = 0x52;
 const uint8_t TOF250_MESAFE_REGISTERI = 0x00;
-// Ham degeri mm'ye ceviren carpan (sensor mm veriyor).
 const long TOF250_MM_CARPANI = 1;
-// Sensor 10 Hz olcum uretir.
 const unsigned long TOF250_OKUMA_ARALIGI_MS = 100;
-// Bu sure boyunca gecerli olcum gelmezse sensor kopuk sayilir.
 const unsigned long TOF250_ZAMAN_ASIMI_MS = 500;
 const long TOF250_MAKSIMUM_MM = 2500;
 
-// Batarya voltaj olcumu: ADS1115 A1 kanali (A0 eski analog lazerdendi).
-// Batarya bolucusu henuz bagli degil; A1 bos oldugu icin okunan deger anlamsizdir.
-// TODO: Gercek voltaj bolucu direnc degerleri (R1/R2) donanima baglanip
-// bir multimetreyle dogrulandiktan sonra Qt tarafindaki
-// SliperModel::BATARYA_BOLUCU_ORANI degeri (src/SliperModel.h) buna gore kalibre edilmelidir.
-// Su an bu deger yer tutucu (placeholder) bir varsayimdir.
-// DIKKAT: ADS1115 girisi VDD+0.3 V'u (3.6 V) asmamalidir. 14.7 V pil icin
-// en az 1:5 oraninda bolucu gerekir (ornegin 100k / 22k -> ~2.65 V).
 #define BATARYA_ADS_KANALI 1
 
-// ---------------- Nesneler ----------------
 Adafruit_MPU6050 mpu;
 HX711 loadCell;
 Adafruit_ADS1115 ads;
@@ -62,41 +31,25 @@ bool mpuHazir = false;
 unsigned long sonMpuDenemeMs = 0;
 const unsigned long MPU_DENEME_ARALIGI_MS = 2000;
 
-// ADS1115 baslangicta bulunamazsa (sensorsuz test / henuz kablolanmamis
-// donanim), hamMesafeOku()/hamBataryaOku() ic I2C cagrilarini calistirmaya
-// devam etmek loop()'u kilitleyebiliyordu: bazi ESP32 core surumlerinde
-// ACK vermeyen bir I2C adresine Wire istegi zaman asimi olmadan asili
-// kalabiliyor, bu da TCP'ye hic paket gonderilmemesine (baglanti "acik"
-// gorunse bile veri akmamasina) yol aciyordu. MPU6050'deki mpuHazir
-// deseninin ayni: hazir degilse I2C'ye hic dokunmadan 0 dondurulur.
 bool adsHazir = false;
 unsigned long sonAdsDenemeMs = 0;
 const unsigned long ADS_DENEME_ARALIGI_MS = 2000;
 
-// Sensor I2C adresleri: her okumadan once cihazin hala cevap verdigi
-// dogrulanir (asagidaki i2cCihazCevapVeriyor).
 const uint8_t ADS1115_I2C_ADRESI = 0x48;
 const uint8_t MPU6050_I2C_ADRESI = 0x68;
-// ADS1115 860 SPS'te bir donusumu ~1.2 ms'de bitirir; bu sureyi asarsa
-// cihaz kaybolmus demektir ve beklemeden cikilir.
 const unsigned long ADS_DONUSUM_ZAMAN_ASIMI_MS = 20;
 
-// I2C hattinin genel sagligi: cevapsiz deneme sayaci bu esige ulasinca
-// surucu bastan kurulur (bkz. i2cVeriYoluSagliginiKontrolEt).
 unsigned long i2cHataSayaci = 0;
 unsigned long i2cYenidenKurmaSayisi = 0;
 const unsigned long I2C_YENIDEN_KURMA_ESIGI = 10;
 
-// ---------------- WiFi SoftAP Ayarlari ----------------
 const char *WIFI_SSID = "SLIPER-ESP32";
-const char *WIFI_SIFRE = "sliper1234"; // en az 8 karakter olmali
+const char *WIFI_SIFRE = "sliper1234";
 const uint16_t TCP_PORT = 8888;
 
 WiFiServer tcpSunucu(TCP_PORT);
 WiFiClient bagliIstemci;
 
-// Kartin en son neden yeniden basladigini seri porta yazar. Baglanti
-// kopmalarinin sebebini ayirt etmenin en hizli yolu budur.
 void yenidenBaslatmaSebebiniYazdir() {
     const esp_reset_reason_t sebep = esp_reset_reason();
     Serial.print("Yeniden baslatma sebebi: ");
@@ -117,19 +70,13 @@ void setup() {
     Serial.begin(115200);
     delay(200);
 
-    // Onceki calismanin nasil bittigini soyler: kart beklenmedik sekilde
-    // yeniden baslayip baglantiyi dusuruyorsa sebebi burada gorunur.
-    //   TASK_WDT -> loop() bir yerde kilitlendi (I2C / bloklayan yazma)
-    //   BROWNOUT -> besleme voltaji dustu (pil / kondansator sorunu)
     yenidenBaslatmaSebebiniYazdir();
 
     Wire.begin(I2C_SDA, I2C_SCL);
     Wire.setClock(100000);
-    // Kablo gevserse / cihaz ACK vermezse Wire cagrilari suresiz asili kalmasin.
     Wire.setTimeOut(50);
     delay(100);
 
-    // MPU6050 baslat (once hatta var mi diye bakilir; bkz. i2cCihazCevapVeriyor)
     if (!i2cCihazKararliCevapVeriyor(MPU6050_I2C_ADRESI) || !mpu.begin()) {
         Serial.println("MPU6050 bulunamadi! Loop icinde tekrar denenecek.");
         mpuHazir = false;
@@ -141,7 +88,6 @@ void setup() {
         mpuHazir = true;
     }
 
-    // HX711 baslat
     loadCell.begin(HX711_DT, HX711_SCK);
     if (loadCell.wait_ready_timeout(2000)) {
         Serial.println("HX711 hazir.");
@@ -149,36 +95,25 @@ void setup() {
         Serial.println("HX711 bulunamadi!");
     }
 
-    // ADS1115 baslat (once hatta var mi diye bakilir; bkz. i2cCihazCevapVeriyor)
     if (!i2cCihazKararliCevapVeriyor(ADS1115_I2C_ADRESI) || !ads.begin()) {
         Serial.println("ADS1115 bulunamadi!");
         adsHazir = false;
     } else {
         ads.setGain(GAIN_ONE);
-        // Varsayilan 128 SPS'te tek okuma ~8 ms surer; 860 SPS ile ~1.2 ms.
         ads.setDataRate(RATE_ADS1115_860SPS);
         Serial.println("ADS1115 hazir.");
         adsHazir = true;
     }
 
-    // WiFi SoftAP baslat
     WiFi.softAP(WIFI_SSID, WIFI_SIFRE);
-    // Guc tasarrufu modu 50 Hz akista paket gecikmelerine ve kopmalara yol aciyor.
     WiFi.setSleep(false);
     Serial.print("SoftAP baslatildi. IP adresi: ");
-    Serial.println(WiFi.softAPIP()); // Varsayilan: 192.168.4.1
+    Serial.println(WiFi.softAPIP());
 
     tcpSunucu.begin();
     Serial.println("TCP sunucu baslatildi, baglanti bekleniyor...");
 }
 
-// ---------------- Ornekleme ----------------
-// Stroke'lar 1.5-5 s surer; plato/Pmax ve hiz regresyonu icin stroke basina
-// en az ~50 ornek gerekir. Bu yuzden 20 ms (50 Hz) aralikla gonderilir.
-// NOT: Kullanilan HX711 modulunde RATE pini kart uzerinde GND'ye sabit,
-// yani 10 SPS calisir: basinc saniyede 10 kez yenilenir, arada son deger
-// tekrar gonderilir. Stroke basina 13-46 basinc okumasi dusar, bu yeterlidir;
-// 10 SPS ayrica 50 Hz sebeke gurultusunu bastirir. Konum (TOF250) 10 Hz'de okunur.
 const unsigned long ORNEK_ARALIGI_MS = 20;
 const unsigned long BATARYA_ARALIGI_MS = 1000;
 const unsigned long MPU_ARALIGI_MS = 100;
@@ -192,20 +127,10 @@ long sonHamAgirlik = 0;
 unsigned long atlananPaketSayisi = 0;
 unsigned long gonderilenPaketSayisi = 0;
 unsigned long sonDurumYazisiMs = 0;
-// Loop'un yasadigini gosteren saniyelik seri port ozeti.
 const unsigned long DURUM_YAZISI_ARALIGI_MS = 1000;
 int16_t sonHamBatarya = 0;
 float sonAccelX = 0, sonAccelY = 0, sonAccelZ = 0;
 
-// Gonderim tamponunda yer var mi: soketin yazilabilir olup olmadigini bekleme
-// suresi SIFIR ile sorar, hicbir zaman bloklamaz.
-//
-// availableForWrite() KULLANILMAZ: Print::availableForWrite() varsayilan olarak
-// 0 doner ("bir yazma bloklayabilir" demek) ve NetworkClient bunu ezmez. Eski
-// kod bu yuzden her paketi "tampon dolu" sayip atliyordu; yalnizca art arda 10
-// atlamadan sonraki zorla gonderim geciyordu. Sonuc: 20 ms yerine 11 x 20 =
-// 220 ms'de bir paket, yani 50 Hz yerine 4.5 Hz veri (bkz. SliperModel.h,
-// PMAKS_PENCERE_S).
 bool soketYazmayaHazir(NetworkClient &istemci) {
     const int soket = istemci.fd();
     if (soket < 0) return false;
@@ -217,41 +142,24 @@ bool soketYazmayaHazir(NetworkClient &istemci) {
     return select(soket + 1, NULL, &yazmaKumesi, NULL, &beklemeYok) > 0;
 }
 
-// Bloklamaz: HX711 yeni donusum hazirsa okur, degilse son degeri korur.
 void hamAgirlikGuncelle() {
     if (loadCell.is_ready()) {
         sonHamAgirlik = loadCell.read();
     }
 }
 
-// I2C cihazi hala yerinde mi: kisa bir adres sorgusu yapar, ACK gelmezse false.
-// Wire.setTimeOut() sayesinde bu cagri en fazla birkac on ms surer.
-//
-// DIKKAT - bos bir beginTransmission/endTransmission ciftini ("probe") ESP32
-// core 3.3.8 surucusu i2c_master_probe() ile karsilar; sensor kablosu
-// kopuk/gevsek oldugunda bu fonksiyon I2C kesme isleyicisinde cokuyor
-// (Guru Meditation / StoreProhibited) ve kart resetleniyor. Bu yuzden adres
-// sorgusuna tek bayt eklenir: surucu bunu normal bir yazma islemi olarak
-// isler, probe koduna hic girmez. Yazilan deger cihazlarin register
-// isaretcisidir, zararsizdir.
 bool i2cCihazCevapVeriyor(uint8_t adres) {
     Wire.beginTransmission(adres);
     Wire.write((uint8_t)0x00);
     return Wire.endTransmission() == 0;
 }
 
-// Bosta kalan (pull-up'siz) bir I2C hatti rastgele ACK uretebilir. Cihazi var
-// saymadan once ust uste iki kez dogrulanir; aksi halde Adafruit begin()
-// fonksiyonlari kendi probe cagrilariyla yine cokme riskine girer.
 bool i2cCihazKararliCevapVeriyor(uint8_t adres) {
     if (!i2cCihazCevapVeriyor(adres)) return false;
     delay(2);
     return i2cCihazCevapVeriyor(adres);
 }
 
-// Art arda cok sayida I2C hatasi, hattin (kablo gevsemesi / kisa devre)
-// bozuldugunu gosterir. Bu durumda tek tek cihaz denemek yerine surucu
-// bastan kurulur; takilmis bir veri yolu ancak boyle toparlanir.
 void i2cVeriYoluSagliginiKontrolEt() {
     if (i2cHataSayaci < I2C_YENIDEN_KURMA_ESIGI) return;
 
@@ -265,12 +173,6 @@ void i2cVeriYoluSagliginiKontrolEt() {
     i2cYenidenKurmaSayisi++;
 }
 
-// ADS1115'ten tek kanal okur. Kutuphanenin readADC_SingleEnded() fonksiyonu
-// donusumun bitmesini kosulsuz bekler; test sirasindaki titresim I2C kablosunu
-// gevsetirse bu bekleme bitmez, loop() durur ve PC tarafi 5 s veri gelmediginde
-// baglantiyi koparir. Bu yuzden okuma once ACK ile dogrulanir, sonra donusum
-// zaman asimli beklenir; sorun varsa adsHazir false yapilip yeniden baslatma
-// dongusune birakilir.
 int16_t adsKanalOku(uint8_t kanal) {
     if (!adsHazir) return 0;
 
@@ -281,7 +183,7 @@ int16_t adsKanalOku(uint8_t kanal) {
         return 0;
     }
 
-    ads.startADCReading(MUX_BY_CHANNEL[kanal], /*continuous=*/false);
+    ads.startADCReading(MUX_BY_CHANNEL[kanal], false);
 
     const unsigned long baslangicMs = millis();
     while (!ads.conversionComplete()) {
@@ -295,8 +197,6 @@ int16_t adsKanalOku(uint8_t kanal) {
     return ads.getLastConversionResults();
 }
 
-// TOF250 mesafe registerini (2 bayt, buyuk uclu) okur. Once repeated-start
-// denenir; sensor kabul etmezse STOP ile tekrar yazilir.
 bool tofHamMesafeOku(uint16_t &hamMesafe) {
     Wire.beginTransmission(TOF250_I2C_ADRESI);
     Wire.write(TOF250_MESAFE_REGISTERI);
@@ -341,8 +241,6 @@ int16_t hamBataryaOku() {
 }
 
 void loop() {
-    // Kopmus istemci serbest birakilmazsa soket tanimlayicisi sizar ve bir sure
-    // sonra yeni baglantilar kabul edilemez olur.
     if (bagliIstemci && !bagliIstemci.connected()) {
         bagliIstemci.stop();
         Serial.println("PC baglantisi kapandi.");
@@ -354,16 +252,12 @@ void loop() {
             bagliIstemci.stop();
         }
         bagliIstemci = yeniIstemci;
-        // Kucuk paketlerin Nagle algoritmasiyla bekletilip toplu gitmesini engeller.
         bagliIstemci.setNoDelay(true);
         Serial.println("PC baglandi.");
     }
 
     if (!mpuHazir && millis() - sonMpuDenemeMs > MPU_DENEME_ARALIGI_MS) {
         sonMpuDenemeMs = millis();
-        // Once ucuz ACK sorgusu: cihaz hatta yoksa begin() cagrilmaz.
-        // (bkz. i2cVeriYoluSagliginiKontrolEt - surekli begin() denemesi
-        // ESP32 core 3.x I2C surucusunu cokertiyor.)
         if (!i2cCihazKararliCevapVeriyor(MPU6050_I2C_ADRESI)) {
             i2cHataSayaci++;
         } else if (mpu.begin()) {
@@ -392,9 +286,6 @@ void loop() {
         }
     }
 
-    // Hat uzun suredir cevapsizsa I2C surucusunu komple yeniden kur: kablo
-    // gevsemesinden sonra surucu bazen takili kaliyor ve tek tek denemeler
-    // sonsuza kadar basarisiz oluyor.
     i2cVeriYoluSagliginiKontrolEt();
 
     hamAgirlikGuncelle();
@@ -413,8 +304,6 @@ void loop() {
 
     if (mpuHazir && simdi - sonMpuMs >= MPU_ARALIGI_MS) {
         sonMpuMs = simdi;
-        // ADS1115'teki ile ayni koruma: cihaz kaybolduysa getEvent() icinde
-        // beklemek yerine mpuHazir dusurulur ve yeniden baglanma denenir.
         if (!i2cCihazCevapVeriyor(MPU6050_I2C_ADRESI)) {
             Serial.println("MPU6050 cevap vermiyor, yeniden baslatilacak.");
             mpuHazir = false;
@@ -429,12 +318,9 @@ void loop() {
     }
 
     StaticJsonDocument<256> doc;
-    // Zaman damgasi: Qt tarafi hiz/debiyi bu degerden hesaplar
-    // (paketin PC'ye varis zamani WiFi/TCP gecikmesi nedeniyle guvenilmez).
     doc["t"] = simdi;
     doc["hamAgirlik"] = sonHamAgirlik;
     doc["hamMesafe"] = sonMesafeMm;
-    // Qt tarafi bu alani gorunce degeri kalibrasyon tablosuna sokmadan mm kabul eder.
     doc["mesafeMm"] = sonMesafeMm;
     doc["hamBatarya"] = sonHamBatarya;
     doc["accelX"] = round(sonAccelX * 1000) / 1000.0;
@@ -445,10 +331,6 @@ void loop() {
     serializeJson(doc, json);
     json += "\n";
 
-    // Wi-Fi sinyali zayifladiginda lwIP gonderim tamponu dolar ve print()
-    // bloklar; loop() durdugu icin PC tarafi veri akisi kesildi sanip
-    // baglantiyi koparir. Tamponda yer yoksa bu paket atlanir: 50 Hz'de tek
-    // ornegin kaybi onemsiz, baglantinin kopmasi degil.
     if (bagliIstemci && bagliIstemci.connected()) {
         if (soketYazmayaHazir(bagliIstemci)) {
             bagliIstemci.print(json);
@@ -458,8 +340,6 @@ void loop() {
         }
     }
 
-    // Loop'un hala dondugunu ve akisin durumunu gosteren saniyelik ozet:
-    // seri monitorde bu satir durursa loop() kilitlenmis demektir.
     if (simdi - sonDurumYazisiMs >= DURUM_YAZISI_ARALIGI_MS) {
         sonDurumYazisiMs = simdi;
         Serial.printf("[%lus] istemci=%d gonderilen=%lu atlanan=%lu tof=%d mesafe=%ldmm ads=%d mpu=%d hx=%d i2cHata=%lu i2cReset=%lu\n",

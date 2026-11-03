@@ -4,9 +4,6 @@ import QtQuick.Layouts 6.7
 import QtCharts 6.7
 import sliper
 
-// Orijinal SLIPER "View Results / Calculate Forecast" ekranlarının karşılığı:
-// Table of Strokes, p-Q Chart of Strokes, Calculation of the Forecast,
-// Forecast Chart ve her stroke'un basınç / mesafe-hız eğrileri.
 Rectangle {
     id: kok
     color: "#0a0a0d"
@@ -131,12 +128,10 @@ Rectangle {
         return Translations.turkish ? metinler[anahtar].tr : metinler[anahtar].en
     }
 
-    // Sayıyı virgülden sonra "basamak" haneyle yazar; değer yoksa "—"
     function sayi(deger, basamak) {
         return (deger === undefined || deger === null || isNaN(deger)) ? "—" : Number(deger).toFixed(basamak)
     }
 
-    // Schleibinger dönüşümü: formül ve geometri C++ tarafındaki SliperModel.h'den gelir
     function schleibingerA(kesisimA) { return calculator.schleibingerA(kesisimA) }
     function schleibingerB(egimB) { return calculator.schleibingerB(egimB) }
 
@@ -165,7 +160,6 @@ Rectangle {
         strokeEgrisiniCiz()
     }
 
-    // --------------------------------------------------------------- P-Q grafiği
     function pqGrafiginiCiz() {
         pqDahil.clear()
         pqHaric.clear()
@@ -181,7 +175,6 @@ Rectangle {
             enKucukBasinc = Math.min(enKucukBasinc, stroke.basinc)
         }
         if (sonuc.yeterliVeri) {
-            // p = A + B*Q çizgisi ("tau0" = A kesişim, "mu" = B eğim)
             var kesisimA = sonuc.tau0, egimB = sonuc.mu
             var cizgiSonuDebi = enBuyukDebi * 1.1
             var cizgiSonuBasinc = kesisimA + egimB * cizgiSonuDebi
@@ -195,7 +188,6 @@ Rectangle {
         pqPEkseni.max = Math.ceil(enBuyukBasinc * 1.15)
     }
 
-    // --------------------------------------------------------------- Tahmin
     function ayarAlanlariniDoldur() {
         var ayar = tahminAyarlari
         var alanlar = ayarAlanlari()
@@ -211,7 +203,6 @@ Rectangle {
 
     function ayarlariKaydet() {
         var alanlar = ayarAlanlari()
-        // Ekranda olmayan ayarlar (yoğunluk, hata payı) kayıtlı değerleriyle korunur
         var yeni = Object.assign({}, tahminAyarlari)
         for (var anahtar in alanlar) {
             var deger = parseFloat(String(alanlar[anahtar].metin).replace(",", "."))
@@ -249,7 +240,6 @@ Rectangle {
                                                      ayar.yukseklik, ayar.yogunluk, ayar.hataPayi)
         }
         var grafikSonuDebi = Math.max(ayar.hedefDebi * 1.5, 10)
-        // Tahmin Q'ya göre düz çizgidir: iki uç nokta yeter
         var sifirDebide = tahminEt(0)
         var grafikSonunda = tahminEt(grafikSonuDebi)
         hatCizgisi.append(0, sifirDebide.basincBar)
@@ -269,7 +259,6 @@ Rectangle {
             pompaCizgisi.append(0, ayar.pompaMaks)
             pompaCizgisi.append(grafikSonuDebi, ayar.pompaMaks)
             enBuyukBasinc = Math.max(enBuyukBasinc, ayar.pompaMaks)
-            // Uygun bölge: hattın üst sınırı ile pompa maks. basıncı arasında, pompanın yettiği kısım
             var bolgeAdimSayisi = 60
             for (i = 0; i <= bolgeAdimSayisi; i++) {
                 var debi = grafikSonuDebi * i / bolgeAdimSayisi
@@ -284,7 +273,6 @@ Rectangle {
         tgPEkseni.max = Math.ceil(enBuyukBasinc * 1.1)
     }
 
-    // Pompalanabilirlik: tablodaki en kötü durum (hata payı üst sınırı) pompa kapasitesiyle karşılaştırılır
     readonly property var durumBilgisi: {
         if (!sonuc.yeterliVeri) return { kod: "yetersiz" }
         var guvenilmezNedeni = calculator.tahminGuvenilmezNedeni(sonuc.tau0, sonuc.mu, sonuc.r2)
@@ -304,7 +292,6 @@ Rectangle {
         return { kod: kod, enKotu: enKotu, asilan: asilan, pompa: pompa, baskin: baskin }
     }
 
-    // --------------------------------------------------------------- Stroke eğrisi
     function strokeEgrisiniCiz() {
         var seriler = [egriBasinc, egriP0l, egriP0r, egriPmaks, egriBaslangic, egriBitis, egriKonum, egriHiz, egriBaslangic2, egriBitis2]
         for (var i = 0; i < seriler.length; i++) seriler[i].clear()
@@ -324,9 +311,7 @@ Rectangle {
             enBuyukBasinc = Math.max(enBuyukBasinc, basinclar[i])
             enBuyukKonum = Math.max(enBuyukKonum, konumlar[i])
         }
-        // Hız eğrisi (orijinal "Speed"): hesap SliperModel bölüm 10'da.
-        // Yalnızca grafik içindir; stroke hızı ayrıca (bölüm 5) hesaplanır.
-        var konumYonu = hamVeri.yon || 1   // -1: konum "sensörden uzaklık"
+        var konumYonu = hamVeri.yon || 1
         var hizlar = calculator.hizEgrisiHesapla(zamanlar, konumlar, konumYonu)
         for (i = 0; i < hizlar.length; i++) {
             egriHiz.append(zamanlar[i], hizlar[i])
@@ -370,7 +355,6 @@ Rectangle {
         }
     }
 
-    // --------------------------------------------------------------- Bileşenler
     component Kart: Rectangle {
         radius: 10
         color: "#0a0a0d"
@@ -478,12 +462,10 @@ Rectangle {
         border.width: 1
     }
 
-    // --------------------------------------------------------------- Yerleşim
     Row {
         anchors.fill: parent
         spacing: 0
 
-        // ======================= SOL PANEL =======================
         Rectangle {
             id: solPanel
             width: 300
@@ -506,7 +488,6 @@ Rectangle {
                     width: parent.width
                     spacing: 10
 
-                    // --- Başlık / ölçüm bilgisi ---
                     Item {
                         width: parent.width
                         height: 16
@@ -561,7 +542,6 @@ Rectangle {
                         color: "#6b7280"; font.family: "Segoe UI"; font.pixelSize: 12; wrapMode: Text.WordWrap
                     }
 
-                    // --- P-Q sonuçları ---
                     Kart {
                         width: parent.width
                         height: sonucSutunu.implicitHeight + 16
@@ -579,7 +559,6 @@ Rectangle {
                         }
                     }
 
-                    // --- Tahmin ayarları (orijinal "Forecast Preferences") ---
                     Kart {
                         width: parent.width
                         height: ayarSutunu.implicitHeight + 20
@@ -621,7 +600,6 @@ Rectangle {
                         }
                     }
 
-                    // --- Pompalanabilirlik durumu ---
                     Kart {
                         id: durumKutusu
                         width: parent.width
@@ -668,7 +646,6 @@ Rectangle {
                         }
                     }
 
-                    // --- Dışa aktarım ---
                     Dugme {
                         width: parent.width
                         text: txt("pdfRaporOnizle")
@@ -700,7 +677,6 @@ Rectangle {
             }
         }
 
-        // ======================= SAĞ ALAN =======================
         Item {
             width: parent.width - solPanel.width
             height: parent.height
@@ -755,7 +731,6 @@ Rectangle {
                     anchors.margins: 10
                     currentIndex: aktifSekme
 
-                    // ---------------- 0: P-Q grafiği ----------------
                     Item {
                         Item {
                             id: pqUstBilgi
@@ -819,7 +794,6 @@ Rectangle {
                         }
                     }
 
-                    // ---------------- 1: Stroke tablosu ----------------
                     Item {
                         id: tabloSekmesi
                         readonly property var kolonlar: [0.05, 0.05, 0.1, 0.07, 0.08, 0.08, 0.08, 0.08, 0.09, 0.09, 0.19, 0.04]
@@ -961,7 +935,6 @@ Rectangle {
                         }
                     }
 
-                    // ---------------- 2: Stroke eğrileri ----------------
                     Item {
                         Row {
                             id: egriUst
@@ -1054,7 +1027,6 @@ Rectangle {
                         }
                     }
 
-                    // ---------------- 3: Tahmin tablosu ----------------
                     Item {
                         Column {
                             id: tahminTabloSutunu
@@ -1134,7 +1106,6 @@ Rectangle {
                         }
                     }
 
-                    // ---------------- 4: Tahmin grafiği ----------------
                     Item {
                         ChartView {
                             theme: ChartView.ChartThemeDark
@@ -1167,7 +1138,6 @@ Rectangle {
         }
     }
 
-    // --------------------------------------------------------------- Bildirim
     Rectangle {
         id: bildirimKutusu
         property bool hataMi: false
@@ -1213,7 +1183,6 @@ Rectangle {
         }
     }
 
-    // --------------------------------------------------------------- Popup'lar
     Popup {
         id: strokeSilPopup
         property int strokeId: -1

@@ -14,8 +14,6 @@ class Calculator : public QObject
     Q_PROPERTY(bool hazir READ hazir NOTIFY hazirlikChanged)
     Q_PROPERTY(bool sonStrokeGecerli READ sonStrokeGecerli NOTIFY sonStrokeGecerliChanged)
     Q_PROPERTY(QVariantMap sonStroke READ sonStroke NOTIFY sonStrokeChanged)
-    // Kalibre edilmiş üst/alt boru konumları (mm). Orijinal cihazdaki
-    // "Calibrate Top/Bottom Position" referans noktalarına karşılık gelir.
     Q_PROPERTY(double ustKonumMm READ ustKonumMm WRITE setUstKonumMm NOTIFY konumSinirlariChanged)
     Q_PROPERTY(double altKonumMm READ altKonumMm WRITE setAltKonumMm NOTIFY konumSinirlariChanged)
 
@@ -33,30 +31,12 @@ public:
     void setUstKonumMm(double deger);
     void setAltKonumMm(double deger);
 
-    // Her sensör örneğinde çağrılır.
-    // zamanS: cihaz zaman damgası (s), konumMm: boru konumu (mm, yukarıda büyük),
-    // basincMbar: piston üzerindeki toplam basınç (betonun ölü ağırlığı dahil).
-    //
-    // Stroke mantığı (orijinal SLIPER kılavuzu bölüm 5):
-    //  - Boru üst referansın altına indiğinde başlangıç işaretlenir. Bitiş,
-    //    borunun durduğu andır (alt referansa varmak da bitiştir, ama tek
-    //    ölçüt değildir: beton dolu boru alt kalibrasyon noktasına kadar
-    //    inmeyebilir ve stroke o zaman hiç kapanmazdı). Başlangıçtan 2 s önce
-    //    ile bitişten 2 s sonrası arasındaki veri stroke olarak saklanır.
-    //  - P0l: hareket öncesi durağan basınç, P0r: bitiş sonrası durağan basınç
-    //  - p, Q, v ve geçersizlik kuralı SliperModel'de (bölüm 5) hesaplanır;
-    //    bu sınıf yalnızca hangi örneklerin kullanılacağını seçer.
-    //  - Sonuç strokeTamamlandi sinyaliyle bildirilir.
     Q_INVOKABLE void konumGuncelle(double zamanS, double konumMm, double basincMbar);
-    // Stroke ancak "Hazırla" ile alınan durağan basınçtan sonra algılanır.
-    // Boru üstte hareketsizken çağrılır; HAZIRLAMA_SURESI_S boyunca basınç
-    // toplanır ve P0l olarak sabitlenir. Her stroke'tan sonra yeniden gerekir.
     Q_INVOKABLE void hazirla();
     Q_INVOKABLE void duraklat();
     Q_INVOKABLE void devamEt();
     Q_INVOKABLE void sifirla();
 
-    // Bkz. SliperModel::basincTahmini / tahminTablosu
     Q_INVOKABLE QVariantMap boruHattiTahminHesapla(double aKesisimMbar, double bEgimMbarHm3,
                                                     double debiM3h, double boruCapiMm,
                                                     double boruUzunluguM,
@@ -68,19 +48,12 @@ public:
     Q_INVOKABLE QVariantMap varsayilanTahminAyarlari() const;
     Q_INVOKABLE QString tahminGuvenilmezNedeni(double kesisimA, double egimB, double r2) const;
     Q_INVOKABLE bool tahminKarariVerilemez(const QString &guvenilmezNedeni) const;
-    // P-Q kesişim/eğiminden Schleibinger a/b (bkz. SliperModel bölüm 8)
     Q_INVOKABLE double schleibingerA(double kesisimA) const;
     Q_INVOKABLE double schleibingerB(double egimB) const;
-    // Borunun "üstte" sayılması için üst referansa gereken yakınlık (mm).
-    // QML grafik kaydıyla Calculator'ın stroke mantığı aynı eşiği kullansın diye
-    // buradan okunur (bkz. SliperModel bölüm 4).
     Q_INVOKABLE double ustYakalamaToleransiMm() const;
-    // "İniş gerçekten başladı" sayılması için gereken yol (mm). Grafik kaydı da
-    // bunu kullanır ki grafiğin ve stroke hesabının iniş tanımı aynı olsun.
     Q_INVOKABLE double minInisYoluMm() const;
     Q_INVOKABLE double sliperBoruCapiMm() const;
     Q_INVOKABLE double sliperBoruUzunluguMm() const;
-    // Sonuç sayfasındaki stroke hız eğrisi (bkz. SliperModel bölüm 10). Dönüş: m/s listesi
     Q_INVOKABLE QVariantList hizEgrisiHesapla(const QVariantList &zamanS, const QVariantList &konumMm,
                                               double konumYonu) const;
 
@@ -92,16 +65,13 @@ signals:
     void sonStrokeGecerliChanged();
     void sonStrokeChanged();
     void konumSinirlariChanged();
-    // Alanlar: tarih, sure, pMaks, p0l, p0r, basinc, debi, hiz, konum,
-    // gecerli, gecersizNedeni, hamVeri {t[], x[], p[], tBaslangic, tBitis}
     void strokeTamamlandi(const QVariantMap &stroke);
 
 private:
-    // Sensörden gelen tek bir ölçüm anı
     struct Ornek {
-        double zamanS;        // cihaz zamanı [s]
-        double yukseklikMm;   // borunun yüksekliği [mm], yukarı = büyük (h = yon * konum)
-        double basincMbar;    // piston üzerindeki toplam basınç [mbar]
+        double zamanS;
+        double yukseklikMm;
+        double basincMbar;
     };
 
     void strokuBaslat(double zamanS);
@@ -109,15 +79,9 @@ private:
     void hazirlamaOrnegiIsle(const Ornek &yeniOrnek);
     void hazirlamayiIptalEt();
     void hazirligiSifirla();
-    // İnişin bittiği an: boru durdu ya da alt referansa vardı.
-    // durmaBaslangicIndeksi: boru durduysa durmanın başladığı örneğin indeksi,
-    // durmadıysa -1. inisiKapat'a bitiş örneği olarak bu indeks verilir.
     int durmaBaslangicIndeksi(double zamanS) const;
     void inisiKapat(double zamanS, int bitisIndeksi = -1);
     void durumAyarla(const QString &yeniDurum);
-    // Konum yönü kalibrasyondan çıkarılır: üst > alt ise konum "yükseklik",
-    // üst < alt ise orijinal SLIPER'daki gibi "sensörden uzaklık"tır (üstte ~100,
-    // altta ~540 mm). İçeride hep yükseklik (h = yon * konum) kullanılır.
     double yon() const { return m_ustKonumMm >= m_altKonumMm ? 1.0 : -1.0; }
     double ustEsik() const;
     double altEsik() const;
@@ -127,25 +91,22 @@ private:
     bool m_duraklatildi = false;
     bool m_sonStrokeGecerli = true;
     QVariantMap m_sonStroke;
-    // Kalibre edilmemişken varsayılan: konum = sensörden uzaklık (Liya cihazında
-    // sensör tepede sabit, reflektör çubuk borunun dibinde; orijinal SLIPER gibi).
     double m_ustKonumMm = 40.0;
     double m_altKonumMm = 540.0;
 
     bool m_hazirlaniyor = false;
     bool m_hazir = false;
-    QVector<Ornek> m_hazirlamaOrnekleri;      // Hazırla basıldıktan sonra kayan pencere
-    double m_hazirlananP0lMbar = 0.0;         // HAZIR olunduğu anda sabitlenen durağan basınç
-    double m_strokeP0lMbar = 0.0;             // devam eden stroke'un P0l'i (strokuBaslat'ta kopyalanır)
-    QVector<Ornek> m_ustteBekleyenOrnekler;   // boru üstteyken son UST_TAMPON_S saniyelik örnekler
-    QVector<Ornek> m_durgunOrnekler;          // stroke öncesi, boru hareketsizken (P0l bunlardan)
-    QVector<Ornek> m_strokeOrnekleri;         // iniş + bitiş sonrası örnekler
-    int m_altaVarisIndeksi = -1;              // m_strokeOrnekleri içinde inişin bittiği örnek
-    double m_inisBaslangicYuksekligiMm = 0.0; // inişin başladığı yükseklik (inilen yol buna göre)
-    double m_bitisYuksekligiMm = 0.0;         // inişin bittiği yükseklik (boru burada durdu)
+    QVector<Ornek> m_hazirlamaOrnekleri;
+    double m_hazirlananP0lMbar = 0.0;
+    double m_strokeP0lMbar = 0.0;
+    QVector<Ornek> m_ustteBekleyenOrnekler;
+    QVector<Ornek> m_durgunOrnekler;
+    QVector<Ornek> m_strokeOrnekleri;
+    int m_altaVarisIndeksi = -1;
+    double m_inisBaslangicYuksekligiMm = 0.0;
+    double m_bitisYuksekligiMm = 0.0;
     double m_baslangicZamaniS = 0.0;
     double m_bitisZamaniS = 0.0;
     QDateTime m_bitisTarihi;
     bool m_bitisSonrasiToplaniyor = false;
-    // Süreler ve eşikler (ONCESI_PENCERE_S, HAREKET_PAYI_S, ...): SliperModel.h bölüm 4
 };

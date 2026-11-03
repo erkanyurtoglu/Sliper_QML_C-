@@ -8,10 +8,6 @@
 
 class Database;
 
-// Orijinal SLIPER PDF raporu (kılavuz bölüm 5.5): stroke ve tahmin grafikleri,
-// temel veriler, stroke özeti, tahmin tablosu ve cihaz parametreleri.
-// Tüm veriler ölçüm kimliğiyle veritabanından okunur; tahmin, ölçüme kayıtlı
-// tahmin ayarlarıyla (Forecast Preferences) hesaplanır.
 class ReportManager : public QObject
 {
     Q_OBJECT
@@ -25,7 +21,7 @@ public:
     struct Seri {
         QVector<QPointF> noktalar;
         QColor renk;
-        bool noktaMi = false;           // true: saçılım, false: çizgi
+        bool noktaMi = false;
         Qt::PenStyle stil = Qt::SolidLine;
         QString ad;
         QVector<QPair<QPointF, QPointF>> hataCubuklari;

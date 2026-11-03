@@ -8,9 +8,6 @@ class QIODevice;
 struct VoskModel;
 struct VoskRecognizer;
 
-// VoiceCommandManager'in ayri bir QThread icinde calistirdigi gercek isci.
-// Mikrofon yakalama ve Vosk ile konusma tanima burada, arayuz thread'ini
-// bloklamadan yapilir.
 class VoiceRecognitionWorker : public QObject
 {
     Q_OBJECT

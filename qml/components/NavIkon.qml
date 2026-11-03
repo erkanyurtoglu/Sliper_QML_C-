@@ -4,7 +4,6 @@ Canvas {
     id: root
     width: 18
     height: 18
-    // "olcum" | "sonuclar" | "gecmis" | "kalibrasyon" | "rehber"
     property string tur: "olcum"
     property color renk: "#9ca3af"
     property real kalinlik: 1.6
@@ -28,7 +27,6 @@ Canvas {
 
         switch (tur) {
         case "olcum": {
-            // bar chart
             var bars = [ [5, 20, 10], [12, 20, 4], [19, 20, 13] ]
             for (var i = 0; i < bars.length; i++) {
                 ctx.beginPath()
@@ -39,7 +37,6 @@ Canvas {
             break
         }
         case "sonuclar": {
-            // trending line with arrow
             ctx.beginPath()
             ctx.moveTo(3, 17)
             ctx.lineTo(9.5, 10.5)
@@ -55,7 +52,6 @@ Canvas {
             break
         }
         case "gecmis": {
-            // clock
             ctx.beginPath()
             ctx.arc(12, 12, 8.5, 0, Math.PI * 2)
             ctx.stroke()
@@ -68,7 +64,6 @@ Canvas {
             break
         }
         case "kalibrasyon": {
-            // gear
             var cx = 12, cy = 12, rIn = 5.5, rOut = 8.5, teeth = 8
             ctx.beginPath()
             for (var t = 0; t < teeth; t++) {
@@ -92,7 +87,6 @@ Canvas {
             break
         }
         case "rehber": {
-            // open book
             ctx.beginPath()
             ctx.moveTo(12, 6.5)
             ctx.bezierCurveTo(10.2, 5, 6.5, 4.5, 3.5, 5.2)

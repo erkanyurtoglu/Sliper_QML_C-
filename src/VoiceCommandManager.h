@@ -5,15 +5,6 @@
 
 class VoiceRecognitionWorker;
 
-// "Başlat", "Durdur", "Bitir" gibi sesli komutları dinlemek için kullanılır.
-// Laboratuvar ortamında eller kirli/meşgulken dokunmadan ölçüm kontrolü
-// yapılabilmesi amacıyla eklendi.
-//
-// Tanıma tamamen cihaz üzerinde (offline) Vosk kütüphanesi ile yapılır,
-// internet bağlantısı gerekmez. Yanlışlıkla tetiklenmeyi önlemek için
-// tanıyıcı sadece bu komut kelimelerini içeren kısıtlı bir sözlükle
-// (grammar) çalışır; çevredeki gündelik konuşma bu dar kelime setine
-// düşmediği için genelde göz ardı edilir (bkz. VoiceRecognitionWorker).
 class VoiceCommandManager : public QObject
 {
     Q_OBJECT
@@ -44,7 +35,6 @@ signals:
     void anlikMetinChanged();
     void sonHataChanged();
 
-    // Sayfalar bu sinyallere baglanip ilgili aksiyonu tetikler.
     void baslatKomutu();
     void durdurKomutu();
     void bitirKomutu();

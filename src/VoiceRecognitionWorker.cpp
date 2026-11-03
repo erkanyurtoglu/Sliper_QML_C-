@@ -16,13 +16,6 @@
 #include <cstdlib>
 
 namespace {
-
-// Vosk'un tanıyabileceği komut kelimeleri. Tanıyıcı, dinlemeye başlarken
-// bu listeyle "grammar" (kısıtlı sözlük) moduna alınır: motor SADECE bu
-// kelimeleri ya da "[unk]" (bilinmeyen) çıktısını üretebilir. Bu sayede
-// etraftaki gündelik konuşma bu dar kelime setine düşmediği icin genelde
-// [unk] olarak elenir, ama gercek komut soylenince net yakalanir - ayrica
-// arama uzayi kuculdugu icin tanima cok daha hizli/dogru calisir.
 const QStringList &grammarKelimeleri()
 {
     static const QStringList kelimeler = {
@@ -44,9 +37,6 @@ QByteArray grammarJsonUret()
     return QJsonDocument(dizi).toJson(QJsonDocument::Compact);
 }
 
-// Turkce karakterleri ASCII'ye indirger, kucuk harfe cevirir; boylece
-// Vosk ciktisi ile aday kelime listeleri arasinda esnek karsilastirma
-// yapilabilir (aksan/karakter farkindan etkilenmez).
 QString sadelestir(const QString &metin)
 {
     QString kucuk = QLocale(QLocale::Turkish).toLower(metin);
@@ -99,7 +89,7 @@ bool kelimeUyuyorMu(const QString &token, const QStringList &adaylar, int tolera
     return false;
 }
 
-} // namespace
+}
 
 VoiceRecognitionWorker::VoiceRecognitionWorker(const QString &modelYolu, QObject *parent)
     : QObject(parent)
@@ -134,7 +124,7 @@ void VoiceRecognitionWorker::dinlemeyeBasla()
         return;
     }
     if (m_audioSource)
-        return; // zaten dinliyor
+        return;
 
     QAudioFormat format;
     format.setSampleRate(16000);
@@ -232,7 +222,7 @@ void VoiceRecognitionWorker::metniDegerlendir(const QString &metin)
 
     for (const QString &token : tokenlar) {
         if (token == "unk")
-            continue; // grammar disina cikan / eslesmeyen ses
+            continue;
 
         int komutTuru = -1;
         if (kelimeUyuyorMu(token, bitirAdaylari, 1)) komutTuru = VoiceRecognitionWorker::KomutBitir;
@@ -243,7 +233,7 @@ void VoiceRecognitionWorker::metniDegerlendir(const QString &metin)
 
         if (komutTuru >= 0) {
             if (m_sonKomutZamani.elapsed() < KOMUT_BEKLEME_MS)
-                return; // cok yakin zamanda baska komut tetiklendi, tekrari engelle
+                return;
             m_sonKomutZamani.restart();
             emit komutAlgilandi(komutTuru, metin);
             return;

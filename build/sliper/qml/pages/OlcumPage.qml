@@ -81,10 +81,6 @@ Rectangle {
     property string uyariMesaji: ""
     property bool bitirIcinDuraklatildi: false
 
-    // Anlık değer kutucukları (BASINÇ/KONUM/HIZ/DEBİ) sensörden gelen her
-    // paketle değil, aşağıdaki Timer ile yavaşlatılmış hızda güncellenir;
-    // aksi halde sayılar gözün takip edemeyeceği kadar hızlı değişip
-    // görüntü kirliliğine yol açıyordu. Grafikler ham veriyi olduğu gibi alır.
     property real gosterilenBasinc: 0
     property real gosterilenKonum: 0
     property real gosterilenHiz: 0
@@ -111,35 +107,14 @@ Rectangle {
     property var hizGecmis: []
     property var debiGecmis: []
 
-    // --- Otomatik kayıt (üst sabitleme noktası) --------------------------------
-    // Cihaz üst sabitleme noktasında havada asılıyken mesafe sensörünün önünde
-    // demir mil yoktur ve sensör çok uzağı (~400 mm) okur. Mil çevrilip sensörün
-    // önüne geldiğinde kalibre edilen üst konum (~64 mm) okunur; gerçek stroke
-    // ancak o andan sonra başlar. Bu yüzden "Ölçümü Başlat" grafiği hemen
-    // akıtmaz, önce üst konumun görülmesini bekler.
-    //   BEKLEMEDE -> (üst konum görüldü) -> KAYITTA -> (Calculator inişi
-    //   kapattı: durum TAMAMLANDI) -> DONDU
-    //   DONDU -> (boru tekrar üst konuma alındı) -> KAYITTA (yeni stroke)
     property string kayitDurumu: "BEKLEMEDE"
     property bool inisBasladi: false
     property real kayitBaslangicKonumuMm: 0
 
-    // Üst referansa bu kadar yaklaşılması "üst konumda" sayılır. Değer
-    // Calculator'dan okunur: grafik kaydı ile stroke hesabı aynı anda
-    // kollanmalı, aksi halde grafik yeni stroke'a hazırlanırken Calculator
-    // boruyu "üstte" saymaz ve iniş stroke olarak işlenmez.
     readonly property real ustYakalamaToleransiMm: calculator.ustYakalamaToleransiMm()
-    // Grafiği erken dondurmamak için: boru bu kadar aşağı inmeden "iniş başladı"
-    // sayılmaz. Calculator'ın iniş tanımıyla aynı kalsın diye oradan okunur.
     readonly property real inisBaslamaYoluMm: calculator.minInisYoluMm()
-    // Üst konumda serbest bırakılma beklenirken grafikte tutulan son süre.
-    // Kısa tutulur: bekleme uzasa bile zaman ekseni şişmez ve iniş başladığında
-    // stroke grafiğin büyük kısmını kaplar (öncesinde yalnızca taban çizgisi görünür).
     readonly property real beklemePenceresiS: 1.0
 
-    // Orijinal ağırlık seti: 3 x ~1.6 kg ve 3 x ~4.8 kg. Eklenen her ağırlık
-    // sırayla tutulur; "Geri" son ekleneni kaldırır. Her stroke, o anki toplam
-    // ağırlıkla kaydedilir (kılavuz: her yük için en az 3 stroke).
     property var agirlikListesi: []
     property real strokeAgirligi: -1
     readonly property int agirlikAdedi: agirlikListesi.length
@@ -164,7 +139,7 @@ Rectangle {
 
     function agirlikOzeti() {
         if (agirlikListesi.length === 0) return txt("agirlikYok")
-        var kucukAgirlikSayisi = 0, buyukAgirlikSayisi = 0   // 1.6 kg ve 4.8 kg'lık parçalar
+        var kucukAgirlikSayisi = 0, buyukAgirlikSayisi = 0
         for (var i = 0; i < agirlikListesi.length; i++) {
             if (agirlikListesi[i] < 3) kucukAgirlikSayisi++; else buyukAgirlikSayisi++
         }
@@ -174,8 +149,6 @@ Rectangle {
         return parcalar.join(" + ") + " = " + agirlikToplam.toFixed(1) + " kg"
     }
 
-    // TS EN 206 / TS 13515 normal beton dayanım sınıfları (C sınıfı) — çimento dozajı
-    // ve azami su/çimento oranı, ilgili sınıfın minimum bağlayıcı gereksinimine göre.
     readonly property var receteListesi: [
         { sinifTr: "C16/20", sinifEn: "C16/20", cimentoTr: "min. 260 kg/m³", cimentoEn: "min. 260 kg/m³", suCimentoTr: "maks. 0.65", suCimentoEn: "max. 0.65", aciklamaTr: "Hafif yükte yalın/donatılı beton", aciklamaEn: "Plain/reinforced concrete for light loads" },
         { sinifTr: "C20/25", sinifEn: "C20/25", cimentoTr: "min. 280 kg/m³", cimentoEn: "min. 280 kg/m³", suCimentoTr: "maks. 0.60", suCimentoEn: "max. 0.60", aciklamaTr: "Standart betonarme", aciklamaEn: "Standard reinforced concrete" },
@@ -191,7 +164,7 @@ Rectangle {
     signal olcumTamamlandi(int id)
     signal agirlikEklendi()
 
-    function resetMeasurementScreen() { //Ekranı temizleme fonksiyonu
+    function resetMeasurementScreen() {
         aktifOlcumId = -1
         uyariMesaji = ""
         bitirIcinDuraklatildi = false
@@ -203,9 +176,6 @@ Rectangle {
         kayitDurumunaDon()
     }
 
-    // Grafikleri temizler ve kaydı yeniden "üst konum bekleniyor" durumuna alır.
-    // Ölçümün kendisine (aktifOlcumId, kaydedilmiş stroke'lar, stroke sayacı)
-    // dokunmaz; yalnızca ekrandaki kayıt yeni bir stroke'a hazırlanır.
     function kayitDurumunaDon() {
         kayitDurumu = "BEKLEMEDE"
         inisBasladi = false
@@ -246,14 +216,6 @@ Rectangle {
         daraVeritabaninaYaz()
     }
 
-    // Dara, boru yüksüzken basıncı 0'a çeker (load cell sıfır kayması). Alınan
-    // değer aktif ölçümle birlikte saklanır, çünkü P-Q doğrusunun kesişimi
-    // (A, dolayısıyla a) tam dara kadar kayar. Gerekçe ve üst sınır:
-    // SliperModel.h bölüm 2.
-    //
-    // Stroke kaydedildikten sonra dara kilitlenir: aynı P-Q doğrusuna darasız
-    // ve daralı stroke'lar girerse sabit kayma yalnızca bir kısmına uygulanmış
-    // olur, doğru bozulur ve bu sonradan hiçbir kayıttan anlaşılamaz.
     function daraDegistirilebilir() {
         return aktifOlcumId <= 0 || calculator.strokeSayisi === 0
     }
@@ -275,7 +237,6 @@ Rectangle {
             return
         }
 
-        // Reddedilen aday, o anda uygulanan daradan bağımsız olan darasız basınç
         var darasizBasinc = sensorManager.basinc + wifiManager.daraBasinciMbar
         uyariMesaji = txt("uyariDaraCokBuyuk")
             .arg(darasizBasinc.toFixed(1))
@@ -333,12 +294,8 @@ Rectangle {
         debiYEkseni.max = 50
     }
 
-    // Zaman ekseni tek bir stroke'u kapsar: veri hangi aralıktaysa eksen de o
-    // aralığa oturur, böylece eğri paneli boydan boya doldurur (sabit 0-60 s
-    // ekseninde 1.5 saniyelik bir stroke iğne gibi görünüyordu).
     function zamanEkseniniUygula(sonZamanS) {
         var ilkZamanS = zamanGecmis.length > 0 ? zamanGecmis[0] : 0
-        // Veri henüz çok kısayken eksen titremesin diye en az bu kadar genişlik tutulur.
         var genislik = Math.max(sonZamanS - ilkZamanS, 1.0)
         var bitis = ilkZamanS + genislik * 1.04
         var eksenler = [xEkseni, konumXEkseni, hizXEkseni, debiXEkseni]
@@ -348,8 +305,6 @@ Rectangle {
         }
     }
 
-    // Y ekseni veriye oturtulur. sifirdanBasla: hız/debi gibi sıfırı anlamlı olan
-    // büyüklüklerde taban 0'da kalır; basınç ve konum kendi bandına yaklaştırılır.
     function degerEkseniHesapla(dizi, sifirdanBasla, varsayilanTavan) {
         if (dizi.length === 0) return { min: 0, max: varsayilanTavan }
         var maxDeger = Math.max.apply(null, dizi)
@@ -359,20 +314,15 @@ Rectangle {
         return { min: taban, max: maxDeger + kenarBoslugu }
     }
 
-    // Kalibrasyondaki üst/alt referansa göre yön: üst < alt ise konum, orijinal
-    // SLIPER'daki gibi "sensörden uzaklık"tır (üstte küçük, altta büyük).
     function konumYonu() {
         return calculator.ustKonumMm >= calculator.altKonumMm ? 1 : -1
     }
 
-    // Boru üst sabitleme noktasında mı? (demir mil sensörün önünde)
     function ustKonumda(konumMm) {
         var yukseklikMm = konumYonu() * konumMm
         return yukseklikMm > konumYonu() * calculator.ustKonumMm - ustYakalamaToleransiMm
     }
 
-    // İniş başladığında: elde tutulan son saniyeler t = 0'dan başlayacak şekilde
-    // yeniden çizilir, böylece her stroke'un grafiği 0'dan başlar.
     function zamanEkseniniSifirla() {
         if (zamanGecmis.length === 0) return
         var kaydirma = zamanGecmis[0]
@@ -389,16 +339,13 @@ Rectangle {
             hizSerisi.append(zamanGecmis[i], hizGecmis[i])
             debiSerisi.append(zamanGecmis[i], debiGecmis[i])
         }
-        // Sonraki örnekler de aynı eksende kalsın
         baslangicZamaniS += kaydirma
         zamanSayaci -= kaydirma
     }
 
-    // Üst konum yakalandığında kaydı başlatır, iniş bittiğinde grafiği dondurur.
     function kayitDurumunuGuncelle() {
         var konumMm = sensorManager.konum
 
-        // 1) Boru üst sabitleme noktasına alındı: yeni stroke için grafiği sıfırla.
         if (kayitDurumu !== "KAYITTA" && calculator.hazir && ustKonumda(konumMm)) {
             grafikleriSifirla()
             kayitDurumu = "KAYITTA"
@@ -409,7 +356,6 @@ Rectangle {
 
         if (kayitDurumu !== "KAYITTA") return
 
-        // 2) İniş gerçekten başladı mı? Üstteki küçük kıpırtılar "iniş bitti" sayılmasın.
         if (!inisBasladi) {
             var inilenYolMm = konumYonu() * (kayitBaslangicKonumuMm - konumMm)
             if (inilenYolMm > inisBaslamaYoluMm) {
@@ -419,21 +365,11 @@ Rectangle {
             return
         }
 
-        // 3) İniş bitti mi? Karar Calculator'a aittir: inişin bittiği anı o
-        //    belirler (boru durdu ya da alt referansa vardı) ve stroke'u o anda
-        //    kapatır. Grafik ayrı bir ölçütle dondurulursa ikisi ayrışır -
-        //    rozet "stroke bitti" derken sayaç 0'da kalıyordu.
         if (calculator.durum === "TAMAMLANDI") kayitDurumu = "DONDU"
     }
 
     Connections {
         target: calculator
-        // Duraklatıldığında grafik ekranda donuk kalır (operatör son stroke'u
-        // inceleyebilsin). Devam edildiğinde kayıt sıfırdan başlatılır: Calculator
-        // da duraklatmada bütün tamponlarını atar ve yeni stroke'u ancak boru
-        // tekrar üst eşiğin içine girdikten sonra başlatır (bkz. Calculator::duraklat,
-        // devamEt). Grafik eski eğriyi tutmaya devam ederse ikisi ayrışır: ekran
-        // aynı eğrinin üstüne çizmeye devam ederken hiçbir stroke kaydedilmezdi.
         function onDuraklatildiChanged() {
             if (!calculator.duraklatildi) kayitDurumunaDon()
         }
@@ -443,19 +379,13 @@ Rectangle {
         target: sensorManager
         function onVeriGuncellendi() {
             if (!sensorManager.veriGecerli || aktifOlcumId <= 0) return
-            // Duraklatildiginda grafikler de donmali; aksi halde cihaz
-            // hareket ettirilince egriler Calculator durmus olsa bile akmaya devam eder.
             if (calculator.duraklatildi) return
 
-            // Stroke hesabı her örnekle beslenir: grafik donmuş olsa bile borunun
-            // oturmasından sonraki P0r penceresi tamamlanmalı, aksi halde p bozulur.
             calculator.konumGuncelle(sensorManager.zamanS, sensorManager.konum, sensorManager.basinc)
 
-            // Üst konum yakalandı mı / iniş bitti mi?
             kayitDurumunuGuncelle()
             if (kayitDurumu !== "KAYITTA") return
 
-            // Zaman ekseni cihazin zaman damgasindan gelir (sabit 0.2 s adim varsayilmaz).
             if (baslangicZamaniS < 0) baslangicZamaniS = sensorManager.zamanS
             zamanSayaci = sensorManager.zamanS - baslangicZamaniS
 
@@ -470,9 +400,6 @@ Rectangle {
             hizGecmis.push(sensorManager.hiz)
             debiGecmis.push(sensorManager.debi)
 
-            // Boru üstte serbest bırakılmayı beklerken yalnızca son birkaç saniye
-            // tutulur (bekleme uzasa bile eksen şişmesin); iniş başladıktan sonra
-            // stroke'un tamamı korunur, 60 s yalnızca güvenlik sınırıdır.
             var tutulacakSureS = inisBasladi ? 60 : beklemePenceresiS
             while (zamanGecmis.length > 1 && zamanGecmis[0] < zamanSayaci - tutulacakSureS) {
                 basincSerisi.remove(0)
@@ -504,9 +431,6 @@ Rectangle {
         }
     }
 
-    // Sesli komutlar: "Başlat / Durdur / Bitir". Bu sayfa arka planda
-    // (StackLayout icinde) da yasadigi icin, komutlar sadece Ölçüm sayfasi
-    // ekranda goruntulenirken (visible) uygulanir.
     Connections {
         target: voiceCommandManager
 
@@ -641,8 +565,6 @@ Rectangle {
                     height: 38
                     model: receteListesi
                     textRole: Translations.turkish ? "sinifTr" : "sinifEn"
-                    // Orijinal SLIPER'daki "Formula" serbest metindir: hazır sınıf
-                    // seçilebilir ya da firmanın kendi karışım kodu yazılabilir.
                     editable: true
                     currentIndex: -1
 
@@ -1424,7 +1346,6 @@ Rectangle {
                 Text {
                     anchors.centerIn: parent
                     visible: !sonStrokeCubugu.var_
-                    // Ölçüm başlatıldıysa kullanıcıya kaydın neyi beklediği anlatılır.
                     text: (aktifOlcumId > 0 && kayitDurumu === "BEKLEMEDE") ? txt("ustKonumIpucu") : txt("strokeYok")
                     color: "#6b7280"
                     font.family: "Segoe UI"
@@ -1649,10 +1570,6 @@ Rectangle {
 
                         Connections {
                             target: calculator
-                            // Stroke sonunda anlik degerler degil, Calculator'un tum stroke
-                            // uzerinden hesapladigi p = Pmax - P0 ve Q = A*v kaydedilir.
-                            // Stroke, borunun bırakıldığı andaki ağırlıkla kaydedilir
-                            // (bitiş sonrası 2 s içinde ağırlık değiştirilse bile).
                             function onDurumChanged() {
                                 if (calculator.durum === "INIYOR") strokeAgirligi = agirlikToplam
                             }
@@ -1844,9 +1761,6 @@ Rectangle {
         }
     }
 
-    // Sesli komut geri bildirimi: eller kirliyken dokunmadan "Başlat /
-    // Durdur / Bitir" denildiginde ne duyuldugunu gostererek kullaniciya
-    // guven verir.
     Rectangle {
         id: sesliKomutRozeti
         visible: voiceCommandManager.etkin

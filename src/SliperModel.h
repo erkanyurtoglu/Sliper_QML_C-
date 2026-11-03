@@ -6,52 +6,17 @@
 #include <QString>
 #include <QStringList>
 
-// =============================================================================
-//  SLIPER HESAP MODELİ 
-// =============================================================================
-//
-// İÇİNDEKİLER 
-//   0. Sabitler            : SLIPER borusunun geometrisi
-//   1. Kalibrasyon         : ham sensör değeri -> kg / mm (kalibrasyon tablosu)
-//   2. Basınç              : load cell kuvveti / piston alanı
-//   3. Debi                : Q = A * v * 3600
-//   4. Stroke zamanlaması  : başlangıç/bitiş eşikleri, P0l/P0r pencereleri
-//   5. Stroke değerlendirme: v (x(t) doğrusu), Pmax (filtreli), p = Pmax - P0l
-//   6. P-Q doğrusu         : P = A + B*Q (en küçük kareler)
-//   7. Ölçüm kalitesi      : P-Q sonucuna eklenen uyarılar
-//   8. a / b               : borudan bağımsız parametreler (Schleibinger)
-//   9. Pompa hattı tahmini : P = 4L/D*a + 16*L*Q/(pi*D^3)*b + rho*g*H
-//  10. Gösterim hesapları  : canlı hız, hız eğrisi, eğim açısı, batarya
-//                            (yalnızca ekrana; ölçüm sonucuna girmez)
-// =============================================================================
 namespace SliperModel {
-
-// --- 0. Sabitler --------------------------------------------------------------
-// Liya SLIPER borusunun ölçülen iç çapı: 128 mm (2026-09-28). Dolum yüksekliği 500 mm.
-// Not: Schleibinger SLIPER 125 mm borudur; kılavuzdaki Excel çıktısı d = 0.125 ile
-// üretilmiştir. a ve b boru geometrisinden bağımsız olduğu için iki cihazın a/b
-// değerleri doğrudan karşılaştırılabilir.
 constexpr double PI = 3.14159265358979323846;
-constexpr double BORU_CAPI_M = 0.128;                                     // d
-constexpr double BORU_UZUNLUGU_M = 0.5;                                   // l
-constexpr double BORU_ALANI_M2 = PI * BORU_CAPI_M * BORU_CAPI_M / 4.0;    // A = pi*d^2/4
-constexpr double YERCEKIMI = 9.80665;                                     // g [m/s2]
+constexpr double BORU_CAPI_M = 0.128;
+constexpr double BORU_UZUNLUGU_M = 0.5;
+constexpr double BORU_ALANI_M2 = PI * BORU_CAPI_M * BORU_CAPI_M / 4.0;
+constexpr double YERCEKIMI = 9.80665;
 
-// --- 1. Kalibrasyon -------------------------------------------------------------
-// Ham sensör değerini kalibrasyon tablosuyla gerçek birime çevirir
-// (load cell: ham -> kg, mesafe sensörü: ham -> mm).
-// Tablo: kalibrasyonda kaydedilen (ham, gerçek) noktaları, ham değere göre sıralı.
-// İki nokta arasında düz çizgiyle okunur; tablonun dışında en yakın iki noktanın
-// çizgisi uzatılır. Tabloda nokta yoksa 0, tek nokta varsa o noktanın değeri döner.
 double kalibrasyonTablosundanOku(const QVector<double> &hamNoktalar,
                                  const QVector<double> &gercekNoktalar,
                                  double hamDeger);
 
-// Mesafe sensörünün ham okumasındaki paket-paket gürültüyü bastırmak için
-// üstel ortalama (hız filtresiyle aynı mantık). Kalibrasyon tablosundan
-// okunduktan hemen sonra, konumu kullanan HER yer için (grafik, ekran,
-// stroke tespiti) tek sefer uygulanır.
-// K büyükse hızlı tepki/çok gürültü, küçükse yavaş tepki/az gürültü.
 constexpr double KONUM_FILTRE_KATSAYISI = 0.35;
 constexpr double konumFiltrele(double oncekiFiltreliKonumMm, double hamKonumMm)
 {
@@ -59,11 +24,6 @@ constexpr double konumFiltrele(double oncekiFiltreliKonumMm, double hamKonumMm)
            + (1.0 - KONUM_FILTRE_KATSAYISI) * oncekiFiltreliKonumMm;
 }
 
-// Load cell ham okumasındaki gürültüyü bastırmak için üstel ortalama. Ham değerin
-// kendisine uygulanır; kalibrasyon ekranı, grafik, basınç ve stroke hesapları
-// hep bu filtreli ham değeri görür. HX711 saniyede 10 yeni örnek üretir, ESP32 ise
-// 50 Hz'de aynı değeri tekrar gönderir; filtre yalnızca değer değiştiğinde ilerler.
-// 0.4 katsayısı yaklaşık 4 örneklik ortalamaya (~250 ms zaman sabiti) denktir.
 constexpr double AGIRLIK_FILTRE_KATSAYISI = 0.4;
 constexpr double agirlikFiltrele(double oncekiFiltreliHamAgirlik, double hamAgirlik)
 {
@@ -71,183 +31,64 @@ constexpr double agirlikFiltrele(double oncekiFiltreliHamAgirlik, double hamAgir
            + (1.0 - AGIRLIK_FILTRE_KATSAYISI) * oncekiFiltreliHamAgirlik;
 }
 
-// --- 2. Basınç ----------------------------------------------------------------
-// p [mbar] = m * g / A / 100        (1 mbar = 100 Pa)
-// 1 kg -> 9.80665 N / 0.01287 m2 = ~7.6 mbar (128 mm boru)
 constexpr double agirliktanBasincMbar(double kutleKg)
 {
     return kutleKg * YERCEKIMI / BORU_ALANI_M2 / 100.0;
 }
 
-// Dara (sıfır kayması): load cell'in sıfır noktası sıcaklıkla ve mekanik
-// oturmayla kayar, boru yüksüzken basınç 0 yerine birkaç mbar okunur. Dara bu
-// kaymayı siler; kalibrasyon tablosuna dokunmaz, tablodan çıkan basınca
-// uygulanan sabit bir çıkarmadır.
-//
-// Sabit kayma P-Q doğrusunun kesişimini (A, dolayısıyla a) tam dara kadar
-// aşağı indirir. Eğim (B/b) ve agirlikTepkiOrani sabit kaymadan etkilenmez,
-// çünkü ikisi de fark üzerinden hesaplanır.
-//
-// Dara YALNIZCA yüksüz durumda (boş boru yerinde, ek ağırlık ve beton yok)
-// alınabilir. Boruda beton varken alınan dara gerçek basıncı siler, a
-// olduğundan küçük çıkar ve bu hata agirlikTepkiOrani uyarısıyla da
-// yakalanamaz (yük grupları arasındaki fark değişmez). Üst sınır bu kazayı
-// engeller: sıfır kayması hiçbir zaman bu kadar büyük olmaz, boruyu dolduran
-// beton ise her zaman daha ağırdır.
 constexpr double DARA_UST_SINIRI_KG = 2.0;
 constexpr double DARA_UST_SINIRI_MBAR = agirliktanBasincMbar(DARA_UST_SINIRI_KG);
 
-// --- 3. Debi ------------------------------------------------------------------
-// Q [m3/h] = A [m2] * v [m/s] * 3600
 constexpr double hizdanDebiM3h(double hizMs)
 {
     return hizMs * BORU_ALANI_M2 * 3600.0;
 }
 
-// --- 4. Stroke zamanlaması --------------------------------------------------------
-// Calculator bu sayılarla stroke'un başını/sonunu ve P0l/P0r örneklerini seçer.
-//
-//  zaman ──►  [ P0l örnekleri ][ HAREKET_PAYI ][ iniş ........ ][ OTURMA ][ P0r örnekleri ]
-//             |<-- ONCESI_PENCERE (2 s) -->|   ^başlangıç     ^bitiş  |<- SONRASI_PENCERE (2 s) ->|
-//
-// Başlangıç: boru üst referansın KONUM_TOLERANSI_MM altına indiğinde.
-// Bitiş    : boru durduğunda (aşağıdaki durma ölçütü) ya da alt referansa
-//            ALT_YAKALAMA_TOLERANSI_MM kadar yaklaştığında - hangisi önce olursa.
-constexpr double KONUM_TOLERANSI_MM = 5.0;    // üst/alt referansa bu kadar yaklaşınca
-// Boru "üstte / yeni stroke'a hazır" sayılması için kalibre edilmiş üst noktaya
-// bu kadar yaklaşması yeterlidir. KONUM_TOLERANSI_MM'den geniştir: boru elle
-// kaldırılıp sabitlendiğinde tam olarak kalibrasyon noktasına oturmaz. Dar bir
-// pencerede (5 mm) boru "üstte" sayılmaz ve sonraki iniş stroke olarak
-// işlenmez - özellikle duraklat/devam et sırasında boru yeniden konumlandığında.
+constexpr double KONUM_TOLERANSI_MM = 5.0;
 constexpr double UST_YAKALAMA_TOLERANSI_MM = 20.0;
-// Alt referans için aynı gerekçe, daha da güçlüsü: boru alt noktaya betonun
-// üstüne oturarak varır, kalibrasyonda elle bastırılan noktaya kadar inmez
-// (sahada 538 mm'ye kalibre edilen alt nokta beton dolu boruda 517 mm'de
-// kalıyordu). Dar bir pencerede boru "alta vardı" sayılmaz, stroke hiç
-// kapanmaz ve durum INIYOR'da takılırdı.
 constexpr double ALT_YAKALAMA_TOLERANSI_MM = 25.0;
-constexpr double DURGUN_TOLERANS_MM = 5.0;    // bu kadar kıpırtı hâlâ "hareketsiz" sayılır
-// Stroke bitişinin asıl ölçütü: boru durdu. Boru DURMA_ONAYI_S saniye boyunca
-// DURMA_TOLERANSI_MM'den az kıpırdadıysa durmuş kabul edilir; yani ölçüt
-// aslında bir hız sınırıdır: DURMA_TOLERANSI_MM / DURMA_ONAYI_S ≈ 2 mm/s.
-// Alt referansa hiç varılmasa bile (kısa iniş, beton yüksekte kalması)
-// stroke böylece doğru anda kapanır.
-//
-// ÖNEMLİ - sınır neden bu kadar düşük: boru beton içinde sabit hızla kaymaz,
-// ilk anda hızlanıp sonra betonun direncine göre belirgin yavaşlar. Eski ölçüt
-// (5 mm / 0.2 s = 25 mm/s) bu yavaşlamayı "durdu" sanıp inişin ortasında
-// stroke'u kapatıyordu: grafik donuyor, boru hâlâ inerken yalnızca baştaki
-// hızlı bölüm kaydedildiği için v ve Q gerçeğin kat kat üstünde çıkıyordu.
-// Sınır gerçek kayma hızlarının (onlarca mm/s) belirgin altında kalmalı.
+constexpr double DURGUN_TOLERANS_MM = 5.0;
 constexpr double DURMA_TOLERANSI_MM = 2.0;
 constexpr double DURMA_ONAYI_S = 1.0;
-// Durma ölçütü ancak boru bu kadar yol indikten sonra işler; aksi halde
-// üstteki kıpırtı ya da inişin ilk ivmelenme anı "durdu" sayılırdı.
 constexpr double MIN_INIS_YOLU_MM = 40.0;
-// Durma ölçütü ayrıca iniş bu süreyi doldurmadan stroke'u kapatmaz. Kılavuzdaki
-// stroke'lar 1.5-5 s sürer; inişin ilk saniyesindeki hızlanma/yavaşlama
-// dalgalanması böylece stroke'u asla erken bitirmez (alt referansa varış bu
-// kuraldan bağımsızdır, orada iniş gerçekten tamamlanmıştır).
 constexpr double MIN_INIS_SURESI_S = 1.0;
-// Stroke kapandıktan sonra P0r penceresi toplanırken boru bu kadar yukarı
-// giderse (operatör yeni stroke için kaldırdı) pencere beklenmeden kapatılır.
-// Sensör gürültüsünün pencereyi boşa çıkarmaması için kıpırtı toleransının
-// belirgin üstündedir.
 constexpr double KALDIRMA_ESIGI_MM = 10.0;
-constexpr double ONCESI_PENCERE_S = 2.0;      // orijinal: başlangıçtan 2 s önce saklanır
-constexpr double SONRASI_PENCERE_S = 2.0;     // orijinal: bitişten 2 s sonra saklanır
-constexpr double HAREKET_PAYI_S = 0.3;        // hareketten hemen önceki bu süre P0l'e katılmaz
-constexpr double P0R_OTURMA_S = 0.5;          // bitişten sonraki bu süre P0r'a katılmaz (sönümlenme)
-constexpr double UST_TAMPON_S = 4.0;          // boru üstteyken hafızada tutulan son süre
-// "Hazırla" düğmesi: boru üstte hareketsizken bu kadar süre basınç toplanır ve
-// P0l bu pencerenin ortalamasıdır. Pencere içinde basınç ya da konum bu
-// toleransları aşarsa pencere kayar, sakinleşene kadar HAZIR olunmaz.
+constexpr double ONCESI_PENCERE_S = 2.0;
+constexpr double SONRASI_PENCERE_S = 2.0;
+constexpr double HAREKET_PAYI_S = 0.3;
+constexpr double P0R_OTURMA_S = 0.5;
+constexpr double UST_TAMPON_S = 4.0;
 constexpr double HAZIRLAMA_SURESI_S = 2.0;
-// 1.6 kg ek ağırlık basıncı 12.2 mbar yükseltir. 10 mbar'lık eski tolerans bu
-// basamağın neredeyse tamamı kadardı: oturmamış, hâlâ sürüklenen bir taban
-// "sakin" sayılıp P0l olarak sabitlenebiliyordu ve bütün gürültü doğrudan
-// p = Pmax - P0l'e geçiyordu. Tolerans bir ağırlık basamağının belirgin
-// altında kalmalı.
 constexpr double HAZIRLAMA_BASINC_TOLERANSI_MBAR = 3.0;
 
-// --- 5. Stroke değerlendirme -----------------------------------------------------
-// Stroke hızı: strokun orta bölümünde (yolun HIZ_UYUM_ALT..HIZ_UYUM_UST kısmı)
-// yükseklik-zaman verisine en küçük kareler doğrusu uydurulur, v = -eğim.
-// Baştaki ivmelenme ve sondaki çarpma bölgeleri hariç tutulur. Orta bölümde
-// 3'ten az örnek varsa v = toplam yol / toplam süre.
 constexpr double HIZ_UYUM_ALT = 0.2;
 constexpr double HIZ_UYUM_UST = 0.8;
-// zamanS ve yukseklikMm: iniş örnekleri (ilk = üst, son = alt referans). Dönüş: m/s
 double strokeHiziMs(const QVector<double> &zamanS, const QVector<double> &yukseklikMm);
 
-// Pmax: basınç eğrisi PMAKS_PENCERE_S saniyelik merkezi hareketli ortalamayla
-// filtrelendikten sonraki en büyük değer (tek örnek gürültü tepelerini bastırır).
-//
-// ÖNEMLİ - pencere neden ÖRNEK SAYISI değil SÜRE: eskiden pencere 15 örnekti ve
-// bu "50 Hz'de 0.3 s" varsayımına dayanıyordu. Kayıtlı ham veri örneklerin
-// aslında ~4.5 Hz (0.22 s aralık) geldiğini gösteriyor; 15 örnek o hızda
-// 3.3 saniyelik ortalama demekti - stroke'un kendisinden (~2 s) uzun. Basınç
-// tepesi düz tabanla birlikte ortalanıp siliniyor, Pmax 30-70 mbar düşük
-// çıkıyordu. Kayıp her stroke'un süresine göre değiştiği için eklenen ağırlığın
-// sinyali (kg başına 7.6 mbar) gürültüye boğuluyor, P-Q eğimi negatife dönüyordu.
-// Süre tabanlı pencere örnekleme hızından bağımsızdır.
 constexpr double PMAKS_PENCERE_S = 0.30;
-// Pencere ayrıca en az bu kadar örnek içermelidir. Örnekler seyrek geldiğinde
-// (ölçülen ~4.5 Hz'de aralık 0.22 s) 0.3 s'lik pencereye yalnızca merkez örnek
-// düşer ve filtre hiç çalışmaz: Pmax ham tepe değeri olur, tek örneklik bir
-// gürültü sıçraması doğrudan sonuca girer. Asgari örnek şartı, örnekleme hızı
-// ne olursa olsun gürültü bastırmayı garanti eder; hızlı örneklemede ise
-// süre şartı baskın kalır ve pencere gereksiz genişlemez.
 constexpr int PMAKS_MIN_ORNEK = 3;
-// zamanS ve basincMbar: iniş örnekleri, aynı uzunlukta
 double filtreliMaksimum(const QVector<double> &zamanS, const QVector<double> &basincMbar,
                         double pencereS = PMAKS_PENCERE_S);
 
-// P0l / P0r: durağan bölgedeki örneklerin ortanca (medyan) değeri.
-// Ortalama değil: durağan pencereye düşen tek bir sıçrama (operatörün boruya
-// dokunması, load cell'in ani kayması) ortalamayı doğrudan kaydırır ve P0l
-// hatası olduğu gibi p = Pmax - P0l'e geçer. Ortanca böyle tek tük
-// sıçramalardan etkilenmez, gerçek durağan seviyeyi verir.
 double durgunBasincMbar(const QVector<double> &basincMbar);
 
-// Stroke basıncı (Schleibinger Excel: p = pmax - P0l). P0l çıkarılarak
-// betonun ölü ağırlığı (~120-155 mbar) elenir.
 constexpr double strokeBasinciMbar(double pMaksMbar, double p0lMbar)
 {
     return pMaksMbar - p0lMbar;
 }
 
-// Geçersiz stroke ("Wrong Stroke") kuralı. Boş dönüş = geçerli.
-// "ornek": MIN_STROKE_ORNEGI'nden az örnek, "hiz": v <= 0, "basinc": p <= 0
 constexpr int MIN_STROKE_ORNEGI = 5;
 QString strokeGecersizNedeni(int inisOrnekSayisi, double hizMs, double basincMbar);
 
-// Takılma (otomatik eleme). Boru inerken bir an durup tekrar kayarsa
-// ölçülen hız düşük çıkar ve nokta P-Q doğrusundan kopar.
-//   takılma oranı = yolun %5-%80 kısmındaki en düşük anlık hız / iniş boyunca tipik (ortanca) hız
-// Takılmasız stroke'larda oran 0.25-0.40, takılanlarda 0.03-0.07 ölçüldü;
-// TAKILMA_ESIGI ikisinin arasındadır. Hesaplanamazsa NaN döner.
 constexpr double TAKILMA_ESIGI = 0.15;
 constexpr double TAKILMA_YOL_ALT = 0.05;
 constexpr double TAKILMA_YOL_UST = 0.80;
 double takilmaOrani(const QVector<double> &zamanS, const QVector<double> &konumMm);
 
-// Bir testte hangi stroke'lar otomatik elenir? Eşiğin altındakiler arasından,
-// en kötüden başlayarak: aynı ek ağırlıktan en fazla 1, toplamda en fazla
-// stroke sayısının %MAKS_OTOMATIK_ELEME_YUZDE'si (en az 1).
-// Dönüş: elenecek stroke'ların indeksleri.
 constexpr int MAKS_OTOMATIK_ELEME_YUZDE = 25;
 QVector<int> otomatikElenecekler(const QVector<qint64> &agirlikAnahtarlari,
                                  const QVector<double> &takilmaOranlari);
 
-// --- 6. P-Q doğrusu -----------------------------------------------------------
-// P = A + B*Q, en küçük kareler:
-//   B = (Σqp - n*q̄*p̄) / (Σq² - n*q̄²),   A = p̄ - B*q̄,   R² = 1 - SSres/SStot
-// A: kesişim [mbar], B: eğim [mbar*h/m3]. (Veritabanı/QML'de "tau0" = A, "mu" = B
-// olarak anılır; bunlar reolojik τ0/μ değil, ham doğru parametreleridir.)
-// A ve B bütün stroke'lardan bulunur; R² ise her ek ağırlığın ortalama (Q, p)
-// noktalarından hesaplanır. MIN_ORTALAMA_R2_AGIRLIK_SAYISI'ndan az farklı ağırlık
-// varsa (iki noktadan geçen doğru her zaman R² = 1 verir) stroke'ların R²'si kullanılır.
 constexpr int MIN_ORTALAMA_R2_AGIRLIK_SAYISI = 3;
 struct DogruUyumu {
     int n = 0;
@@ -261,56 +102,20 @@ struct DogruUyumu {
 DogruUyumu pqDogrusu(const QVector<double> &debiM3h, const QVector<double> &basincMbar,
                      const QVector<qint64> &agirlikAnahtarlari);
 
-// --- 7. Ölçüm kalitesi uyarıları --------------------------------------------------
-// P-Q sonucuyla birlikte gösterilen uyarı kodları (metinleri QML/rapor tarafında):
-//   azStroke          : 3'ten az kullanılan stroke
-//   egimNegatif       : B < 0
-//   kesisimNegatif    : A < 0
-//   dusukR2           : R² < MIN_R2
-//   darDebiAraligi    : (Qmaks - Qmin) < MIN_DEBI_ARALIGI_ORANI * Qort
-//   tekYuk            : bütün stroke'lar aynı ek ağırlıkla
-//   yukBasinaAzStroke : bir ağırlıkta MIN_YUK_BASINA_STROKE'tan az stroke (kılavuz 5.3)
-//   cokGecersiz       : stroke'ların %MAKS_GECERSIZ_YUZDE'sinden fazlası geçersiz
-//   agirlikTepkisiZayif : eklenen ağırlık Pmax'ta görünmüyor (bkz. agirlikTepkiOrani)
 constexpr int MIN_STROKE_SAYISI = 3;
 constexpr double MIN_R2 = 0.85;
 constexpr double MIN_DEBI_ARALIGI_ORANI = 0.3;
 constexpr int MIN_YUK_BASINA_STROKE = 3;
 constexpr int MAKS_GECERSIZ_YUZDE = 30;
 
-// Ağırlık tepkisi: eklenen her kg piston alanına bindiği için Pmax'ı
-// agirliktanBasincMbar(1) = 7.62 mbar (128 mm boru) yükseltmek ZORUNDADIR.
-// Bu, reolojiden bağımsız, saf kuvvet/alan ilişkisidir; betonun kıvamı
-// değiştiremez. En hafif ve en ağır yük grubunun ortalama Pmax farkı ölçülür
-// ve beklenen farka bölünür:
-//
-//   oran = (Pmax_enAgir - Pmax_enHafif) / (agirlikFarkiKg * 7.62)
-//
-// Sağlam bir düzenekte oran ~1 çıkar. Belirgin altındaysa eklenen ağırlık
-// load cell'e ULAŞMIYOR demektir (kızak sürtünmesi, ağırlığın boruya tam
-// oturmaması, load cell kalibrasyon ölçeğinin hatalı olması). O durumda
-// P-Q doğrusunun eğimi ölçülen bir büyüklük değil yalnızca gürültüdür;
-// R² düşük ve B çoğunlukla negatif çıkar. Bu uyarı olmadan arıza sessiz
-// kalır, kullanıcı da sonucu reçeteye/betona yorar.
-//
-// agirlikBasinaOrtalamaPmax: ek ağırlık (0.1 kg anahtarlı) -> ortalama Pmax [mbar]
-// Dönüş: ölçülen/beklenen oranı; iki farklı yük yoksa NaN.
 constexpr double MIN_AGIRLIK_TEPKI_ORANI = 0.5;
 double agirlikTepkiOrani(const QHash<qint64, double> &agirlikBasinaOrtalamaPmax);
 
-// agirlikBasinaStrokeSayisi: ek ağırlık -> o ağırlıkla atılan kullanılan stroke sayısı
-// agirlikBasinaOrtalamaPmax: ek ağırlık -> o ağırlıktaki ortalama Pmax [mbar]
 QStringList olcumUyarilari(const DogruUyumu &pqCizgisi,
                            const QHash<qint64, int> &agirlikBasinaStrokeSayisi,
                            const QHash<qint64, double> &agirlikBasinaOrtalamaPmax,
                            int toplamStrokeSayisi, int gecersizStrokeSayisi);
 
-// --- 8. a / b (borudan bağımsız parametreler) -----------------------------------
-// CFD makalesi Denklem 3. Schleibinger uygulaması bunları "Yield Pressure a [mbar]"
-// ve "Pressure Gradient b" olarak gösterir; b'yi 1000 ile çarpılmış halde yazar
-// (örn. Excel çıktısında a=0.84, b=4.55).
-//   a = d*A / (4l)
-//   b = B * pi * d^3 / (16l)
 constexpr double schleibingerA(double kesisimMbar)
 {
     return BORU_CAPI_M * kesisimMbar / (4.0 * BORU_UZUNLUGU_M);
@@ -321,76 +126,33 @@ constexpr double schleibingerB(double egimMbarHm3)
            / (16.0 * BORU_UZUNLUGU_M);
 }
 
-// --- 9. Pompa hattı tahmini -------------------------------------------------------
-//   P = 4L/D*a + 16*L*Q/(pi*D^3)*b + rho*g*H      (D, L: hedef boru hattı)
-// A: P-Q kesişimi [mbar], B: P-Q eğimi [mbar*h/m3], Q: [m3/h], D: [mm], L: [m], H: [m].
-// Hata payı yalnızca sürtünme terimlerine (ilk iki terim) uygulanır.
-// Schleibinger kılavuzundaki iki tahmin tablosunu birebir verir.
-
-// Tahmin, şantiyedeki gerçek hat için yapılır. Anahtarlar:
-//   cap [mm], hatUzunlugu [m] (toplam boru, dikey kısım dahil),
-//   yukseklik [m] (pompalama yüksekliği; negatif = aşağı), dirsek90, dirsek45 [adet],
-//   hedefDebi [m3/h], pompaMaks [bar, 0 = yok], yogunluk [kg/m3], hataPayi [%]
-//
-// Hesap uzunluğu L (sürtünmenin oluştuğu boru):  L = hat + dirsek90 × e90 + dirsek45 × e45
-// Pompalama yüksekliği h için ayrıca ρ·g·h kaldırma basıncı eklenir.
-// Dirsek eşdeğerleri: 1 m yarıçaplı 90° dirsek ≈ 3 m yatay boru; açıyla
-// orantılı olarak 45° ≈ 1.5 m (beton pompalama kaynaklarındaki pratik kural).
 constexpr double DIRSEK_90_ESDEGER_M = 3.0;
 constexpr double DIRSEK_45_ESDEGER_M = 1.5;
 QVariantMap varsayilanTahminAyarlari();
 QVariantMap tahminAyarlariniTamamla(const QVariantMap &ayarlar);
 double hesapUzunluguM(const QVariantMap &ayarlar);
 
-// Tek bir (Q, D, L) için basınç. Dönen alanlar: gecerliGiris, basincBar,
-// altSinirBar, ustSinirBar, akmaMbar, viskozMbar, yukseklikMbar, aMbar, bMbarHm
 QVariantMap basincTahmini(double kesisimA, double egimB, double debiM3h, double capMm,
                           double uzunlukM, double yukseklikM, double yogunlukKgM3,
                           double hataPayiYuzde);
 
-// Hedef debi ve hesap uzunluğu için tek satır. Satır alanları:
-// debi, uzunluk (hesap uzunluğu), basincBar, altSinirBar, ustSinirBar, pompaAsildi, basincNegatif
 QVariantList tahminTablosu(double kesisimA, double egimB, const QVariantMap &ayarlar);
 
-// Pompa kararı verilebilir mi? Boş = güvenilir.
-//   "egimNegatif"    : B < 0, debi arttıkça basınç düşüyor (fiziksel değil) -> karar verilmez
-//   "kesisimNegatif" : A < 0 -> karar verilmez
-//   "dusukR2"        : R² < MIN_R2 -> karar gösterilir ama "güvenilir değil"
 QString tahminGuvenilmezNedeni(double kesisimA, double egimB, double r2);
 bool tahminKarariVerilemez(const QString &guvenilmezNedeni);
 
-// --- 10. Gösterim hesapları (ölçüm sonucuna girmez) --------------------------------
-
-// Canlı hız (ölçüm ekranı): ardışık iki örnekten anlık hız, gürültüye karşı üstel
-// ortalamayla yumuşatılır:  yeni = K * anlık + (1 - K) * önceki
-// K büyükse hızlı tepki/çok gürültü, küçükse yavaş tepki/az gürültü.
-constexpr double CANLI_HIZ_FILTRE_KATSAYISI = 0.3;
-// konumYonu: +1 konum = yükseklik, -1 konum = sensörden uzaklık. Dönüş: m/s, aşağı = pozitif
-double anlikHizMs(double oncekiKonumMm, double simdikiKonumMm, double gecenSureS, double konumYonu);
-constexpr double canliHizFiltrele(double oncekiFiltreliHizMs, double anlikHiz)
-{
-    return CANLI_HIZ_FILTRE_KATSAYISI * anlikHiz
-           + (1.0 - CANLI_HIZ_FILTRE_KATSAYISI) * oncekiFiltreliHizMs;
-}
-
-// Sonuç sayfasındaki stroke "Speed" eğrisi: her örnekte bir önceki ve bir sonraki
-// örnek arasındaki konum farkı / zaman farkı, ardından HIZ_EGRISI_ORTALAMA örneklik
-// merkezi ortalama. Stroke hızı bu eğriden DEĞİL, bölüm 5'teki doğrudan hesaplanır.
-constexpr int HIZ_EGRISI_ORTALAMA = 5;
+constexpr double HIZ_PENCERESI_S = 0.40;
+double penceredekiHizMs(const QVector<double> &zamanS, const QVector<double> &konumMm, double konumYonu);
 QVector<double> hizEgrisiMs(const QVector<double> &zamanS, const QVector<double> &konumMm,
                             double konumYonu);
 
-// Eğim açısı (su terazisi): düzeltilmiş ivmeölçer değerlerinden iki eksende açı [derece].
 struct EgimAcilari {
     double xDerece = 0.0;
     double yDerece = 0.0;
 };
 EgimAcilari egimAcilari(double ivmeX, double ivmeY, double ivmeZ);
 
-// Batarya voltajı: ADS1115 ham değeri (GAIN_ONE, ±4.096 V, 16 bit) x bölücü oranı.
-// NOT: Bölücü dirençleri henüz doğrulanmadı; BATARYA_BOLUCU_ORANI varsayımdır
-// (bkz. sliper_esp32.ino). Gösterge WifiManager::BATARYA_OLCUMU_AKTIF ile kapalı.
-constexpr double ADS1115_LSB_VOLT = 0.000125;   // 4.096 V / 32768
+constexpr double ADS1115_LSB_VOLT = 0.000125;
 constexpr double BATARYA_BOLUCU_ORANI = 2.0;
 constexpr double bataryaVoltaji(double hamDeger)
 {
