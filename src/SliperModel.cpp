@@ -1,4 +1,6 @@
 #include "SliperModel.h"
+#include <QMap>
+#include <QSet>
 #include <QtMath>
 #include <algorithm>
 #include <cmath>
@@ -231,13 +233,81 @@ QString strokeGecersizNedeni(int inisOrnekSayisi, double hizMs, double basincMba
     return QString();
 }
 
+// Takılma oranı. Gerekçe SliperModel.h bölüm 5.
+double takilmaOrani(const QVector<double> &zamanS, const QVector<double> &konumMm)
+{
+    const double hesaplanamadi = std::numeric_limits<double>::quiet_NaN();
+    const int ornekSayisi = std::min(zamanS.size(), konumMm.size());
+    if (ornekSayisi < 6) return hesaplanamadi;
+
+    const double toplamYolMm = konumMm[ornekSayisi - 1] - konumMm.first();
+    if (std::abs(toplamYolMm) < 1.0) return hesaplanamadi;
+
+    // Ardışık iki örnek arasındaki hız, "yolun ne kadarı alındı / saniye" olarak
+    QVector<double> araOrtaYolOranlari, araHizlari;
+    for (int i = 1; i < ornekSayisi; ++i) {
+        const double sureS = zamanS[i] - zamanS[i - 1];
+        if (sureS <= 0.0) continue;
+        const double oncekiOran = (konumMm[i - 1] - konumMm.first()) / toplamYolMm;
+        const double sonrakiOran = (konumMm[i] - konumMm.first()) / toplamYolMm;
+        araOrtaYolOranlari.append((oncekiOran + sonrakiOran) / 2.0);
+        araHizlari.append((sonrakiOran - oncekiOran) / sureS);
+    }
+
+    QVector<double> pozitifHizlar;
+    for (double hiz : araHizlari) {
+        if (hiz > 0.0) pozitifHizlar.append(hiz);
+    }
+    if (pozitifHizlar.isEmpty()) return hesaplanamadi;
+    std::sort(pozitifHizlar.begin(), pozitifHizlar.end());
+    const int ortaIndeks = pozitifHizlar.size() / 2;
+    const double tipikHiz = pozitifHizlar.size() % 2 == 1
+        ? pozitifHizlar[ortaIndeks]
+        : (pozitifHizlar[ortaIndeks - 1] + pozitifHizlar[ortaIndeks]) / 2.0;
+
+    double enDusukHiz = std::numeric_limits<double>::max();
+    for (int i = 0; i < araHizlari.size(); ++i) {
+        if (araOrtaYolOranlari[i] >= TAKILMA_YOL_ALT && araOrtaYolOranlari[i] <= TAKILMA_YOL_UST) {
+            enDusukHiz = std::min(enDusukHiz, araHizlari[i]);
+        }
+    }
+    if (enDusukHiz == std::numeric_limits<double>::max()) return hesaplanamadi;
+    return enDusukHiz / tipikHiz;
+}
+
+QVector<int> otomatikElenecekler(const QVector<qint64> &agirlikAnahtarlari,
+                                 const QVector<double> &takilmaOranlari)
+{
+    const int strokeSayisi = std::min(agirlikAnahtarlari.size(), takilmaOranlari.size());
+
+    QVector<int> adaylar;
+    for (int i = 0; i < strokeSayisi; ++i) {
+        if (!std::isnan(takilmaOranlari[i]) && takilmaOranlari[i] < TAKILMA_ESIGI) adaylar.append(i);
+    }
+    std::sort(adaylar.begin(), adaylar.end(), [&](int sol, int sag) {
+        return takilmaOranlari[sol] < takilmaOranlari[sag];
+    });
+
+    const int enFazlaElenecek = std::max(1, strokeSayisi * MAKS_OTOMATIK_ELEME_YUZDE / 100);
+    QVector<int> elenecekler;
+    QSet<qint64> elemeYapilanAgirliklar;
+    for (int aday : adaylar) {
+        if (elenecekler.size() >= enFazlaElenecek) break;
+        if (elemeYapilanAgirliklar.contains(agirlikAnahtarlari[aday])) continue;
+        elemeYapilanAgirliklar.insert(agirlikAnahtarlari[aday]);
+        elenecekler.append(aday);
+    }
+    return elenecekler;
+}
+
 // =============================================================================
 //  6. P-Q doğrusu:  p = A + B × Q
 // =============================================================================
 // Her geçerli stroke bir (Q, p) noktasıdır. Bu noktalara en uygun çizgi:
 //   A = çizginin Q = 0'daki değeri   (harekete geçme direnci)
 //   B = çizginin eğimi               (hıza bağlı direnç)
-DogruUyumu pqDogrusu(const QVector<double> &debiM3h, const QVector<double> &basincMbar)
+DogruUyumu pqDogrusu(const QVector<double> &debiM3h, const QVector<double> &basincMbar,
+                     const QVector<qint64> &agirlikAnahtarlari)
 {
     DogruUyumu sonuc;
     const int noktaSayisi = std::min(debiM3h.size(), basincMbar.size());
@@ -257,6 +327,28 @@ DogruUyumu pqDogrusu(const QVector<double> &debiM3h, const QVector<double> &basi
         sonuc.kesisimA = cizgi.baslangic;
         sonuc.egimB = cizgi.egim;
         sonuc.r2 = cizgi.uyumR2;
+
+        // R²: her ek ağırlığın ortalama debisi ve ortalama basıncı tek nokta sayılır
+        QMap<qint64, double> agirlikBasinaDebiToplami;
+        QMap<qint64, double> agirlikBasinaBasincToplami;
+        QMap<qint64, int> agirlikBasinaNoktaSayisi;
+        const int gruplananNoktaSayisi = std::min<int>(noktaSayisi, agirlikAnahtarlari.size());
+        for (int i = 0; i < gruplananNoktaSayisi; ++i) {
+            agirlikBasinaDebiToplami[agirlikAnahtarlari[i]] += debiM3h[i];
+            agirlikBasinaBasincToplami[agirlikAnahtarlari[i]] += basincMbar[i];
+            agirlikBasinaNoktaSayisi[agirlikAnahtarlari[i]] += 1;
+        }
+        QVector<double> ortalamaDebiler;
+        QVector<double> ortalamaBasinclar;
+        for (auto it = agirlikBasinaNoktaSayisi.constBegin(); it != agirlikBasinaNoktaSayisi.constEnd(); ++it) {
+            ortalamaDebiler.append(agirlikBasinaDebiToplami.value(it.key()) / it.value());
+            ortalamaBasinclar.append(agirlikBasinaBasincToplami.value(it.key()) / it.value());
+        }
+        // İki noktaya çizilen doğru her zaman tam oturur (R² = 1): en az 3 ağırlık gerekir
+        const Cizgi ortalamaCizgisi = enUygunCizgi(ortalamaDebiler, ortalamaBasinclar);
+        if (ortalamaCizgisi.hesaplandi && ortalamaDebiler.size() >= MIN_ORTALAMA_R2_AGIRLIK_SAYISI) {
+            sonuc.r2 = ortalamaCizgisi.uyumR2;
+        }
     } else {
         // Bütün stroke'lar aynı debide: eğim bulunamaz, A = ortalama basınç
         double basincToplami = 0.0;
@@ -336,32 +428,54 @@ QStringList olcumUyarilari(const DogruUyumu &pqCizgisi,
 
 QVariantMap varsayilanTahminAyarlari()
 {
-    // Schleibinger uygulamasının varsayılanları (kılavuz Şekil 17a / 19b)
     QVariantMap ayar;
-    ayar["q1"] = 10.0;         // 1. debi [m3/h]
-    ayar["q2"] = 50.0;         // 2. debi [m3/h]
-    ayar["cap"] = 126.0;       // pompa hattı boru çapı [mm]
-    ayar["l2"] = 50.0;         // 1. hat uzunluğu [m]
-    ayar["l3"] = 100.0;        // 2. hat uzunluğu [m]
-    ayar["l4"] = 200.0;        // 3. hat uzunluğu [m]
-    ayar["yogunluk"] = 2400.0; // beton yoğunluğu [kg/m3]
-    ayar["yukseklik"] = 0.0;   // pompalama yüksekliği [m], aşağı ise eksi
-    ayar["hataPayi"] = 10.0;   // [%]
-    ayar["pompaMaks"] = 0.0;   // pompanın maksimum basıncı [bar], 0 = girilmedi
+    ayar["cap"] = 125.0;             // pompa hattı boru iç çapı [mm]
+    ayar["hatUzunlugu"] = 100.0;     // toplam boru hattı uzunluğu [m]
+    ayar["yukseklik"] = 0.0;         // pompalama yüksekliği [m], aşağı ise eksi
+    ayar["dirsek90"] = 0.0;          // 90° dirsek sayısı
+    ayar["dirsek45"] = 0.0;          // 45° dirsek sayısı
+    ayar["hedefDebi"] = 30.0;        // hedef debi [m3/h]
+    ayar["pompaMaks"] = 0.0;         // pompanın maksimum basıncı [bar], 0 = girilmedi
+    ayar["yogunluk"] = 2400.0;       // beton yoğunluğu [kg/m3]
+    ayar["hataPayi"] = 10.0;         // [%]
     return ayar;
 }
 
 // Eksik veya bozuk alanları varsayılan değerle doldurur.
+// Eski ayarlar taşınır (pompalama yüksekliği aynı anahtarla kalır):
+//   yatay + dikey ayrı girilmişse  -> hat uzunluğu = yatay + |dikey|
+//   Q1/Q2 × L2/L3/L4 ise           -> hat uzunluğu = L4, hedef debi = Q2
 QVariantMap tahminAyarlariniTamamla(const QVariantMap &ayarlar)
 {
+    QVariantMap tasinanAyarlar = ayarlar;
+    if (!tasinanAyarlar.contains("hatUzunlugu")) {
+        if (tasinanAyarlar.contains("yatayUzunluk")) {
+            tasinanAyarlar["hatUzunlugu"] = tasinanAyarlar.value("yatayUzunluk").toDouble()
+                                            + std::abs(tasinanAyarlar.value("yukseklik").toDouble());
+        } else if (tasinanAyarlar.contains("l4")) {
+            tasinanAyarlar["hatUzunlugu"] = tasinanAyarlar.value("l4");
+        }
+    }
+    if (!tasinanAyarlar.contains("hedefDebi") && tasinanAyarlar.contains("q2")) {
+        tasinanAyarlar["hedefDebi"] = tasinanAyarlar.value("q2");
+    }
+
     QVariantMap tamAyarlar = varsayilanTahminAyarlari();
-    for (auto alan = ayarlar.constBegin(); alan != ayarlar.constEnd(); ++alan) {
+    for (auto alan = tasinanAyarlar.constBegin(); alan != tasinanAyarlar.constEnd(); ++alan) {
         if (!tamAyarlar.contains(alan.key()) || !alan.value().isValid()) continue;
         bool sayiMi = false;
         const double deger = alan.value().toDouble(&sayiMi);
         if (sayiMi) tamAyarlar[alan.key()] = deger;
     }
     return tamAyarlar;
+}
+
+double hesapUzunluguM(const QVariantMap &ayarlar)
+{
+    const QVariantMap ayar = tahminAyarlariniTamamla(ayarlar);
+    return ayar["hatUzunlugu"].toDouble()
+           + ayar["dirsek90"].toDouble() * DIRSEK_90_ESDEGER_M
+           + ayar["dirsek45"].toDouble() * DIRSEK_45_ESDEGER_M;
 }
 
 // Tek bir durum için pompa basıncı:
@@ -414,29 +528,22 @@ QVariantMap basincTahmini(double kesisimA, double egimB, double debiM3h, double 
     return sonuc;
 }
 
-// Orijinal uygulamadaki tahmin tablosu: 2 debi × 3 hat uzunluğu = 6 satır.
+// Girilen hat ve hedef debi için tek satırlık tahmin.
 QVariantList tahminTablosu(double kesisimA, double egimB, const QVariantMap &ayarlar)
 {
     const QVariantMap ayar = tahminAyarlariniTamamla(ayarlar);
     const double pompaMaksBar = ayar["pompaMaks"].toDouble();
-    QVariantList satirlar;
+    const double debi = ayar["hedefDebi"].toDouble();
+    const double uzunluk = hesapUzunluguM(ayar);
 
-    for (const char *uzunlukAlani : { "l2", "l3", "l4" }) {
-        for (const char *debiAlani : { "q1", "q2" }) {
-            const double debi = ayar[debiAlani].toDouble();
-            const double uzunluk = ayar[uzunlukAlani].toDouble();
-
-            QVariantMap satir = basincTahmini(kesisimA, egimB, debi, ayar["cap"].toDouble(), uzunluk,
-                                              ayar["yukseklik"].toDouble(), ayar["yogunluk"].toDouble(),
-                                              ayar["hataPayi"].toDouble());
-            satir["debi"] = debi;
-            satir["uzunluk"] = uzunluk;
-            satir["pompaAsildi"] = pompaMaksBar > 0.0 && satir["ustSinirBar"].toDouble() > pompaMaksBar;
-            satir["basincNegatif"] = satir["basincBar"].toDouble() < 0.0;
-            satirlar.append(satir);
-        }
-    }
-    return satirlar;
+    QVariantMap satir = basincTahmini(kesisimA, egimB, debi, ayar["cap"].toDouble(), uzunluk,
+                                      ayar["yukseklik"].toDouble(), ayar["yogunluk"].toDouble(),
+                                      ayar["hataPayi"].toDouble());
+    satir["debi"] = debi;
+    satir["uzunluk"] = uzunluk;
+    satir["pompaAsildi"] = pompaMaksBar > 0.0 && satir["ustSinirBar"].toDouble() > pompaMaksBar;
+    satir["basincNegatif"] = satir["basincBar"].toDouble() < 0.0;
+    return { satir };
 }
 
 QString tahminGuvenilmezNedeni(double kesisimA, double egimB, double r2)

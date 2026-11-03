@@ -103,8 +103,8 @@ Rectangle {
                 {
                     baslikTr: "Boru hattı tahminini hesaplayın",
                     baslikEn: "Calculate the pipeline estimate",
-                    metinTr: "\"TAHMİN AYARLARI\" bölümüne Q1/Q2 debilerini, boru çapını, L2/L3/L4 uzunluklarını, pompalama yüksekliğini (aşağı pompalamada negatif), beton yoğunluğunu, hata payını ve pompanın maksimum basıncını girip \"Tahmini Hesapla ve Kaydet\"e basın. Tahmin tablosundaki tüm durumlar pompa kapasitesi içindeyse sonuç \"POMPALANABİLİR\", değilse \"POMPALAMA SORUNU\" olarak gösterilir.",
-                    metinEn: "In \"FORECAST PREFERENCES\" enter the Q1/Q2 flow rates, pipe diameter, L2/L3/L4 lengths, pumping head (negative for downward pumping), concrete density, error tolerance and the pump max. pressure, then press \"Calculate and Save Forecast\". If all cases in the forecast table are within the pump capacity the result is \"PUMPABLE\", otherwise \"PUMPING ISSUE\".",
+                    metinTr: "\"TAHMİN AYARLARI\" bölümüne şantiyedeki hattı girin: boru iç çapı, hedef debi, hat uzunluğu, pompalama yüksekliği (aşağı pompalamada negatif), 90° ve 45° dirsek sayıları ve pompanın maksimum basıncı. \"Tahmini Hesapla ve Kaydet\"e basın. Gereken basınç pompa kapasitesi içindeyse sonuç \"POMPALANABİLİR\", değilse \"POMPALAMA SORUNU\" olarak gösterilir.",
+                    metinEn: "In \"FORECAST PREFERENCES\" enter the site pipeline: pipe inner diameter, target flow, line length, pumping height (negative for downward pumping), number of 90° and 45° bends and the pump max. pressure. Press \"Calculate and Save Forecast\". If the required pressure is within the pump capacity the result is \"PUMPABLE\", otherwise \"PUMPING ISSUE\".",
                     mockup: { tur: "sonuclar", bolge: "boru" }
                 },
                 {

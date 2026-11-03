@@ -64,6 +64,9 @@ public:
 
 private:
     void tablolariOlustur();
+    // Takılan stroke'ları otomatik hariç tutar (SliperModel bölüm 5). Kullanıcının
+    // elle verdiği karar (kullaniciKarari) her zaman önceliklidir.
+    void otomatikElemeUygula(int olcumId);
     static QString jsonYaz(const QVariantMap &veri);
     static QVariantMap jsonOku(const QString &json);
     QSqlDatabase m_db;

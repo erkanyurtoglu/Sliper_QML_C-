@@ -38,13 +38,16 @@ Rectangle {
         uyumKalitesi: { tr: "UYUM (R²)", en: "FIT (R²)" },
         kullanilanStroke: { tr: "KULLANILAN STROKE", en: "STROKES USED" },
         tahminAyarlari: { tr: "TAHMİN AYARLARI", en: "FORECAST PREFERENCES" },
-        q1: { tr: "Q1 (m³/h)", en: "Q1 (m³/h)" },
-        q2: { tr: "Q2 (m³/h)", en: "Q2 (m³/h)" },
-        cap: { tr: "Boru çapı D (mm)", en: "Pipe diameter D (mm)" },
-        l2: { tr: "L2 (m)", en: "L2 (m)" },
-        l3: { tr: "L3 (m)", en: "L3 (m)" },
-        l4: { tr: "L4 (m)", en: "L4 (m)" },
-        yukseklik: { tr: "Pompalama yüks. h (m)", en: "Pumping head h (m)" },
+        hedefDebi: { tr: "Hedef debi Q (m³/h)", en: "Target flow Q (m³/h)" },
+        cap: { tr: "Boru iç çapı D (mm)", en: "Pipe inner diameter D (mm)" },
+        hatUzunlugu: { tr: "Hat uzunluğu (m)", en: "Line length (m)" },
+        yukseklik: { tr: "Pompalama yüksekliği (m)", en: "Pumping height (m)" },
+        dirsek90: { tr: "90° dirsek sayısı", en: "90° bends" },
+        dirsek45: { tr: "45° dirsek sayısı", en: "45° bends" },
+        hesapUzunlugu: { tr: "Hesap uzunluğu (m)", en: "Calc. length (m)" },
+        uygunBolge: { tr: "Uygun bölge", en: "Feasible region" },
+        hataBandi: { tr: "Alt – Üst sınır", en: "Lower – upper bound" },
+        hedefNokta: { tr: "Hedef debi", en: "Target flow" },
         yogunluk: { tr: "Yoğunluk ρ (kg/m³)", en: "Density ρ (kg/m³)" },
         hataPayi: { tr: "Hata payı (%)", en: "Error bar tol. (%)" },
         pompaMaks: { tr: "Pompa maks. (bar)", en: "Pump max. (bar)" },
@@ -56,15 +59,15 @@ Rectangle {
         pompalanabilirGuvenilmez: { tr: "POMPALANABİLİR — GÜVENİLİR DEĞİL", en: "PUMPABLE — UNRELIABLE" },
         durumEgimNegatif: { tr: "P–Q eğimi (B) negatif: tahmin fiziksel değil, pompalanabilirlik kararı verilemez. Ölçümü tekrarlayın.", en: "p–Q slope (B) is negative: forecast is not physical, no pumpability decision. Repeat the measurement." },
         durumKesisimNegatif: { tr: "P–Q kesişimi (A) negatif: tahmin fiziksel değil, pompalanabilirlik kararı verilemez. Ölçümü tekrarlayın.", en: "p–Q intercept (A) is negative: forecast is not physical, no pumpability decision. Repeat the measurement." },
-        durumDusukR2: { tr: "En yüksek tahmin %1 bar pompa kapasitesi içinde, ancak uyum kalitesi düşük (R² = %2): sonuç güvenilir değil.", en: "Highest estimate %1 bar is within pump capacity, but fit quality is low (R² = %2): result is unreliable." },
+        durumDusukR2: { tr: "Gereken basınç en fazla %1 bar, pompa kapasitesi içinde, ancak uyum kalitesi düşük (R² = %2): sonuç güvenilir değil.", en: "Required pressure up to %1 bar is within pump capacity, but fit quality is low (R² = %2): result is unreliable." },
         gecersiz: { tr: "geçersiz", en: "invalid" },
         degerlendirilmedi: { tr: "DEĞERLENDİRİLMEDİ", en: "NOT EVALUATED" },
         durumYetersizVeri: { tr: "Yeterli stroke verisi yok.", en: "Not enough stroke data." },
         durumPompaYok: { tr: "Pompalanabilirlik kararı için pompa maks. basıncını girip tahmini hesaplayın.", en: "Enter the pump max. pressure and calculate the forecast to evaluate pumpability." },
-        durumUygun: { tr: "Tüm durumlarda uygun. En yüksek tahmin %1 bar (Q = %2 m³/h, L = %3 m), pompa kapasitesi kullanımı %%4.", en: "Suitable in all cases. Highest estimate %1 bar (Q = %2 m³/h, L = %3 m), %4% of pump capacity." },
-        durumAkma: { tr: "%1 durumda kapasite aşılıyor (en yüksek %2 bar). Basıncın çoğu akma (A) teriminden geliyor: süperakışkanlaştırıcı veya ince malzeme/pasta miktarını artırmayı, daha kısa/geniş hattı değerlendirin.", en: "Capacity exceeded in %1 case(s) (highest %2 bar). Mostly from the yield (A) term: consider more superplasticizer or fines/paste, or a shorter/wider line." },
-        durumViskoz: { tr: "%1 durumda kapasite aşılıyor (en yüksek %2 bar). Basıncın çoğu viskoz (B) terimden geliyor: debiyi düşürmeyi, daha geniş boruyu veya daha düşük viskoziteli karışımı değerlendirin.", en: "Capacity exceeded in %1 case(s) (highest %2 bar). Mostly from the viscous (B) term: consider a lower flow rate, a wider pipe or a less viscous mix." },
-        durumYukseklik: { tr: "%1 durumda kapasite aşılıyor (en yüksek %2 bar). Basıncın çoğu pompalama yüksekliğinden (ρ·g·h) geliyor: daha yüksek basınçlı pompa gerekir.", en: "Capacity exceeded in %1 case(s) (highest %2 bar). Mostly from the pumping head (ρ·g·h): a higher-pressure pump is required." },
+        durumUygun: { tr: "Gereken basınç en fazla %1 bar (Q = %2 m³/h, hesap uzunluğu %3 m), pompa kapasitesi kullanımı %%4.", en: "Required pressure up to %1 bar (Q = %2 m³/h, calc. length %3 m), %4% of pump capacity." },
+        durumAkma: { tr: "Gereken basınç %2 bar, pompa kapasitesini aşıyor. Basıncın çoğu akma (A) teriminden geliyor: süperakışkanlaştırıcı veya ince malzeme/pasta miktarını artırmayı, daha kısa/geniş hattı değerlendirin.", en: "Required pressure %2 bar exceeds pump capacity. Mostly from the yield (A) term: consider more superplasticizer or fines/paste, or a shorter/wider line." },
+        durumViskoz: { tr: "Gereken basınç %2 bar, pompa kapasitesini aşıyor. Basıncın çoğu viskoz (B) terimden geliyor: debiyi düşürmeyi, daha geniş boruyu veya daha düşük viskoziteli karışımı değerlendirin.", en: "Required pressure %2 bar exceeds pump capacity. Mostly from the viscous (B) term: consider a lower flow rate, a wider pipe or a less viscous mix." },
+        durumYukseklik: { tr: "Gereken basınç %2 bar, pompa kapasitesini aşıyor. Basıncın çoğu dikey yükseklikten (ρ·g·h) geliyor: daha yüksek basınçlı pompa gerekir.", en: "Required pressure %2 bar exceeds pump capacity. Mostly from the vertical height (ρ·g·h): a higher-pressure pump is required." },
         pdfRaporOnizle: { tr: "📄  PDF Rapor Önizle", en: "📄  Preview PDF Report" },
         excelCsvOnizle: { tr: "📊  Excel (CSV) Önizle", en: "📊  Preview Excel (CSV)" },
         excelXmlDisaAktar: { tr: "📑  Excel (XML) Dışa Aktar", en: "📑  Export Excel (XML)" },
@@ -87,6 +90,7 @@ Rectangle {
         durum: { tr: "Durum", en: "Status" },
         dahil: { tr: "Dahil", en: "Included" },
         haric: { tr: "Hariç", en: "Excluded" },
+        otomatikHaricTakilma: { tr: "Otomatik hariç", en: "Auto-excluded" },
         hatali: { tr: "Wrong Stroke", en: "Wrong Stroke" },
         strokeYok: { tr: "Bu ölçümde stroke yok", en: "No strokes in this measurement" },
         strokeSilSoru: { tr: "Stroke %1 kalıcı olarak silinsin mi? Bu işlem geri alınamaz.", en: "Delete stroke %1 permanently? This cannot be undone." },
@@ -194,18 +198,21 @@ Rectangle {
     // --------------------------------------------------------------- Tahmin
     function ayarAlanlariniDoldur() {
         var ayar = tahminAyarlari
-        q1Alani.metin = ayar.q1; q2Alani.metin = ayar.q2; capAlani.metin = ayar.cap
-        l2Alani.metin = ayar.l2; l3Alani.metin = ayar.l3; l4Alani.metin = ayar.l4
-        yukseklikAlani.metin = ayar.yukseklik; yogunlukAlani.metin = ayar.yogunluk
-        hataAlani.metin = ayar.hataPayi
+        var alanlar = ayarAlanlari()
+        for (var anahtar in alanlar) alanlar[anahtar].metin = ayar[anahtar]
         pompaAlani.metin = ayar.pompaMaks > 0 ? ayar.pompaMaks : ""
         ayarBildirimi.text = ""
     }
 
+    function ayarAlanlari() {
+        return { cap: capAlani, hatUzunlugu: hatUzunluguAlani, yukseklik: yukseklikAlani,
+                 dirsek90: dirsek90Alani, dirsek45: dirsek45Alani, hedefDebi: hedefDebiAlani }
+    }
+
     function ayarlariKaydet() {
-        var alanlar = { q1: q1Alani, q2: q2Alani, cap: capAlani, l2: l2Alani, l3: l3Alani, l4: l4Alani,
-                        yukseklik: yukseklikAlani, yogunluk: yogunlukAlani, hataPayi: hataAlani }
-        var yeni = {}
+        var alanlar = ayarAlanlari()
+        // Ekranda olmayan ayarlar (yoğunluk, hata payı) kayıtlı değerleriyle korunur
+        var yeni = Object.assign({}, tahminAyarlari)
         for (var anahtar in alanlar) {
             var deger = parseFloat(String(alanlar[anahtar].metin).replace(",", "."))
             if (isNaN(deger)) { ayarBildirimi.hata = true; ayarBildirimi.text = txt("gecersizGirdi"); return }
@@ -213,10 +220,9 @@ Rectangle {
         }
         var pompa = parseFloat(String(pompaAlani.metin).replace(",", "."))
         yeni.pompaMaks = (isNaN(pompa) || pompa < 0) ? 0 : pompa
-        if (yeni.cap <= 0 || yeni.q1 < 0 || yeni.q2 < 0 || yeni.l2 < 0 || yeni.l3 < 0 || yeni.l4 < 0 || yeni.yogunluk < 0) {
+        if (yeni.cap <= 0 || yeni.hedefDebi < 0 || yeni.hatUzunlugu < 0 || yeni.dirsek90 < 0 || yeni.dirsek45 < 0) {
             ayarBildirimi.hata = true; ayarBildirimi.text = txt("gecersizGirdi"); return
         }
-        yeni.hataPayi = Math.max(0, Math.min(100, yeni.hataPayi))
         if (database.tahminAyarlariKaydet(olcumId, yeni)) {
             tahminAyarlari = database.tahminAyarlariGetir(olcumId)
             ayarBildirimi.hata = false
@@ -232,43 +238,46 @@ Rectangle {
     }
 
     function tahminGrafiginiCiz() {
-        var cizgiler = [tahminL2, tahminL3, tahminL4]
-        var cubuklar = [hc0, hc1, hc2, hc3, hc4, hc5]
-        for (var i = 0; i < cizgiler.length; i++) cizgiler[i].clear()
-        for (i = 0; i < cubuklar.length; i++) cubuklar[i].clear()
+        var seriler = [hatCizgisi, hatAltSinir, hatUstSinir, hedefNoktasi, hedefCubugu, bolgeUst, bolgeAlt]
+        for (var i = 0; i < seriler.length; i++) seriler[i].clear()
         pompaCizgisi.clear()
-        if (!sonuc.yeterliVeri) return
+        if (!sonuc.yeterliVeri || tahminSatirlari.length === 0) return
         var ayar = tahminAyarlari
-        var kesisimA = sonuc.tau0, egimB = sonuc.mu
-        function tahminEt(debi, hatUzunlugu) {
-            return calculator.boruHattiTahminHesapla(kesisimA, egimB, debi, ayar.cap, hatUzunlugu,
+        var hedef = tahminSatirlari[0]
+        function tahminEt(debi) {
+            return calculator.boruHattiTahminHesapla(sonuc.tau0, sonuc.mu, debi, ayar.cap, hedef.uzunluk,
                                                      ayar.yukseklik, ayar.yogunluk, ayar.hataPayi)
         }
-        var grafikSonuDebi = Math.max(ayar.q1, ayar.q2, 1) * 1.1
-        var hatUzunluklari = [ayar.l2, ayar.l3, ayar.l4]
-        var debiler = [ayar.q1, ayar.q2]
-        var enBuyukBasinc = 1, enKucukBasinc = 0
-        for (i = 0; i < 3; i++) {
-            // Tahmin Q'ya göre düz çizgidir: iki uç nokta yeter
-            var sifirDebide = tahminEt(0, hatUzunluklari[i])
-            var grafikSonunda = tahminEt(grafikSonuDebi, hatUzunluklari[i])
-            cizgiler[i].append(0, sifirDebide.basincBar)
-            cizgiler[i].append(grafikSonuDebi, grafikSonunda.basincBar)
-            enBuyukBasinc = Math.max(enBuyukBasinc, grafikSonunda.ustSinirBar, sifirDebide.ustSinirBar)
-            enKucukBasinc = Math.min(enKucukBasinc, sifirDebide.altSinirBar, grafikSonunda.altSinirBar)
-            // Q1 ve Q2'de hata payı çubukları
-            for (var j = 0; j < 2; j++) {
-                var tahmin = tahminEt(debiler[j], hatUzunluklari[i])
-                if (ayar.hataPayi > 0) {
-                    cubuklar[i * 2 + j].append(debiler[j], tahmin.altSinirBar)
-                    cubuklar[i * 2 + j].append(debiler[j], tahmin.ustSinirBar)
-                }
-            }
+        var grafikSonuDebi = Math.max(ayar.hedefDebi * 1.5, 10)
+        // Tahmin Q'ya göre düz çizgidir: iki uç nokta yeter
+        var sifirDebide = tahminEt(0)
+        var grafikSonunda = tahminEt(grafikSonuDebi)
+        hatCizgisi.append(0, sifirDebide.basincBar)
+        hatCizgisi.append(grafikSonuDebi, grafikSonunda.basincBar)
+        if (ayar.hataPayi > 0) {
+            hatAltSinir.append(0, sifirDebide.altSinirBar)
+            hatAltSinir.append(grafikSonuDebi, grafikSonunda.altSinirBar)
+            hatUstSinir.append(0, sifirDebide.ustSinirBar)
+            hatUstSinir.append(grafikSonuDebi, grafikSonunda.ustSinirBar)
+            hedefCubugu.append(hedef.debi, hedef.altSinirBar)
+            hedefCubugu.append(hedef.debi, hedef.ustSinirBar)
         }
+        hedefNoktasi.append(hedef.debi, hedef.basincBar)
+        var enBuyukBasinc = Math.max(1, grafikSonunda.ustSinirBar, sifirDebide.ustSinirBar)
+        var enKucukBasinc = Math.min(0, sifirDebide.altSinirBar, grafikSonunda.altSinirBar)
         if (ayar.pompaMaks > 0) {
             pompaCizgisi.append(0, ayar.pompaMaks)
             pompaCizgisi.append(grafikSonuDebi, ayar.pompaMaks)
             enBuyukBasinc = Math.max(enBuyukBasinc, ayar.pompaMaks)
+            // Uygun bölge: hattın üst sınırı ile pompa maks. basıncı arasında, pompanın yettiği kısım
+            var bolgeAdimSayisi = 60
+            for (i = 0; i <= bolgeAdimSayisi; i++) {
+                var debi = grafikSonuDebi * i / bolgeAdimSayisi
+                var hatBasinci = tahminEt(debi).ustSinirBar
+                if (hatBasinci > ayar.pompaMaks) break
+                bolgeUst.append(debi, ayar.pompaMaks)
+                bolgeAlt.append(debi, hatBasinci)
+            }
         }
         tgQEkseni.max = Math.ceil(grafikSonuDebi)
         tgPEkseni.min = Math.floor(enKucukBasinc * 1.1)
@@ -588,15 +597,12 @@ Rectangle {
                                 columnSpacing: 8
                                 rowSpacing: 6
                                 readonly property real hucre: (width - columnSpacing) / 2
-                                Girdi { id: q1Alani; width: ayarIzgarasi.hucre; etiket: txt("q1") }
-                                Girdi { id: q2Alani; width: ayarIzgarasi.hucre; etiket: txt("q2") }
                                 Girdi { id: capAlani; width: ayarIzgarasi.hucre; etiket: txt("cap") }
-                                Girdi { id: hataAlani; width: ayarIzgarasi.hucre; etiket: txt("hataPayi") }
-                                Girdi { id: l2Alani; width: ayarIzgarasi.hucre; etiket: txt("l2") }
-                                Girdi { id: l3Alani; width: ayarIzgarasi.hucre; etiket: txt("l3") }
-                                Girdi { id: l4Alani; width: ayarIzgarasi.hucre; etiket: txt("l4") }
+                                Girdi { id: hedefDebiAlani; width: ayarIzgarasi.hucre; etiket: txt("hedefDebi") }
+                                Girdi { id: hatUzunluguAlani; width: ayarIzgarasi.hucre; etiket: txt("hatUzunlugu") }
                                 Girdi { id: yukseklikAlani; width: ayarIzgarasi.hucre; etiket: txt("yukseklik") }
-                                Girdi { id: yogunlukAlani; width: ayarIzgarasi.hucre; etiket: txt("yogunluk") }
+                                Girdi { id: dirsek90Alani; width: ayarIzgarasi.hucre; etiket: txt("dirsek90") }
+                                Girdi { id: dirsek45Alani; width: ayarIzgarasi.hucre; etiket: txt("dirsek45") }
                                 Girdi { id: pompaAlani; width: ayarIzgarasi.hucre; etiket: txt("pompaMaks"); ipucu: "85–130" }
                             }
                             Dugme {
@@ -632,6 +638,8 @@ Rectangle {
                             anchors.margins: 10; anchors.leftMargin: 16
                             spacing: 4
                             Text {
+                                width: parent.width
+                                wrapMode: Text.WordWrap
                                 text: durumBilgisi.kod === "uygun" ? "✓ " + txt("pompalanabilir")
                                       : (durumBilgisi.kod === "sorun" ? "! " + txt("pompalamaSorunu")
                                       : (durumBilgisi.kod === "guvenilmez" ? "? " + txt("pompalanabilirGuvenilmez")
@@ -654,7 +662,7 @@ Rectangle {
                                         return txt("durumUygun").arg(bar).arg(sayi(d.enKotu.debi, 1)).arg(sayi(d.enKotu.uzunluk, 0))
                                                                 .arg(sayi(d.enKotu.ustSinirBar / d.pompa * 100, 0))
                                     var anahtar = d.baskin === "viskoz" ? "durumViskoz" : (d.baskin === "yukseklik" ? "durumYukseklik" : "durumAkma")
-                                    return txt(anahtar).arg(d.asilan).arg(bar)
+                                    return txt(anahtar).replace("%2", bar)
                                 }
                             }
                         }
@@ -917,8 +925,12 @@ Rectangle {
                                             Text {
                                                 id: durumYazisi
                                                 anchors.centerIn: parent
-                                                text: !strokeSatiri.s.gecerli ? txt("hatali") : (strokeSatiri.s.secili ? txt("dahil") : txt("haric"))
-                                                color: !strokeSatiri.s.gecerli ? "#f87171" : (strokeSatiri.s.secili ? "#4ade80" : "#9ca3af")
+                                                text: !strokeSatiri.s.gecerli ? txt("hatali")
+                                                      : strokeSatiri.s.secili ? txt("dahil")
+                                                      : strokeSatiri.s.otomatikHaric ? txt("otomatikHaricTakilma") : txt("haric")
+                                                color: !strokeSatiri.s.gecerli ? "#f87171"
+                                                       : strokeSatiri.s.secili ? "#4ade80"
+                                                       : strokeSatiri.s.otomatikHaric ? "#fbbf24" : "#9ca3af"
                                                 font.pixelSize: 10; font.bold: true
                                             }
                                         }
@@ -1053,8 +1065,11 @@ Rectangle {
                             Text {
                                 width: parent.width
                                 wrapMode: Text.WordWrap
-                                text: txt("tahmin") + "  —  D = " + sayi(tahminAyarlari.cap, 0) + " mm,  h = " + sayi(tahminAyarlari.yukseklik, 1)
-                                      + " m,  ρ = " + sayi(tahminAyarlari.yogunluk, 0) + " kg/m³,  ±%" + sayi(tahminAyarlari.hataPayi, 0)
+                                text: txt("tahmin") + "  —  D = " + sayi(tahminAyarlari.cap, 0) + " mm,  "
+                                      + txt("hatUzunlugu") + " " + sayi(tahminAyarlari.hatUzunlugu, 0)
+                                      + ",  h = " + sayi(tahminAyarlari.yukseklik, 1)
+                                      + " m,  90°×" + sayi(tahminAyarlari.dirsek90, 0) + ",  45°×" + sayi(tahminAyarlari.dirsek45, 0)
+                                      + ",  ρ = " + sayi(tahminAyarlari.yogunluk, 0) + " kg/m³,  ±%" + sayi(tahminAyarlari.hataPayi, 0)
                                       + (tahminAyarlari.pompaMaks > 0 ? ",  " + txt("pompaCizgi") + " " + sayi(tahminAyarlari.pompaMaks, 0) + " bar" : "")
                                 color: "#9ca3af"; font.family: "Segoe UI"; font.pixelSize: 12
                             }
@@ -1075,7 +1090,7 @@ Rectangle {
                                     width: tahminTablosu.width
                                     height: 30
                                     BaslikHucre { width: tahminTablosu.width * 0.18; text: txt("debi"); anchors.verticalCenter: parent.verticalCenter }
-                                    BaslikHucre { width: tahminTablosu.width * 0.18; text: txt("uzunluk"); anchors.verticalCenter: parent.verticalCenter }
+                                    BaslikHucre { width: tahminTablosu.width * 0.18; text: txt("hesapUzunlugu"); anchors.verticalCenter: parent.verticalCenter }
                                     BaslikHucre { width: tahminTablosu.width * 0.18; text: txt("basincBar"); anchors.verticalCenter: parent.verticalCenter }
                                     BaslikHucre { width: tahminTablosu.width * 0.28; text: txt("aralik"); anchors.verticalCenter: parent.verticalCenter }
                                     BaslikHucre { width: tahminTablosu.width * 0.18; text: txt("pompa"); anchors.verticalCenter: parent.verticalCenter }
@@ -1133,17 +1148,18 @@ Rectangle {
                             Eksen { id: tgQEkseni; min: 0; max: 100; titleText: txt("debi") }
                             Eksen { id: tgPEkseni; min: 0; max: 100; titleText: "P (bar)" }
 
-                            LineSeries { id: tahminL2; name: txt("tahmin") + " " + sayi(tahminAyarlari.l2, 0) + " m"; axisX: tgQEkseni; axisY: tgPEkseni; color: "#3b82f6"; width: 2.5 }
-                            LineSeries { id: tahminL3; name: txt("tahmin") + " " + sayi(tahminAyarlari.l3, 0) + " m"; axisX: tgQEkseni; axisY: tgPEkseni; color: "#22c55e"; width: 2.5; style: Qt.DotLine }
-                            LineSeries { id: tahminL4; name: txt("tahmin") + " " + sayi(tahminAyarlari.l4, 0) + " m"; axisX: tgQEkseni; axisY: tgPEkseni; color: "#ef4444"; width: 2.5; style: Qt.DashLine }
+                            AreaSeries {
+                                name: txt("uygunBolge"); axisX: tgQEkseni; axisY: tgPEkseni
+                                color: "#3316a34a"; borderColor: "transparent"; borderWidth: 0
+                                upperSeries: LineSeries { id: bolgeUst }
+                                lowerSeries: LineSeries { id: bolgeAlt }
+                            }
+                            LineSeries { id: hatCizgisi; name: txt("tahmin") + " " + sayi(tahminSatirlari.length > 0 ? tahminSatirlari[0].uzunluk : 0, 0) + " m"; axisX: tgQEkseni; axisY: tgPEkseni; color: "#3b82f6"; width: 2.5 }
+                            LineSeries { id: hatAltSinir; name: txt("hataBandi"); axisX: tgQEkseni; axisY: tgPEkseni; color: "#64748b"; width: 1; style: Qt.DashLine }
+                            LineSeries { id: hatUstSinir; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#64748b"; width: 1; style: Qt.DashLine }
                             LineSeries { id: pompaCizgisi; name: txt("pompaCizgi"); axisX: tgQEkseni; axisY: tgPEkseni; color: "#f59e0b"; width: 2; style: Qt.DashDotLine }
-                            // Hata çubukları (Q1 ve Q2'de, her uzunluk için)
-                            LineSeries { id: hc0; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#3b82f6"; width: 2 }
-                            LineSeries { id: hc1; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#3b82f6"; width: 2 }
-                            LineSeries { id: hc2; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#22c55e"; width: 2 }
-                            LineSeries { id: hc3; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#22c55e"; width: 2 }
-                            LineSeries { id: hc4; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#ef4444"; width: 2 }
-                            LineSeries { id: hc5; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#ef4444"; width: 2 }
+                            LineSeries { id: hedefCubugu; name: ""; axisX: tgQEkseni; axisY: tgPEkseni; color: "#ef4444"; width: 2 }
+                            ScatterSeries { id: hedefNoktasi; name: txt("hedefNokta"); axisX: tgQEkseni; axisY: tgPEkseni; color: "#ef4444"; borderColor: "#ef4444"; markerSize: 12 }
                         }
                     }
                 }

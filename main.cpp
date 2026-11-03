@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
     WifiManager wifiManager(&sensorManager, &database);
     VoiceCommandManager voiceCommandManager;
 
-    // Kalibre edilmiş üst/alt boru konumları (stroke başlangıç/bitiş referansı)
     const QVariantMap konumSinirlari = database.kalibrasyonGetir("konum_sinirlari");
     if (konumSinirlari.value("mevcut").toBool()) {
         calculator.setUstKonumMm(konumSinirlari.value("deger1").toDouble());

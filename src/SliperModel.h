@@ -222,11 +222,33 @@ constexpr double strokeBasinciMbar(double pMaksMbar, double p0lMbar)
 constexpr int MIN_STROKE_ORNEGI = 5;
 QString strokeGecersizNedeni(int inisOrnekSayisi, double hizMs, double basincMbar);
 
+// Takılma (otomatik eleme). Boru inerken bir an durup tekrar kayarsa
+// ölçülen hız düşük çıkar ve nokta P-Q doğrusundan kopar.
+//   takılma oranı = yolun %5-%80 kısmındaki en düşük anlık hız / iniş boyunca tipik (ortanca) hız
+// Takılmasız stroke'larda oran 0.25-0.40, takılanlarda 0.03-0.07 ölçüldü;
+// TAKILMA_ESIGI ikisinin arasındadır. Hesaplanamazsa NaN döner.
+constexpr double TAKILMA_ESIGI = 0.15;
+constexpr double TAKILMA_YOL_ALT = 0.05;
+constexpr double TAKILMA_YOL_UST = 0.80;
+double takilmaOrani(const QVector<double> &zamanS, const QVector<double> &konumMm);
+
+// Bir testte hangi stroke'lar otomatik elenir? Eşiğin altındakiler arasından,
+// en kötüden başlayarak: aynı ek ağırlıktan en fazla 1, toplamda en fazla
+// stroke sayısının %MAKS_OTOMATIK_ELEME_YUZDE'si (en az 1).
+// Dönüş: elenecek stroke'ların indeksleri.
+constexpr int MAKS_OTOMATIK_ELEME_YUZDE = 25;
+QVector<int> otomatikElenecekler(const QVector<qint64> &agirlikAnahtarlari,
+                                 const QVector<double> &takilmaOranlari);
+
 // --- 6. P-Q doğrusu -----------------------------------------------------------
 // P = A + B*Q, en küçük kareler:
 //   B = (Σqp - n*q̄*p̄) / (Σq² - n*q̄²),   A = p̄ - B*q̄,   R² = 1 - SSres/SStot
 // A: kesişim [mbar], B: eğim [mbar*h/m3]. (Veritabanı/QML'de "tau0" = A, "mu" = B
 // olarak anılır; bunlar reolojik τ0/μ değil, ham doğru parametreleridir.)
+// A ve B bütün stroke'lardan bulunur; R² ise her ek ağırlığın ortalama (Q, p)
+// noktalarından hesaplanır. MIN_ORTALAMA_R2_AGIRLIK_SAYISI'ndan az farklı ağırlık
+// varsa (iki noktadan geçen doğru her zaman R² = 1 verir) stroke'ların R²'si kullanılır.
+constexpr int MIN_ORTALAMA_R2_AGIRLIK_SAYISI = 3;
 struct DogruUyumu {
     int n = 0;
     double kesisimA = 0.0;
@@ -236,7 +258,8 @@ struct DogruUyumu {
     double qMaks = 0.0;
     double qOrt = 0.0;
 };
-DogruUyumu pqDogrusu(const QVector<double> &debiM3h, const QVector<double> &basincMbar);
+DogruUyumu pqDogrusu(const QVector<double> &debiM3h, const QVector<double> &basincMbar,
+                     const QVector<qint64> &agirlikAnahtarlari);
 
 // --- 7. Ölçüm kalitesi uyarıları --------------------------------------------------
 // P-Q sonucuyla birlikte gösterilen uyarı kodları (metinleri QML/rapor tarafında):
@@ -250,7 +273,7 @@ DogruUyumu pqDogrusu(const QVector<double> &debiM3h, const QVector<double> &basi
 //   cokGecersiz       : stroke'ların %MAKS_GECERSIZ_YUZDE'sinden fazlası geçersiz
 //   agirlikTepkisiZayif : eklenen ağırlık Pmax'ta görünmüyor (bkz. agirlikTepkiOrani)
 constexpr int MIN_STROKE_SAYISI = 3;
-constexpr double MIN_R2 = 0.9;
+constexpr double MIN_R2 = 0.85;
 constexpr double MIN_DEBI_ARALIGI_ORANI = 0.3;
 constexpr int MIN_YUK_BASINA_STROKE = 3;
 constexpr int MAKS_GECERSIZ_YUZDE = 30;
@@ -304,11 +327,20 @@ constexpr double schleibingerB(double egimMbarHm3)
 // Hata payı yalnızca sürtünme terimlerine (ilk iki terim) uygulanır.
 // Schleibinger kılavuzundaki iki tahmin tablosunu birebir verir.
 
-// Orijinal uygulamadaki "Forecast Preferences" alanları + pompa kapasitesi.
-// Anahtarlar: q1, q2 [m3/h], cap [mm], l2, l3, l4 [m], yogunluk [kg/m3],
-// yukseklik [m] (negatif = aşağı pompalama), hataPayi [%], pompaMaks [bar, 0 = yok]
+// Tahmin, şantiyedeki gerçek hat için yapılır. Anahtarlar:
+//   cap [mm], hatUzunlugu [m] (toplam boru, dikey kısım dahil),
+//   yukseklik [m] (pompalama yüksekliği; negatif = aşağı), dirsek90, dirsek45 [adet],
+//   hedefDebi [m3/h], pompaMaks [bar, 0 = yok], yogunluk [kg/m3], hataPayi [%]
+//
+// Hesap uzunluğu L (sürtünmenin oluştuğu boru):  L = hat + dirsek90 × e90 + dirsek45 × e45
+// Pompalama yüksekliği h için ayrıca ρ·g·h kaldırma basıncı eklenir.
+// Dirsek eşdeğerleri: 1 m yarıçaplı 90° dirsek ≈ 3 m yatay boru; açıyla
+// orantılı olarak 45° ≈ 1.5 m (beton pompalama kaynaklarındaki pratik kural).
+constexpr double DIRSEK_90_ESDEGER_M = 3.0;
+constexpr double DIRSEK_45_ESDEGER_M = 1.5;
 QVariantMap varsayilanTahminAyarlari();
 QVariantMap tahminAyarlariniTamamla(const QVariantMap &ayarlar);
+double hesapUzunluguM(const QVariantMap &ayarlar);
 
 // Tek bir (Q, D, L) için basınç. Dönen alanlar: gecerliGiris, basincBar,
 // altSinirBar, ustSinirBar, akmaMbar, viskozMbar, yukseklikMbar, aMbar, bMbarHm
@@ -316,8 +348,8 @@ QVariantMap basincTahmini(double kesisimA, double egimB, double debiM3h, double 
                           double uzunlukM, double yukseklikM, double yogunlukKgM3,
                           double hataPayiYuzde);
 
-// Orijinal "Table of Results": {Q1, Q2} x {L2, L3, L4}. Satır alanları:
-// debi, uzunluk, basincBar, altSinirBar, ustSinirBar, pompaAsildi, basincNegatif
+// Hedef debi ve hesap uzunluğu için tek satır. Satır alanları:
+// debi, uzunluk (hesap uzunluğu), basincBar, altSinirBar, ustSinirBar, pompaAsildi, basincNegatif
 QVariantList tahminTablosu(double kesisimA, double egimB, const QVariantMap &ayarlar);
 
 // Pompa kararı verilebilir mi? Boş = güvenilir.

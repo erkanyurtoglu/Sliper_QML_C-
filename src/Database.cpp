@@ -93,6 +93,28 @@ void Database::tablolariOlustur()
     kolonEkle("Strokelar", "gecersizNedeni", "TEXT DEFAULT ''");
     kolonEkle("Strokelar", "hamVeri", "TEXT DEFAULT ''");
 
+    // Otomatik eleme: otomatikHaricNedeni boş değilse program stroke'u hariç tuttu.
+    // kullaniciKarari NULL = karar programın; 0/1 = kullanıcı elle hariç/dahil etti.
+    bool otomatikElemeKolonlariVardi = false;
+    {
+        QSqlQuery kontrol("PRAGMA table_info(Strokelar)");
+        while (kontrol.next()) {
+            if (kontrol.value("name").toString() == "kullaniciKarari") otomatikElemeKolonlariVardi = true;
+        }
+    }
+    kolonEkle("Strokelar", "otomatikHaricNedeni", "TEXT DEFAULT ''");
+    kolonEkle("Strokelar", "kullaniciKarari", "INTEGER DEFAULT NULL");
+    if (!otomatikElemeKolonlariVardi) {
+        // Eskiden elle hariç tutulanlar kullanıcı kararı sayılır; sonra bütün
+        // geçmiş testlere otomatik eleme bir kez uygulanır.
+        QSqlQuery eskiKararlar;
+        eskiKararlar.exec("UPDATE Strokelar SET kullaniciKarari = 0 WHERE secili = 0");
+        QSqlQuery olcumler("SELECT DISTINCT olcumId FROM Strokelar");
+        QList<int> olcumIdleri;
+        while (olcumler.next()) olcumIdleri.append(olcumler.value(0).toInt());
+        for (int olcumId : olcumIdleri) otomatikElemeUygula(olcumId);
+    }
+
     sorgu.exec(
         "CREATE TABLE IF NOT EXISTS Ayarlar ("
         "anahtar TEXT PRIMARY KEY, "
@@ -244,14 +266,65 @@ int Database::strokeKaydet(int olcumId, const QVariantMap &stroke, double agirli
         return -1;
     }
     qDebug() << "Stroke kaydedildi, olcumId:" << olcumId;
-    return sorgu.lastInsertId().toInt();
+    const int strokeId = sorgu.lastInsertId().toInt();
+    otomatikElemeUygula(olcumId);
+    return strokeId;
+}
+
+void Database::otomatikElemeUygula(int olcumId)
+{
+    QSqlQuery sorgu;
+    sorgu.prepare("SELECT id, agirlik, hamVeri FROM Strokelar "
+                  "WHERE olcumId = :olcumId AND gecerli = 1 ORDER BY id ASC");
+    sorgu.bindValue(":olcumId", olcumId);
+    if (!sorgu.exec()) return;
+
+    QVector<int> strokeIdleri;
+    QVector<qint64> agirlikAnahtarlari;
+    QVector<double> takilmaOranlari;
+    while (sorgu.next()) {
+        strokeIdleri.append(sorgu.value("id").toInt());
+        agirlikAnahtarlari.append(qRound64(sorgu.value("agirlik").toDouble() * 10.0));
+
+        // Ham veriden yalnızca iniş (tBaslangic..tBitis) kullanılır
+        const QVariantMap hamVeri = jsonOku(sorgu.value("hamVeri").toString());
+        const QVariantList zamanlar = hamVeri.value("t").toList();
+        const QVariantList konumlar = hamVeri.value("x").toList();
+        const double baslangicS = hamVeri.value("tBaslangic").toDouble();
+        const double bitisS = hamVeri.value("tBitis").toDouble();
+        QVector<double> inisZamanlari, inisKonumlari;
+        for (int i = 0; i < std::min(zamanlar.size(), konumlar.size()); ++i) {
+            const double zamanS = zamanlar[i].toDouble();
+            if (zamanS < baslangicS || zamanS > bitisS) continue;
+            inisZamanlari.append(zamanS);
+            inisKonumlari.append(konumlar[i].toDouble());
+        }
+        takilmaOranlari.append(SliperModel::takilmaOrani(inisZamanlari, inisKonumlari));
+    }
+
+    const QVector<int> elenecekler = SliperModel::otomatikElenecekler(agirlikAnahtarlari, takilmaOranlari);
+
+    for (int i = 0; i < strokeIdleri.size(); ++i) {
+        const QString otomatikHaricNedeni = elenecekler.contains(i) ? QStringLiteral("takilma") : QString();
+        QSqlQuery guncelle;
+        guncelle.prepare(
+            "UPDATE Strokelar SET otomatikHaricNedeni = :neden, "
+            "secili = COALESCE(kullaniciKarari, :otomatikSecili) WHERE id = :id");
+        guncelle.bindValue(":neden", otomatikHaricNedeni);
+        guncelle.bindValue(":otomatikSecili", otomatikHaricNedeni.isEmpty() ? 1 : 0);
+        guncelle.bindValue(":id", strokeIdleri[i]);
+        if (!guncelle.exec()) {
+            qWarning() << "Otomatik eleme kaydedilemedi:" << guncelle.lastError().text();
+        }
+    }
 }
 
 bool Database::strokeSeciliAyarla(int strokeId, bool secili)
 {
     QSqlQuery sorgu;
-    sorgu.prepare("UPDATE Strokelar SET secili = :secili WHERE id = :id");
+    sorgu.prepare("UPDATE Strokelar SET secili = :secili, kullaniciKarari = :kullaniciKarari WHERE id = :id");
     sorgu.bindValue(":secili", secili ? 1 : 0);
+    sorgu.bindValue(":kullaniciKarari", secili ? 1 : 0);
     sorgu.bindValue(":id", strokeId);
     if (!sorgu.exec()) {
         qWarning() << "Stroke secimi guncellenemedi:" << sorgu.lastError().text();
@@ -262,6 +335,12 @@ bool Database::strokeSeciliAyarla(int strokeId, bool secili)
 
 bool Database::strokeSil(int strokeId)
 {
+    int olcumId = -1;
+    QSqlQuery olcumSorgusu;
+    olcumSorgusu.prepare("SELECT olcumId FROM Strokelar WHERE id = :id");
+    olcumSorgusu.bindValue(":id", strokeId);
+    if (olcumSorgusu.exec() && olcumSorgusu.next()) olcumId = olcumSorgusu.value(0).toInt();
+
     QSqlQuery sorgu;
     sorgu.prepare("DELETE FROM Strokelar WHERE id = :id");
     sorgu.bindValue(":id", strokeId);
@@ -269,6 +348,8 @@ bool Database::strokeSil(int strokeId)
         qWarning() << "Stroke silinemedi:" << sorgu.lastError().text();
         return false;
     }
+    // Eleme sınırları stroke sayısına bağlı: kalan stroke'lar için yeniden karar verilir
+    if (olcumId > 0) otomatikElemeUygula(olcumId);
     return true;
 }
 
@@ -347,7 +428,7 @@ QVariantList Database::strokeVerileriGetir(int olcumId)
     QSqlQuery sorgu;
     sorgu.prepare(
         "SELECT id, basinc, konum, debi, gecerli, tarih, sure, pMaks, p0l, p0r, hiz, "
-        "agirlik, secili, gecersizNedeni FROM Strokelar "
+        "agirlik, secili, gecersizNedeni, otomatikHaricNedeni, kullaniciKarari FROM Strokelar "
         "WHERE olcumId = :olcumId ORDER BY id ASC"
     );
     sorgu.bindValue(":olcumId", olcumId);
@@ -377,6 +458,10 @@ QVariantList Database::strokeVerileriGetir(int olcumId)
         satir["agirlik"] = sorgu.value("agirlik").toDouble();
         satir["secili"] = sorgu.value("secili").isNull() ? true : sorgu.value("secili").toBool();
         satir["gecersizNedeni"] = sorgu.value("gecersizNedeni").toString();
+        // Program tarafından hariç tutuldu ve kullanıcı bu kararı değiştirmedi
+        satir["otomatikHaric"] = sorgu.value("kullaniciKarari").isNull()
+                                 && !sorgu.value("otomatikHaricNedeni").toString().isEmpty();
+        satir["otomatikHaricNedeni"] = sorgu.value("otomatikHaricNedeni").toString();
         sonuclar.append(satir);
     }
 
@@ -408,6 +493,7 @@ QVariantMap Database::binghamHesapla(int olcumId)
 
     QVector<double> basinclarMbar;             // her kullanılan stroke'un p değeri
     QVector<double> debilerM3h;                // her kullanılan stroke'un Q değeri
+    QVector<qint64> agirlikAnahtarlari;        // her kullanılan stroke'un ek ağırlık anahtarı
     // Ek ağırlık 0.1 kg hassasiyetle anahtar yapılır (1.6 kg -> 16), kayan nokta
     // karşılaştırma hatası olmasın diye.
     QHash<qint64, int> agirlikBasinaStrokeSayisi;
@@ -425,6 +511,7 @@ QVariantMap Database::binghamHesapla(int olcumId)
             basinclarMbar.append(sorgu.value("basinc").toDouble());
             debilerM3h.append(sorgu.value("debi").toDouble());
             const qint64 agirlikAnahtari = qRound64(sorgu.value("agirlik").toDouble() * 10.0);
+            agirlikAnahtarlari.append(agirlikAnahtari);
             agirlikBasinaStrokeSayisi[agirlikAnahtari] += 1;
             agirlikBasinaPmaksToplami[agirlikAnahtari] += sorgu.value("pMaks").toDouble();
         }
@@ -455,7 +542,7 @@ QVariantMap Database::binghamHesapla(int olcumId)
 
     // p = A + B*Q ve uyarılar: SliperModel bölüm 6 ve 7.
     // Eski kayıtlarla uyum için sonuçta "tau0" = A (kesişim), "mu" = B (eğim) adıyla saklanır.
-    const SliperModel::DogruUyumu pqCizgisi = SliperModel::pqDogrusu(debilerM3h, basinclarMbar);
+    const SliperModel::DogruUyumu pqCizgisi = SliperModel::pqDogrusu(debilerM3h, basinclarMbar, agirlikAnahtarlari);
     uyarilar = SliperModel::olcumUyarilari(pqCizgisi, agirlikBasinaStrokeSayisi,
                                            agirlikBasinaOrtalamaPmaks,
                                            toplamStrokeSayisi, gecersizStrokeSayisi);
@@ -746,14 +833,16 @@ QString Database::xmlDisaAktar(int olcumId)
     satir({});
 
     satir({ metin("Forecast at following input parameters") });
-    satir({ metin("Output Q1 [m3/h]"), sayi(ayarlar["q1"].toDouble()) });
-    satir({ metin("Output Q2 [m3/h]"), sayi(ayarlar["q2"].toDouble()) });
-    satir({ metin("Length of pipe L2 [m]"), sayi(ayarlar["l2"].toDouble()) });
-    satir({ metin("Length of pipe L3 [m]"), sayi(ayarlar["l3"].toDouble()) });
-    satir({ metin("Length of pipe L4 [m]"), sayi(ayarlar["l4"].toDouble()) });
+    satir({ metin("Target output Q [m3/h]"), sayi(ayarlar["hedefDebi"].toDouble()) });
     satir({ metin("Diameter of pipe D2 [m]"), sayi(ayarlar["cap"].toDouble() / 1000.0) });
+    satir({ metin("Line length [m]"), sayi(ayarlar["hatUzunlugu"].toDouble()) });
+    satir({ metin("Pumping height h [m]"), sayi(ayarlar["yukseklik"].toDouble()) });
+    satir({ metin("90 deg bends"), sayi(ayarlar["dirsek90"].toDouble()) });
+    satir({ metin("90 deg bend equivalent length [m]"), sayi(SliperModel::DIRSEK_90_ESDEGER_M) });
+    satir({ metin("45 deg bends"), sayi(ayarlar["dirsek45"].toDouble()) });
+    satir({ metin("45 deg bend equivalent length [m]"), sayi(SliperModel::DIRSEK_45_ESDEGER_M) });
+    satir({ metin("Calculation length L [m]"), sayi(SliperModel::hesapUzunluguM(ayarlar)) });
     satir({ metin("bulk density [kg/m3]"), sayi(ayarlar["yogunluk"].toDouble()) });
-    satir({ metin("pumping head h [m]"), sayi(ayarlar["yukseklik"].toDouble()) });
     satir({ metin("Error Bar Tolerance [%]"), sayi(ayarlar["hataPayi"].toDouble()) });
     satir({ metin("Pump max. pressure [bar]"), sayi(ayarlar["pompaMaks"].toDouble()) });
     satir({});

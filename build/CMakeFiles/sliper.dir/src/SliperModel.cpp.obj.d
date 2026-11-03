@@ -334,5 +334,8 @@ CMakeFiles/sliper.dir/src/SliperModel.cpp.obj: \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QString \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QStringList \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qstringlist.h \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QMap \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/QSet \
+ C:/Qt/6.7.3/mingw_64/include/QtCore/qset.h \
  C:/Qt/6.7.3/mingw_64/include/QtCore/QtMath \
  C:/Qt/6.7.3/mingw_64/include/QtCore/qmath.h

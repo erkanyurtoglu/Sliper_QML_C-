@@ -46,7 +46,8 @@ QString uyariMetni(const QString &kod)
         { "azStroke", "Tahmin için yeterli geçerli stroke yok (en az 3 önerilir; her yük için 3 stroke idealdir)." },
         { "egimNegatif", "P–Q eğimi (B) negatif: debi arttıkça basınç düşüyor. Ayrışma/blokaj veya ölçüm hatası olabilir." },
         { "kesisimNegatif", "P–Q kesişimi (A) negatif: durağan basınç (P0) hatalı ölçülmüş olabilir." },
-        { "dusukR2", "Uyum kalitesi düşük (R² < 0.90): stroke noktaları doğrudan çok sapıyor." },
+        { "dusukR2", QString("Uyum kalitesi düşük (R² < %1): stroke noktaları doğrudan çok sapıyor.")
+                         .arg(SliperModel::MIN_R2, 0, 'f', 2) },
         { "darDebiAraligi", "Debi aralığı çok dar: farklı ağırlıklarla stroke atılmalı, aksi halde eğim güvenilir değil." },
         { "yukBasinaAzStroke", "Bazı yüklerde 3'ten az geçerli stroke var; kılavuz her yük için en az 3 stroke önerir." },
         { "tekYuk", "Tüm stroke'lar aynı ek ağırlıkla atılmış: en az iki farklı yük kullanılmalı." },
@@ -274,7 +275,8 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
         for (const QVariant &kayit : strokelar) {
             const QVariantMap stroke = kayit.toMap();
             const QString durum = stroke["gecerli"].toBool()
-                ? (stroke["secili"].toBool() ? "Dahil" : "Hariç")
+                ? (stroke["secili"].toBool() ? "Dahil"
+                   : stroke["otomatikHaric"].toBool() ? "Otomatik hariç" : "Hariç")
                 : "Hatalı stroke";
             icerik += satir({ QString::number(stroke["stroke"].toInt()), stroke["saat"].toString(),
                               sayi(stroke["sure"].toDouble(), 2), sayi(stroke["agirlik"].toDouble(), 1),
@@ -289,15 +291,19 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
     html += baslik("Pompa Basıncı Tahmini");
     html += tablo(
         satir({ "Girdi", "Değer" }, true)
-        + satir({ "Debi Q1 / Q2", sayi(ayarlar["q1"].toDouble(), 1) + " / " + sayi(ayarlar["q2"].toDouble(), 1) + " m³/h" })
-        + satir({ "Boru çapı D", sayi(ayarlar["cap"].toDouble(), 0) + " mm" })
-        + satir({ "Boru uzunlukları L2 / L3 / L4", sayi(ayarlar["l2"].toDouble(), 0) + " / " + sayi(ayarlar["l3"].toDouble(), 0) + " / " + sayi(ayarlar["l4"].toDouble(), 0) + " m" })
+        + satir({ "Hedef debi Q", sayi(ayarlar["hedefDebi"].toDouble(), 1) + " m³/h" })
+        + satir({ "Boru iç çapı D", sayi(ayarlar["cap"].toDouble(), 0) + " mm" })
+        + satir({ "Hat uzunluğu", sayi(ayarlar["hatUzunlugu"].toDouble(), 0) + " m" })
         + satir({ "Pompalama yüksekliği h", sayi(ayarlar["yukseklik"].toDouble(), 1) + " m" })
+        + satir({ "90° dirsek", QString("%1 adet × %2 m").arg(sayi(ayarlar["dirsek90"].toDouble(), 0), sayi(SliperModel::DIRSEK_90_ESDEGER_M, 1)) })
+        + satir({ "45° dirsek", QString("%1 adet × %2 m").arg(sayi(ayarlar["dirsek45"].toDouble(), 0), sayi(SliperModel::DIRSEK_45_ESDEGER_M, 1)) })
+        + satir({ "Hesap uzunluğu L (hat + dirsekler)", sayi(SliperModel::hesapUzunluguM(ayarlar), 1) + " m" })
         + satir({ "Beton yoğunluğu ρ", sayi(ayarlar["yogunluk"].toDouble(), 0) + " kg/m³" })
         + satir({ "Hata payı", "±%" + sayi(ayarlar["hataPayi"].toDouble(), 0) })
         + satir({ "Pompa maks. basıncı", ayarlar["pompaMaks"].toDouble() > 0 ? sayi(ayarlar["pompaMaks"].toDouble(), 1) + " bar" : "girilmedi" }));
 
     const double pompaMaksBar = ayarlar["pompaMaks"].toDouble();
+    bool pompaAsildi = false;
     const QString guvenilmezNedeni = SliperModel::tahminGuvenilmezNedeni(kesisimA, egimB, pqSonucu["r2"].toDouble());
     const bool kararVerilemez = SliperModel::tahminKarariVerilemez(guvenilmezNedeni);
     const bool dusukGuven = guvenilmezNedeni == "dusukR2";
@@ -307,6 +313,7 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
         for (const QVariant &kayit : tahminSatirlari) {
             const QVariantMap tahmin = kayit.toMap();
             enYuksekTahminBar = std::max(enYuksekTahminBar, tahmin["ustSinirBar"].toDouble());
+            pompaAsildi = pompaAsildi || tahmin["pompaAsildi"].toBool();
             QString pompaDurumu = "—";
             if (pompaMaksBar > 0) {
                 if (kararVerilemez || tahmin["basincNegatif"].toBool())
@@ -328,37 +335,34 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
                 + QString("(a = d·A/4l, b = B·π·d³/16l; d = %1 m, l = %2 m)</p>")
                       .arg(SliperModel::BORU_CAPI_M).arg(SliperModel::BORU_UZUNLUGU_M);
 
-        // Tahmin grafiği: her uzunluk için P(Q) doğrusu + Q1/Q2'de hata çubukları
-        const QColor renkler[3] = { QColor("#2563eb"), QColor("#16a34a"), QColor("#dc2626") };
-        const Qt::PenStyle stiller[3] = { Qt::SolidLine, Qt::DotLine, Qt::DashLine };
-        const char *uzunlukAlanlari[3] = { "l2", "l3", "l4" };
-        const double grafikSonuDebi = std::max(ayarlar["q1"].toDouble(), ayarlar["q2"].toDouble()) * 1.1;
+        // Tahmin grafiği: hat için P(Q) doğrusu + hedef debide hata çubuğu
+        const double hedefDebi = ayarlar["hedefDebi"].toDouble();
+        const double grafikSonuDebi = std::max(hedefDebi * 1.5, 10.0);
         const double hatCapiMm = ayarlar["cap"].toDouble();
+        const double hatUzunluguM = SliperModel::hesapUzunluguM(ayarlar);
         const double yukseklikM = ayarlar["yukseklik"].toDouble();
         const double yogunluk = ayarlar["yogunluk"].toDouble();
         const double hataPayi = ayarlar["hataPayi"].toDouble();
         QVector<Seri> seriler;
-        for (int i = 0; i < 3; ++i) {
-            const double hatUzunluguM = ayarlar[uzunlukAlanlari[i]].toDouble();
-            Seri tahminCizgisi; tahminCizgisi.renk = renkler[i]; tahminCizgisi.stil = stiller[i];
-            tahminCizgisi.ad = QString("Tahmin %1 m").arg(sayi(hatUzunluguM, 0));
-            // Tahmin Q'ya göre düz çizgidir: iki uç nokta yeter
-            for (double debi : { 0.0, grafikSonuDebi }) {
-                const QVariantMap tahmin = SliperModel::basincTahmini(kesisimA, egimB, debi, hatCapiMm,
-                    hatUzunluguM, yukseklikM, yogunluk, hataPayi);
-                tahminCizgisi.noktalar.append(QPointF(debi, tahmin["basincBar"].toDouble()));
-            }
-            // Q1 ve Q2'de hata payı çubukları
-            for (double debi : { ayarlar["q1"].toDouble(), ayarlar["q2"].toDouble() }) {
-                const QVariantMap tahmin = SliperModel::basincTahmini(kesisimA, egimB, debi, hatCapiMm,
-                    hatUzunluguM, yukseklikM, yogunluk, hataPayi);
-                if (hataPayi > 0) {
-                    tahminCizgisi.hataCubuklari.append({ QPointF(debi, tahmin["altSinirBar"].toDouble()),
-                                                         QPointF(debi, tahmin["ustSinirBar"].toDouble()) });
-                }
-            }
-            seriler.append(tahminCizgisi);
+        Seri tahminCizgisi; tahminCizgisi.renk = QColor("#2563eb"); tahminCizgisi.stil = Qt::SolidLine;
+        tahminCizgisi.ad = QString("Tahmin %1 m").arg(sayi(hatUzunluguM, 0));
+        // Tahmin Q'ya göre düz çizgidir: iki uç nokta yeter
+        for (double debi : { 0.0, grafikSonuDebi }) {
+            const QVariantMap tahmin = SliperModel::basincTahmini(kesisimA, egimB, debi, hatCapiMm,
+                hatUzunluguM, yukseklikM, yogunluk, hataPayi);
+            tahminCizgisi.noktalar.append(QPointF(debi, tahmin["basincBar"].toDouble()));
         }
+        if (hataPayi > 0) {
+            const QVariantMap tahmin = SliperModel::basincTahmini(kesisimA, egimB, hedefDebi, hatCapiMm,
+                hatUzunluguM, yukseklikM, yogunluk, hataPayi);
+            tahminCizgisi.hataCubuklari.append({ QPointF(hedefDebi, tahmin["altSinirBar"].toDouble()),
+                                                 QPointF(hedefDebi, tahmin["ustSinirBar"].toDouble()) });
+        }
+        seriler.append(tahminCizgisi);
+        Seri hedefNoktasi; hedefNoktasi.noktaMi = true; hedefNoktasi.renk = QColor("#dc2626"); hedefNoktasi.ad = "Hedef debi";
+        hedefNoktasi.noktalar.append(QPointF(hedefDebi, SliperModel::basincTahmini(kesisimA, egimB, hedefDebi, hatCapiMm,
+            hatUzunluguM, yukseklikM, yogunluk, hataPayi)["basincBar"].toDouble()));
+        seriler.append(hedefNoktasi);
         if (pompaMaksBar > 0) {
             Seri pompaCizgisi; pompaCizgisi.renk = QColor("#f59e0b"); pompaCizgisi.stil = Qt::DashDotLine; pompaCizgisi.ad = "Pompa maks.";
             pompaCizgisi.noktalar = { QPointF(0, pompaMaksBar), QPointF(grafikSonuDebi, pompaMaksBar) };
@@ -380,18 +384,17 @@ QString ReportManager::raporHtmlOlustur(int olcumId, QMap<QString, QImage> &gors
             ? "DEĞERLENDİRİLEMEDİ — P–Q eğimi (B) negatif, tahmin fiziksel değil. Ölçümü tekrarlayın."
             : "DEĞERLENDİRİLEMEDİ — P–Q kesişimi (A) negatif, tahmin fiziksel değil. Ölçümü tekrarlayın.";
     } else if (pompaMaksBar > 0) {
-        const bool pompaYeterli = enYuksekTahminBar <= pompaMaksBar;
-        if (!pompaYeterli) {
+        if (pompaAsildi) {
             durumRengi = "#dc2626";
-            durumMetni = QString("BAZI DURUMLARDA POMPA KAPASİTESİ YETERSİZ — en yüksek tahmin %1 bar / pompa %2 bar")
+            durumMetni = QString("POMPA KAPASİTESİ YETERSİZ — gereken en fazla %1 bar / pompa %2 bar")
                 .arg(sayi(enYuksekTahminBar, 1), sayi(pompaMaksBar, 1));
         } else if (dusukGuven) {
             durumRengi = "#b45309";
-            durumMetni = QString("POMPALANABİLİR — GÜVENİLİR DEĞİL (R² = %1) — en yüksek tahmin %2 bar / pompa %3 bar")
+            durumMetni = QString("POMPALANABİLİR — GÜVENİLİR DEĞİL (R² = %1) — gereken en fazla %2 bar / pompa %3 bar")
                 .arg(sayi(pqSonucu["r2"].toDouble(), 2), sayi(enYuksekTahminBar, 1), sayi(pompaMaksBar, 1));
         } else {
             durumRengi = "#16a34a";
-            durumMetni = QString("TÜM DURUMLARDA POMPALANABİLİR — en yüksek tahmin %1 bar / pompa %2 bar")
+            durumMetni = QString("POMPALANABİLİR — gereken en fazla %1 bar / pompa %2 bar")
                 .arg(sayi(enYuksekTahminBar, 1), sayi(pompaMaksBar, 1));
         }
     }
