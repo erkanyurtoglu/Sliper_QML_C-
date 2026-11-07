@@ -271,6 +271,34 @@
                     "designable": true,
                     "final": false,
                     "index": 12,
+                    "name": "mesafeSensoruArizali",
+                    "notify": "sensorArizasiChanged",
+                    "read": "mesafeSensoruArizali",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "bool",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 13,
+                    "name": "yukSensoruArizali",
+                    "notify": "sensorArizasiChanged",
+                    "read": "yukSensoruArizali",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "bool",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 14,
                     "name": "bataryaVoltaj",
                     "notify": "bataryaVoltajChanged",
                     "read": "bataryaVoltaj",
@@ -284,7 +312,7 @@
                     "constant": false,
                     "designable": true,
                     "final": false,
-                    "index": 13,
+                    "index": 15,
                     "name": "zamanS",
                     "notify": "veriGuncellendi",
                     "read": "zamanS",
@@ -345,6 +373,11 @@
                 {
                     "access": "public",
                     "name": "veriGecerliChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "sensorArizasiChanged",
                     "returnType": "void"
                 },
                 {

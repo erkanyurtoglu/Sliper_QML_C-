@@ -26,6 +26,7 @@ Rectangle {
         nedenHiz: { tr: "hız ≤ 0", en: "speed ≤ 0" },
         nedenBasinc: { tr: "p ≤ 0", en: "p ≤ 0" },
         nedenOrnek: { tr: "yetersiz örnek", en: "too few samples" },
+        nedenKesinti: { tr: "veri kesintisi", en: "data gap" },
         geriButon: { tr: "−", en: "−" },
         sifirlaButon: { tr: "↺", en: "↺" },
         olcumuBaslatButon: { tr: "▶  Ölçümü Başlat", en: "▶  Start Measurement" },
@@ -61,6 +62,9 @@ Rectangle {
         uyariReceteSec: { tr: "Lütfen reçeteyi seçin veya yazın.", en: "Please select or type the mix design." },
         recetePlaceholder: { tr: "Seçin veya yazın (örn. C30/37, K-12)...", en: "Select or type (e.g. C30/37, M-12)..." },
         veriAkisiKesildi: { tr: "⚠ Veri akışı kesildi — cihazı ve Wi-Fi bağlantısını kontrol edin", en: "⚠ Data transfer interrupted — check the device and Wi-Fi connection" },
+        mesafeSensoruArizali: { tr: "⚠ Mesafe sensörü cevap vermiyor", en: "⚠ Distance sensor not responding" },
+        yukSensoruArizali: { tr: "⚠ Load cell cevap vermiyor", en: "⚠ Load cell not responding" },
+        ikiSensorArizali: { tr: "⚠ Mesafe sensörü ve load cell cevap vermiyor", en: "⚠ Distance sensor and load cell not responding" },
         uyariStrokeKaydedilemedi: { tr: "Stroke %1 veritabanına kaydedilemedi!", en: "Stroke %1 could not be saved to the database!" },
         uyariCihazBagliDegil: { tr: "Cihaz bağlı değil. Lütfen önce sol alttan SLIPER-ESP32'ye bağlanın.", en: "Device not connected. Please connect to SLIPER-ESP32 from the bottom left first." },
         uyariAktifOlcumYok: { tr: "Aktif bir ölçüm yok. Önce ölçümü başlatın.", en: "No active measurement. Please start a measurement first." },
@@ -1340,6 +1344,7 @@ Rectangle {
                     if (kod === "hiz") return txt("nedenHiz")
                     if (kod === "basinc") return txt("nedenBasinc")
                     if (kod === "ornek") return txt("nedenOrnek")
+                    if (kod === "kesinti") return txt("nedenKesinti")
                     return ""
                 }
 
@@ -1753,7 +1758,12 @@ Rectangle {
         Text {
             id: kesintiMetni
             anchors.centerIn: parent
-            text: txt("veriAkisiKesildi")
+            text: {
+                if (sensorManager.mesafeSensoruArizali && sensorManager.yukSensoruArizali) return txt("ikiSensorArizali")
+                if (sensorManager.mesafeSensoruArizali) return txt("mesafeSensoruArizali")
+                if (sensorManager.yukSensoruArizali) return txt("yukSensoruArizali")
+                return txt("veriAkisiKesildi")
+            }
             color: "#fecaca"
             font.family: "Segoe UI"
             font.pixelSize: 13

@@ -17,6 +17,8 @@ double SensorManager::hamAccelX() const { return m_hamAccelX; }
 double SensorManager::hamAccelY() const { return m_hamAccelY; }
 double SensorManager::hamAccelZ() const { return m_hamAccelZ; }
 bool SensorManager::veriGecerli() const { return m_veriGecerli; }
+bool SensorManager::mesafeSensoruArizali() const { return m_mesafeSensoruArizali; }
+bool SensorManager::yukSensoruArizali() const { return m_yukSensoruArizali; }
 double SensorManager::bataryaVoltaj() const { return m_bataryaVoltaj; }
 double SensorManager::zamanS() const { return m_zamanS; }
 
@@ -76,4 +78,12 @@ void SensorManager::veriyiGecersizYap()
     if (!m_veriGecerli) return;
     m_veriGecerli = false;
     emit veriGecerliChanged();
+}
+
+void SensorManager::sensorArizasiGuncelle(bool mesafeSensoruArizali, bool yukSensoruArizali)
+{
+    if (m_mesafeSensoruArizali == mesafeSensoruArizali && m_yukSensoruArizali == yukSensoruArizali) return;
+    m_mesafeSensoruArizali = mesafeSensoruArizali;
+    m_yukSensoruArizali = yukSensoruArizali;
+    emit sensorArizasiChanged();
 }

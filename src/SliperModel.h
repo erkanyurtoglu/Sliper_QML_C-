@@ -47,9 +47,10 @@ constexpr double hizdanDebiM3h(double hizMs)
 constexpr double KONUM_TOLERANSI_MM = 5.0;
 constexpr double UST_YAKALAMA_TOLERANSI_MM = 20.0;
 constexpr double ALT_YAKALAMA_TOLERANSI_MM = 25.0;
-constexpr double DURGUN_TOLERANS_MM = 5.0;
-constexpr double DURMA_TOLERANSI_MM = 2.0;
-constexpr double DURMA_ONAYI_S = 1.0;
+constexpr double DURGUN_TOLERANS_MM = 12.0;
+constexpr double DURMA_TOLERANSI_MM = 12.0;
+constexpr double INISTE_KALDIRMA_ESIGI_MM = 30.0;
+constexpr double DURMA_ONAYI_S = 2.0;
 constexpr double MIN_INIS_YOLU_MM = 40.0;
 constexpr double MIN_INIS_SURESI_S = 1.0;
 constexpr double KALDIRMA_ESIGI_MM = 10.0;
@@ -78,7 +79,10 @@ constexpr double strokeBasinciMbar(double pMaksMbar, double p0lMbar)
 }
 
 constexpr int MIN_STROKE_ORNEGI = 5;
-QString strokeGecersizNedeni(int inisOrnekSayisi, double hizMs, double basincMbar);
+constexpr double MAKS_ORNEK_ARALIGI_S = 0.3;
+double enBuyukOrnekAraligiS(const QVector<double> &zamanS);
+QString strokeGecersizNedeni(int inisOrnekSayisi, double enBuyukOrnekAraligiS, double hizMs,
+                             double basincMbar);
 
 constexpr double TAKILMA_ESIGI = 0.15;
 constexpr double TAKILMA_YOL_ALT = 0.05;

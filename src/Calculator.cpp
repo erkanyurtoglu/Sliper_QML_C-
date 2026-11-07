@@ -9,6 +9,7 @@ using SliperModel::UST_YAKALAMA_TOLERANSI_MM;
 using SliperModel::ALT_YAKALAMA_TOLERANSI_MM;
 using SliperModel::DURGUN_TOLERANS_MM;
 using SliperModel::DURMA_TOLERANSI_MM;
+using SliperModel::INISTE_KALDIRMA_ESIGI_MM;
 using SliperModel::DURMA_ONAYI_S;
 using SliperModel::MIN_INIS_YOLU_MM;
 using SliperModel::MIN_INIS_SURESI_S;
@@ -90,6 +91,10 @@ void Calculator::konumGuncelle(double zamanS, double konumMm, double basincMbar)
         }
     }
 
+    if (m_durum == "INIYOR" && kaldirilanInisiKapat(yukseklikMm)) {
+        strokuBitir();
+    }
+
     if (yukseklikMm > ustEsik()) {
         m_strokeOrnekleri.clear();
         m_ustteBekleyenOrnekler.append(yeniOrnek);
@@ -154,6 +159,39 @@ int Calculator::durmaBaslangicIndeksi(double zamanS) const
     if (durmaSuresiS < DURMA_ONAYI_S) return -1;
 
     return durmaBasiIndeksi;
+}
+
+bool Calculator::kaldirilanInisiKapat(double yeniYukseklikMm)
+{
+    if (m_strokeOrnekleri.isEmpty()) return false;
+
+    int enAltIndeks = 0;
+    for (int i = 1; i < m_strokeOrnekleri.size(); ++i) {
+        if (m_strokeOrnekleri[i].yukseklikMm < m_strokeOrnekleri[enAltIndeks].yukseklikMm) {
+            enAltIndeks = i;
+        }
+    }
+    const double enAltYukseklikMm = m_strokeOrnekleri[enAltIndeks].yukseklikMm;
+
+    const bool boruKaldirildi = yeniYukseklikMm > enAltYukseklikMm + INISTE_KALDIRMA_ESIGI_MM;
+    if (!boruKaldirildi) return false;
+    if (m_inisBaslangicYuksekligiMm - enAltYukseklikMm < MIN_INIS_YOLU_MM) return false;
+
+    const double durgunUstSiniriMm = enAltYukseklikMm + DURMA_TOLERANSI_MM;
+    int altaVarisIndeksi = 0;
+    while (altaVarisIndeksi < enAltIndeks
+           && m_strokeOrnekleri[altaVarisIndeksi].yukseklikMm > durgunUstSiniriMm) {
+        ++altaVarisIndeksi;
+    }
+    int sonDurgunIndeks = m_strokeOrnekleri.size() - 1;
+    while (sonDurgunIndeks > enAltIndeks
+           && m_strokeOrnekleri[sonDurgunIndeks].yukseklikMm > durgunUstSiniriMm) {
+        --sonDurgunIndeks;
+    }
+    m_strokeOrnekleri.resize(sonDurgunIndeks + 1);
+
+    inisiKapat(m_strokeOrnekleri[altaVarisIndeksi].zamanS, altaVarisIndeksi);
+    return true;
 }
 
 void Calculator::inisiKapat(double zamanS, int bitisIndeksi)
@@ -246,8 +284,8 @@ void Calculator::strokuBitir()
     const double basincMbar = SliperModel::strokeBasinciMbar(pMaks, p0l);
 
     const int inisOrnekSayisi = sonInisIndeksi + 1;
-    const QString gecersizNedeni =
-        SliperModel::strokeGecersizNedeni(inisOrnekSayisi, hizMs, basincMbar);
+    const QString gecersizNedeni = SliperModel::strokeGecersizNedeni(
+        inisOrnekSayisi, SliperModel::enBuyukOrnekAraligiS(inisZamanlari), hizMs, basincMbar);
 
     const double ilkZamanS = m_durgunOrnekler.isEmpty()
         ? ornekler.first().zamanS

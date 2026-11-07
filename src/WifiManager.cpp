@@ -205,6 +205,7 @@ void WifiManager::soketBaglandi()
 
     if (m_sensorManager) {
         m_sensorManager->veriyiGecersizYap();
+        m_sensorManager->sensorArizasiGuncelle(false, false);
     }
 
     qDebug() << "ESP32'ye baglanildi:" << ESP32_IP << ESP32_PORT;
@@ -338,6 +339,18 @@ void WifiManager::jsonSatiriIsle(const QByteArray &satir)
     }
 
     const QJsonObject paket = belge.object();
+
+    const bool mesafeSensoruArizali = !paket.value("tofGecerli").toBool(true);
+    const bool yukSensoruArizali = !paket.value("hxGecerli").toBool(true);
+    if (m_sensorManager) {
+        m_sensorManager->sensorArizasiGuncelle(mesafeSensoruArizali, yukSensoruArizali);
+    }
+    if (mesafeSensoruArizali || yukSensoruArizali) {
+        if (m_sensorManager) {
+            m_sensorManager->veriyiGecersizYap();
+        }
+        return;
+    }
 
     const double gelenHamAgirlik = paket.value("hamAgirlik").toDouble();
     if (!m_agirlikFiltresiBasladi) {

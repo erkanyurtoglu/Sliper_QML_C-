@@ -81,6 +81,7 @@ private:
     void hazirlamayiIptalEt();
     void hazirligiSifirla();
     int durmaBaslangicIndeksi(double zamanS) const;
+    bool kaldirilanInisiKapat(double yeniYukseklikMm);
     void inisiKapat(double zamanS, int bitisIndeksi = -1);
     void durumAyarla(const QString &yeniDurum);
     double yon() const { return m_ustKonumMm >= m_altKonumMm ? 1.0 : -1.0; }

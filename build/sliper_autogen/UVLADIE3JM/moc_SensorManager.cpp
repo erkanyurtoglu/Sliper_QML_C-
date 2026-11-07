@@ -47,6 +47,7 @@ constexpr auto qt_meta_stringdata_CLASSSensorManagerENDCLASS = QtMocHelpers::str
     "hamMesafeChanged",
     "hamAccelDegisti",
     "veriGecerliChanged",
+    "sensorArizasiChanged",
     "veriGuncellendi",
     "bataryaVoltajChanged",
     "veriGuncelle",
@@ -72,6 +73,8 @@ constexpr auto qt_meta_stringdata_CLASSSensorManagerENDCLASS = QtMocHelpers::str
     "hamAccelY",
     "hamAccelZ",
     "veriGecerli",
+    "mesafeSensoruArizali",
+    "yukSensoruArizali",
     "bataryaVoltaj"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
@@ -85,34 +88,35 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSSensorManagerENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      18,   14, // methods
-      14,  166, // properties
+      19,   14, // methods
+      16,  173, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-      12,       // signalCount
+      13,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,  122,    2, 0x06,   15 /* Public */,
-       3,    0,  123,    2, 0x06,   16 /* Public */,
-       4,    0,  124,    2, 0x06,   17 /* Public */,
-       5,    0,  125,    2, 0x06,   18 /* Public */,
-       6,    0,  126,    2, 0x06,   19 /* Public */,
-       7,    0,  127,    2, 0x06,   20 /* Public */,
-       8,    0,  128,    2, 0x06,   21 /* Public */,
-       9,    0,  129,    2, 0x06,   22 /* Public */,
-      10,    0,  130,    2, 0x06,   23 /* Public */,
-      11,    0,  131,    2, 0x06,   24 /* Public */,
-      12,    0,  132,    2, 0x06,   25 /* Public */,
-      13,    0,  133,    2, 0x06,   26 /* Public */,
+       1,    0,  128,    2, 0x06,   17 /* Public */,
+       3,    0,  129,    2, 0x06,   18 /* Public */,
+       4,    0,  130,    2, 0x06,   19 /* Public */,
+       5,    0,  131,    2, 0x06,   20 /* Public */,
+       6,    0,  132,    2, 0x06,   21 /* Public */,
+       7,    0,  133,    2, 0x06,   22 /* Public */,
+       8,    0,  134,    2, 0x06,   23 /* Public */,
+       9,    0,  135,    2, 0x06,   24 /* Public */,
+      10,    0,  136,    2, 0x06,   25 /* Public */,
+      11,    0,  137,    2, 0x06,   26 /* Public */,
+      12,    0,  138,    2, 0x06,   27 /* Public */,
+      13,    0,  139,    2, 0x06,   28 /* Public */,
+      14,    0,  140,    2, 0x06,   29 /* Public */,
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-      14,    7,  134,    2, 0x02,   27 /* Public */,
-      22,    1,  149,    2, 0x02,   35 /* Public */,
-      24,    1,  152,    2, 0x02,   37 /* Public */,
-      26,    3,  155,    2, 0x02,   39 /* Public */,
-      30,    1,  162,    2, 0x02,   43 /* Public */,
-      32,    0,  165,    2, 0x02,   45 /* Public */,
+      15,    7,  141,    2, 0x02,   30 /* Public */,
+      23,    1,  156,    2, 0x02,   38 /* Public */,
+      25,    1,  159,    2, 0x02,   40 /* Public */,
+      27,    3,  162,    2, 0x02,   42 /* Public */,
+      31,    1,  169,    2, 0x02,   46 /* Public */,
+      33,    0,  172,    2, 0x02,   48 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -127,30 +131,33 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSSensorManagerENDCLASS[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
 
  // methods: parameters
-    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   15,   16,   17,   18,   19,   20,   21,
-    QMetaType::Void, QMetaType::Double,   23,
-    QMetaType::Void, QMetaType::Double,   25,
-    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double,   27,   28,   29,
-    QMetaType::Void, QMetaType::Double,   31,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   16,   17,   18,   19,   20,   21,   22,
+    QMetaType::Void, QMetaType::Double,   24,
+    QMetaType::Void, QMetaType::Double,   26,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double,   28,   29,   30,
+    QMetaType::Void, QMetaType::Double,   32,
     QMetaType::Void,
 
  // properties: name, type, flags
-      16, QMetaType::Double, 0x00015001, uint(0), 0,
-      17, QMetaType::Double, 0x00015001, uint(1), 0,
-      18, QMetaType::Double, 0x00015001, uint(2), 0,
-      19, QMetaType::Double, 0x00015001, uint(3), 0,
-      20, QMetaType::Double, 0x00015001, uint(4), 0,
-      21, QMetaType::Double, 0x00015001, uint(5), 0,
-      23, QMetaType::Double, 0x00015001, uint(6), 0,
-      25, QMetaType::Double, 0x00015001, uint(7), 0,
-      33, QMetaType::Double, 0x00015001, uint(8), 0,
+      17, QMetaType::Double, 0x00015001, uint(0), 0,
+      18, QMetaType::Double, 0x00015001, uint(1), 0,
+      19, QMetaType::Double, 0x00015001, uint(2), 0,
+      20, QMetaType::Double, 0x00015001, uint(3), 0,
+      21, QMetaType::Double, 0x00015001, uint(4), 0,
+      22, QMetaType::Double, 0x00015001, uint(5), 0,
+      24, QMetaType::Double, 0x00015001, uint(6), 0,
+      26, QMetaType::Double, 0x00015001, uint(7), 0,
       34, QMetaType::Double, 0x00015001, uint(8), 0,
       35, QMetaType::Double, 0x00015001, uint(8), 0,
-      36, QMetaType::Bool, 0x00015001, uint(9), 0,
-      37, QMetaType::Double, 0x00015001, uint(11), 0,
-      15, QMetaType::Double, 0x00015001, uint(10), 0,
+      36, QMetaType::Double, 0x00015001, uint(8), 0,
+      37, QMetaType::Bool, 0x00015001, uint(9), 0,
+      38, QMetaType::Bool, 0x00015001, uint(10), 0,
+      39, QMetaType::Bool, 0x00015001, uint(10), 0,
+      40, QMetaType::Double, 0x00015001, uint(12), 0,
+      16, QMetaType::Double, 0x00015001, uint(11), 0,
 
        0        // eod
 };
@@ -186,6 +193,10 @@ Q_CONSTINIT const QMetaObject SensorManager::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<double, std::true_type>,
         // property 'veriGecerli'
         QtPrivate::TypeAndForceComplete<bool, std::true_type>,
+        // property 'mesafeSensoruArizali'
+        QtPrivate::TypeAndForceComplete<bool, std::true_type>,
+        // property 'yukSensoruArizali'
+        QtPrivate::TypeAndForceComplete<bool, std::true_type>,
         // property 'bataryaVoltaj'
         QtPrivate::TypeAndForceComplete<double, std::true_type>,
         // property 'zamanS'
@@ -211,6 +222,8 @@ Q_CONSTINIT const QMetaObject SensorManager::staticMetaObject = { {
         // method 'hamAccelDegisti'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'veriGecerliChanged'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'sensorArizasiChanged'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'veriGuncellendi'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
@@ -261,14 +274,15 @@ void SensorManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 7: _t->hamMesafeChanged(); break;
         case 8: _t->hamAccelDegisti(); break;
         case 9: _t->veriGecerliChanged(); break;
-        case 10: _t->veriGuncellendi(); break;
-        case 11: _t->bataryaVoltajChanged(); break;
-        case 12: _t->veriGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[5])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[6])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[7]))); break;
-        case 13: _t->hamAgirlikGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
-        case 14: _t->hamMesafeGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
-        case 15: _t->hamAccelGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3]))); break;
-        case 16: _t->bataryaVoltajGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
-        case 17: _t->veriyiGecersizYap(); break;
+        case 10: _t->sensorArizasiChanged(); break;
+        case 11: _t->veriGuncellendi(); break;
+        case 12: _t->bataryaVoltajChanged(); break;
+        case 13: _t->veriGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[5])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[6])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[7]))); break;
+        case 14: _t->hamAgirlikGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
+        case 15: _t->hamMesafeGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
+        case 16: _t->hamAccelGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3]))); break;
+        case 17: _t->bataryaVoltajGuncelle((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
+        case 18: _t->veriyiGecersizYap(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -345,15 +359,22 @@ void SensorManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         }
         {
             using _t = void (SensorManager::*)();
-            if (_t _q_method = &SensorManager::veriGuncellendi; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+            if (_t _q_method = &SensorManager::sensorArizasiChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
                 *result = 10;
                 return;
             }
         }
         {
             using _t = void (SensorManager::*)();
-            if (_t _q_method = &SensorManager::bataryaVoltajChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+            if (_t _q_method = &SensorManager::veriGuncellendi; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
                 *result = 11;
+                return;
+            }
+        }
+        {
+            using _t = void (SensorManager::*)();
+            if (_t _q_method = &SensorManager::bataryaVoltajChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 12;
                 return;
             }
         }
@@ -374,8 +395,10 @@ void SensorManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 9: *reinterpret_cast< double*>(_v) = _t->hamAccelY(); break;
         case 10: *reinterpret_cast< double*>(_v) = _t->hamAccelZ(); break;
         case 11: *reinterpret_cast< bool*>(_v) = _t->veriGecerli(); break;
-        case 12: *reinterpret_cast< double*>(_v) = _t->bataryaVoltaj(); break;
-        case 13: *reinterpret_cast< double*>(_v) = _t->zamanS(); break;
+        case 12: *reinterpret_cast< bool*>(_v) = _t->mesafeSensoruArizali(); break;
+        case 13: *reinterpret_cast< bool*>(_v) = _t->yukSensoruArizali(); break;
+        case 14: *reinterpret_cast< double*>(_v) = _t->bataryaVoltaj(); break;
+        case 15: *reinterpret_cast< double*>(_v) = _t->zamanS(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -403,18 +426,18 @@ int SensorManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 18)
+        if (_id < 19)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 18;
+        _id -= 19;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 18)
+        if (_id < 19)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 18;
+        _id -= 19;
     }else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::BindableProperty
             || _c == QMetaObject::RegisterPropertyMetaType) {
         qt_static_metacall(this, _c, _id, _a);
-        _id -= 14;
+        _id -= 16;
     }
     return _id;
 }
@@ -480,14 +503,20 @@ void SensorManager::veriGecerliChanged()
 }
 
 // SIGNAL 10
-void SensorManager::veriGuncellendi()
+void SensorManager::sensorArizasiChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 10, nullptr);
 }
 
 // SIGNAL 11
-void SensorManager::bataryaVoltajChanged()
+void SensorManager::veriGuncellendi()
 {
     QMetaObject::activate(this, &staticMetaObject, 11, nullptr);
+}
+
+// SIGNAL 12
+void SensorManager::bataryaVoltajChanged()
+{
+    QMetaObject::activate(this, &staticMetaObject, 12, nullptr);
 }
 QT_WARNING_POP

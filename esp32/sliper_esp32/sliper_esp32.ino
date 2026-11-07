@@ -19,7 +19,8 @@ const uint8_t TOF250_MESAFE_REGISTERI = 0x00;
 const long TOF250_MM_CARPANI = 1;
 const unsigned long TOF250_OKUMA_ARALIGI_MS = 100;
 const unsigned long TOF250_ZAMAN_ASIMI_MS = 500;
-const long TOF250_MAKSIMUM_MM = 2500;
+const long TOF250_MAKSIMUM_CM = 250;
+const unsigned long HX711_ZAMAN_ASIMI_MS = 500;
 
 #define BATARYA_ADS_KANALI 1
 
@@ -124,6 +125,7 @@ unsigned long sonOrnekMs = 0;
 unsigned long sonBataryaMs = 0;
 unsigned long sonMpuMs = 0;
 long sonHamAgirlik = 0;
+unsigned long sonAgirlikZamaniMs = 0;
 unsigned long atlananPaketSayisi = 0;
 unsigned long gonderilenPaketSayisi = 0;
 unsigned long sonDurumYazisiMs = 0;
@@ -145,7 +147,12 @@ bool soketYazmayaHazir(NetworkClient &istemci) {
 void hamAgirlikGuncelle() {
     if (loadCell.is_ready()) {
         sonHamAgirlik = loadCell.read();
+        sonAgirlikZamaniMs = millis();
     }
+}
+
+bool hx711Hazir() {
+    return sonAgirlikZamaniMs != 0 && millis() - sonAgirlikZamaniMs < HX711_ZAMAN_ASIMI_MS;
 }
 
 bool i2cCihazCevapVeriyor(uint8_t adres) {
@@ -226,7 +233,7 @@ void tofMesafeGuncelle() {
         return;
     }
     const long mesafeMm = (long)hamMesafe * TOF250_MM_CARPANI;
-    if (mesafeMm <= TOF250_MAKSIMUM_MM) {
+    if (mesafeMm <= TOF250_MAKSIMUM_CM) {
         sonMesafeMm = mesafeMm;
         sonMesafeZamaniMs = millis();
     }
@@ -322,6 +329,8 @@ void loop() {
     doc["hamAgirlik"] = sonHamAgirlik;
     doc["hamMesafe"] = sonMesafeMm;
     doc["mesafeMm"] = sonMesafeMm;
+    doc["tofGecerli"] = tofHazir();
+    doc["hxGecerli"] = hx711Hazir();
     doc["hamBatarya"] = sonHamBatarya;
     doc["accelX"] = round(sonAccelX * 1000) / 1000.0;
     doc["accelY"] = round(sonAccelY * 1000) / 1000.0;
@@ -348,7 +357,7 @@ void loop() {
                       gonderilenPaketSayisi, atlananPaketSayisi,
                       tofHazir() ? 1 : 0, sonMesafeMm,
                       adsHazir ? 1 : 0, mpuHazir ? 1 : 0,
-                      loadCell.is_ready() ? 1 : 0,
+                      hx711Hazir() ? 1 : 0,
                       i2cHataSayaci, i2cYenidenKurmaSayisi);
     }
 

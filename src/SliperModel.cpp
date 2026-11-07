@@ -178,8 +178,19 @@ double durgunBasincMbar(const QVector<double> &basincMbar)
     return (siraliBasinclar[ortaIndeks - 1] + siraliBasinclar[ortaIndeks]) / 2.0;
 }
 
-QString strokeGecersizNedeni(int inisOrnekSayisi, double hizMs, double basincMbar)
+double enBuyukOrnekAraligiS(const QVector<double> &zamanS)
 {
+    double enBuyukAralikS = 0.0;
+    for (int i = 1; i < zamanS.size(); ++i) {
+        enBuyukAralikS = std::max(enBuyukAralikS, zamanS[i] - zamanS[i - 1]);
+    }
+    return enBuyukAralikS;
+}
+
+QString strokeGecersizNedeni(int inisOrnekSayisi, double enBuyukOrnekAraligiS, double hizMs,
+                             double basincMbar)
+{
+    if (enBuyukOrnekAraligiS > MAKS_ORNEK_ARALIGI_S) return "kesinti";
     if (inisOrnekSayisi < MIN_STROKE_ORNEGI) return "ornek";
     if (hizMs <= 0.0) return "hiz";
     if (basincMbar <= 0.0) return "basinc";
